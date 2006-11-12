@@ -25,11 +25,17 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>net.sourceforge.pmd.runtime.pmdBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>net.genady.rmi.RMINature</nature>
 		<nature>net.sourceforge.pmd.eclipse.pmdNature</nature>
 		<nature>net.sourceforge.metrics.nature</nature>
+		<nature>net.sourceforge.pmd.runtime.pmdNature</nature>
 	</natures>
 </projectDescription>

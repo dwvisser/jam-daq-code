@@ -55,31 +55,28 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 			.getLogger(OpenMultipleFiles.class.getPackage().getName());
 
 	// UI components
-	private final Frame frame;
 
-	private final JDialog dialog;
+	private transient final JDialog dialog;
 
-	private JList histList;
+	private transient JList histList;
 
-	private DefaultListModel hListModel;
+	private transient DefaultListModel hListModel;
 
-	private JTextField txtListFile;
+	private transient JTextField txtListFile;
 
-	private final JCheckBox chkBoxAdd;
+	private transient final JCheckBox chkBoxAdd;
 
-	private final PanelOKApplyCancelButtons okApply;
 
-	private final MultipleFileChooser multiChooser;
+	private transient final MultipleFileChooser multiChooser;
 
-	private final List<HistogramAttributes> histAttrList = new ArrayList<HistogramAttributes>();
 
 	/** HDF file reader */
-	private final HDFIO hdfio;
+	private transient final HDFIO hdfio;
 
 	/** Broadcaster */
-	private final Broadcaster broadcaster;
+	private transient final Broadcaster broadcaster;
 
-	private final JamStatus STATUS = JamStatus.getSingletonInstance();
+	private transient final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	/**
 	 * Constructs an object which uses a dialog to open a selected histogram out
@@ -91,7 +88,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 *            where to print messages
 	 */
 	public OpenMultipleFiles(Frame parent) {
-		frame = parent;
+		final Frame frame = parent;
 		broadcaster = Broadcaster.getSingletonInstance();
 		hdfio = new HDFIO(frame);
 		dialog = new JDialog(frame, "Open Multiple Files");
@@ -109,7 +106,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 				"Select Histograms to open");
 		tabPane.addChangeListener(new ChangeListener() {
 			// This method is called whenever the selected tab changes
-			public void stateChanged(ChangeEvent evt) {
+			public void stateChanged(final ChangeEvent evt) {
 				final JTabbedPane pane = (JTabbedPane) evt.getSource();
 				changeSelectedTab(pane.getSelectedIndex());
 			}
@@ -125,7 +122,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 		JButton bLoadlist = new JButton("Load List");
 		pLoadButtons.add(bLoadlist);
 		bLoadlist.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				multiChooser.loadList();
 			}
 		});
@@ -135,11 +132,11 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 		pLoad.add(chkBoxAdd);
 
 		bSavelist.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				multiChooser.saveList();
 			}
 		});
-		okApply = new PanelOKApplyCancelButtons(
+		final PanelOKApplyCancelButtons okApply = new PanelOKApplyCancelButtons(
 				new PanelOKApplyCancelButtons.AbstractListener(dialog) {
 					public void apply() {
 						defaultSelection();
@@ -191,7 +188,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 * 
 	 * @param tabIndex
 	 */
-	public void changeSelectedTab(int tabIndex) {
+	public void changeSelectedTab(final int tabIndex) {
 		if (tabIndex == 1) {
 			refreshHistList();
 		}
@@ -241,7 +238,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 * non-javadoc: Load name of histograms from the selected file
 	 * 
 	 */
-	private boolean loadHistNames(File fileSelect) {
+	private boolean loadHistNames(final File fileSelect) {
 		boolean loadState;
 		/* Read in histogram names attributes */
 		try {
@@ -292,7 +289,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 	private List<HistogramAttributes> createSelectedHistogramNamesList() {
 		checkSelectionIsNone();
 		final Object[] selected = histList.getSelectedValues();
-		histAttrList.clear();
+		final List<HistogramAttributes> histAttrList = new ArrayList<HistogramAttributes>();
 		/* Put selected histograms into a list */
 		for (int i = 0; i < selected.length; i++) {
 			// Get name from full name
@@ -339,7 +336,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 	/**
 	 * Called by HDFIO when asynchronized IO is completed
 	 */
-	public void completedIO(String message, String errorMessage) {
+	public void completedIO(final String message, final String errorMessage) {
 		hdfio.removeListener();
 		notifyApp();
 	}

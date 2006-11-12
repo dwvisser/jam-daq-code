@@ -1,7 +1,6 @@
 package jam;
 
 import jam.commands.CommandManager;
-import jam.data.DataBase;
 import jam.data.control.AbstractControl;
 import jam.global.AcquisitionStatus;
 import jam.global.BroadcastEvent;
@@ -17,6 +16,7 @@ import jam.sort.control.SetupSortOn;
 import jam.ui.Console;
 import jam.ui.SelectionTree;
 import jam.ui.SummaryTable;
+import jam.ui.Utility;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -29,10 +29,8 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 /**
  * Launcher and main window for Jam.
@@ -45,7 +43,7 @@ public final class JamMain extends JFrame implements Observer {
 
 	static {
 		//need this block first in order for console to have correct L&F
-		setLookAndFeel();
+		Utility.setLookAndFeel();
 	}
 
 	/**
@@ -73,25 +71,6 @@ public final class JamMain extends JFrame implements Observer {
 		new JamMain(true);
 	}
 
-	private static void setLookAndFeel() {
-		try {
-			String lookAndFeel = UIManager.getSystemLookAndFeelClassName();
-			// Override system look and feel for gtk
-			if (lookAndFeel
-					.equals("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")) {
-				lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
-			}
-			UIManager.setLookAndFeel(lookAndFeel);
-		} catch (Exception e) {
-			warning(e, "Jam--error setting GUI appearance");
-		}
-	}
-
-	static void warning(final Exception exception, final String title) {
-		JOptionPane.showMessageDialog(null, exception.getMessage(), title,
-				JOptionPane.WARNING_MESSAGE);
-	}
-
 	/**
 	 * Configuration information for Jam.
 	 */
@@ -109,12 +88,10 @@ public final class JamMain extends JFrame implements Observer {
 	JamMain(final boolean showGUI) {
 		super("Jam");
 		status.setShowGUI(showGUI);
-		setLookAndFeel();
 		showSplashScreen(showGUI);
 		/* Application initialization */
 		properties = new JamProperties(); // class that has properties
 		status.setFrame(this);
-		status.setValidator(DataBase.getInstance());
 		status.setAcqisitionStatus(new AcquisitionStatus() {
 			public boolean isAcqOn() {
 				return getRunState().isAcqOn();
@@ -267,7 +244,7 @@ public final class JamMain extends JFrame implements Observer {
 	 * @see jam.global.SortMode
 	 */
 	private void sortModeChanged() {
-		final StringBuffer title = new StringBuffer("Jam - ");
+		final StringBuilder title = new StringBuilder("Jam - ");
 		final String disk = "disk";
 		final SortMode mode = status.getSortMode();
 		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK) {

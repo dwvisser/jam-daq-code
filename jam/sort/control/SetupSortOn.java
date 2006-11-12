@@ -51,6 +51,8 @@ public final class SetupSortOn extends AbstractSetup {
 
 	private static SetupSortOn instance = null;
 
+	private static final Object monitor = new Object();
+
 	/**
 	 * Creates the only instance of this class.
 	 * 
@@ -58,10 +60,12 @@ public final class SetupSortOn extends AbstractSetup {
 	 *            the console to use
 	 */
 	public static void createInstance(final ConsoleLog console) {
-		if (instance == null) {
-			instance = new SetupSortOn(console);
-		} else {
-			throw new IllegalStateException("Object already created.");
+		synchronized (monitor) {
+			if (instance == null) {
+				instance = new SetupSortOn(console);
+			} else {
+				throw new IllegalStateException("Object already created.");
+			}
 		}
 	}
 
@@ -71,10 +75,12 @@ public final class SetupSortOn extends AbstractSetup {
 	 * @return the only instance of this class
 	 */
 	public static SetupSortOn getInstance() {
-		if (instance == null) {
-			throw new IllegalStateException("Object not created yet.");
+		synchronized (monitor) {
+			if (instance == null) {
+				throw new IllegalStateException("Object not created yet.");
+			}
+			return instance;
 		}
-		return instance;
 	}
 
 	private transient final AbstractButton bbrowseh, bbrowsed, bbrowsel;
@@ -111,22 +117,26 @@ public final class SetupSortOn extends AbstractSetup {
 	private transient final JTextField textExpName, textPathHist, textPathData,
 			textPathLog;
 
-	private String hostDataIP;
-	
-	private int hostDataPort;
-	
+	private transient final String hostDataIP;
+
+	private transient final int hostDataPort;
+
 	private SetupSortOn(ConsoleLog console) {
 		super("Setup Online");
 		initCheckLock();
 		initDiskCheckbox();
 		final int fileTextCols = 25;
-		final String defaultName = JamProperties.getPropString(PropertyKeys.EXP_NAME);
-		dataFolder = new File(JamProperties.getPropString(PropertyKeys.EVENT_OUTPATH));
-		histFolder = new File(JamProperties.getPropString(PropertyKeys.HIST_PATH));
-		logDirectory = new File(JamProperties.getPropString(PropertyKeys.LOG_PATH));
-		hostDataIP=JamProperties.getPropString(PropertyKeys.HOST_DATA_IP); 
-		hostDataPort=JamProperties.getPropInt(PropertyKeys.HOST_DATA_P_RECV);
-		
+		final String defaultName = JamProperties
+				.getPropString(PropertyKeys.EXP_NAME);
+		dataFolder = new File(JamProperties
+				.getPropString(PropertyKeys.EVENT_OUTPATH));
+		histFolder = new File(JamProperties
+				.getPropString(PropertyKeys.HIST_PATH));
+		logDirectory = new File(JamProperties
+				.getPropString(PropertyKeys.LOG_PATH));
+		hostDataIP = JamProperties.getPropString(PropertyKeys.HOST_DATA_IP);
+		hostDataPort = JamProperties.getPropInt(PropertyKeys.HOST_DATA_P_RECV);
+
 		runControl = RunControl.getSingletonInstance();
 		consoleLog = console;
 		dialog.setResizable(false);
@@ -240,7 +250,7 @@ public final class SetupSortOn extends AbstractSetup {
 		pBottom.add(new javax.swing.JButton(new jam.ui.WindowCancelAction(
 				dialog)));
 		pBottom.add(checkLock);
-		
+
 		dialog
 				.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		dialog.pack();
@@ -310,10 +320,10 @@ public final class SetupSortOn extends AbstractSetup {
 								+ exptName);
 				/* Kill all existing Daemons and clear data areas */
 				resetAcq(false);
-				sortChooser.loadSorter(btnSpecifyPath.isSelected()); // load sorting
+				sortChooser.loadSorter(btnSpecifyPath.isSelected()); // load
+				// sorting
 				// routine
-				final SortRoutine sortRoutine = sortChooser
-						.getSortRoutine();
+				final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 				if (sortRoutine != null) {
 					lockMode(true);
 					setupSort(); // create daemons
@@ -525,8 +535,9 @@ public final class SetupSortOn extends AbstractSetup {
 			diskDaemon.setRingBuffer(storageRing);
 		}
 		/* Create the net daemon. */
-		netDaemon = new NetDaemon(sortingRing, storageRing, hostDataIP, hostDataPort);
-		
+		netDaemon = new NetDaemon(sortingRing, storageRing, hostDataIP,
+				hostDataPort);
+
 		/* Tell control about everything. */
 		runControl.setupOn(exptName, dataFolder, histFolder, sortDaemon,
 				netDaemon, diskDaemon);

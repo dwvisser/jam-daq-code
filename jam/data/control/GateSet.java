@@ -255,7 +255,7 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 	private void checkHistogram() {
 		/* has histogram changed? */
 		final Nameable named = STATUS.getCurrentHistogram();
-		if (currentHistogram != named) {
+		if (!currentHistogram.equals(named)) {
 			doSetup(); // setup chooser list
 			canceller.cancel(); // cancel current gate if was setting
 		}

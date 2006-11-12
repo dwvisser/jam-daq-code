@@ -48,25 +48,23 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	private static final Logger LOGGER = Logger
 			.getLogger(OpenSelectedHistogram.class.getPackage().getName());
 
-	private final JDialog dialog;
+	private transient final JDialog dialog;
 
-	private final JTextField txtFile;
+	private transient final JTextField txtFile;
 
-	private final JList histList;
+	private transient final JList histList;
 
-	private final DefaultListModel histListData;
+	private transient final DefaultListModel histListData;
 
 	/**
 	 * File to read histogram information from
 	 */
-	private File fileOpen;
-
-	private final List<HistogramAttributes> histAttrList = new ArrayList<HistogramAttributes>();
+	private transient File fileOpen;
 
 	/** HDF file reader */
-	private final HDFIO hdfio;
+	private transient final HDFIO hdfio;
 
-	private final Frame frame;
+	private transient final Frame frame;
 
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();;
@@ -147,11 +145,9 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	 * 
 	 */
 	public void open() {
-		if (chooseFile()) {
-			if (loadHistNames(fileOpen)) {
-				txtFile.setText(fileOpen.getAbsolutePath());
-				dialog.setVisible(true);
-			}
+		if (chooseFile() && loadHistNames(fileOpen)) {
+			txtFile.setText(fileOpen.getAbsolutePath());
+			dialog.setVisible(true);
 		}
 	}
 
@@ -182,7 +178,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	 */
 	private void loadHistograms() {
 		final Object[] selected = histList.getSelectedValues();
-		histAttrList.clear();
+		final List<HistogramAttributes> histAttrList = new ArrayList<HistogramAttributes>();
 		// No histograms selected
 		if (selected.length == 0) {
 			LOGGER.severe("No histograms selected");
@@ -248,7 +244,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	/**
 	 * Called by HDFIO when asynchronized IO is completed
 	 */
-	public void completedIO(String message, String errorMessage) {
+	public void completedIO(final String message, final String errorMessage) {
 		hdfio.removeListener();
 		notifyApp();
 	}

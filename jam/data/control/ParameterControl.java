@@ -43,26 +43,21 @@ import javax.swing.border.EmptyBorder;
  */
 public final class ParameterControl extends AbstractControl {
 
-	private final int borderHeight = 5;
+	private static final int BORDER_HEIGHT = 5;
 
-	private final String FILE_EXTENSION = "par";
+	private static final String FILE_EXTENSION = "par";
 
-	private final FileUtilities FILE_UTIL = FileUtilities.getInstance();
+	private transient String invalidNames;
 
-	private String invalidNames;
+	private transient JLabel[] labelParam;
 
-	private JLabel[] labelParam;
+	private transient File lastFile; // last file referred to in a JFileChooser
 
-	private File lastFile; // last file referred to in a JFileChooser
-
-	private JPanel pCenter;
-
-	private JPanel[] pParam;
+	private transient final JPanel pCenter;
 
 	// widgets for each parameter
-	private JScrollPane scrollPane;
 
-	private JTextField[] textParam;
+	private transient JTextField[] textParam;
 
 	/**
 	 * Constructs a new parameter dialog.
@@ -75,10 +70,10 @@ public final class ParameterControl extends AbstractControl {
 		final Container cddisp = getContentPane();
 		cddisp.setLayout(new BorderLayout());
 		/* Central Panel */
-		pCenter = new JPanel(new GridLayout(0, 1, borderHeight, 5));
-		pCenter.setBorder(new EmptyBorder(borderHeight, 10, borderHeight, 10));
+		pCenter = new JPanel(new GridLayout(0, 1, BORDER_HEIGHT, 5));
+		pCenter.setBorder(new EmptyBorder(BORDER_HEIGHT, 10, BORDER_HEIGHT, 10));
 		/* Scroll Panel */
-		scrollPane = new JScrollPane(pCenter);
+		final JScrollPane scrollPane = new JScrollPane(pCenter);
 		scrollPane
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		cddisp.add(scrollPane, BorderLayout.CENTER);
@@ -92,7 +87,7 @@ public final class ParameterControl extends AbstractControl {
 		pButtonsTop.add(pLoadSave);
 		JButton bload = new JButton("Load\u2026");
 		bload.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent event) {
 				load();
 			}
 		});
@@ -100,7 +95,7 @@ public final class ParameterControl extends AbstractControl {
 
 		JButton bsave = new JButton("Save\u2026");
 		bsave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent event) {
 				save();
 			}
 		});
@@ -113,14 +108,14 @@ public final class ParameterControl extends AbstractControl {
 
 		final JButton brecall = new JButton("Recall");
 		brecall.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent event) {
 				read();
 			}
 		});
 		pOKApplyCancel.add(brecall);
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent event) {
 				set();
 				dispose();
 			}
@@ -128,7 +123,7 @@ public final class ParameterControl extends AbstractControl {
 		pOKApplyCancel.add(bok);
 		final JButton bapply = new JButton("Apply");
 		bapply.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent event) {
 				set();
 			}
 		});
@@ -137,7 +132,7 @@ public final class ParameterControl extends AbstractControl {
 		pOKApplyCancel.add(bcancel);
 
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
+			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
 		});
@@ -155,18 +150,17 @@ public final class ParameterControl extends AbstractControl {
 		for (int i = 0; i < textParam.length; i++) {
 			try {
 				textValue = textParam[i].getText().trim();
-				if (textValue.equals("")) {
+				if (textValue.length()==0) {
 					textValue = "0.0";
 					textParam[i].setText(textValue);
 				}
 			} catch (NumberFormatException nfe) {
 				allValid = false;
-				if (!invalidNames.equals("")) {
-					invalidNames = invalidNames + ", "
-							+ labelParam[i].getText();
-					;
-				} else {
+				if (invalidNames.length()==0) {
 					invalidNames = labelParam[i].getText();
+				} else {
+					invalidNames = invalidNames + ", "
+					+ labelParam[i].getText();
 				}
 			}
 		}
@@ -182,73 +176,96 @@ public final class ParameterControl extends AbstractControl {
 		final List<DataParameter> plist = DataParameter.getParameterList();
 		final int numberParameters = plist.size();
 		pCenter.removeAll();
+		final JPanel[] pParam = new JPanel[numberParameters];
 		// we have some elements in the parameter list
 		if (numberParameters != 0) {
 			// widgets for each parameter
-			pParam = new JPanel[numberParameters];
 			labelParam = new JLabel[numberParameters];
 			textParam = new JTextField[numberParameters];
 			count = 0;
 			for (DataParameter currentParameter : plist) {
-				pParam[count] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10,
-						0));
+				pParam[count] = createParameterPanel();
 				pCenter.add(pParam[count]);
-				labelParam[count] = new JLabel(currentParameter.getName()
-						.trim(), SwingConstants.RIGHT);
+				labelParam[count] = createParameterLabel(currentParameter);
 				pParam[count].add(labelParam[count]);
-				textParam[count] = new JTextField("");
-				textParam[count].setColumns(10);
-				textParam[count].setEditable(true);
+				textParam[count] = createParameterText(count);
 				pParam[count].add(textParam[count]);
 				count++;
 			}
 		}
 		pack();
 		if (numberParameters > 0) {
-			Dimension dialogDim = calculateScrollDialogSize(this, pParam[0],
-					borderHeight, numberParameters);
+			final Dimension dialogDim = calculateScrollDialogSize(this, pParam[0],
+					BORDER_HEIGHT, numberParameters);
 			setSize(dialogDim);
 		}
 	}
 
-	private void load() {
-		JFrame frame = null;
-		String name = null;
-		String listNotLoaded = "";
+	/**
+	 * @param count
+	 */
+	private JTextField createParameterText(final int count) {
+		final JTextField rval = new JTextField("");
+		textParam[count].setColumns(10);
+		textParam[count].setEditable(true);
+		return rval;
+	}
 
-		JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fd.setFileFilter(new ExtensionFileFilter(
+	/**
+	 * @param count
+	 * @param currentParameter
+	 */
+	private JLabel createParameterLabel(final DataParameter currentParameter) {
+		return new JLabel(currentParameter.getName()
+				.trim(), SwingConstants.RIGHT);
+	}
+
+	/**
+	 * @param count
+	 * @param pParam
+	 */
+	private JPanel createParameterPanel() {
+		return new JPanel(new FlowLayout(FlowLayout.RIGHT, 10,
+				0));
+	}
+
+	private void load() {
+		final JFrame frame = null;
+		String name = null;
+		final StringBuilder listNotLoaded = new StringBuilder();
+
+		final JFileChooser fileDialog = new JFileChooser(lastFile);
+		fileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fileDialog.setFileFilter(new ExtensionFileFilter(
 				new String[] { FILE_EXTENSION }, "List Files (*."
 						+ FILE_EXTENSION + ")"));
-		int option = fd.showOpenDialog(frame);
+		final int option = fileDialog.showOpenDialog(frame);
 		// save current values
 		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			File inputFile = fd.getSelectedFile();
+				&& fileDialog.getSelectedFile() != null) {
+			final File inputFile = fileDialog.getSelectedFile();
 			try {
 				// Load properties from file
-				Properties saveProperties = new Properties();
-				FileInputStream fos = new FileInputStream(inputFile);
+				final Properties saveProperties = new Properties();
+				final FileInputStream fos = new FileInputStream(inputFile);
 				saveProperties.load(fos);
 				// copy from properties to parameters
 				for (DataParameter parameter : DataParameter.getParameterList()) {
 					name = parameter.getName().trim();
 					if (saveProperties.containsKey(name)) {
-						String valueString = (String) saveProperties.get(name);
-						double valueDouble = Double.parseDouble(valueString);
+						final String valueString = (String) saveProperties.get(name);
+						final double valueDouble = Double.parseDouble(valueString);
 						parameter.setValue(valueDouble);
 					} else {
-						if (listNotLoaded.equals("")) {
-							listNotLoaded = name;
-						} else {
-							listNotLoaded += ", " + name;
+						if (listNotLoaded.length()>0) {
+							listNotLoaded.append(", ");
 						}
+						listNotLoaded.append(name);
 					}
 				}
 				read();
 				LOGGER.info("Load Parameters from file " + inputFile.getName());
-				if (!listNotLoaded.equals("")) {
+				if (listNotLoaded.length()>0) {
 					LOGGER.warning("Did not load parameter(s) " + listNotLoaded
 							+ ".");
 				}
@@ -285,30 +302,31 @@ public final class ParameterControl extends AbstractControl {
 	 * 
 	 */
 	private void save() {
-		JFrame frame = null;
+		final JFrame frame = null;
 		set();
-		JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fd.setFileFilter(new ExtensionFileFilter(
+		final JFileChooser fileDialog = new JFileChooser(lastFile);
+		fileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fileDialog.setFileFilter(new ExtensionFileFilter(
 				new String[] { FILE_EXTENSION }, "List Files (*."
 						+ FILE_EXTENSION + ")"));
-		int option = fd.showSaveDialog(frame);
+		final int option = fileDialog.showSaveDialog(frame);
 		// save current values
 		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
+				&& fileDialog.getSelectedFile() != null) {
 
-			File selectFile = fd.getSelectedFile();
-			File outputFile = FILE_UTIL.changeExtension(selectFile,
+			final File selectFile = fileDialog.getSelectedFile();
+			final FileUtilities fileUtility = FileUtilities.getInstance();
+			final File outputFile = fileUtility.changeExtension(selectFile,
 					FILE_EXTENSION, FileUtilities.APPEND_ONLY);
-			if (FILE_UTIL.overWriteExistsConfirm(outputFile)) {
-				Properties saveProperties = new Properties();
+			if (fileUtility.overWriteExistsConfirm(outputFile)) {
+				final Properties saveProperties = new Properties();
 				for (DataParameter parameter : DataParameter.getParameterList()) {
 					final String valueString = String.valueOf(parameter
 							.getValue());
 					saveProperties.put(parameter.getName().trim(), valueString);
 				}
 				try {
-					FileOutputStream fos = new FileOutputStream(outputFile);
+					final FileOutputStream fos = new FileOutputStream(outputFile);
 					saveProperties.store(fos, "Jam Sort Parameters");
 					LOGGER.info("Saved Parameters to file "
 							+ outputFile.getName());
@@ -345,7 +363,7 @@ public final class ParameterControl extends AbstractControl {
 						nfe);
 			}
 		} else {
-			if (!invalidNames.equals("")) {
+			if (invalidNames.length()>0) {
 				LOGGER
 						.severe("Parameters not set, not a number for parameter(s) "
 								+ invalidNames + ".");
@@ -353,7 +371,7 @@ public final class ParameterControl extends AbstractControl {
 		}
 	}
 
-	public void setVisible(boolean state) {
+	public void setVisible(final boolean state) {
 		if (state) {
 			read();
 		}

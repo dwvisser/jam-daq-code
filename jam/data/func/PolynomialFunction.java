@@ -74,14 +74,14 @@ public class PolynomialFunction extends AbstractCalibrationFunction {
 		
 		try {
 			coeff= pf.polynomialFit(x, y, 2);
-			System.out.println("Coeff ");
+			System.out.println("Coeff ");//NOPMD
 			for (int i=0; i< 3;i++)
 			{
-				System.out.println(""+coeff[i]);
+				System.out.println(""+coeff[i]);//NOPMD
 			}
 		}
 		catch(DataException de) {
-			System.out.println(de);
+			System.out.println(de);//NOPMD
 		}
 
 

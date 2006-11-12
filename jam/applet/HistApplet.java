@@ -1,4 +1,4 @@
-package jam.applet;
+package jam.applet;//NOPMD
 
 import jam.InitialHistograms;
 import jam.JamException;

@@ -1,5 +1,6 @@
 package jam.data.control;
 
+import static jam.data.Histogram.Type.ONE_DIM_INT;
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.HistDouble1D;
@@ -43,23 +44,25 @@ import javax.swing.border.EmptyBorder;
 public class GainShift extends AbstractManipulation implements ItemListener,
 		Observer {
 
-	private final JCheckBox cchan, ccoeff;
+	private transient final JCheckBox cchan, ccoeff;
 
-	private final JComboBox cfrom;
+	private transient final JComboBox cfrom;
 
-	private double chan1i, chan2i, chan1f, chan2f, a1, b1, a2, b2;
+	private transient double chan1i, chan2i, chan1f, chan2f;
 
-	private final JComboBox cto;
+	private transient double intercept1, slope1, intercept2, slope2;
 
-	private AbstractHist1D hfrom;
+	private transient final JComboBox cto;
 
-	private AbstractHist1D hto;
+	private transient AbstractHist1D hfrom;
 
-	private final JLabel label1, label2, label3, label4;
+	private transient AbstractHist1D hto;
 
-	private final JLabel lname;
+	private final transient JLabel label1, label2, label3, label4;
 
-	private final JTextField text1, text2, text3, text4, ttextto;
+	private transient final JLabel lname;
+
+	private transient final JTextField text1, text2, text3, text4, ttextto;
 
 	/**
 	 * Constructs a gain shift dialog.
@@ -83,11 +86,11 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		cdgain.setLayout(new BorderLayout(hgap, vgap));
 		setLocation(20, 50);
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
+			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
 
-			public void windowOpened(WindowEvent e) {
+			public void windowOpened(final WindowEvent event) {
 				doSetup();
 			}
 		});
@@ -178,8 +181,8 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		cdgain.add(pButtons.getComponent(), BorderLayout.SOUTH);
 		pack();
 		cfrom.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Object selected = cfrom.getSelectedItem();
+			public void actionPerformed(final ActionEvent event) {
+				final Object selected = cfrom.getSelectedItem();
 				if (selected == null || selected instanceof String) {
 					hfrom = null;
 					pButtons.setButtonsEnabled(false, false, true);
@@ -198,8 +201,8 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 * calculate channels if given coeff.
 	 */
 	private void calculateChannels() {
-		chan1f = (a1 + b1 * chan1i - a2) / b2;
-		chan2f = (a1 + b1 * chan2i - a2) / b2;
+		chan1f = (intercept1 + slope1 * chan1i - intercept2) / slope2;
+		chan2f = (intercept1 + slope1 * chan2i - intercept2) / slope2;
 	}
 
 	/**
@@ -207,13 +210,13 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 */
 	private void calculateCoefficients() {
 
-		a1 = 0.0; // if using channels, gain just gives channel
-		b1 = 1.0; // see line above
-		a2 = (chan2f * chan1i - chan1f * chan2i) / (chan2f - chan1f);
-		if (chan1f != 0.0) {// avoid divide by zero errors
-			b2 = (chan1i - a2) / chan1f;
+		intercept1 = 0.0; // if using channels, gain just gives channel
+		slope1 = 1.0; // see line above
+		intercept2 = (chan2f * chan1i - chan1f * chan2i) / (chan2f - chan1f);
+		if (chan1f == 0.0) {// avoid divide by zero errors
+			slope2 = (chan2i - intercept2) / chan2f;
 		} else {
-			b2 = (chan2i - a2) / chan2f;
+			slope2 = (chan1i - intercept2) / chan1f;
 		}
 
 	}
@@ -231,18 +234,18 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		}
 		final NumberUtilities numbers = NumberUtilities.getInstance();
 		/* Get input histogram. */
-		final double[] in = (hfrom.getType() == Histogram.Type.ONE_DIM_INT) ? numbers.intToDoubleArray(((HistInt1D) hfrom)
-				.getCounts())
+		final double[] countsIn = (hfrom.getType() == ONE_DIM_INT) ? numbers
+				.intToDoubleArray(((HistInt1D) hfrom).getCounts())
 				: ((HistDouble1D) hfrom).getCounts();
 		final double[] errIn = hfrom.getErrors();
 		/* Get or create output histogram. */
-		String name = (String) cto.getSelectedItem();
+		final String name = (String) cto.getSelectedItem();
 
 		if (isNewHistogram(name)) {
-			String histName = ttextto.getText().trim();
-			String groupName = parseGroupName(name);
-			hto = (AbstractHist1D) createNewDoubleHistogram(groupName, histName,
-					hfrom.getSizeX());
+			final String histName = ttextto.getText().trim();
+			final String groupName = parseGroupName(name);
+			hto = (AbstractHist1D) createNewDoubleHistogram(groupName,
+					histName, hfrom.getSizeX());
 			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
 					+ "'");
 
@@ -251,13 +254,13 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 
 		}
 		hto.setZero();
-		final int countLen = hto.getType() == Histogram.Type.ONE_DIM_INT ? ((HistInt1D) hto)
+		final int countLen = hto.getType() == ONE_DIM_INT ? ((HistInt1D) hto)
 				.getCounts().length
 				: ((HistDouble1D) hto).getCounts().length;
-		final double[] out = gainShift(in, a1, b1, a2, b2, countLen);
-		final double[] errOut = errorGainShift(errIn, a1, b1, a2, b2, hto
+		final double[] out = gainShift(countsIn, intercept1, slope1, intercept2, slope2, countLen);
+		final double[] errOut = errorGainShift(errIn, intercept1, slope1, intercept2, slope2, hto
 				.getErrors().length);
-		if (hto.getType() == Histogram.Type.ONE_DIM_INT) {
+		if (hto.getType() == ONE_DIM_INT) {
 			hto.setCounts(numbers.doubleToIntArray(out));
 		} else {
 			hto.setCounts(out);
@@ -265,9 +268,9 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		hto.setErrors(errOut);
 
 		LOGGER.info("Gain shift " + hfrom.getFullName().trim() + " with gain: "
-				+ format(a1) + " + " + format(b1) + " x ch; to "
-				+ hto.getFullName() + " with gain: " + format(a2) + " + "
-				+ format(b2) + " x ch");
+				+ format(intercept1) + " + " + format(slope1) + " x ch; to "
+				+ hto.getFullName() + " with gain: " + format(intercept2) + " + "
+				+ format(slope2) + " x ch");
 	}
 
 	/**
@@ -276,7 +279,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 * 
 	 */
 	public void doSetup() {
-		String lto = (String) cto.getSelectedItem();
+		final String lto = (String) cto.getSelectedItem();
 		cto.removeAllItems();
 		loadAllHists(cto, true, Histogram.Type.ONE_D);
 		cto.setSelectedItem(lto);
@@ -289,13 +292,13 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 * and used at the Nuclear Physics Laboratory at University of Washigton,
 	 * Seattle.
 	 * 
-	 * @param y1
+	 * @param countsIn
 	 *            input array of counts
-	 * @param constIn
-	 *            constant calibration coefficient of y1
+	 * @param interceptIn
+	 *            constant calibration coefficient of countsIn
 	 * @param slopeIn
-	 *            linear calibration coefficient of y1
-	 * @param constOut
+	 *            linear calibration coefficient of countsIn
+	 * @param interceptOut
 	 *            constant calibration coefficient for output array
 	 * @param slopeOut
 	 *            linear calibration coefficient for output array
@@ -306,70 +309,69 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 * @throws DataException
 	 *             if there's a problem
 	 */
-	private double[] errorGainShift(double[] y1, double constIn,
-			double slopeIn, double constOut, double slopeOut, int npts2)
+	private double[] errorGainShift(final double[] countsIn,
+			final double interceptIn, final double slopeIn,
+			final double interceptOut, final double slopeOut, final int npts2)
 			throws DataException {
-		int i, n;
-		double[] y2;
+		double[] countsOut;
 		double e1lo, e1hi, x2lo, x2hi;
 		int mlo, mhi;
-		y2 = new double[npts2];// lang spec says elements init to zero
-		for (n = 0; n < y1.length; n++) {
-			e1lo = constIn + slopeIn * (n - 0.5); // energy at lower edge of
+		countsOut = new double[npts2];// lang spec says elements init to zero
+		for (int n = 0; n < countsIn.length; n++) {
+			e1lo = interceptIn + slopeIn * (n - 0.5); // energy at lower edge
+														// of
 			// spec#1
 			// channel
-			e1hi = constIn + slopeIn * (n + 0.5); // energy at upper edge of
+			e1hi = interceptIn + slopeIn * (n + 0.5); // energy at upper edge
+														// of
 			// spec#1
 			// channel
-			x2lo = (e1lo - constOut) / slopeOut; // fractional chan#2
+			x2lo = (e1lo - interceptOut) / slopeOut; // fractional chan#2
 			// corresponding to
 			// e1lo
-			x2hi = (e1hi - constOut) / slopeOut; // fractional chan#2
+			x2hi = (e1hi - interceptOut) / slopeOut; // fractional chan#2
 			// corresponding to
 			// e1hi
 			mlo = (int) (x2lo + 0.5);
 			mhi = (int) (x2hi + 0.5);
-			if (mlo < 0)
-				mlo = 0;
-			if (mhi < 0)
-				mhi = 0;
-			if (mlo >= npts2)
-				mlo = npts2 - 1;
-			if (mhi >= npts2)
-				mhi = npts2 - 1;
+			mlo = Math.max(mlo, 0);
+			mhi = Math.max(mhi, 0);
+			mlo = Math.min(mlo, npts2 - 1);
+			mhi = Math.min(mhi, npts2 - 1);
 			if ((mlo >= 0) && (mhi < npts2)) {
 				if (mhi == mlo) { // sp#1 chan fits within one sp#2 chan
-					y2[mlo] = y2[mlo] + y1[n];
+					countsOut[mlo] = countsOut[mlo] + countsIn[n];
 				} else if (mhi == mlo + 1) { // sp#1 chan falls into two sp#2
 					// chans
-					y2[mlo] = Math.sqrt(y2[mlo]
-							* y2[mlo]
-							+ Math.pow(y1[n] * (mlo + 0.5 - x2lo)
+					countsOut[mlo] = Math.sqrt(countsOut[mlo]
+							* countsOut[mlo]
+							+ Math.pow(countsIn[n] * (mlo + 0.5 - x2lo)
 									/ (x2hi - x2lo), 2.0));
-					y2[mhi] = y2[mhi] + y1[n] * (x2hi - mhi + 0.5)
-							/ (x2hi - x2lo);
+					countsOut[mhi] = countsOut[mhi] + countsIn[n]
+							* (x2hi - mhi + 0.5) / (x2hi - x2lo);
 				} else if (mhi > mlo + 1) { // sp#1 chan covers several sp#2
 					// chans
-					for (i = mlo + 1; i <= mhi - 1; i++) {
-						y2[i] = y2[i] + y1[n] / (x2hi - x2lo);
+					for (int i = mlo + 1; i <= mhi - 1; i++) {
+						countsOut[i] = countsOut[i] + countsIn[n]
+								/ (x2hi - x2lo);
 					}
-					y2[mlo] = y2[mlo] + y1[n] * (mlo + 0.5 - x2lo)
-							/ (x2hi - x2lo);
-					y2[mhi] = y2[mhi] + y1[n] * (x2hi - mhi + 0.5)
-							/ (x2hi - x2lo);
+					countsOut[mlo] = countsOut[mlo] + countsIn[n]
+							* (mlo + 0.5 - x2lo) / (x2hi - x2lo);
+					countsOut[mhi] = countsOut[mhi] + countsIn[n]
+							* (x2hi - mhi + 0.5) / (x2hi - x2lo);
 				} else {
 					throw new DataException("Something is wrong: n = " + n
 							+ ", mlo = " + mlo + ", mhi = " + mhi);
 				}
 			}
 		}
-		return y2;
+		return countsOut;
 	}
 
 	/*
 	 * format a number
 	 */
-	private String format(double value) {
+	private String format(final double value) {
 		int integer, fraction;
 		NumberFormat fval;
 
@@ -388,13 +390,13 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 * Gain-shifting subroutine adapted from Fortran code written and used at
 	 * the Nuclear Physics Laboratory at University of Washigton, Seattle.
 	 * 
-	 * @param y1
+	 * @param countsIn
 	 *            input array of counts
-	 * @param constIn
-	 *            constant calibration coefficient of y1
+	 * @param interceptIn
+	 *            constant calibration coefficient of countsIn
 	 * @param slopeIn
-	 *            linear calibration coefficient of y1
-	 * @param constOut
+	 *            linear calibration coefficient of countsIn
+	 * @param interceptOut
 	 *            constant calibration coefficient for output array
 	 * @param slopeOut
 	 *            linear calibration coefficient for output array
@@ -405,61 +407,57 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 * @throws DataException
 	 *             if there's a problem
 	 */
-	private double[] gainShift(double[] y1, double constIn, double slopeIn,
-			double constOut, double slopeOut, int npts2) throws DataException {
-		double[] y2;
+	private double[] gainShift(final double[] countsIn, final double interceptIn,
+			final double slopeIn, final double interceptOut, final double slopeOut,
+			final int npts2) throws DataException {
+		double[] countsOut;
 		double e1lo, e1hi, x2lo, x2hi;
 		int mlo, mhi;
 		// create and zero new array
-		y2 = new double[npts2];// language specifies elements initialized to
+		countsOut = new double[npts2];// language specifies elements initialized to
 		// zero
 		// loop for each channel of original array
-		for (int n = 0; n < y1.length; n++) {
-			e1lo = constIn + slopeIn * (n - 0.5); // energy at lower edge of
+		for (int n = 0; n < countsIn.length; n++) {
+			e1lo = interceptIn + slopeIn * (n - 0.5); // energy at lower edge of
 			// spec#1 channel
-			e1hi = constIn + slopeIn * (n + 0.5); // energy at upper edge of
+			e1hi = interceptIn + slopeIn * (n + 0.5); // energy at upper edge of
 			// spec#1 channel
-			x2lo = (e1lo - constOut) / slopeOut; // fractional chan#2
+			x2lo = (e1lo - interceptOut) / slopeOut; // fractional chan#2
 			// corresponding to
 			// e1lo
-			x2hi = (e1hi - constOut) / slopeOut; // fractional chan#2
+			x2hi = (e1hi - interceptOut) / slopeOut; // fractional chan#2
 			// corresponding to
 			// e1hi
 			mlo = (int) (x2lo + 0.5); // channel corresponding to x2low
 			mhi = (int) (x2hi + 0.5); // channel corresponding to x2hi
 
 			// if beyond limits of array set to limit.
-			if (mlo < 0)
-				mlo = 0;
-			if (mhi < 0)
-				mhi = 0;
-			if (mlo >= npts2)
-				mlo = npts2 - 1;
-			if (mhi >= npts2)
-				mhi = npts2 - 1;
-
+			mlo = Math.max(mlo, 0);
+			mhi = Math.max(mhi, 0);
+			mlo = Math.min(mlo, npts2 - 1);
+			mhi = Math.min(mhi, npts2 - 1);
 			// treat the 3 cases below
 			if ((mlo >= 0) && (mhi < npts2)) {
 
 				// sp#1 chan fits within one sp#2 chan
 				if (mhi == mlo) {
-					y2[mlo] = y2[mlo] + y1[n];
+					countsOut[mlo] = countsOut[mlo] + countsIn[n];
 
 					// sp#1 chan falls into two sp#2 chans
 				} else if (mhi == (mlo + 1)) {
-					y2[mlo] = y2[mlo] + y1[n] * (mlo + 0.5 - x2lo)
+					countsOut[mlo] = countsOut[mlo] + countsIn[n] * (mlo + 0.5 - x2lo)
 							/ (x2hi - x2lo);
-					y2[mhi] = y2[mhi] + y1[n] * (x2hi - mhi + 0.5)
+					countsOut[mhi] = countsOut[mhi] + countsIn[n] * (x2hi - mhi + 0.5)
 							/ (x2hi - x2lo);
 
 					// sp#1 chan covers several sp#2 chans
 				} else if (mhi > mlo + 1) {
 					for (int i = mlo + 1; i <= mhi - 1; i++) {
-						y2[i] = y2[i] + y1[n] / (x2hi - x2lo);
+						countsOut[i] = countsOut[i] + countsIn[n] / (x2hi - x2lo);
 					}
-					y2[mlo] = y2[mlo] + y1[n] * (mlo + 0.5 - x2lo)
+					countsOut[mlo] = countsOut[mlo] + countsIn[n] * (mlo + 0.5 - x2lo)
 							/ (x2hi - x2lo);
-					y2[mhi] = y2[mhi] + y1[n] * (x2hi - mhi + 0.5)
+					countsOut[mhi] = countsOut[mhi] + countsIn[n] * (x2hi - mhi + 0.5)
 							/ (x2hi - x2lo);
 				} else {
 					throw new DataException("Something is wrong: n = " + n
@@ -469,11 +467,11 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		}
 		// test debug
 		double sum = 0;
-		for (int i = 0; i < y2.length; i++) {
-			sum = sum + y2[i];
+		for (int i = 0; i < countsOut.length; i++) {
+			sum = sum + countsOut[i];
 		}
 
-		return y2;
+		return countsOut;
 	}
 
 	/*
@@ -486,8 +484,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			chan2i = Double.valueOf(text3.getText().trim()).doubleValue();
 			chan2f = Double.valueOf(text4.getText().trim()).doubleValue();
 		} catch (NumberFormatException nfe) {
-			throw new DataException(
-					"A Channel is not a valid number [GainShift]");
+			throw new DataException("A Channel is not a valid number.", nfe);
 		}
 	}
 
@@ -496,10 +493,10 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 */
 	private void getCoefficients() throws DataException {
 		try {
-			a1 = Double.valueOf(text1.getText().trim()).doubleValue();
-			b1 = Double.valueOf(text2.getText().trim()).doubleValue();
-			a2 = Double.valueOf(text3.getText().trim()).doubleValue();
-			b2 = Double.valueOf(text4.getText().trim()).doubleValue();
+			intercept1 = Double.valueOf(text1.getText().trim()).doubleValue();
+			slope1 = Double.valueOf(text2.getText().trim()).doubleValue();
+			intercept2 = Double.valueOf(text3.getText().trim()).doubleValue();
+			slope2 = Double.valueOf(text4.getText().trim()).doubleValue();
 		} catch (NumberFormatException nfe) {
 			throw new DataException(
 					"A Coefficient is not a valid number [GainShift]");
@@ -510,28 +507,26 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	/**
 	 * A item state change indicates that a gate has been chosen.
 	 */
-	public void itemStateChanged(ItemEvent ie) {
-		if (ie.getSource() == ccoeff || ie.getSource() == cchan) {
+	public void itemStateChanged(final ItemEvent event) {
+		if (event.getSource() == ccoeff || event.getSource() == cchan) {
 			try {
 				setUseCoeff(ccoeff.isSelected());
 			} catch (DataException de) {
 				LOGGER.log(Level.SEVERE, de.getMessage(), de);
 			}
-		} else if (ie.getSource() == cto) {
-			if (cto.getSelectedItem() != null) {
-				setUseHist((String) cto.getSelectedItem());
-			}
+		} else if (event.getSource() == cto && (cto.getSelectedItem() != null)) {
+			setUseHist((String) cto.getSelectedItem());
 		}
 	}
 
-	private double log10(double x) {
-		return Math.log(x) / Math.log(10.0);
+	private double log10(final double arg) {
+		return Math.log(arg) / Math.log(10.0);
 	}
 
 	/*
 	 * non-javadoc: Change the label in the UI depending on the gain shift type.
 	 */
-	private void setUILabels(boolean state) {
+	private void setUILabels(final boolean state) {
 		if (state) {
 			label1.setText("Input Gain");
 			label2.setText("+ channel x");
@@ -545,15 +540,15 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		}
 	}
 
-	private void setUseCoeff(boolean state) throws DataException {
+	private void setUseCoeff(final boolean state) throws DataException {
 		if (state) {
 			setUILabels(state);
 			getChannels();
 			calculateCoefficients();
-			text1.setText(format(a1));
-			text2.setText(format(b1));
-			text3.setText(format(a2));
-			text4.setText(format(b2));
+			text1.setText(format(intercept1));
+			text2.setText(format(slope1));
+			text3.setText(format(intercept2));
+			text4.setText(format(slope2));
 		} else {
 			setUILabels(state);
 			getCoefficients();
@@ -568,7 +563,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	/*
 	 * non-javadoc: setup if using a new histogram
 	 */
-	private void setUseHist(String name) {
+	private void setUseHist(final String name) {
 		if (isNewHistogram(name)) {
 			lname.setEnabled(true);
 			ttextto.setEnabled(true);
@@ -585,9 +580,9 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 * Implementation of Observable interface to receive broad cast events.
 	 * Listen for histograms new, histogram added
 	 */
-	public void update(Observable observable, Object o) {
-		final BroadcastEvent be = (BroadcastEvent) o;
-		final BroadcastEvent.Command com = be.getCommand();
+	public void update(final Observable observable, final Object event) {
+		final BroadcastEvent jamEvent = (BroadcastEvent) event;
+		final BroadcastEvent.Command com = jamEvent.getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_NEW
 				|| com == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			doSetup();

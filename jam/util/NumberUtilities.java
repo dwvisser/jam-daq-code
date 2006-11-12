@@ -72,7 +72,7 @@ public final class NumberUtilities {
 	public double[] intToDoubleArray(final int[] intArray) {
 		final int len = intArray.length;
 		final double[] out = new double[len];
-		for (int i = 0; i < len; i++) {
+		for (int i = 0; i < len; i++) {//NOPMD
 			out[i] = intArray[i];
 		}
 		return out;

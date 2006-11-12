@@ -1,5 +1,6 @@
 package jam.global;
 
+import jam.data.DataBase;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.plot.PlotDisplay;
@@ -61,6 +62,7 @@ public final class JamStatus {
 	 */
 	private JamStatus() {
 		super();
+		setValidator(DataBase.getInstance());
 	}
 
 	/**

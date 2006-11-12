@@ -378,17 +378,8 @@ public class BatchExport extends JDialog implements Observer {
 		status = true;
 		// Root directory
 		status = createExportDir(exportDir);
-		// Check for overwrite
-		if (status && already) {
-			final int optionPaneRely = JOptionPane.showConfirmDialog(JamStatus
-					.getSingletonInstance().getFrame(),
-					"Overwrite existing files? \n", "File Exists",
-					JOptionPane.YES_NO_OPTION);
-			if (optionPaneRely == JOptionPane.NO_OPTION) {
-				status = false;
-			}
-		}
-		// create group directoris
+		status = checkFileOverwrite(status, already);
+		// create group directories
 		if (status) {
 			for (int i = 0; i < exportDirList.size(); i++) {
 				final boolean statusTemp = createExportDir(exportDirList.get(i));
@@ -410,6 +401,26 @@ public class BatchExport extends JDialog implements Observer {
 			}
 			LOGGER.info("Exporting complete.");
 		}
+	}
+
+	/**
+	 * @param status
+	 * @param already
+	 * @return
+	 */
+	private boolean checkFileOverwrite(final boolean status, final boolean already) {
+		boolean rval = status;
+		// Check for overwrite
+		if (status && already) {
+			final int optionPaneRely = JOptionPane.showConfirmDialog(JamStatus
+					.getSingletonInstance().getFrame(),
+					"Overwrite existing files? \n", "File Exists",
+					JOptionPane.YES_NO_OPTION);
+			if (optionPaneRely == JOptionPane.NO_OPTION) {
+				rval = false;
+			}
+		}
+		return rval;
 	}
 
 	private AbstractButton getButton(final AbstractImpExp impExp) {

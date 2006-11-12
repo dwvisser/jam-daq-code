@@ -12,6 +12,7 @@ import jam.plot.PlotDisplay;
 import jam.plot.PlotMouseListener;
 import jam.ui.Canceller;
 import jam.ui.WindowCancelAction;
+import jam.util.NumberUtilities;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -96,11 +97,6 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 * If these are set, they are used for display.
 	 */
 	protected transient int lowerLimit;
-
-	/**
-	 * Counter for mouse input.
-	 */
-	private transient int mouseClickCount;
 
 	/**
 	 * Displayed name of <code>Fit</code> routine.
@@ -328,54 +324,22 @@ public abstract class AbstractFit implements PlotMouseListener {
 		tabs.addTab("Information", null, textInfo,
 				"Additional information output from the fits.");
 		/* top panel with histogram name */
-		final JPanel pHistName = new JPanel(new BorderLayout());
-		pHistName.setBorder(LineBorder.createBlackLineBorder());
-		pHistName.add(new JLabel("Fit Histogram: ", RIGHT), BorderLayout.WEST);
-		textHistName = new JLabel("     ");
-		pHistName.add(textHistName, BorderLayout.CENTER);
+		final JPanel pHistName = createHistogramNamePanel();
 		main.add(pHistName, BorderLayout.NORTH);
 		/* bottom panel with status and buttons */
 		final JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new GridLayout(0, 1));
 		main.add(bottomPanel, BorderLayout.SOUTH);
 		/* status panel part of bottom panel */
-		final JPanel statusPanel = new JPanel();
-		statusPanel.setLayout(new BorderLayout());
-		statusPanel.add(new JLabel("Status: ", RIGHT), BorderLayout.WEST);
-		status = new JLabel(
-				"OK                                                          ");
-		statusPanel.add(status, BorderLayout.CENTER);
+		final JPanel statusPanel = createStatusPanel();
 		bottomPanel.add(statusPanel);
 		/* button panel part of bottom panel */
 		final JPanel pbut = new JPanel();
 		pbut.setLayout(new GridLayout(1, 0));
 		bottomPanel.add(pbut);
-		final JButton bMouseGet = new JButton("Get Mouse");
-		bMouseGet.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				initializeMouse();
-				setMouseActive(true);
-			}
-		});
+		final JButton bMouseGet = createGetMouseButton();
 		pbut.add(bMouseGet);
-		final JButton bGo = new JButton("Do Fit");
-		bGo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				try {
-					setMouseActive(false);
-					updateParametersFromDialog();
-					getCounts();
-					status.setText("Estimating...");
-					estimate();
-					status.setText("Doing Fit...");
-					status.setText(doFit());
-					updateDisplay();
-					drawFit();
-				} catch (FitException fe) {
-					status.setText(fe.getMessage());
-				}
-			}
-		});
+		final JButton bGo = createDoFitButton();
 		pbut.add(bGo);
 		final JButton bDraw = new JButton("Draw Fit");
 		bDraw.addActionListener(new ActionListener() {
@@ -432,6 +396,70 @@ public abstract class AbstractFit implements PlotMouseListener {
 			}
 		});
 		dfit.pack();
+	}
+
+	/**
+	 * @return
+	 */
+	private JButton createGetMouseButton() {
+		final JButton bMouseGet = new JButton("Get Mouse");
+		bMouseGet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				initializeMouse();
+				setMouseActive(true);
+			}
+		});
+		return bMouseGet;
+	}
+
+	/**
+	 * @return
+	 */
+	private JPanel createStatusPanel() {
+		final JPanel statusPanel = new JPanel();
+		statusPanel.setLayout(new BorderLayout());
+		statusPanel.add(new JLabel("Status: ", RIGHT), BorderLayout.WEST);
+		status = new JLabel(
+				"OK                                                          ");
+		statusPanel.add(status, BorderLayout.CENTER);
+		return statusPanel;
+	}
+
+	/**
+	 * @return
+	 */
+	private JPanel createHistogramNamePanel() {
+		final JPanel pHistName = new JPanel(new BorderLayout());
+		pHistName.setBorder(LineBorder.createBlackLineBorder());
+		pHistName.add(new JLabel("Fit Histogram: ", RIGHT), BorderLayout.WEST);
+		textHistName = new JLabel("     ");
+		pHistName.add(textHistName, BorderLayout.CENTER);
+		return pHistName;
+	}
+
+	/**
+	 * @return
+	 */
+	private JButton createDoFitButton() {
+		final JButton bGo = new JButton("Do Fit");
+		bGo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				try {
+					setMouseActive(false);
+					updateParametersFromDialog();
+					getCounts();
+					status.setText("Estimating...");
+					estimate();
+					status.setText("Doing Fit...");
+					status.setText(doFit());
+					updateDisplay();
+					drawFit();
+				} catch (FitException fe) {
+					status.setText(fe.getMessage());
+				}
+			}
+		});
+		return bGo;
 	}
 
 	/*
@@ -630,10 +658,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 				.getCurrentHistogram();
 		if (hist1d.getType() == Histogram.Type.ONE_DIM_INT) {
 			final int[] temp = ((HistInt1D)hist1d).getCounts();
-			counts = new double[temp.length];
-			for (int j = 0; j < temp.length; j++) {
-				counts[j] = temp[j];
-			}
+			counts = NumberUtilities.getInstance().intToDoubleArray(temp);
 		} else {
 			counts = ((HistDouble1D)hist1d).getCounts();
 		}
@@ -683,7 +708,6 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 * Set the state to enter values using mouse
 	 */
 	private void initializeMouse() {
-		mouseClickCount = 0;
 		final List<Parameter> tempList = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.size(); i++) {
 			final Parameter parameter = parameters.get(i);
@@ -738,7 +762,6 @@ public abstract class AbstractFit implements PlotMouseListener {
 	public void plotMousePressed(final Bin bin, final Point pPixel) {
 		while (parameterIter.hasNext()) {
 			final Parameter parameter = parameterIter.next();
-			mouseClickCount++;
 			if (parameter.isMouseClickable() && (!parameter.isFixed())) {
 				final JTextField data = textData.get(parameter);
 				data.setForeground(Color.BLACK);
@@ -858,10 +881,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 		if (histogram != null && histogram.getDimensionality() == 1) {
 			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
 				final int[] temp = ((HistInt1D)histogram).getCounts();
-				counts = new double[temp.length];
-				for (int j = 0; j < temp.length; j++) {
-					counts[j] = temp[j];
-				}
+				counts = NumberUtilities.getInstance().intToDoubleArray(temp);
 			} else if (histogram.getType() == Histogram.Type.ONE_D_DOUBLE) {
 				counts = ((HistDouble1D)histogram).getCounts();
 			}
