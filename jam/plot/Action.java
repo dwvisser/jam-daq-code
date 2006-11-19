@@ -118,7 +118,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	private transient int countLow, countHigh;// NOPMD
 
 	/** current command being processed */
-	private transient String currentCommand;
+	private transient String currentCommand="";
 
 	private transient final Bin cursorBin;
 
@@ -355,7 +355,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			if (inCommand != null) {
 				if (inCommand.equals(CURSOR)) {
 					/* use cursor only if current command does not exist */
-					if (currentCommand == null) {
+					if (currentCommand.length()==0) {
 						currentCommand = inCommand;
 					}
 				} else {
@@ -408,7 +408,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			isCursorCommand = true;
 			commandPresent = false;
 			mousePressed = false;
-			currentCommand = null;
+			currentCommand = "";
 			clicks.clear();
 			plotDisplay.getPlotContainer().setSelectingArea(false);
 		}

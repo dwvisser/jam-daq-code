@@ -84,9 +84,9 @@ public class HistogramTest extends TestCase {
                 + gate1.getName(), hist1.hasGate(gate1));
         assertTrue(hist2.getFullName() + " doesn't have gate "
                 + gate2.getName(), hist2.hasGate(gate2));
-        assertTrue(hist1.getFullName() + " has gate " + gate2.getName(), !hist1
+        assertFalse(hist1.getFullName() + " has gate " + gate2.getName(), hist1
                 .hasGate(gate2));
-        assertTrue(hist2.getFullName() + " has gate " + gate1.getName(), !hist2
+        assertFalse(hist2.getFullName() + " has gate " + gate1.getName(), hist2
                 .hasGate(gate1));
     }
 

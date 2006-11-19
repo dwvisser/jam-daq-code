@@ -10,6 +10,7 @@ import jam.data.Histogram;
 import jam.global.ComponentPrintable;
 import jam.global.RunInfo;
 import jam.plot.color.PlotColorMap;
+import jam.util.NumberUtilities;
 
 import java.awt.Component;
 import java.awt.Cursor;
@@ -70,11 +71,6 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 	 */
 	protected transient double[] counts;
 
-	/**
-	 * 2D counts.
-	 */
-	//protected transient double[][] counts2d;
-
 	/* Histogram related stuff. */
 
 	protected transient double [][] counts2d;
@@ -128,15 +124,30 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 	/**
 	 * Descriptor of domain and range of histogram to plot.
 	 */
-	protected transient Limits plotLimits;
-
+	protected transient Limits limits;
+	
+	/**
+	 * @return limits are how the histogram is to be drawn
+	 */
+	Limits getLimits() {
+		return limits;
+	}
+	
 	/* Gives channels of mouse click. */
-	transient final PlotMouse plotMouse;
+	protected transient final PlotMouse plotMouse;
 
+	PlotMouse getPlotMouse() {
+		return plotMouse;
+	}
+	
 	/** Gate points in plot coordinates (channels). */
 	protected final Polygon pointsGate = new Polygon();
 
-	transient boolean printing = false;
+	protected transient boolean printing = false;
+	
+	boolean isPrinting() {
+		return printing;
+	}
 
 	private transient Scroller scrollbars;
 
@@ -152,6 +163,10 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 	 * Size of plot window in channels.
 	 */
 	protected transient Size size = new Size(0);
+	
+	Size getSize() {
+		return size;
+	}
 
 	/**
 	 * configuration for screen plotting
@@ -189,11 +204,11 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 	final void autoCounts() {
 		final Histogram plotHist = getHistogram();
 		copyCounts(plotHist);
-		plotLimits.setMinimumCounts(110 * findMinimumCounts() / 100);
+		limits.setMinimumCounts(110 * findMinimumCounts() / 100);
 		if (findMaximumCounts() > 5) {
-			plotLimits.setMaximumCounts(110 * findMaximumCounts() / 100);
+			limits.setMaximumCounts(110 * findMaximumCounts() / 100);
 		} else {
-			plotLimits.setMaximumCounts(5);
+			limits.setMaximumCounts(5);
 		}
 		/* scroll bars do not always reset on their own */
 		scrollbars.update();
@@ -230,13 +245,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 		} else {// dim==1
 			if (type == Histogram.Type.ONE_DIM_INT) {
 				final int[] temp = ((HistInt1D)hist).getCounts();
-				counts = new double[size.getSizeX()];
-				/*
-				 * NOT System.arraycopy() because of array type difference
-				 */
-				for (int i = 0; i < temp.length; i++) {
-					counts[i] = temp[i];
-				}
+				counts = NumberUtilities.getInstance().intToDoubleArray(temp);
 			} else {// must be floating point
 				counts = ((HistDouble1D) hist).getCounts();
 			}
@@ -282,7 +291,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 	 */
 	void displayHistogram(final Histogram hist) {
 		synchronized (this) {
-			plotLimits = Limits.getLimits(hist);
+			limits = Limits.getLimits(hist);
 			if (hist == null) {// we have a null histogram so fake it
 				plotHistNum = -1;
 				counts = new double[100];
@@ -292,7 +301,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 				plotHistNum = hist.getNumber();
 				copyCounts(hist); // copy hist counts
 				/* Limits contains handle to Models */
-				scrollbars.setLimits(plotLimits);
+				scrollbars.setLimits(limits);
 			}
 			panel.setDisplayingGate(false);
 			panel.setDisplayingOverlay(false);
@@ -331,17 +340,8 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 		final int xCoord2 = bin2.getX();
 		final int yCoord1 = bin1.getY();
 		final int yCoord2 = bin2.getY();
-		int xll; // x lower limit
-		int xul; // x upper limit
-		int yll; // y lower limit
-		int yul; // y upper limit
-		if (xCoord1 <= xCoord2) {
-			xll = xCoord1;
-			xul = xCoord2;
-		} else {
-			xll = xCoord2;
-			xul = xCoord1;
-		}
+		int xll = Math.min(xCoord1, xCoord2);// x lower limit
+		int xul = Math.max(xCoord1, xCoord2);// x upper limit
 		// check for beyond extremes and set to extremes
 		if ((xll < 0) || (xll > size.getSizeX() - 1)) {
 			xll = 0;
@@ -349,13 +349,8 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 		if ((xul < 0) || (xul > size.getSizeX() - 1)) {
 			xul = size.getSizeX() - 1;
 		}
-		if (yCoord1 <= yCoord2) {
-			yll = yCoord1;
-			yul = yCoord2;
-		} else {
-			yll = yCoord2;
-			yul = yCoord1;
-		}
+		int yll = Math.min(yCoord1, yCoord2);// y lower limit
+		int yul = Math.max(yCoord1, yCoord2);// y upper limit
 		/* check for beyond extremes and set to extremes */
 		if ((yll < 0) || (yll > size.getSizeY() - 1)) {
 			yll = 0;
@@ -363,10 +358,10 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 		if ((yul < 0) || (yul > size.getSizeY() - 1)) {
 			yul = size.getSizeY() - 1;
 		}
-		plotLimits.setMinimumX(xll);
-		plotLimits.setMaximumX(xul);
-		plotLimits.setMinimumY(yll);
-		plotLimits.setMaximumY(yul);
+		limits.setMinimumX(xll);
+		limits.setMaximumX(xul);
+		limits.setMinimumY(yll);
+		limits.setMaximumY(yul);
 		refresh();
 	}
 
@@ -439,13 +434,6 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 		synchronized (this) {
 			return plotHistNum < 0 ? null : Histogram.getHistogram(plotHistNum);// NOPMD
 		}
-	}
-
-	/**
-	 * @return limits are how the histogram is to be drawn
-	 */
-	Limits getLimits() {
-		return plotLimits;
 	}
 
 	/*
@@ -700,10 +688,10 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 	 * set full range X
 	 */
 	void setFull() {
-		plotLimits.setMinimumX(0);
-		plotLimits.setMaximumX(size.getSizeX() - 1);
-		plotLimits.setMinimumY(0);
-		plotLimits.setMaximumY(size.getSizeY() - 1);
+		limits.setMinimumX(0);
+		limits.setMaximumX(size.getSizeX() - 1);
+		limits.setMinimumY(0);
+		limits.setMaximumY(size.getSizeY() - 1);
 		refresh();
 	}
 
@@ -744,7 +732,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 	 * Set the scale to linear scale
 	 */
 	void setLinear() {
-		plotLimits.setScale(Scale.LINEAR);
+		limits.setScale(Scale.LINEAR);
 		refresh();
 	}
 
@@ -752,7 +740,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 	 * Set the scale to log scale
 	 */
 	void setLog() {
-		plotLimits.setScale(Scale.LOG);
+		limits.setScale(Scale.LOG);
 		panel.repaint();
 	}
 
@@ -788,7 +776,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 		if (temp > FS_MAX) {
 			temp = FS_MAX;
 		}
-		plotLimits.setMaximumCounts(temp);
+		limits.setMaximumCounts(temp);
 	}
 
 	/* End Plot mouse methods */
@@ -804,11 +792,11 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 	 */
 	void setRange(final int limC1, final int limC2) {
 		if (limC1 <= limC2) {
-			plotLimits.setMinimumCounts(limC1);
-			plotLimits.setMaximumCounts(limC2);
+			limits.setMinimumCounts(limC1);
+			limits.setMaximumCounts(limC2);
 		} else {
-			plotLimits.setMinimumCounts(limC2);
-			plotLimits.setMaximumCounts(limC1);
+			limits.setMinimumCounts(limC2);
+			limits.setMaximumCounts(limC1);
 		}
 		refresh();
 	}
@@ -844,56 +832,5 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 			}
 		};
 		SwingUtilities.invokeLater(task);
-	}
-
-	/*
-	 * Non-javadoc: Zoom the region viewed.
-	 */
-	void zoom(final PlotContainer.Zoom inOut) {
-		int xll = plotLimits.getMinimumX();
-		int xul = plotLimits.getMaximumX();
-		int yll = plotLimits.getMinimumY();
-		int yul = plotLimits.getMaximumY();
-		// Specifies how much to zoom, zoom is 1/ZOOM_FACTOR
-		final int ZOOM_FACTOR = 10;
-		final int diffX = Math.max(1, (xul - xll) / ZOOM_FACTOR);
-		final int diffY = Math.max(1, (yul - yll) / ZOOM_FACTOR);
-		if (inOut == PlotContainer.Zoom.OUT) {// zoom out
-			xll = xll - diffX;
-			xul = xul + diffX;
-			yll = yll - diffY;
-			yul = yul + diffY;
-		} else if (inOut == PlotContainer.Zoom.IN) {// zoom in
-			xll = xll + diffX;
-			xul = xul - diffX;
-			yll = yll + diffY;
-			yul = yul - diffY;
-		}
-		/* check if beyond extremes, if so, set to extremes */
-		if ((xll < 0) || (xll > size.getSizeX() - 1)) {
-			xll = 0;
-		}
-		if ((xul < 0) || (xul > size.getSizeX() - 1)) {
-			xul = size.getSizeX() - 1;
-		}
-		if (xll > xul) {
-			final int temp = xll;
-			xll = xul - 1;
-			xul = temp + 1;
-		}
-		if ((yll < 0) || (yll > size.getSizeY() - 1)) {
-			yll = 0;
-		}
-		if ((yul < 0) || (yul > size.getSizeY() - 1)) {
-			yul = size.getSizeY() - 1;
-		}
-		if (yll > yul) {
-			final int temp = yll;
-			yll = yul - 1;
-			yul = temp + 1;
-		}
-		plotLimits.setLimitsX(xll, xul);
-		plotLimits.setLimitsY(yll, yul);
-		refresh();
 	}
 }

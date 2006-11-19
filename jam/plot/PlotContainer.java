@@ -4,6 +4,7 @@ import jam.data.AbstractHist1D;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.ComponentPrintable;
+import jam.plot.AbstractPlot.Size;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -28,15 +29,16 @@ import javax.swing.border.Border;
 public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 
 	enum LayoutType {
-	/** Layout with axis labels without border */
-	LABELS,
-	/** Layout with axis labels and border */ 
-	LABELS_BORDER,
-	/** Layout not axis labels without border */
-	NO_LABELS,
-	/** Layout not axis labels but with border */
-	NO_LABELS_BORDER};
-	
+		/** Layout with axis labels without border */
+		LABELS,
+		/** Layout with axis labels and border */
+		LABELS_BORDER,
+		/** Layout not axis labels without border */
+		NO_LABELS,
+		/** Layout not axis labels but with border */
+		NO_LABELS_BORDER
+	};
+
 	/**
 	 * Zoom direction.
 	 * 
@@ -61,29 +63,31 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	/*
 	 * any access to currentSubPlot should be syn synchronized on this
 	 */
-	private final Object plotLock = new Object();
+	private transient final Object plotLock = new Object();
 
-	private final CardLayout plotSwapPanelLayout;
+	private transient final CardLayout plotSwapPanelLayout;
 
-	private final Plot1d plot1d;
+	private transient final Plot1d plot1d;
 
-	private final Plot2d plot2d;
+	private transient final Plot2d plot2d;
 
-	private final Scroller scroller1d, scroller2d;
+	private transient final Scroller scroller1d, scroller2d;
 
-	private boolean hasHistogram;
+	private transient boolean hasData;
 
-	private final PlotSelectListener plotSelectListener;
+	private transient final PlotSelectListener plotSelectListener;
 
-	private LayoutType layoutType;
-	private int plotNumber;
+	private transient LayoutType layoutType;
 
-	private AbstractPlot currentSubPlot;
-	
-	private final JPanel panel=new JPanel();
-	
+	private transient int plotNumber;
+
+	private transient AbstractPlot currentSubPlot;
+
+	private transient final JPanel panel = new JPanel();
+
 	/**
-	 * @param plotSelect place to send selection messages
+	 * @param plotSelect
+	 *            place to send selection messages
 	 */
 	private PlotContainer(PlotSelectListener plotSelect) {
 		plotSelectListener = plotSelect;
@@ -96,19 +100,19 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 		plot1d = new Plot1d();
 		scroller1d = new Scroller(plot1d);
 		panel.add(KEY1, scroller1d);
-		plot1d.plotMouse.setPlotSelectListener(this);
+		plot1d.getPlotMouse().setPlotSelectListener(this);
 		/* panel 2d plot and its scroll bars */
 		plot2d = new Plot2d();
 		scroller2d = new Scroller(plot2d);
 		panel.add(KEY2, scroller2d);
-		plot2d.plotMouse.setPlotSelectListener(this);
+		plot2d.getPlotMouse().setPlotSelectListener(this);
 		/* Initial show plot1d */
 		plotSwapPanelLayout.show(panel, KEY1);
 		currentSubPlot = plot1d;
 	}
-	
-	static PlotContainer createPlotContainer(PlotSelectListener psl){
-	    return new PlotContainer(psl);
+
+	static PlotContainer createPlotContainer(final PlotSelectListener psl) {
+		return new PlotContainer(psl);
 	}
 
 	/**
@@ -116,15 +120,15 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	 * 
 	 * @param selectedState
 	 */
-	void select(boolean selectedState) {
-	    Border border = null;
-        if ((layoutType == LayoutType.LABELS_BORDER)
-                || (layoutType == LayoutType.NO_LABELS_BORDER)) {
-            border = selectedState ? BorderFactory.createLineBorder(
-                    Color.BLACK, 2) : BorderFactory.createEmptyBorder(2, 2, 2,
-                    2);
-        }
-        panel.setBorder(border);
+	void select(final boolean selectedState) {
+		Border border = null;
+		if ((layoutType == LayoutType.LABELS_BORDER)
+				|| (layoutType == LayoutType.NO_LABELS_BORDER)) {
+			border = selectedState ? BorderFactory.createLineBorder(
+					Color.BLACK, 2) : BorderFactory.createEmptyBorder(2, 2, 2,
+					2);
+		}
+		panel.setBorder(border);
 	}
 
 	/**
@@ -132,24 +136,25 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	 * 
 	 * @param type
 	 */
-	void setLayoutType(LayoutType type) {
-        layoutType = type;
-        //Plot labels
-        if ((type == LayoutType.LABELS_BORDER) || (type == LayoutType.LABELS)) {
-            plot1d.setLayout(PlotGraphicsLayout.Type.WITH_LABELS);
-            plot2d.setLayout(PlotGraphicsLayout.Type.WITH_LABELS);
-        } else if ((type == LayoutType.NO_LABELS_BORDER)
-                || (type == LayoutType.NO_LABELS)) {
-            plot1d.setLayout(PlotGraphicsLayout.Type.WO_LABELS);
-            plot2d.setLayout(PlotGraphicsLayout.Type.WO_LABELS);
+	void setLayoutType(final LayoutType type) {
+		layoutType = type;
+		// Plot labels
+		if ((type == LayoutType.LABELS_BORDER) || (type == LayoutType.LABELS)) {
+			plot1d.setLayout(PlotGraphicsLayout.Type.WITH_LABELS);
+			plot2d.setLayout(PlotGraphicsLayout.Type.WITH_LABELS);
+		} else if ((type == LayoutType.NO_LABELS_BORDER)
+				|| (type == LayoutType.NO_LABELS)) {
+			plot1d.setLayout(PlotGraphicsLayout.Type.WO_LABELS);
+			plot2d.setLayout(PlotGraphicsLayout.Type.WO_LABELS);
 
-        }
-        //Plot border
-        final Border border = type == LayoutType.LABELS_BORDER
-                || type == LayoutType.NO_LABELS_BORDER ? BorderFactory
-                .createEmptyBorder(2, 2, 2, 2) : null;
-        panel.setBorder(border);
-    }
+		}
+		// Plot border
+		final int borderWidth = (type == LayoutType.LABELS_BORDER || type == LayoutType.NO_LABELS_BORDER) ? 2
+				: 0;
+		final Border border = BorderFactory.createEmptyBorder(borderWidth,
+				borderWidth, borderWidth, borderWidth);
+		panel.setBorder(border);
+	}
 
 	/**
 	 * Display a histogram,
@@ -157,30 +162,30 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	 * @param hist
 	 *            histogram to display
 	 */
-	void displayHistogram(Histogram hist) {
-        synchronized (plotLock) {
-            select(true);
-            if (hist != null) {
-                hasHistogram = true;
-                final int dim = hist.getDimensionality();
-                final String key;
-                if (dim == 1) {
-                    currentSubPlot = plot1d;
-                    key = KEY1;
-                } else {
-                    currentSubPlot = plot2d;
-                    key = KEY2;
-                }
-                plotSwapPanelLayout.show(panel, key);
-            } else {
-                /* Histogram is null set to blank 1D */
-                currentSubPlot = plot1d;
-                hasHistogram = false;
-                plotSwapPanelLayout.show(panel, KEY1);
-            }
-            currentSubPlot.displayHistogram(hist);
-        }
-    }
+	void displayHistogram(final Histogram hist) {
+		synchronized (plotLock) {
+			select(true);
+			if (hist == null) {
+				/* Histogram is null set to blank 1D */
+				currentSubPlot = plot1d;
+				hasData = false;
+				plotSwapPanelLayout.show(panel, KEY1);
+			} else {
+				hasData = true;
+				final int dim = hist.getDimensionality();
+				final String key;
+				if (dim == 1) {
+					currentSubPlot = plot1d;
+					key = KEY1;
+				} else {
+					currentSubPlot = plot2d;
+					key = KEY2;
+				}
+				plotSwapPanelLayout.show(panel, key);
+			}
+			currentSubPlot.displayHistogram(hist);
+		}
+	}
 
 	/**
 	 * Overlay histograms
@@ -188,11 +193,11 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	 * @param hists
 	 *            to overlay
 	 */
-	void overlayHistograms(List<AbstractHist1D> hists) {
+	void overlayHistograms(final List<AbstractHist1D> hists) {
 		currentSubPlot.overlayHistograms(hists);
 	}
-	
-	/** 
+
+	/**
 	 * Clear overlays.
 	 */
 	void removeOverlays() {
@@ -207,14 +212,14 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	Histogram getHistogram() {
 		return getPlot().getHistogram();
 	}
-	
+
 	/**
 	 * Returns whether this plot has a valid histogram.
 	 * 
 	 * @return <code>true</code> if this plot contains a histogram
 	 */
-	boolean hasHistogram(){
-		return hasHistogram;
+	boolean hasHistogram() {
+		return hasData;
 	}
 
 	/**
@@ -225,8 +230,8 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	int getDimensionality() {
 		return (getPlot() == plot1d) ? 1 : 2;
 	}
-	
-	void enableScrolling(boolean enable){
+
+	void enableScrolling(final boolean enable) {
 		scroller1d.enableScrolling(enable);
 		scroller2d.enableScrolling(enable);
 	}
@@ -235,7 +240,7 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 		return plotNumber;
 	}
 
-	void setNumber(int numIn) {
+	void setNumber(final int numIn) {
 		plotNumber = numIn;
 	}
 
@@ -243,17 +248,18 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 		return getPlot().getLimits();
 	}
 
-	void markChannel(Bin p) {
-		getPlot().markChannel(p);
+	void markChannel(final Bin bin) {
+		getPlot().markChannel(bin);
 	}
 
 	/**
 	 * Only update plot if it has a histogram
-	 *
+	 * 
 	 */
 	void update() {
-		if (hasHistogram)
+		if (hasData) {
 			getPlot().update();
+		}
 	}
 
 	/**
@@ -264,33 +270,35 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 			return currentSubPlot;
 		}
 	}
-	
-	void displayFit(double[][] signals, double[] background,
-			double[] residuals, int ll) {
-		getPlot().displayFit(signals, background, residuals, ll);
+
+	void displayFit(final double[][] signals, final double[] background,
+			final double[] residuals, final int lowerLimit) {
+		getPlot().displayFit(signals, background, residuals, lowerLimit);
 	}
 
 	/**
 	 * Caller should have checked 'isCalibrated' first.
 	 * 
-	 * @param channel to check energy for
+	 * @param channel
+	 *            to check energy for
 	 * @return energy value for the channel
 	 */
-	double getEnergy(double channel) {
+	double getEnergy(final double channel) {
 		return getPlot().getEnergy(channel);
 	}
 
 	/**
 	 * Get the counts in a bin.
 	 * 
-	 * @param p bin to grab counts from
+	 * @param channel
+	 *            bin to grab counts from
 	 * @return counts in the bin
 	 */
-	double getCount(Bin p) {
-		return getPlot().getCount(p);
+	double getCount(final Bin channel) {
+		return getPlot().getCount(channel);
 	}
 
-	int getChannel(double energy) {
+	int getChannel(final double energy) {
 		return getPlot().getChannel(energy);
 	}
 
@@ -300,35 +308,91 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	Object getCounts() {
 		return getPlot().getCounts();
 	}
-	
-	void zoom(Zoom inOut) {
-		getPlot().zoom(inOut);
+
+	/**
+	 * 
+	 * @param value
+	 *            value to check
+	 * @param size
+	 *            x-range to stay within
+	 * @param useMax
+	 *            whether to use 0 or xMax if out of range
+	 * @return input value if in range, 0 or xMax if not
+	 */
+	private int constrainValue(final int value, final int size,
+			final boolean useMax) {
+		final int max = size - 1;
+		int rval = value;
+		if ((value < 0) || (value > max)) {
+			rval = useMax ? max : 0;
+		}
+		return rval;
 	}
 
-	void markArea(Bin p1, Bin p2) {
-		getPlot().markArea(p1, p2);
+	/*
+	 * Non-javadoc: Zoom the region viewed.
+	 */
+	void zoom(final PlotContainer.Zoom inOut) {
+		final Limits limits = getLimits();
+		int xll = limits.getMinimumX();
+		int xul = limits.getMaximumX();
+		int yll = limits.getMinimumY();
+		int yul = limits.getMaximumY();
+		// Specifies how much to zoom, zoom is 1/ZOOM_FACTOR
+		final int ZOOM_FACTOR = 10;
+		final int diffX = Math.max(1, (xul - xll) / ZOOM_FACTOR);
+		final int diffY = Math.max(1, (yul - yll) / ZOOM_FACTOR);
+		final int zoomSign = (inOut == PlotContainer.Zoom.IN) ? 1 : -1;
+		xll += zoomSign * diffX;
+		xul -= zoomSign * diffX;
+		yll += zoomSign * diffY;
+		yul -= zoomSign * diffY;
+		final AbstractPlot plot = getPlot();
+		final Size size = plot.getSize();
+		/* check if beyond extremes, if so, set to extremes */
+		xll = constrainValue(xll, size.getSizeX(), false);
+		xul = constrainValue(xul, size.getSizeX(), true);
+		if (xll > xul) {
+			final int temp = xll;
+			xll = xul - 1;
+			xul = temp + 1;
+		}
+		yll = constrainValue(yll, size.getSizeY(), false);
+		yul = constrainValue(yul, size.getSizeY(), true);
+		if (yll > yul) {
+			final int temp = yll;
+			yll = yul - 1;
+			yul = temp + 1;
+		}
+		limits.setLimitsX(xll, xul);
+		limits.setLimitsY(yll, yul);
+		plot.refresh();
 	}
 
-	void setMarkArea(boolean tf) {
-		getPlot().setMarkArea(tf);
+	void markArea(final Bin bin1, final Bin bin2) {
+		getPlot().markArea(bin1, bin2);
+	}
+
+	void setMarkArea(final boolean isMarkingArea) {
+		getPlot().setMarkArea(isMarkingArea);
 	}
 
 	void autoCounts() {
 		getPlot().autoCounts();
 	}
 
-	void setRange(int limC1, int limC2) {
+	void setRange(final int limC1, final int limC2) {
 		getPlot().setRange(limC1, limC2);
 	}
 
 	/**
 	 * Expand a region
 	 * 
-	 * @param c1
-	 * @param c2
+	 * @param channel1
+	 * @param channel2
 	 */
-	void expand(Bin c1, Bin c2) {
-		getPlot().expand(c1, c2);
+	void expand(final Bin channel1, final Bin channel2) {
+		getPlot().expand(channel1, channel2);
 	}
 
 	/**
@@ -352,36 +416,37 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 		getPlot().setLog();
 	}
 
-	void setBinWidth(double x) {
-		getPlot().setBinWidth(x);
+	void setBinWidth(final double width) {
+		getPlot().setBinWidth(width);
 	}
-	
-	double getBinWidth(){
+
+	double getBinWidth() {
 		return getPlot().getBinWidth();
 	}
-	
-	void setSelectingArea(boolean tf) {
-		getPlot().setSelectingArea(tf);
+
+	void setSelectingArea(final boolean isSelectingArea) {
+		getPlot().setSelectingArea(isSelectingArea);
 	}
 
-	void setMarkingChannels(boolean mc) {
-		getPlot().setMarkingChannels(mc);
+	void setMarkingChannels(final boolean isMarkingChannels) {
+		getPlot().setMarkingChannels(isMarkingChannels);
 	}
 
-	void initializeSelectingArea(Bin p1) {
-		getPlot().initializeSelectingArea(p1);
+	void initializeSelectingArea(final Bin bin) {
+		getPlot().initializeSelectingArea(bin);
 	}
 
-	void displayGate(Gate gate) {
+	void displayGate(final Gate gate) {
 		getPlot().displayGate(gate);
 	}
 
-	void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel) {
+	void displaySetGate(final GateSetMode mode, final Bin pChannel,
+			final Point pPixel) {
 		getPlot().displaySetGate(mode, pChannel, pPixel);
 	}
 
-	void setRenderForPrinting(boolean rfp, PageFormat pf) {
-		getPlot().setRenderForPrinting(rfp, pf);
+	void setRenderForPrinting(final boolean printing, final PageFormat format) {
+		getPlot().setRenderForPrinting(printing, format);
 	}
 
 	ComponentPrintable getComponentPrintable() {
@@ -399,46 +464,47 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	/**
 	 * Add a mouse listener.
 	 * 
-	 * @param listener the listener to add
+	 * @param listener
+	 *            the listener to add
 	 */
-	void addPlotMouseListener(PlotMouseListener listener) {
-		plot1d.plotMouse.addListener(listener);
-		plot2d.plotMouse.addListener(listener);
+	void addPlotMouseListener(final PlotMouseListener listener) {
+		plot1d.getPlotMouse().addListener(listener);
+		plot2d.getPlotMouse().addListener(listener);
 	}
 
 	/* Mouse methods */
-	
-	/* non-javadoc:
-	 * Remove a mouse listener.
+
+	/*
+	 * non-javadoc: Remove a mouse listener.
 	 */
 	void removePlotMouseListener(final PlotMouseListener listener) {
-		plot1d.plotMouse.removeListener(listener);
-		plot2d.plotMouse.removeListener(listener);
+		plot1d.getPlotMouse().removeListener(listener);
+		plot2d.getPlotMouse().removeListener(listener);
 	}
 
 	void removeAllPlotMouseListeners() {
-		plot1d.plotMouse.removeAllListeners();
-		plot2d.plotMouse.removeAllListeners();
+		plot1d.getPlotMouse().removeAllListeners();
+		plot2d.getPlotMouse().removeAllListeners();
 	}
 
 	/**
 	 * @see PlotSelectListener#plotSelected(Object)
 	 */
-	public void plotSelected(Object source) {
+	public void plotSelected(final Object source) {
 		plotSelectListener.plotSelected(this);
 	}
 
-	//End Mouse methods
+	// End Mouse methods
 	void reset() {
 		plot1d.reset();
 		plot2d.reset();
 	}
-	
-	void repaint(){
-	    panel.repaint();
+
+	void repaint() {
+		panel.repaint();
 	}
-	
-	Component getComponent(){
-	    return panel;
+
+	Component getComponent() {
+		return panel;
 	}
 }

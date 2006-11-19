@@ -254,10 +254,10 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 	 *         Histogram
 	 */
 	protected int findMaximumCounts() {
-		int chminX = plotLimits.getMinimumX();
-		int chmaxX = plotLimits.getMaximumX();
-		int chminY = plotLimits.getMinimumY();
-		int chmaxY = plotLimits.getMaximumY();
+		int chminX = limits.getMinimumX();
+		int chmaxX = limits.getMaximumX();
+		int chminY = limits.getMinimumY();
+		int chmaxY = limits.getMaximumY();
 		int maxCounts = 0;
 		chminX = getChannelMin(chminX);
 		chminY = getChannelMin(chminY);
@@ -296,10 +296,10 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 	 *         Histogram
 	 */
 	protected int findMinimumCounts() {
-		int chminX = plotLimits.getMinimumX();
-		int chmaxX = plotLimits.getMaximumX();
-		int chminY = plotLimits.getMinimumY();
-		int chmaxY = plotLimits.getMaximumY();
+		int chminX = limits.getMinimumX();
+		int chmaxX = limits.getMaximumX();
+		int chminY = limits.getMinimumY();
+		int chmaxY = limits.getMaximumY();
 		int minCounts = 0;
 		chminX = getChannelMin(chminX);
 		chminY = getChannelMin(chminY);
@@ -327,7 +327,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 	 */
 	protected void paintHistogram(final Graphics context) {
 		final Histogram plotHist = getHistogram();
-		final Scale scale = plotLimits.getScale();
+		final Scale scale = limits.getScale();
 		context.setColor(plotColorMap.getHistogram());
 		context.getClipBounds(clipBounds);
 		final int minX = graph.toDataHorz((int) clipBounds.getMinX());

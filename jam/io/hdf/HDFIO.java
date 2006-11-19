@@ -75,15 +75,15 @@ public final class HDFIO implements DataIO {
 			super();
 		}
 
-		static final int OVERHEAD_READ = 1;
+		public static final int OVERHEAD_READ = 1;
 
-		static final int OVERHEAD_WRITE = 3; // 2 for start
+		public static final int OVERHEAD_WRITE = 3; // 2 for start
 
 		/**
 		 * Number of steps in progress, 1 for converting objects, 10 for writing
 		 * them out
 		 */
-		static final int READ_WRITE = 11; // 1 Count DD's, 10
+		public static final int READ_WRITE = 11; // 1 Count DD's, 10
 	}
 
 	// read objects
@@ -175,7 +175,7 @@ public final class HDFIO implements DataIO {
 			final List<HistogramAttributes> histAttrList) {
 		synchronized (this) {
 			boolean rval = true;
-			final StringBuffer message = new StringBuffer();
+			final StringBuilder message = new StringBuilder(54);
 			// reset all counters
 			groupCount = 0;
 			histCount = 0;
@@ -203,35 +203,7 @@ public final class HDFIO implements DataIO {
 					convertHDFToJamOriginal(mode, fileName, existingGrps,
 							histAttrList);
 				}
-				/* Create output message. */
-				if (mode == FileOpenMode.OPEN) {
-					message.append("Opened ").append(infile.getName());
-				} else if (mode == FileOpenMode.OPEN_MORE) {
-					message.append("Opened Additional ").append(
-							infile.getName());
-				} else if (mode == FileOpenMode.RELOAD) {
-					message.append("Reloaded ").append(infile.getName());
-				} else { // ADD
-					message.append("Adding counts in ")
-							.append(infile.getName());
-					// FIXME currently only add one group
-					message.append(" to groups ");
-					for (int i = 0; i < existingGrps.size(); i++) {
-						final String groupName = (existingGrps.get(0))
-								.getName();
-						if (0 < i) {
-							message.append(", ");
-						}
-						message.append(groupName);
-					}
-				}
-				message.append(" (");
-				message.append(groupCount).append(" groups");
-				message.append(", ").append(histCount).append(" histograms");
-				message.append(", ").append(gateCount).append(" gates");
-				message.append(", ").append(scalerCount).append(" scalers");
-				message.append(", ").append(paramCount).append(" parameters");
-				message.append(')');
+				createOutputMessage(infile, mode, existingGrps, message);
 			} catch (FileNotFoundException e) {
 				uiErrorMsg = "Opening file: " + infile.getPath()
 						+ " Cannot find file or file is locked";
@@ -256,6 +228,44 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
+	/**
+	 * @param infile
+	 * @param mode
+	 * @param existingGrps
+	 * @param message
+	 */
+	private void createOutputMessage(final File infile, final FileOpenMode mode, final List<Group> existingGrps, final StringBuilder message) {
+		/* Create output message. */
+		if (mode == FileOpenMode.OPEN) {
+			message.append("Opened ").append(infile.getName());
+		} else if (mode == FileOpenMode.OPEN_MORE) {
+			message.append("Opened Additional ").append(
+					infile.getName());
+		} else if (mode == FileOpenMode.RELOAD) {
+			message.append("Reloaded ").append(infile.getName());
+		} else { // ADD
+			message.append("Adding counts in ")
+					.append(infile.getName());
+			// FIXME currently only add one group
+			message.append(" to groups ");
+			for (int i = 0; i < existingGrps.size(); i++) {
+				final String groupName = (existingGrps.get(0))
+						.getName();
+				if (0 < i) {
+					message.append(", ");
+				}
+				message.append(groupName);
+			}
+		}
+		message.append(" (");
+		message.append(groupCount).append(" groups");
+		message.append(", ").append(histCount).append(" histograms");
+		message.append(", ").append(gateCount).append(" gates");
+		message.append(", ").append(scalerCount).append(" scalers");
+		message.append(", ").append(paramCount).append(" parameters");
+		message.append(')');
+	}
+
 	/*
 	 * non-javadoc: Given separate vectors of the writeable objects, constructs
 	 * and writes out an HDF file containing the contents. Null or empty <code>Vector</code>
@@ -270,7 +280,7 @@ public final class HDFIO implements DataIO {
 			final List<Histogram> histograms, final boolean writeData,
 			final boolean writeSettings) {
 		synchronized (this) {
-			final StringBuffer message = new StringBuffer();
+			final StringBuilder message = new StringBuilder(60);
 			/* reset all counters */
 			groupCount = 0;
 			histCount = 0;
@@ -301,7 +311,7 @@ public final class HDFIO implements DataIO {
 				message.append(", ").append(gateCount).append(" gates");
 				message.append(", ").append(scalerCount).append(" scalers");
 				message.append(", ").append(paramCount).append(" parameters");
-				message.append(")");
+				message.append(')');
 
 			} catch (FileNotFoundException e) {
 				uiErrorMsg = "Opening file: " + file.getName();
@@ -344,22 +354,8 @@ public final class HDFIO implements DataIO {
 		final List<VirtualGroup> virtualGroups = hdfToJam
 				.findGroups(existingGroupList);
 		GROUPLIST: for (VirtualGroup currentVGroup : virtualGroups) {
-			Group currentGroup = null;
 			final List<VirtualGroup> histList;
-			// Get the current group for the rest of the operation
-			if (mode == FileOpenMode.OPEN || mode == FileOpenMode.OPEN_MORE) {
-				currentGroup = hdfToJam.convertGroup(currentVGroup, fileName,
-						histAttributeList, mode);
-				if (currentGroup != null) {
-					groupCount++;
-				}
-			} else {
-				final String groupName = hdfToJam
-						.readVirtualGroupName(currentVGroup);
-				if (hdfToJam.containsGroup(groupName, existingGroupList)) {
-					currentGroup = Group.getGroup(groupName);
-				}
-			}
+			Group currentGroup = getCurrentGroup(mode, fileName, existingGroupList, histAttributeList, currentVGroup);
 
 			// No histograms in group
 			if (currentGroup == null) {
@@ -415,6 +411,33 @@ public final class HDFIO implements DataIO {
 				paramCount = hdfToJam.convertParameters(paramList.get(0), mode);
 			}
 		} // Loop group end
+	}
+
+	/**
+	 * @param mode
+	 * @param fileName
+	 * @param existingGroupList
+	 * @param histAttributeList
+	 * @param currentVGroup
+	 * @return
+	 */
+	private Group getCurrentGroup(final FileOpenMode mode, final String fileName, final List<Group> existingGroupList, final List<HistogramAttributes> histAttributeList, VirtualGroup currentVGroup) {
+		// Get the current group for the rest of the operation
+		Group currentGroup = null;
+		if (mode == FileOpenMode.OPEN || mode == FileOpenMode.OPEN_MORE) {
+			currentGroup = hdfToJam.convertGroup(currentVGroup, fileName,
+					histAttributeList, mode);
+			if (currentGroup != null) {
+				groupCount++;
+			}
+		} else {
+			final String groupName = hdfToJam
+					.readVirtualGroupName(currentVGroup);
+			if (hdfToJam.containsGroup(groupName, existingGroupList)) {
+				currentGroup = Group.getGroup(groupName);
+			}
+		}
+		return currentGroup;
 	}
 
 	/* --------------------- End DataIO Interface Methods ------------------ */

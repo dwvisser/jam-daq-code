@@ -26,10 +26,11 @@ final class Peak extends Object implements Comparable, Cloneable {
 	private Peak(double position, double area, double width) {
 		this(position, 0.0, area, 0.0, width, 0.0);
 	}
-    
-    static Peak createPeak(double position, double area, double width) {
-        return new Peak(position, area, width);
-    }
+
+	static Peak createPeak(final double position, final double area,
+			final double width) {
+		return new Peak(position, area, width);
+	}
 
 	/**
 	 * Generates a peak with error bars on its parameters.
@@ -54,19 +55,18 @@ final class Peak extends Object implements Comparable, Cloneable {
 		setArea(intensity, intErr);
 		setWidth(wid, widErr);
 	}
-	
+
 	protected Object clone() throws CloneNotSupportedException {
-		final Peak rval=(Peak)super.clone();
-		rval.setPosition(position,perr);
-		rval.setArea(area,aerr);
-		rval.setWidth(width,werr);
+		final Peak rval = (Peak) super.clone();
+		rval.setPosition(position, perr);
+		rval.setArea(area, aerr);
+		rval.setWidth(width, werr);
 		return rval;
 	}
-	
-	Peak offset(final double correction){
-		return new Peak(position+correction, perr, area, aerr, width, werr);
-	}
 
+	Peak offset(final double correction) {
+		return new Peak(position + correction, perr, area, aerr, width, werr);
+	}
 
 	/**
 	 * @return centroid of peak
@@ -104,13 +104,13 @@ final class Peak extends Object implements Comparable, Cloneable {
 	}
 
 	public String toString() {
-		final StringBuffer rval = new StringBuffer("Peak\n");
-		rval.append("  Position = ").append(position).append(" +/- ");
-		rval.append(perr).append("\n");
-		rval.append("  Area = ").append(area).append(" +/- ").append(aerr);
-		rval.append("\n");
-		rval.append("  FWHM = ").append(width).append(" +/- ").append(werr);
-		rval.append("\n");
+		final StringBuilder rval = new StringBuilder(58);
+		rval.append("Peak\n  Position = ");
+		rval.append(position).append(" +/- ");
+		rval.append(perr);
+		rval.append("\n  Area = ").append(area).append(" +/- ").append(aerr);
+		rval.append("\n  FWHM = ").append(width).append(" +/- ").append(werr);
+		rval.append('\n');
 		return rval.toString();
 	}
 

@@ -1,19 +1,22 @@
 package jam.fit;
+
 import jam.global.MessageHandler;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * This uses the Levenberg-Marquadt prescription for finding the local minimum of chi-squared
- * given seed parameter values for the function to fit.  The <code>NonLinearFit</code> class which
- * creates and calls this must supply the function evaluation and differentiation.
- *
- * @author  Dale Visser
+ * This uses the Levenberg-Marquadt prescription for finding the local minimum
+ * of chi-squared given seed parameter values for the function to fit. The
+ * <code>NonLinearFit</code> class which creates and calls this must supply
+ * the function evaluation and differentiation.
+ * 
+ * @author Dale Visser
  * @version 0.5, 8/28/98
- *
- * @see	AbstractNonLinearFit
+ * 
+ * @see AbstractNonLinearFit
  * @see GaussianFit
  */
 final class LevenbergMarquadt {
@@ -36,112 +39,114 @@ final class LevenbergMarquadt {
 	/**
 	 * counts how many iterations have bee called
 	 */
-	private int iterationCount = 0;
+	private transient int iterationCount = 0;
 
 	/**
 	 * reference to NonLinearFit object
 	 */
-	private AbstractNonLinearFit nonLinFit;
+	private transient final AbstractNonLinearFit nonLinFit;
 
 	/**
-	 * proportional to second derivative of chi-squared with respect to parameters
+	 * proportional to second derivative of chi-squared with respect to
+	 * parameters
 	 */
-	Matrix space;
+	private transient Matrix space;
 
 	/**
-	 * proportional to first derivative of chi-squared with respect to parameters
+	 * proportional to first derivative of chi-squared with respect to
+	 * parameters
 	 */
-	Matrix vec;
+	private transient Matrix vec;
 
 	/**
-	 * smooth variation parameter between using exact solution, or a small step in
-	 * that direction
+	 * smooth variation parameter between using exact solution, or a small step
+	 * in that direction
 	 */
-	private double lambda = -1.0;
+	private transient double lambda = -1.0;// NOPMD
 
 	/**
-	 * alpha*da=beta is the equation to be solved.
-	 * alpha and space are similar
+	 * alpha*da=beta is the equation to be solved. alpha and space are similar
 	 */
-	private Matrix alpha;
+	private transient Matrix alpha;// NOPMD
 
 	/**
 	 * beta and vec are similar
 	 */
-	private Matrix beta;
+	private transient Matrix beta;// NOPMD
 
 	/**
 	 * second holder of alpha, expanded at end
 	 */
-	private Matrix covar;
+	private transient Matrix covar;
 
 	/**
-	 * da contains trial changes to parameter values
+	 * contains trial changes to parameter values
 	 */
-	private Matrix da;
+	private transient Matrix deltaA;// NOPMD
 
 	/**
 	 * array containing all parameters
 	 */
-	private Parameter[] parameters;
+	private transient final Parameter[] parameters;
 
 	/**
 	 * contains trial values for calculation
 	 */
-	private Parameter[] tryParameters;
+	private transient Parameter[] tryParameters;// NOPMD
 
 	/**
 	 * the low channel limit for fitting
 	 */
-	private int minChannel;
+	private transient int minChannel;
 
 	/**
 	 * the high channel limit for fitting
 	 */
-	private int maxChannel;
+	private transient int maxChannel;
 
 	/**
 	 * number of function parameters
 	 */
-	private int nPar;
+	private transient final int nPar;
 
 	/**
 	 * number of variable function parameters
 	 */
-	private int nVar;
+	private transient int nVar;
 
 	/**
 	 * degrees of freedom numChannels-number variable params
 	 */
-	private int dof;
+	private transient int dof;
 
-	/** 
+	/**
 	 * full contents of 1-d histogram to fit
 	 */
-	private double[] data;
+	private transient double[] data;
 
 	/**
 	 * Array of channel count estimated errors.
 	 */
 
-	private double[] errors;
+	private transient double[] errors;
 
 	/**
 	 * latest chi-squared value
 	 */
-	private double chiSq;
+	private transient double chiSq;
 
 	/**
 	 * previous chi-squared value
 	 */
-	private double oChiSq;
-	
-	private final MessageHandler messages;
+	private transient double oChiSq;// NOPMD
+
+	private transient final MessageHandler messages;
 
 	/**
 	 * Class constructor giving handle to parent.
-	 *
-	 * @param	nlf the parent <code>NonLinearFit</code> object creating this
+	 * 
+	 * @param nlf
+	 *            the parent <code>NonLinearFit</code> object creating this
 	 */
 	public LevenbergMarquadt(AbstractNonLinearFit nlf) {
 		super();
@@ -150,7 +155,8 @@ final class LevenbergMarquadt {
 		List<Parameter> temp2 = new ArrayList<Parameter>();
 		for (Parameter param : nonLinFit.getParameters()) {
 			if (param.isDouble()) {
-				boolean variableParameter=!(param.isOutputOnly() || param.isKnown());
+				boolean variableParameter = !(param.isOutputOnly() || param
+						.isKnown());
 				if (variableParameter) {
 					temp2.add(param);
 				}
@@ -160,37 +166,42 @@ final class LevenbergMarquadt {
 		nPar = parameters.length;
 	}
 
-	/** 
+	/**
 	 * Sets the histogram values and the boundaries for the fit.
 	 * 
-	 * @param	counts	    the counts in the histogram to fit
-	 * @param errors error bars on the histogram bin counts
-	 * @param	minChannel  the lower limit of the fit
-	 * @param	maxChannel  the upper limit of the fit
+	 * @param counts
+	 *            the counts in the histogram to fit
+	 * @param errors
+	 *            error bars on the histogram bin counts
+	 * @param minChannel
+	 *            the lower limit of the fit
+	 * @param maxChannel
+	 *            the upper limit of the fit
 	 */
-	void setup(
-		double[] counts,
-		double[] errors,
-		int minChannel,
-		int maxChannel) {
-		this.data = counts;
-		this.errors = errors;
+	void setup(final double[] counts, final double[] errors,
+			final int minChannel, final int maxChannel) {
+		this.data = new double[counts.length];
+		System.arraycopy(counts, 0, data, 0, counts.length);
+		this.errors = new double[errors.length];
+		System.arraycopy(errors, 0, this.errors, 0, errors.length);
 		this.minChannel = minChannel;
 		this.maxChannel = maxChannel;
 	}
 
 	/**
 	 * Calculates a single iteration of the minimization routine.
-	 *
-	 * @param	    iteration		indicates first, middle, or final iteration
-	 * @exception   Exception		trying to diagonalize singular matrices	    
-	 * @see	    #FIRST_ITERATION
-	 * @see	    #NEXT_ITERATION
-	 * @see	    #LAST_ITERATION
-	 * @see	    AbstractNonLinearFit#doFit
+	 * 
+	 * @param iteration
+	 *            indicates first, middle, or final iteration
+	 * @exception Exception
+	 *                trying to diagonalize singular matrices
+	 * @see #FIRST_ITERATION
+	 * @see #NEXT_ITERATION
+	 * @see #LAST_ITERATION
+	 * @see AbstractNonLinearFit#doFit
 	 */
-	public void iterate(int iteration) throws Exception {
-		int j, l;
+	public void iterate(int iteration) throws Exception {// NOPMD
+		int index;
 		Matrix oneda = new Matrix(nPar, 1);
 		boolean firstCall;
 		boolean lastCall;
@@ -199,64 +210,66 @@ final class LevenbergMarquadt {
 		firstCall = (iteration == FIRST_ITERATION);
 		lastCall = (iteration == LAST_ITERATION);
 
-		//first iteration, initialize
+		// first iteration, initialize
 		if (firstCall) {
-			da = new Matrix(nPar, 1, 0.0);
+			deltaA = new Matrix(nPar, 1, 0.0);
 			beta = new Matrix(nPar, 1, 0.0);
 			nVar = 0;
-			for (j = 0; j < nPar; j++) {
-				if (!parameters[j].isFixed()) {
-					//increment number of variable function parameters
+			for (index = 0; index < nPar; index++) {
+				if (!parameters[index].isFixed()) {
+					// increment number of variable function parameters
 					nVar++;
 				}
 			}
 			dof = maxChannel - minChannel + 1 - nVar;
-			//set working space variables (used in calculate())
+			// set working space variables (used in calculate())
 			vec = new Matrix(nVar, 1, 0.0);
 			space = new Matrix(nVar, nVar, 0.0);
 
 			alpha = new Matrix(nVar, nVar, 0.0);
 			oneda = new Matrix(nVar, 1, 0.0);
-			//mfit x 1 matrix filled w/ zeroes
+			// mfit x 1 matrix filled w/ zeroes
 			lambda = 0.001;
-			//call calculate w/ parameters, retrieve results into alpha,beta,chiSq is updated
+			// call calculate w/ parameters, retrieve results into
+			// alpha,beta,chiSq is updated
 			calculate(parameters);
 			alpha = new Matrix(space);
 			beta = new Matrix(vec);
 
 			oChiSq = chiSq;
 			tryParameters = new Parameter[parameters.length];
-			System.arraycopy(
-				parameters,
-				0,
-				tryParameters,
-				0,
-				parameters.length);
+			System
+					.arraycopy(parameters, 0, tryParameters, 0,
+							parameters.length);
 		}
 
-		//Entering main iteration, must have alpha and beta from last calculation,and oChiSq
+		// Entering main iteration, must have alpha and beta from last
+		// calculation,and oChiSq
 
-		//Alter linearized fitting matrix, by augmenting diagonal elements
-		covar = new Matrix(alpha); //make a copy of alpha into covar
-		oneda = new Matrix(beta); //make a copy of beta into oneda
+		// Alter linearized fitting matrix, by augmenting diagonal elements
+		covar = new Matrix(alpha); // make a copy of alpha into covar
+		oneda = new Matrix(beta); // make a copy of beta into oneda
 		if (lastCall) {
 			lambda = 0.0;
 		}
-		for (j = 0; j < nVar; j++) {
-			covar.element[j][j] = covar.element[j][j] * (1.0 + lambda);
-			//aubment diagonal elements
+		for (index = 0; index < nVar; index++) {
+			covar.element[index][index] = covar.element[index][index]
+					* (1.0 + lambda);
+			// aubment diagonal elements
 		}
 
-		//Matrix solution using covar and oneda
-		GaussJordanElimination gje = new GaussJordanElimination(covar, oneda);
+		// Matrix solution using covar and oneda
+		final GaussJordanElimination gje = new GaussJordanElimination(covar, oneda);
 		gje.doIt();
 		covar = gje.getMatrix();
 		oneda = gje.getVectors();
 
-		//copy oneda into da, which will be used to alter the parameters for another try
-		da = new Matrix(oneda);
-		//expand if last call, otherwise output iterationCount
-		if (lastCall) { //final call (converged presumably) evaluate covariance matrix
+		// copy oneda into da, which will be used to alter the parameters for
+		// another try
+		deltaA = new Matrix(oneda);
+		// expand if last call, otherwise output iterationCount
+		if (lastCall) { // final call (converged presumably) evaluate covariance
+						// matrix
 			expandCovarianceMatrix();
 			setParameterErrors();
 			allDone = true;
@@ -264,122 +277,140 @@ final class LevenbergMarquadt {
 			iterationCount++;
 		}
 
-		//do only if not on final call	
+		// do only if not on final call
 		if (!allDone) {
 
-			//alter those parameters that are not fixed by adding da 
+			// alter those parameters that are not fixed by adding da
 			// before execution, tryParameters=same as last call
 			// after execution, tryParameters changed to new
-			j = 0;
-			for (l = 0; l < nPar; l++) {
+			index = 0;
+			for (int l = 0; l < nPar; l++) {
 				if (!tryParameters[l].isFixed()) {
-					tryParameters[l].setValue(
-						tryParameters[l].getDoubleValue() + da.element[j][0]);
-					j++;
+					tryParameters[l].setValue(tryParameters[l].getDoubleValue()
+							+ deltaA.element[index][0]);
+					index++;
 				}
 			}
 
-			//find alpha, beta matrices, put in covar and da, chiSq is calculated
+			// find alpha, beta matrices, put in covar and da, chiSq is
+			// calculated
 			calculate(tryParameters);
 			covar = new Matrix(space);
-			da = new Matrix(vec);
-			//Did the trial succeed?
-			if (chiSq < oChiSq) { //Success, adopt the new solution.
+			deltaA = new Matrix(vec);
+			// Did the trial succeed?
+			if (chiSq < oChiSq) { // Success, adopt the new solution.
 				lambda = lambda * 0.1;
 				oChiSq = chiSq;
 				alpha = new Matrix(covar);
-				beta = new Matrix(da);
-				//tryParameters left the same for next iteration		
-			} else { //Failure, increase lambda 
+				beta = new Matrix(deltaA);
+				// tryParameters left the same for next iteration
+			} else { // Failure, increase lambda
 				lambda = lambda * 10;
 				chiSq = oChiSq;
 				System.arraycopy(parameters, 0, tryParameters, 0, nPar);
-				//alpha and beta left the same
-				//old parameters copied into tryParameters for next iteration
+				// alpha and beta left the same
+				// old parameters copied into tryParameters for next iteration
 			}
 		}
 	}
 
 	/**
-	 * Calculates space, vec, and chiSq from passed parameters.
-	 * To do this, assigns parameter values in nonLinFit
-	 *
-	 * @param	params	array of parameters to calculate from
+	 * Calculates space, vec, and chiSq from passed parameters. To do this,
+	 * assigns parameter values in nonLinFit
+	 * 
+	 * @param params
+	 *            array of parameters to calculate from
 	 */
-	private void calculate(Parameter[] params) {
-		int i, j, k, l, m;
-		double sig2i; //1 over sigma squared
+	private void calculate(final Parameter[] params) {
+		double sig2i; // 1 over sigma squared
 		double weight;
-		double y, dy;
+		double yFit, deltaY;
 		double[] dyda = new double[nPar];
-		/* set parameter values in funk */
-		for (i = 0; i < params.length; i++) {
-			nonLinFit.setParameter(
-				params[i].getName(),
-				params[i].getDoubleValue());
-		}
-		if (iterationCount == 0) {
-			messages.messageOut("Iteration ChiSq/dof ",MessageHandler.NEW);
-			for (i = 0; i < params.length; i++) {
-				messages.messageOut(params[i].getName() + " ");
-			}
-			messages.messageOut("",MessageHandler.END);
-		}
-		/* initialize space and vec (matrix and vector in Numerical Recipes in C 15.5) */
-		for (j = 0; j < nVar; j++) {
-			for (k = 0; k <= j; k++) {
-				space.element[j][k] = 0.0;
-			}
+		setParameters(params);
+		outputParameters(params);
+		/*
+		 * initialize space and vec (matrix and vector in Numerical Recipes in C
+		 * 15.5)
+		 */
+		for (int j = 0; j < nVar; j++) {
+			Arrays.fill(space.element[j], 0.0);
 			vec.element[j][0] = 0.0;
 		}
 		/* initialize chiSq */
 		chiSq = 0.0;
 		/* Summation loop over all data channels */
-		for (i = minChannel; i <= maxChannel; i++) {
-			y = nonLinFit.valueAt(i);
-			for (j = 0; j < nPar; j++) {
+		for (int i = minChannel; i <= maxChannel; i++) {
+			yFit = nonLinFit.valueAt(i);
+			for (int j = 0; j < nPar; j++) {
 				dyda[j] = nonLinFit.derivative(i, params[j].getName());
 			}
 			sig2i = 1.0 / (errors[i] * errors[i]);
-			dy = data[i] - y;
+			deltaY = data[i] - yFit;
 			/* and find chi squared */
-			chiSq = chiSq + dy * dy * sig2i;
+			chiSq = chiSq + deltaY * deltaY * sig2i;
 			/* setup workspace for MRQMIN magic */
-			j = -1;
-			for (l = 0; l < nPar; l++) {
+			int row = -1;
+			for (int l = 0; l < nPar; l++) {
 				if (!params[l].isFixed()) {
 					weight = dyda[l] * sig2i;
-					j++;
-					k = -1;
-					for (m = 0; m <= l; m++) {
+					row++;
+					int column = -1;
+					for (int m = 0; m <= l; m++) {
 						if (!params[m].isFixed()) {
-							k++;
-							space.element[j][k] =
-								space.element[j][k] + weight * dyda[m];
+							column++;
+							space.element[row][column] = space.element[row][column] + weight
+									* dyda[m];
 						}
 					}
-					vec.element[j][0] = vec.element[j][0] + dy * weight;
+					vec.element[row][0] = vec.element[row][0] + deltaY * weight;
 				}
 			}
 		}
+		outputParamsPostFit(params);
+	}
+
+	/**
+	 * @param params
+	 */
+	private void outputParamsPostFit(final Parameter[] params) {
 		/* debug message */
-		messages.messageOut(iterationCount + " ",MessageHandler.NEW);
+		messages.messageOut(iterationCount + " ", MessageHandler.NEW);
 		messages.messageOut(round(chiSq / dof, 3) + " ");
-		for (i = 0; i < params.length; i++) {
-			messages.messageOut(
-				round(
-					nonLinFit
-						.getParameter(params[i].getName())
-						.getDoubleValue(),
-					3)
+		for (int i = 0; i < params.length; i++) {
+			messages.messageOut(round(nonLinFit.getParameter(
+					params[i].getName()).getDoubleValue(), 3)
 					+ " ");
 		}
-		messages.messageOut("",MessageHandler.END);
+		messages.messageOut("", MessageHandler.END);
 		/* fill in the symmetric side */
-		for (j = 1; j < nVar; j++) {
-			for (k = 0; k < j; k++) {
+		for (int j = 1; j < nVar; j++) {
+			for (int k = 0; k < j; k++) {
 				space.element[k][j] = space.element[j][k];
 			}
+		}
+	}
+
+	/**
+	 * @param params
+	 */
+	private void outputParameters(final Parameter[] params) {
+		if (iterationCount == 0) {
+			messages.messageOut("Iteration ChiSq/dof ", MessageHandler.NEW);
+			for (int i = 0; i < params.length; i++) {
+				messages.messageOut(params[i].getName() + " ");
+			}
+			messages.messageOut("", MessageHandler.END);
+		}
+	}
+
+	/**
+	 * @param params
+	 */
+	private void setParameters(final Parameter[] params) {
+		/* set parameter values in funk */
+		for (int i = 0; i < params.length; i++) {
+			nonLinFit.setParameter(params[i].getName(), params[i]
+					.getDoubleValue());
 		}
 	}
 
@@ -387,36 +418,35 @@ final class LevenbergMarquadt {
 	 * Expands the covariance matrix to include the fixed parameters.
 	 */
 	private void expandCovarianceMatrix() {
-		int i, j, k;
 		Matrix temp;
 		double temp2;
 
 		temp = new Matrix(nPar, nPar, 0.0);
-		for (i = 0; i < nVar; i++) {
-			for (j = 0; j < nVar; j++) {
+		for (int i = 0; i < nVar; i++) {
+			for (int j = 0; j < nVar; j++) {
 				temp.element[i][j] = covar.element[i][j];
 			}
 		}
-		for (i = nVar; i < nPar; i++) {
-			for (j = 0; j <= i; j++) {
+		for (int i = nVar; i < nPar; i++) {
+			for (int j = 0; j <= i; j++) {
 				temp.element[i][j] = 0.0;
 				temp.element[j][i] = 0.0;
 			}
 		}
-		k = nVar - 1;
-		for (j = nPar - 1; j >= 0; j--) {
+		int refIndex = nVar - 1;
+		for (int j = nPar - 1; j >= 0; j--) {
 			if (!parameters[j].isFixed()) {
-				for (i = 0; i < nPar; i++) {
-					temp2 = temp.element[i][k];
-					temp.element[i][k] = temp.element[i][j];
+				for (int i = 0; i < nPar; i++) {
+					temp2 = temp.element[i][refIndex];
+					temp.element[i][refIndex] = temp.element[i][j];
 					temp.element[i][j] = temp2;
 				}
-				for (i = 0; i < nPar; i++) {
-					temp2 = temp.element[k][i];
-					temp.element[k][i] = temp.element[j][i];
+				for (int i = 0; i < nPar; i++) {
+					temp2 = temp.element[refIndex][i];
+					temp.element[refIndex][i] = temp.element[j][i];
 					temp.element[j][i] = temp2;
 				}
-				k--;
+				refIndex--;
 			}
 		}
 		covar = new Matrix(temp);
@@ -425,15 +455,16 @@ final class LevenbergMarquadt {
 
 	/**
 	 * Gives the chi-sqared value of the latest iteration.
-	 *	
-	 * @return	<code>chiSq/dof</code>
+	 * 
+	 * @return <code>chiSq/dof</code>
 	 */
 	public double getChiSq() {
 		return chiSq / dof;
 	}
 
 	/**
-	 * Assigns the error values in the parameters, based on the expanded covariance matrix.
+	 * Assigns the error values in the parameters, based on the expanded
+	 * covariance matrix.
 	 */
 	private void setParameterErrors() {
 		for (int i = 0; i < nPar; i++) {
@@ -442,18 +473,22 @@ final class LevenbergMarquadt {
 	}
 
 	/**
-	 * Rounds a <code>String</code> representation of a <code>double</code> value.
-	 *
-	 * @param	in	    value to round
-	 * @param	fraction    number of digits to show in fractional part
-	 * @return		    a <code>String</code> with the specified appearance of the number
+	 * Rounds a <code>String</code> representation of a <code>double</code>
+	 * value.
+	 * 
+	 * @param value
+	 *            value to round
+	 * @param fraction
+	 *            number of digits to show in fractional part
+	 * @return a <code>String</code> with the specified appearance of the
+	 *         number
 	 */
-	private String round(double in, int fraction) {
+	private String round(final double value, final int fraction) {
 		String out;
-		NumberFormat nf = NumberFormat.getInstance();
-		nf.setMinimumFractionDigits(fraction);
-		nf.setMaximumFractionDigits(fraction);
-		out = nf.format(in);
+		final NumberFormat formatter = NumberFormat.getInstance();
+		formatter.setMinimumFractionDigits(fraction);
+		formatter.setMaximumFractionDigits(fraction);
+		out = formatter.format(value);
 		return out;
 	}
 

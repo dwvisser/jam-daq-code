@@ -153,7 +153,7 @@ final class PlotPanel extends JPanel {
 	protected void paintComponent(final Graphics graphics) {
 		super.paintComponent(graphics);
 		final PlotColorMap pcm = PlotColorMap.getInstance();
-		if (plot.printing) { // output to printer
+		if (plot.isPrinting()) { // output to printer
 			// FIXME KBS font not set
 			// graph.setFont(printFont);
 			pcm.setColorMap(Mode.PRINT);
@@ -168,7 +168,7 @@ final class PlotPanel extends JPanel {
 		this.setForeground(foreground);
 		this.setBackground(pcm.getBackground());
 		plot.viewSize = getSize();
-		plot.graph.update(graphics, plot.viewSize, plot.plotLimits);
+		plot.graph.update(graphics, plot.viewSize, plot.limits);
 		/*
 		 * give graph all pertinent info, draw outline, tickmarks, labels, and
 		 * title

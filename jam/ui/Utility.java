@@ -5,6 +5,10 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 public final class Utility {
+	
+	private Utility(){
+		super();
+	}
 
 	public static void setLookAndFeel() {
 		try {

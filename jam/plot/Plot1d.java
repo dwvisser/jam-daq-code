@@ -230,7 +230,7 @@ final class Plot1d extends AbstractPlot {
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 				0.5f));
 		g.setColor(colorMap.getArea());
-		graph.update(g, viewSize, plotLimits);
+		graph.update(g, viewSize, limits);
 		graph.markArea1d(areaMark1, areaMark2, counts);
 		g2.setComposite(prev);
 	}
@@ -365,8 +365,8 @@ final class Plot1d extends AbstractPlot {
 	 * Find the maximum counts in the part of the histogram displayed
 	 */
 	protected final int findMaximumCounts() {
-		int chmax = plotLimits.getMaximumX();
-		int chmin = plotLimits.getMinimumX();
+		int chmax = limits.getMaximumX();
+		int chmin = limits.getMinimumX();
 		double maxCounts = 0;
 		if ((chmin == 0) && (ignoreChZero)) {
 			chmin = 1;
@@ -387,8 +387,8 @@ final class Plot1d extends AbstractPlot {
 	 * Find the minimum counts in the part of the histogram displayed
 	 */
 	protected final int findMinimumCounts() {
-		int chmax = plotLimits.getMaximumX();
-		int chmin = plotLimits.getMinimumX();
+		int chmax = limits.getMaximumX();
+		int chmin = limits.getMinimumX();
 		int minCounts = 0;
 		if ((chmin == 0) && (ignoreChZero)) {
 			chmin = 1;
