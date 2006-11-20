@@ -36,19 +36,20 @@ import javax.swing.border.EmptyBorder;
  */
 public class Combine extends AbstractManipulation implements Observer {
 
-	private JComboBox cfrom1, cfrom2, cto;
+	private transient final JComboBox cfrom1, cfrom2, cto;
 
-	private JCheckBox cnorm, cplus, cminus, ctimes, cdiv;
+	private transient JCheckBox cnorm;
+	private transient final JCheckBox cplus, cminus, ctimes, cdiv;
 
-	private double fac1;
+	private transient double fac1;
 
-	private double fac2;
+	private transient double fac2;
 
-	private AbstractHist1D hto;
+	private transient AbstractHist1D hto;
 
-	private JLabel lname, lWith;
+	private transient final JLabel lname, lWith;
 
-	private JTextField ttextto, ttimes1, ttimes2;
+	private transient final JTextField ttextto, ttimes1, ttimes2;
 
 	/**
 	 * Construct a new "manipilate histograms" dialog.
@@ -104,18 +105,11 @@ public class Combine extends AbstractManipulation implements Observer {
 		pEntries.add(pradio);
 		ButtonGroup cbg = new ButtonGroup();
 
-		cnorm = new JCheckBox("Renormalize", true);
-		cnorm.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				enableInputWith(false);
-			}
-		});
-		cbg.add(cnorm);
-		pradio.add(cnorm);
+		addNormCheckbox(pradio, cbg);
 
 		cplus = new JCheckBox("Add", false);
 		cplus.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
+			public void itemStateChanged(final ItemEvent event) {
 				enableInputWith(true);
 			}
 		});
@@ -124,7 +118,7 @@ public class Combine extends AbstractManipulation implements Observer {
 
 		cminus = new JCheckBox("Subtract", false);
 		cminus.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
+			public void itemStateChanged(final ItemEvent event) {
 				enableInputWith(true);
 			}
 		});
@@ -207,6 +201,21 @@ public class Combine extends AbstractManipulation implements Observer {
 				});
 		cdmanip.add(pButtons.getComponent(), BorderLayout.SOUTH);
 		pack();
+	}
+
+	/**
+	 * @param pradio
+	 * @param cbg
+	 */
+	private void addNormCheckbox(JPanel pradio, ButtonGroup cbg) {
+		cnorm = new JCheckBox("Renormalize", true);
+		cnorm.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				enableInputWith(false);
+			}
+		});
+		cbg.add(cnorm);
+		pradio.add(cnorm);
 	}
 
 	/*
@@ -311,12 +320,12 @@ public class Combine extends AbstractManipulation implements Observer {
 			hto.setCounts(out);
 		}
 
-		if (hfrom2 != null) {
-			LOGGER.info("Combine " + hfrom1.getFullName().trim() + operation
-					+ hfrom2.getFullName().trim() + " to " + hto.getFullName());
-		} else {
+		if (hfrom2 == null) {
 			LOGGER.info("Normalize " + hfrom1.getFullName().trim() + " to "
 					+ hto.getFullName());
+		} else {
+			LOGGER.info("Combine " + hfrom1.getFullName().trim() + operation
+					+ hfrom2.getFullName().trim() + " to " + hto.getFullName());
 		}
 	}
 

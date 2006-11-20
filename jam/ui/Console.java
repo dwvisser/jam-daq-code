@@ -162,8 +162,8 @@ public class Console extends JPanel {
 			found |= listener.performParseCommand(cmd, params);
 		}
 		if (!found) {
-			final StringBuffer buffer = new StringBuffer();
-			buffer.append("\"").append(cmd)
+			final StringBuilder buffer = new StringBuilder();
+			buffer.append('\"').append(cmd)
 					.append("\" is an invalid command. ");
 			final Collection<String> offer = CommandManager.getInstance()
 					.getSimilarCommnands(cmd, true);
@@ -175,7 +175,7 @@ public class Console extends JPanel {
 					buffer.append(":\t");
 				}
 				for (String command : offer) {
-					buffer.append(command).append("\t");
+					buffer.append(command).append('\t');
 				}
 			}
 			consoleLog.errorOutln(buffer.toString());

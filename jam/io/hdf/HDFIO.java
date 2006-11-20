@@ -234,23 +234,22 @@ public final class HDFIO implements DataIO {
 	 * @param existingGrps
 	 * @param message
 	 */
-	private void createOutputMessage(final File infile, final FileOpenMode mode, final List<Group> existingGrps, final StringBuilder message) {
+	private void createOutputMessage(final File infile,
+			final FileOpenMode mode, final List<Group> existingGrps,
+			final StringBuilder message) {
 		/* Create output message. */
 		if (mode == FileOpenMode.OPEN) {
 			message.append("Opened ").append(infile.getName());
 		} else if (mode == FileOpenMode.OPEN_MORE) {
-			message.append("Opened Additional ").append(
-					infile.getName());
+			message.append("Opened Additional ").append(infile.getName());
 		} else if (mode == FileOpenMode.RELOAD) {
 			message.append("Reloaded ").append(infile.getName());
 		} else { // ADD
-			message.append("Adding counts in ")
-					.append(infile.getName());
+			message.append("Adding counts in ").append(infile.getName());
 			// FIXME currently only add one group
 			message.append(" to groups ");
 			for (int i = 0; i < existingGrps.size(); i++) {
-				final String groupName = (existingGrps.get(0))
-						.getName();
+				final String groupName = (existingGrps.get(0)).getName();
 				if (0 < i) {
 					message.append(", ");
 				}
@@ -320,7 +319,7 @@ public final class HDFIO implements DataIO {
 						+ "': " + e.toString();
 			} finally {
 				try {
-					if (out!=null) {
+					if (out != null) {
 						out.close();
 					}
 				} catch (IOException e) {
@@ -355,7 +354,8 @@ public final class HDFIO implements DataIO {
 				.findGroups(existingGroupList);
 		GROUPLIST: for (VirtualGroup currentVGroup : virtualGroups) {
 			final List<VirtualGroup> histList;
-			Group currentGroup = getCurrentGroup(mode, fileName, existingGroupList, histAttributeList, currentVGroup);
+			final Group currentGroup = getCurrentGroup(mode, fileName,
+					existingGroupList, histAttributeList, currentVGroup);
 
 			// No histograms in group
 			if (currentGroup == null) {
@@ -363,39 +363,15 @@ public final class HDFIO implements DataIO {
 			}
 
 			// Keep track of first loaded group
-			if (firstLoadedGroup == null) {
-				firstLoadedGroup = currentGroup;
-			}
+			firstLoadedGroup = (firstLoadedGroup == null) ? currentGroup
+					: firstLoadedGroup;
 			// Find histograms
 			final List<String> empty = Collections.emptyList();
 			histList = hdfToJam.findHistograms(currentVGroup, empty);
 
 			// Loop over histograms
 			for (VirtualGroup histVGroup : histList) {
-				final Histogram hist = hdfToJam.convertHistogram(currentGroup,
-						histVGroup, histAttributeList, mode);
-				if (hist != null) {
-					histCount++;
-				}
-				// Load gates and calibration if not add
-				if (hist != null && mode != FileOpenMode.ADD) {
-					final List<VirtualGroup> gateList = hdfToJam.findGates(
-							histVGroup, hist.getType());
-					// Loop over gates
-					for (VirtualGroup gateVGroup : gateList) {
-						final Gate gate = hdfToJam.convertGate(hist,
-								gateVGroup, mode);
-						if (gate != null) {
-							gateCount++;
-						}
-					}
-					/* Load calibration. */
-					final VDataDescription vddCalibration = hdfToJam
-							.findCalibration(histVGroup);
-					if (vddCalibration != null) {
-						hdfToJam.convertCalibration(hist, vddCalibration);
-					}
-				} // End Load gates and calibration
+				loadHistogram(mode, histAttributeList, currentGroup, histVGroup);
 			} // Loop Histogram end
 			// Load scalers
 			final List<VirtualGroup> scalerList = hdfToJam
@@ -415,13 +391,75 @@ public final class HDFIO implements DataIO {
 
 	/**
 	 * @param mode
+	 * @param histAttributeList
+	 * @param currentGroup
+	 * @param histVGroup
+	 * @throws HDFException
+	 */
+	private void loadHistogram(final FileOpenMode mode,
+			final List<HistogramAttributes> histAttributeList,
+			final Group currentGroup, final VirtualGroup histVGroup)
+			throws HDFException {
+		final Histogram hist = hdfToJam.convertHistogram(currentGroup,
+				histVGroup, histAttributeList, mode);
+		if (hist != null) {
+			histCount++;
+		}
+		// Load gates and calibration if not add
+		if (hist != null && mode != FileOpenMode.ADD) {
+			loadGatesAndCalibration(mode, histVGroup, hist);
+		} // End Load gates and calibration
+	}
+
+	/**
+	 * @param mode
+	 * @param histVGroup
+	 * @param hist
+	 * @throws HDFException
+	 */
+	private void loadGatesAndCalibration(final FileOpenMode mode,
+			final VirtualGroup histVGroup, final Histogram hist)
+			throws HDFException {
+		final List<VirtualGroup> gateList = hdfToJam.findGates(histVGroup, hist
+				.getType());
+		// Loop over gates
+		countGates(mode, hist, gateList);
+		/* Load calibration. */
+		final VDataDescription vddCalibration = hdfToJam
+				.findCalibration(histVGroup);
+		if (vddCalibration != null) {
+			hdfToJam.convertCalibration(hist, vddCalibration);
+		}
+	}
+
+	/**
+	 * @param mode
+	 * @param hist
+	 * @param gateList
+	 * @throws HDFException
+	 */
+	private void countGates(final FileOpenMode mode, final Histogram hist,
+			final List<VirtualGroup> gateList) throws HDFException {
+		for (VirtualGroup gateVGroup : gateList) {
+			final Gate gate = hdfToJam.convertGate(hist, gateVGroup, mode);
+			if (gate != null) {
+				gateCount++;
+			}
+		}
+	}
+
+	/**
+	 * @param mode
 	 * @param fileName
 	 * @param existingGroupList
 	 * @param histAttributeList
 	 * @param currentVGroup
 	 * @return
 	 */
-	private Group getCurrentGroup(final FileOpenMode mode, final String fileName, final List<Group> existingGroupList, final List<HistogramAttributes> histAttributeList, VirtualGroup currentVGroup) {
+	private Group getCurrentGroup(final FileOpenMode mode,
+			final String fileName, final List<Group> existingGroupList,
+			final List<HistogramAttributes> histAttributeList,
+			final VirtualGroup currentVGroup) {
 		// Get the current group for the rest of the operation
 		Group currentGroup = null;
 		if (mode == FileOpenMode.OPEN || mode == FileOpenMode.OPEN_MORE) {
@@ -531,48 +569,16 @@ public final class HDFIO implements DataIO {
 					globalHists.add(histVGroup);
 					final boolean histDefined = hist.getArea() > 0
 							|| !suppressEmpty;
-					if (writeData && histDefined) {
-						jamToHDF.convertHistogram(histVGroup, hist);
-						histCount++;
-					}
+					convertHistogram(writeData, hist, histVGroup, histDefined);
 					// Add calibrations
-					if ((writeData || wrtSettings)
-							&& hist.getDimensionality() == 1 ) {
-						final AbstractCalibrationFunction calFunc = ((AbstractHist1D) hist)
-								.getCalibration();
-						if (!(calFunc instanceof NoFunction)) {
-							final VDataDescription calibDD = jamToHDF
-									.convertCalibration(calFunc);
-							histVGroup.add(calibDD);
-						}
-					}
-					/* Loop for all gates */
-					for (Gate gate : hist.getGates()) {
-						if (wrtSettings && gate.isDefined()) {
-							final VirtualGroup gateVGroup = jamToHDF
-									.convertGate(gate);
-							histVGroup.add(gateVGroup);
-							// backward compatiable
-							globalGates.add(gateVGroup);
-							gateCount++;
-						}
-					} // end loop gates
+					addCalibration(writeData, wrtSettings, hist, histVGroup);
+					addGates(wrtSettings, globalGates, hist, histVGroup);
 				}
 			} // end loop histograms
 			/* Convert all scalers */
 			if (writeData) {
 				final List<Scaler> scalerList = group.getScalerList();
-				if (scalerList.size() > 0) {
-					final VirtualGroup vgScalers = jamToHDF.addScalerSection();
-					vgGroup.add(vgScalers);
-					final VDataDescription vddScalers = jamToHDF
-							.convertScalers(scalerList);
-					vgScalers.add(vddScalers);
-					if (group == Group.getSortGroup()) {
-						/* here for backwards compatibility */
-						globalScaler.add(vddScalers);
-					}
-				}
+				addScalers(globalScaler, group, vgGroup, scalerList);
 				scalerCount = scalerList.size();
 			}
 			/* Convert all parameters */
@@ -597,10 +603,117 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
+	/**
+	 * @param globalScaler
+	 * @param group
+	 * @param vgGroup
+	 * @param scalerList
+	 */
+	private void addScalers(final VirtualGroup globalScaler, final Group group,
+			final VirtualGroup vgGroup, final List<Scaler> scalerList) {
+		if (scalerList.size() > 0) {
+			final VirtualGroup vgScalers = jamToHDF.addScalerSection();
+			vgGroup.add(vgScalers);
+			final VDataDescription vddScalers = jamToHDF
+					.convertScalers(scalerList);
+			vgScalers.add(vddScalers);
+			addScalers(globalScaler, group, vddScalers);
+		}
+	}
+
+	/**
+	 * @param globalScaler
+	 * @param group
+	 * @param vddScalers
+	 */
+	private void addScalers(final VirtualGroup globalScaler, final Group group,
+			final VDataDescription vddScalers) {
+		if (group == Group.getSortGroup()) {
+			/* here for backwards compatibility */
+			globalScaler.add(vddScalers);
+		}
+	}
+
+	/**
+	 * @param wrtSettings
+	 * @param globalGates
+	 * @param hist
+	 * @param histVGroup
+	 */
+	private void addGates(final boolean wrtSettings,
+			final VirtualGroup globalGates, final Histogram hist,
+			final VirtualGroup histVGroup) {
+		/* Loop for all gates */
+		for (Gate gate : hist.getGates()) {
+			addGates(wrtSettings, globalGates, histVGroup, gate);
+		} // end loop gates
+	}
+
+	/**
+	 * @param writeData
+	 * @param wrtSettings
+	 * @param hist
+	 * @param histVGroup
+	 */
+	private void addCalibration(final boolean writeData,
+			final boolean wrtSettings, final Histogram hist,
+			final VirtualGroup histVGroup) {
+		if ((writeData || wrtSettings) && hist.getDimensionality() == 1) {
+			final AbstractCalibrationFunction calFunc = ((AbstractHist1D) hist)
+					.getCalibration();
+			addCalibration(histVGroup, calFunc);
+		}
+	}
+
+	/**
+	 * @param wrtSettings
+	 * @param globalGates
+	 * @param histVGroup
+	 * @param gate
+	 */
+	private void addGates(final boolean wrtSettings,
+			final VirtualGroup globalGates, final VirtualGroup histVGroup,
+			final Gate gate) {
+		if (wrtSettings && gate.isDefined()) {
+			final VirtualGroup gateVGroup = jamToHDF.convertGate(gate);
+			histVGroup.add(gateVGroup);
+			// backward compatiable
+			globalGates.add(gateVGroup);
+			gateCount++;
+		}
+	}
+
+	/**
+	 * @param histVGroup
+	 * @param calFunc
+	 */
+	private void addCalibration(final VirtualGroup histVGroup,
+			final AbstractCalibrationFunction calFunc) {
+		if (!(calFunc instanceof NoFunction)) {
+			final VDataDescription calibDD = jamToHDF
+					.convertCalibration(calFunc);
+			histVGroup.add(calibDD);
+		}
+	}
+
+	/**
+	 * @param writeData
+	 * @param hist
+	 * @param histVGroup
+	 * @param histDefined
+	 */
+	private void convertHistogram(final boolean writeData, final Histogram hist,
+			final VirtualGroup histVGroup, final boolean histDefined) {
+		if (writeData && histDefined) {
+			jamToHDF.convertHistogram(histVGroup, hist);
+			histCount++;
+		}
+	}
+
 	private void displayMessage() {
 		final Runnable runner = new Runnable() {
 			public void run() {
-				if (uiErrorMsg.equals("")) {
+				if (uiErrorMsg.length()==0) {
 					LOGGER.info(uiMessage);
 				} else {
 					LOGGER.severe(uiErrorMsg);
@@ -670,7 +783,8 @@ public final class HDFIO implements DataIO {
 			throws HDFException {
 		final List<HistogramAttributes> lstHistAtt = new ArrayList<HistogramAttributes>();
 		hdfToJam.setInFile(inHDF);
-		final VirtualGroup hists = VirtualGroup.ofName(JamFileFields.HIST_SECTION);
+		final VirtualGroup hists = VirtualGroup
+				.ofName(JamFileFields.HIST_SECTION);
 		/* only the "histograms" VG (only one element) */
 		if (hists != null) {
 			for (AbstractData data : hists.getObjects()) {
@@ -901,7 +1015,7 @@ public final class HDFIO implements DataIO {
 
 			/* Runs on the event-dispatching thread. */
 			public void finished() {
-				if (!uiErrorMsg.equals("")) {
+				if (uiErrorMsg.length()>0) {
 					LOGGER.severe(uiErrorMsg);
 				}
 				synchronized (asListener) {
@@ -928,7 +1042,7 @@ public final class HDFIO implements DataIO {
 			}
 
 			public void finished() {
-				if (uiErrorMsg.equals("")) {
+				if (uiErrorMsg.length()==0) {
 					LOGGER.info(uiMessage);
 				} else {
 					LOGGER.severe(uiErrorMsg);

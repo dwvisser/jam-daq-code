@@ -109,9 +109,7 @@ public abstract class AbstractHist1D extends Histogram {
 			} else if (getType() == Type.ONE_DIM_INT) { // INT type
 				final int[] temp = ((HistInt1D)this).getCounts();
 				histArray = new double[temp.length];
-				for (int i = 0; i < temp.length; i++) {
-					histArray[i] = temp[i];
-				}
+				System.arraycopy(temp, 0, histArray, 0, temp.length);
 			} else { // 2D
 				throw new UnsupportedOperationException(
 						"findPeaks() called on 2D hist");
@@ -204,12 +202,10 @@ public abstract class AbstractHist1D extends Histogram {
 	 * @see #setCalibration(AbstractCalibrationFunction)
 	 */
 	public boolean isCalibrated() {
-		boolean calibrated;
+		boolean calibrated = false;
 		synchronized (this) {
 			if (calibFunc!=null) {
 				calibrated= calibFunc.isCalibrated();
-			}else{
-				calibrated=false;
 			}
 		}
 		return calibrated;
