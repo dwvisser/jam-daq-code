@@ -100,6 +100,7 @@ public abstract class AbstractHist1D extends Histogram {
 	 * @throws UnsupportedOperationException
 	 *             if called on a 2d histogram
 	 */
+	@SuppressWarnings("cast")
 	public double[][] findPeaks(final double sensitivity, final double width,
 			final boolean cal) {
 		synchronized (this) {
@@ -109,7 +110,11 @@ public abstract class AbstractHist1D extends Histogram {
 			} else if (getType() == Type.ONE_DIM_INT) { // INT type
 				final int[] temp = ((HistInt1D)this).getCounts();
 				histArray = new double[temp.length];
-				System.arraycopy(temp, 0, histArray, 0, temp.length);
+				//Can't use as cast required
+				//System.arraycopy(temp, 0, histArray, 0, temp.length);				
+				for (int i = 0; i < temp.length; i++) {
+					histArray[i] = (double)temp[i];
+				}				
 			} else { // 2D
 				throw new UnsupportedOperationException(
 						"findPeaks() called on 2D hist");
