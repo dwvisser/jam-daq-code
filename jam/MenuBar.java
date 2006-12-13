@@ -30,7 +30,7 @@ import javax.swing.JMenuItem;
  * @version 1.4
  * @since 30 Dec 2003
  */
-final class MenuBar implements Observer, CommandNames {
+final class MenuBar implements Observer {
 
 	final transient private JamStatus status = JamStatus.getSingletonInstance();
 
@@ -82,78 +82,78 @@ final class MenuBar implements Observer, CommandNames {
 
 		final JMenu file = new JMenu("File");
 
-		file.add(getMenuItem(CLEAR));
-		file.add(getMenuItem(OPEN_HDF));
+		file.add(getMenuItem(CommandNames.CLEAR));
+		file.add(getMenuItem(CommandNames.OPEN_HDF));
 
 		final JMenuItem openSpecial = new JMenu("Open Special");
 		file.add(openSpecial);
-		openSpecial.add(getMenuItem(OPEN_MULTIPLE_HDF));
-		openSpecial.add(getMenuItem(OPEN_ADD_HDF));
-		openSpecial.add(getMenuItem(OPEN_SELECTED));
+		openSpecial.add(getMenuItem(CommandNames.OPEN_MULTIPLE_HDF));
+		openSpecial.add(getMenuItem(CommandNames.OPEN_ADD_HDF));
+		openSpecial.add(getMenuItem(CommandNames.OPEN_SELECTED));
 
-		file.add(getMenuItem(RELOAD_HDF));
-		file.add(getMenuItem(ADD_HDF));
-		file.add(getMenuItem(SAVE_HDF));
-		file.add(getMenuItem(SAVE_AS_HDF));
+		file.add(getMenuItem(CommandNames.RELOAD_HDF));
+		file.add(getMenuItem(CommandNames.ADD_HDF));
+		file.add(getMenuItem(CommandNames.SAVE_HDF));
+		file.add(getMenuItem(CommandNames.SAVE_AS_HDF));
 
 		final JMenuItem saveSpecial = new JMenu("Save Special");
-		saveSpecial.add(getMenuItem(SAVE_SORT));
-		saveSpecial.add(getMenuItem(SAVE_GROUP));
-		saveSpecial.add(getMenuItem(SAVE_HISTOGRAMS));
-		saveSpecial.add(getMenuItem(SAVE_GATES));
+		saveSpecial.add(getMenuItem(CommandNames.SAVE_SORT));
+		saveSpecial.add(getMenuItem(CommandNames.SAVE_GROUP));
+		saveSpecial.add(getMenuItem(CommandNames.SAVE_HISTOGRAMS));
+		saveSpecial.add(getMenuItem(CommandNames.SAVE_GATES));
 
 		file.add(saveSpecial);
 		file.addSeparator();
 
 		final JMenuItem utilities = new JMenu("Scaler Utilities");
 		file.add(utilities);
-		utilities.add(getMenuItem(OPEN_SCALERS));
-		utilities.add(getMenuItem(SHOW_SCALER_SCAN));
+		utilities.add(getMenuItem(CommandNames.OPEN_SCALERS));
+		utilities.add(getMenuItem(CommandNames.SHOW_SCALER_SCAN));
 		file.addSeparator();
 
 		file.add(impHist);
-		impHist.add(getMenuItem(IMPORT_TEXT));
-		impHist.add(getMenuItem(IMPORT_SPE));
-		impHist.add(getMenuItem(IMPORT_DAMM));
-		impHist.add(getMenuItem(IMPORT_XSYS));
-		impHist.add(getMenuItem(IMPORT_BAN));
+		impHist.add(getMenuItem(CommandNames.IMPORT_TEXT));
+		impHist.add(getMenuItem(CommandNames.IMPORT_SPE));
+		impHist.add(getMenuItem(CommandNames.IMPORT_DAMM));
+		impHist.add(getMenuItem(CommandNames.IMPORT_XSYS));
+		impHist.add(getMenuItem(CommandNames.IMPORT_BAN));
 
 		final JMenu expHist = new JMenu("Export");
 		file.add(expHist);
-		expHist.add(getMenuItem(EXPORT_TABLE));
-		expHist.add(getMenuItem(EXPORT_TEXT));
-		expHist.add(getMenuItem(EXPORT_SPE));
-		expHist.add(getMenuItem(EXPORT_DAMM));
-		expHist.add(getMenuItem(SHOW_BATCH_EXPORT));
+		expHist.add(getMenuItem(CommandNames.EXPORT_TABLE));
+		expHist.add(getMenuItem(CommandNames.EXPORT_TEXT));
+		expHist.add(getMenuItem(CommandNames.EXPORT_SPE));
+		expHist.add(getMenuItem(CommandNames.EXPORT_DAMM));
+		expHist.add(getMenuItem(CommandNames.SHOW_BATCH_EXPORT));
 
 		file.addSeparator();
-		file.add(getMenuItem(PRINT));
-		file.add(getMenuItem(PAGE_SETUP));
+		file.add(getMenuItem(CommandNames.PRINT));
+		file.add(getMenuItem(CommandNames.PAGE_SETUP));
 		file.addSeparator();
-		file.add(getMenuItem(EXIT));
+		file.add(getMenuItem(CommandNames.EXIT));
 
 		return file;
 	}
 
 	private JMenu createSetupMenu() {
 		final JMenu setup = new JMenu("Setup");
-		setup.add(getMenuItem(SHOW_SETUP_ONLINE));
-		setup.add(getMenuItem(SHOW_SETUP_OFF));
-		setup.add(getMenuItem(SHOW_SETUP_REMOTE));
-		setup.add(getMenuItem(SHOW_CONFIG));
+		setup.add(getMenuItem(CommandNames.SHOW_SETUP_ONLINE));
+		setup.add(getMenuItem(CommandNames.SHOW_SETUP_OFF));
+		setup.add(getMenuItem(CommandNames.SHOW_SETUP_REMOTE));
+		setup.add(getMenuItem(CommandNames.SHOW_CONFIG));
 		return setup;
 	}
 
 	private JMenu createControlMenu() {
 		final JMenu mcontrol = new JMenu("Control");
-		mcontrol.add(getMenuItem(START));
-		mcontrol.add(getMenuItem(STOP));
-		mcontrol.add(getMenuItem(FLUSH));
+		mcontrol.add(getMenuItem(CommandNames.START));
+		mcontrol.add(getMenuItem(CommandNames.STOP));
+		mcontrol.add(getMenuItem(CommandNames.FLUSH));
 		mcontrol.addSeparator();
-		mcontrol.add(getMenuItem(SHOW_RUN_CONTROL));
-		mcontrol.add(getMenuItem(SHOW_SORT_CONTROL));
-		mcontrol.add(getMenuItem(PARAMETERS));
-		mcontrol.add(getMenuItem(SHOW_BUFFER_COUNT));
+		mcontrol.add(getMenuItem(CommandNames.SHOW_RUN_CONTROL));
+		mcontrol.add(getMenuItem(CommandNames.SHOW_SORT_CONTROL));
+		mcontrol.add(getMenuItem(CommandNames.PARAMETERS));
+		mcontrol.add(getMenuItem(CommandNames.SHOW_BUFFER_COUNT));
 		return mcontrol;
 	}
 
@@ -161,17 +161,17 @@ final class MenuBar implements Observer, CommandNames {
 		final JMenu histogram = new JMenu("Histogram");
 		final JMenuItem group = new JMenu("Group");
 		histogram.add(group);
-		group.add(getMenuItem(SHOW_NEW_GROUP));
-		group.add(getMenuItem(SHOW_RENAME_GROUP));
-		group.add(getMenuItem(DELETE_GROUP));
+		group.add(getMenuItem(CommandNames.SHOW_NEW_GROUP));
+		group.add(getMenuItem(CommandNames.SHOW_RENAME_GROUP));
+		group.add(getMenuItem(CommandNames.DELETE_GROUP));
 
-		histogram.add(getMenuItem(SHOW_NEW_HIST));
-		histogram.add(getMenuItem(SHOW_HIST_ZERO));
-		histogram.add(getMenuItem(DELETE_HISTOGRAM));
-		histogram.add(getMenuItem(SHOW_HIST_FIT));
-		histogram.add(getMenuItem(SHOW_HIST_PROJECT));
-		histogram.add(getMenuItem(SHOW_HIST_COMBINE));
-		histogram.add(getMenuItem(SHOW_GAIN_SHIFT));
+		histogram.add(getMenuItem(CommandNames.SHOW_NEW_HIST));
+		histogram.add(getMenuItem(CommandNames.SHOW_HIST_ZERO));
+		histogram.add(getMenuItem(CommandNames.DELETE_HISTOGRAM));
+		histogram.add(getMenuItem(CommandNames.SHOW_HIST_FIT));
+		histogram.add(getMenuItem(CommandNames.SHOW_HIST_PROJECT));
+		histogram.add(getMenuItem(CommandNames.SHOW_HIST_COMBINE));
+		histogram.add(getMenuItem(CommandNames.SHOW_GAIN_SHIFT));
 
 		return histogram;
 	}
@@ -180,9 +180,9 @@ final class MenuBar implements Observer, CommandNames {
 
 		final JMenu gate = new JMenu("Gate");
 		menus.add(gate);
-		gate.add(getMenuItem(SHOW_NEW_GATE));
-		gate.add(getMenuItem(SHOW_ADD_GATE));
-		gate.add(getMenuItem(SHOW_SET_GATE));
+		gate.add(getMenuItem(CommandNames.SHOW_NEW_GATE));
+		gate.add(getMenuItem(CommandNames.SHOW_ADD_GATE));
+		gate.add(getMenuItem(CommandNames.SHOW_SET_GATE));
 		return gate;
 	}
 
@@ -196,16 +196,16 @@ final class MenuBar implements Observer, CommandNames {
 	private JMenu createScalerMenu() {
 		final JMenu scalers = new JMenu("Scaler");
 		menus.add(scalers);
-		scalers.add(getMenuItem(DISPLAY_SCALERS));
-		scalers.add(getMenuItem(SHOW_ZERO_SCALERS));
+		scalers.add(getMenuItem(CommandNames.DISPLAY_SCALERS));
+		scalers.add(getMenuItem(CommandNames.SHOW_ZERO_SCALERS));
 		scalers.addSeparator();
-		scalers.add(getMenuItem(DISPLAY_MONITORS));
-		scalers.add(getMenuItem(DISPLAY_MON_CFG));
+		scalers.add(getMenuItem(CommandNames.DISPLAY_MONITORS));
+		scalers.add(getMenuItem(CommandNames.DISPLAY_MON_CFG));
 		return scalers;
 	}
 
 	private JMenu createFitMenu() {
-		fitting.add(getMenuItem(SHOW_FIT_NEW));
+		fitting.add(getMenuItem(CommandNames.SHOW_FIT_NEW));
 		fitting.addSeparator();
 		return fitting;
 	}
@@ -214,9 +214,9 @@ final class MenuBar implements Observer, CommandNames {
 
 		final JMenu helpMenu = new JMenu("Help");
 		menus.add(helpMenu);
-		helpMenu.add(getMenuItem(HELP_ABOUT));
-		helpMenu.add(getMenuItem(USER_GUIDE));
-		helpMenu.add(getMenuItem(HELP_LICENSE));
+		helpMenu.add(getMenuItem(CommandNames.HELP_ABOUT));
+		helpMenu.add(getMenuItem(CommandNames.USER_GUIDE));
+		helpMenu.add(getMenuItem(CommandNames.HELP_LICENSE));
 		return helpMenu;
 	}
 
@@ -228,13 +228,13 @@ final class MenuBar implements Observer, CommandNames {
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(PlotPrefs.HIGHLIGHT_GATE));
 		mPrefer.add(getMenuItem(ColorPrefs.SMOOTH_SCALE));
-		mPrefer.add(getMenuItem(SHOW_GRADIENT));
+		mPrefer.add(getMenuItem(CommandNames.SHOW_GRADIENT));
 		mPrefer.add(getMenuItem(PlotPrefs.ENABLE_SCROLLING));
 		mPrefer.add(getMenuItem(PlotPrefs.DISPLAY_LABELS));
 		mPrefer.add(getMenuItem(PlotPrefs.BLACK_BACKGROUND));
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_PEAK_FIND));
-		mPrefer.add(getMenuItem(SHOW_PEAK_FIND));
+		mPrefer.add(getMenuItem(CommandNames.SHOW_PEAK_FIND));
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(HDFPrefs.SUPPRES_EMPTY));
 		mPrefer.addSeparator();
@@ -279,8 +279,8 @@ final class MenuBar implements Observer, CommandNames {
 
 	private void updateViews() {
 		view.removeAll();
-		view.add(getMenuItem(SHOW_VIEW_NEW));
-		view.add(getMenuItem(SHOW_VIEW_DELETE));
+		view.add(getMenuItem(CommandNames.SHOW_VIEW_NEW));
+		view.add(getMenuItem(CommandNames.SHOW_VIEW_DELETE));
 		view.addSeparator();
 		for (final String name : View.getNameList()) {
 			view.add(namedMenuItem(name));
