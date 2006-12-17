@@ -2,7 +2,8 @@
  *
  */
 package jam.fit;
-import jam.global.GaussianConstants;
+import static jam.global.GaussianConstants.MAGIC_A;
+import static jam.global.GaussianConstants.MAGIC_B;
 
 import java.util.Iterator;
 import java.util.SortedSet;
@@ -20,31 +21,23 @@ import java.util.TreeSet;
  *
  * @see	    AbstractNonLinearFit
  */
-public class MultipleGaussians extends AbstractNonLinearFit implements GaussianConstants{
+public class MultipleGaussians extends AbstractNonLinearFit {
 
 	/**
 	 * function <code>Parameter</code>--constant background term
 	 */
-	private Parameter paramA;
+	private transient final Parameter paramA;
 
-	/**
-	 * function <code>Parameter</code>--linear background term
-	 */
-	private Parameter paramB;
 
-	/**
-	 * function <code>Parameter</code>--quadratic background term
-	 */
-	private Parameter paramC;
 
-	private Parameter independentWidths;
+	private transient final Parameter independentWidths;
 
 	private static final String INDEP_WIDTH =
 		"Vary Widths Independently (not yet implemented)";
 	private static final String WIDTH_ESTIMATE = "Estimated width";
 
-	private Parameter numPeaks;
-	int npeak; //for local calculations
+	private transient final Parameter numPeaks;
+	private transient int npeak; //for local calculations
 
 	private static final String NUM_PEAKS = "# Peaks to Fit";
 
@@ -53,34 +46,34 @@ public class MultipleGaussians extends AbstractNonLinearFit implements GaussianC
 	private static final String[] S_WIDTH = new String[POSSIBLE_PEAKS];
 	private static final String[] S_CENTROID = new String[POSSIBLE_PEAKS];
 
-	private Parameter widthEstimate;
-	private Parameter[] area = new Parameter[POSSIBLE_PEAKS];
-	private Parameter[] width = new Parameter[POSSIBLE_PEAKS];
-	private Parameter[] centroid = new Parameter[POSSIBLE_PEAKS];
+	private transient final Parameter widthEstimate;
+	private transient final Parameter[] area = new Parameter[POSSIBLE_PEAKS];
+	private transient final Parameter[] width = new Parameter[POSSIBLE_PEAKS];
+	private transient final Parameter[] centroid = new Parameter[POSSIBLE_PEAKS];
 
-	private double[] dArea = new double[POSSIBLE_PEAKS];
-	private double[] dWidth = new double[POSSIBLE_PEAKS];
-	private double[] dCentroid = new double[POSSIBLE_PEAKS];
-
-	/**
-	 * used for calculations
-	 */
-	private double[] diff = new double[POSSIBLE_PEAKS];
+	private transient double[] dArea = new double[POSSIBLE_PEAKS];
+	private transient double[] dWidth = new double[POSSIBLE_PEAKS];
+	private transient double[] dCentroid = new double[POSSIBLE_PEAKS];
 
 	/**
 	 * used for calculations
 	 */
-	private double[] exp = new double[POSSIBLE_PEAKS];
+	private transient double[] diff = new double[POSSIBLE_PEAKS];
+
+	/**
+	 * used for calculations
+	 */
+	private transient double[] exp = new double[POSSIBLE_PEAKS];
 
 	/**
 	 * Background terms calculated as powers of x-rangeCenter.
 	 */
-	private double rangeCenter, diffCenter;
+	private transient double diffCenter;
 
 	/**
 	 * different components of channel count
 	 */
-	private double peakSum;
+	private transient double peakSum;
 
 	/**
 	 * Class constructor.
@@ -111,9 +104,15 @@ public class MultipleGaussians extends AbstractNonLinearFit implements GaussianC
 				Parameter.FIX,
 				Parameter.ESTIMATE);
 		paramA.setEstimate(true);
-		paramB = new Parameter("B", Parameter.FIX);
+		/**
+		 * function <code>Parameter</code>--linear background term
+		 */
+		final Parameter paramB = new Parameter("B", Parameter.FIX);
 		paramB.setFixed(true);
-		paramC = new Parameter("C", Parameter.FIX);
+		/**
+		 * function <code>Parameter</code>--quadratic background term
+		 */
+		final Parameter paramC = new Parameter("C", Parameter.FIX);
 		paramC.setFixed(true);
 		addParameter(paramA);
 		addParameter(paramB);
@@ -153,12 +152,7 @@ public class MultipleGaussians extends AbstractNonLinearFit implements GaussianC
 		/* First, sort clickable mouse entries */
 		orderParameters();
 		npeak = this.numPeaks.getIntValue();
-		for (int i = npeak; i < POSSIBLE_PEAKS; i++) {
-			area[i].setValue(0.0);
-			area[i].setFixed(true);
-			this.centroid[i].setFixed(true);
-			this.width[i].setFixed(true);
-		}
+		fixPeaksToZero();
 		/* Second, Process whether independent widths or not, and number of peaks. */
 		if (!independentWidths.getBooleanValue()) { //not independent; 
 			for (int i = 1; i < npeak; i++) {
@@ -188,10 +182,10 @@ public class MultipleGaussians extends AbstractNonLinearFit implements GaussianC
 			}
 			if (area[i].isEstimate()) {
 				dArea[i] = 0.0;
-				double rangeOffset = dWidth[i] * 0.5;
-				int imin =
+				final double rangeOffset = dWidth[i] * 0.5;
+				final int imin =
 					Math.max((int) (dCentroid[i] - rangeOffset), _minCH);
-				int imax =
+				final int imax =
 					Math.min((int) (dCentroid[i] + rangeOffset), _maxCH);
 				for (int j = imin; j <= imax; j++) {
 					dArea[i] += counts[j] - backLevel;
@@ -202,6 +196,18 @@ public class MultipleGaussians extends AbstractNonLinearFit implements GaussianC
 				textInfo.messageOutln(
 					"Estimated " + S_AREA[i] + " = " + dArea[i]);
 			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void fixPeaksToZero() {
+		for (int i = npeak; i < POSSIBLE_PEAKS; i++) {
+			area[i].setValue(0.0);
+			area[i].setFixed(true);
+			this.centroid[i].setFixed(true);
+			this.width[i].setFixed(true);
 		}
 	}
 
@@ -229,11 +235,11 @@ public class MultipleGaussians extends AbstractNonLinearFit implements GaussianC
 	/**
 	 * Calculates the gaussian with background at a given x.
 	 *
-	 * @param	x   value to calculate at
+	 * @param	xval   value to calculate at
 	 * @return	    value of function at x
 	 */
-	public double valueAt(double x) {
-		setGlobalNumbers(x);
+	public double valueAt(final double xval) {
+		setGlobalNumbers(xval);
 		return p("A")
 			+ p("B") * diffCenter
 			+ p("C") * diffCenter * diffCenter
@@ -244,7 +250,7 @@ public class MultipleGaussians extends AbstractNonLinearFit implements GaussianC
 		return true;
 	}
 
-	double calculateBackground(int channel) {
+	double calculateBackground(final int channel) {
 		setGlobalNumbers(channel);
 		return p("A") + p("B") * diffCenter + p("C") * diffCenter * diffCenter;
 	}
@@ -253,16 +259,16 @@ public class MultipleGaussians extends AbstractNonLinearFit implements GaussianC
 		return numPeaks.getIntValue();
 	}
 
-	double calculateSignal(int signal, int channel) {
+	double calculateSignal(final int signal, final int channel) {
 		setGlobalNumbers(channel);
 		return dArea[signal] / dWidth[signal] * exp[signal];
 	}
 
-	private double lastSet = -1.0;
-	private void setGlobalNumbers(double x) {
-		if (x != lastSet) {
-			rangeCenter = 0.5 * (lo.getDoubleValue() + hi.getDoubleValue());
-			diffCenter = x - rangeCenter;
+	private static final double LAST_SET = -1.0;
+	private void setGlobalNumbers(final double xval) {
+		if (xval != LAST_SET) {
+			final double rangeCenter = 0.5 * (lo.getDoubleValue() + hi.getDoubleValue());
+			diffCenter = xval - rangeCenter;
 			npeak = numPeaks.getIntValue();
 			for (int i = 0; i < npeak; i++) {
 				dWidth[i] = width[i].getDoubleValue();
@@ -270,7 +276,7 @@ public class MultipleGaussians extends AbstractNonLinearFit implements GaussianC
 				dCentroid[i] = centroid[i].getDoubleValue();
 			}
 			for (int i = 0; i < npeak; i++) {
-				diff[i] = x - centroid[i].getDoubleValue();
+				diff[i] = xval - centroid[i].getDoubleValue();
 			}
 			peakSum = 0.0;
 			for (int i = 0; i < npeak; i++) {
@@ -286,17 +292,17 @@ public class MultipleGaussians extends AbstractNonLinearFit implements GaussianC
 	 * Evaluates derivative with respect to <code>parameterName</code> at <code>x</code>.
 	 *
 	 * @param   parName   the name of the parameter to differentiate with respect to
-	 * @param   x		value to evalueate at
+	 * @param   xval		value to evalueate at
 	 * @return			df(<code>x</code>)/d(<code>parameterName</code>) at x
 	 */
-	public double derivative(double x, String parName) {
+	public double derivative(final double xval, final String parName) {
 		double rval = 0.0;
-		setGlobalNumbers(x);
-		if (parName.equals("A")) {
+		setGlobalNumbers(xval);
+		if ("A".equals(parName)) {
 			rval = 1.0;
-		} else if (parName.equals("B")) {
+		} else if ("B".equals(parName)) {
 			rval = diffCenter;
-		} else if (parName.equals("C")) {
+		} else if ("C".equals(parName)) {
 			rval = diffCenter * diffCenter;
 		} else {
 			for (int i = 0; i < numPeaks.getIntValue(); i++) {
