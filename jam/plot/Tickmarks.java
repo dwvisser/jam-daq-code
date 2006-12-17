@@ -187,10 +187,7 @@ final class Tickmarks {
 		final int decadeMin = (lowerLimit == 0) ? 0 : getDecade(lowerLimit);
 		final int decadeMax = (upperLimit == 0) ? 0 : getDecade(upperLimit);
 		// take the power of decadeMin and decadeMax;
-		countInDecadeMin = 1;
-		for (int i = 0; i < decadeMin; i++) {
-			countInDecadeMin *= 10;
-		}
+		getCountInDecadeMin(decadeMin);
 		int countInDecadeMax = 1;
 		for (int i = 0; i < decadeMax; i++) {
 			countInDecadeMax *= 10;
@@ -225,10 +222,19 @@ final class Tickmarks {
 		return ticks;
 	}
 
+	/**
+	 * @param decadeMin
+	 */
+	private void getCountInDecadeMin(final int decadeMin) {
+		countInDecadeMin = 1;
+		for (int i = 0; i < decadeMin; i++) {
+			countInDecadeMin *= 10;
+		}
+	}
+
 	private int getDecade(final double val) {
 		final double logten = Math.log(10.0);
-		final double rval = Math.log(val) / logten;
-		return (int) rval;
+		return (int)(Math.log(val) / logten);
 	}
 
 }

@@ -1,46 +1,50 @@
 package jam.plot;
 
-interface PlotCommands {
+final class PlotCommands {
 	
-	String HELP = "help";
+	private PlotCommands(){
+		super();
+	}
+	
+	public static final String HELP = "help";
 
-	String EXPAND = "expand";
+	public static final String EXPAND = "expand";
 
-	String ZOOMIN = "zoomin";
+	public static final String ZOOMIN = "zoomin";
 
-	String ZOOMOUT = "zoomout";
+	public static final String ZOOMOUT = "zoomout";
 
-	String ZOOMVERT = "zoomvert";
+	public static final String ZOOMVERT = "zoomvert";
 
-	String ZOOMHORZ = "zoomhorz";
+	public static final String ZOOMHORZ = "zoomhorz";
 
-	String FULL = "full";
+	public static final String FULL = "full";
 
-	String LINEAR = "linear";
+	public static final String LINEAR = "linear";
 
-	String LOG = "log";
+	public static final String LOG = "log";
 
-	String AREA = "area";
+	public static final String AREA = "area";
 
-	String GOTO = "go";
+	public static final String GOTO = "go";
 
-	String NETAREA = "netarea";
+	public static final String NETAREA = "netarea";
 
-	String UPDATE = "update";
+	public static final String UPDATE = "update";
 
-	String AUTO = "auto";
+	public static final String AUTO = "auto";
 
-	String OVERLAY = "overlay";
+	public static final String OVERLAY = "overlay";
 
-	String CANCEL = "cancel";
+	public static final String CANCEL = "cancel";
 
-	String RANGE = "range";
+	public static final String RANGE = "range";
 
-	String DISPLAY = "display";
+	public static final String DISPLAY = "display";
 
-	String REBIN = "rebin";
+	public static final String REBIN = "rebin";
 
-	String SCALE = "scale";
+	public static final String SCALE = "scale";
 
-	String CURSOR = "cursor";
+	public static final String CURSOR = "cursor";
 }

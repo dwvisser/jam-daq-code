@@ -59,109 +59,112 @@ package jam.io;
  * @since jdk1.1
  *
  */
-interface XsysHeader {
+final class XsysHeader {
+	
+	private XsysHeader(){
+		super();
+	}
 
 	/** key word indicating it is a xsys spectrum file */
-	String XSYSHEADER="SPEC";
+	public static final String HEADER="SPEC";
 
 	/** number of bytes in an integer */
-	int L_INT=4;
+	public static final int L_INT=4;
 	
 	/** buffer size in ints */
-	int XSYS_BUFFER_SIZE=128;
+	public static final int XSYS_BUFFER_SIZE=128;
 	
 	/** buffer size bytes */
-	int L_BUFFER=XSYS_BUFFER_SIZE*L_INT;
+	public static final int L_BUFFER=XSYS_BUFFER_SIZE*L_INT;
 	
 	/** flag used in xsys file to indicate cabration coefficients follow */
-	int CALIB_ENERGY=999;
+	public static final int CALIB_ENERGY=999;
 
 	/* pointers to data are ints so we convert them to bytes */
 	
 	/** position of marker */
-	int P_HEADER=0*L_INT;
+	public static final int P_HEADER=0*L_INT;
 	
 	/** position of run number */
-	int P_RUN_NUMBER=1*L_INT;
+	public static final int P_RUN_NUMBER=1*L_INT;
 	
 	/** position of title */
-	int P_TITLE=22*L_INT;
+	public static final int P_TITLE=22*L_INT;
 	
 	/** length of title */
-	int L_TITLE=80;
+	public static final int L_TITLE=80;
 	
 	/** number of scalers */
-	int NUMBER_SCALERS=24;			
+	public static final int NUMBER_SCALERS=24;			
 	
 	/** position of scalers */
-	int P_SCALERS=42*L_INT;		    //
+	public static final int P_SCALERS=42*L_INT;		    //
 	
 	/** position of scalers field */
-	int P_SCALER_TITLES=66*L_INT;	    //
+	public static final int P_SCALER_TITLES=66*L_INT;	    //
 	
 	/** length of scaler titles */
-	int L_SCALER_TITLES=8;		    //
-		
+	public static final int L_SCALER_TITLES=8;		    //	
 	
 	/** position of data area number */
-	int P_AREA_NUMBER=2*L_INT;		    //	
+	public static final int P_AREA_NUMBER=2*L_INT;		    //	
 	
 	/** positon of data type */
-	int P_AREA_DATA_TYPE=3*L_INT;	    //
+	public static final int P_AREA_DATA_TYPE=3*L_INT;	    //
 	
 	/** positon of length in words*/
-	int P_AREA_LENGTH_WORD=4*L_INT;	    //
+	public static final int P_AREA_LENGTH_WORD=4*L_INT;	    //
 	
 	/** ??? */
-	int P_AREA_LENGTH_PAGE=5*L_INT;
+	public static final int P_AREA_LENGTH_PAGE=5*L_INT;
 	
 	/** position of Area Name */
-	int P_AREA_NAME=7*L_INT;
+	public static final int P_AREA_NAME=7*L_INT;
 	
 	/** Length area Name */
-	int L_AREA_NAME=8;
+	public static final int L_AREA_NAME=8;
 	
 	/** area X size */
-	int P_AREA_SIZE_X=9*L_INT;
+	public static final int P_AREA_SIZE_X=9*L_INT;
 	
 	/** area Y size */
-	int P_AREA_SIZE_Y=10*L_INT;
+	public static final int P_AREA_SIZE_Y=10*L_INT;
 		
 	/** position calibration flag */
-	int P_AREA_CALIB_FLAG=13*L_INT;
+	public static final int P_AREA_CALIB_FLAG=13*L_INT;
 	
 	/** position of mbd channel number */
-	int P_AREA_MBD_CHAN=15*L_INT;	
+	public static final int P_AREA_MBD_CHAN=15*L_INT;	
 	
 	/** position calibration coeff. */
-	int P_AREA_CALIB_COEF=17*L_INT;
+	public static final int P_AREA_CALIB_COEF=17*L_INT;
 	
 	/** length calibration coeff. */
-	int L_AREA_CALIB_COEF=3;	
+	public static final int L_AREA_CALIB_COEF=3;	
 	
 	/* types of data areas */
 	
 	/** 1d I*4 data area */
-	int XSYS1DI4=1;
+	public static final int XSYS1DI4=1;
 	
 	/** 2d I*4 data area */
-	int XSYS2DI4=2;
+	public static final int XSYS2DI4=2;
 	
 	/** 2d I*2 data area */
-	int XSYS2DI2=3;
+	public static final int XSYS2DI2=3;
 	
 	/** 1d R*4 data area */
-	int XSYS1DR4=4;
+	public static final int XSYS1DR4=4;
 	
 	/** 1d R*8 data area */
-	int XSYS1DR8=5;		
+	public static final int XSYS1DR8=5;		
 	
 	/** eval routine */
-	int XSYSEVAL=6;
+	public static final int XSYSEVAL=6;
 	
 	/** 2d gate */
-	int XSYS2DGT=7;
+	public static final int XSYS2DGT=7;
 	
 	/** R*4 protected from clearing */
-	int XSYSR4PT=8;
+	public static final int XSYSR4PT=8;
 }

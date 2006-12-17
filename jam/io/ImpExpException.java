@@ -23,5 +23,9 @@ public class ImpExpException extends Exception {
     ImpExpException(String errorMessage, Throwable thrown) {
         super(errorMessage,thrown);
     }
+    
+    ImpExpException(Throwable thrown){
+    	super(thrown);
+    }
 
 }

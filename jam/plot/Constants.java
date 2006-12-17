@@ -6,10 +6,14 @@ package jam.plot;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  * @version 2004-12-13
  */
-public interface Constants {
+public final class Constants {
+	
+	private Constants(){
+		super();
+	}
 
     /**
      * Maximum value to display on the counts scale.
      */
-    int MAXIMUM_COUNTS = 1000000000;
+    public static final int MAXIMUM_COUNTS = 1000000000;
 }

@@ -1,5 +1,6 @@
 package jam.plot;
 
+import static jam.plot.PlotCommands.*;
 import jam.commands.CommandManager;
 import jam.data.AbstractHist1D;
 import jam.data.Histogram;
@@ -51,8 +52,7 @@ import java.util.prefs.PreferenceChangeListener;
  * @version 0.5
  */
 
-class Action implements PlotMouseListener, PreferenceChangeListener,
-		PlotCommands {
+class Action implements PlotMouseListener, PreferenceChangeListener {
 
 	/** Broadcaster for event and gate change */
 	private static final Broadcaster BROADCASTER = Broadcaster
@@ -118,7 +118,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	private transient int countLow, countHigh;// NOPMD
 
 	/** current command being processed */
-	private transient String currentCommand="";
+	private transient String currentCommand = "";
 
 	private transient final Bin cursorBin;
 
@@ -181,51 +181,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 */
 	@SuppressWarnings("unused")
 	private void area() {
-		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		if (commandPresent) {
-			if (clicks.size() == 0) {
-				synchronized (cursorBin) {
-					addClick(cursorBin);
-					currentPlot.initializeSelectingArea(cursorBin);
-					currentPlot.markChannel(cursorBin);
-					textOut.messageOut(cursorBin.getCoordString() + S_TO);
-				}
-			} else {
-				currentPlot.setSelectingArea(false);
-				final Bin lim1 = getClick(0);
-				if (currentPlot.getDimensionality() == 1) {
-					synchronized (cursorBin) {
-						textOut.messageOut(String.valueOf(cursorBin.getX()));
-						final double[] counts = (double[]) currentPlot
-								.getCounts();
-						final double area = inquire.getArea(counts, lim1,
-								cursorBin);
-						final double centroid = inquire.getCentroid(counts,
-								lim1, cursorBin);
-						final double fwhm = inquire.getFWHM(counts, lim1,
-								cursorBin);
-						currentPlot.markChannel(cursorBin);
-						currentPlot.markArea(lim1, cursorBin);
-						textOut.messageOut(":  Area = "
-								+ numFormat.format(area) + ", Centroid = "
-								+ numFormat.format(centroid) + ", FWHM = "
-								+ numFormat.format(fwhm), MessageHandler.END);
-					}
-				} else {// 2D histogram
-					synchronized (cursorBin) {
-						textOut.messageOut(cursorBin.getCoordString());
-						final double[][] counts = (double[][]) currentPlot
-								.getCounts();
-						final double area = inquire.getArea(counts, lim1,
-								cursorBin);
-						currentPlot.markChannel(cursorBin);
-						currentPlot.markArea(lim1, cursorBin);
-						textOut.messageOut(":  Area = "
-								+ numFormat.format(area), MessageHandler.END);
-					}
-				}
-				done();
-			}
+			areaCommandPresent();
 		} else {
 			isCursorCommand = true;
 			init();
@@ -233,6 +190,56 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 					.getFullName().trim();
 			textOut.messageOut("Area for " + name + " from channel ",
 					MessageHandler.NEW);
+		}
+	}
+
+	/**
+	 * @param currentPlot
+	 */
+	private void areaCommandPresent() {
+		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
+		if (clicks.size() == 0) {
+			synchronized (cursorBin) {
+				addClick(cursorBin);
+				currentPlot.initializeSelectingArea(cursorBin);
+				currentPlot.markChannel(cursorBin);
+				textOut.messageOut(cursorBin.getCoordString() + S_TO);
+			}
+		} else {
+			currentPlot.setSelectingArea(false);
+			final Bin lim1 = getClick(0);
+			if (currentPlot.getDimensionality() == 1) {
+				synchronized (cursorBin) {
+					textOut.messageOut(String.valueOf(cursorBin.getX()));
+					final double[] counts = (double[]) currentPlot
+							.getCounts();
+					final double area = inquire.getArea(counts, lim1,
+							cursorBin);
+					final double centroid = inquire.getCentroid(counts,
+							lim1, cursorBin);
+					final double fwhm = inquire.getFWHM(counts, lim1,
+							cursorBin);
+					currentPlot.markChannel(cursorBin);
+					currentPlot.markArea(lim1, cursorBin);
+					textOut.messageOut(":  Area = "
+							+ numFormat.format(area) + ", Centroid = "
+							+ numFormat.format(centroid) + ", FWHM = "
+							+ numFormat.format(fwhm), MessageHandler.END);
+				}
+			} else {// 2D histogram
+				synchronized (cursorBin) {
+					textOut.messageOut(cursorBin.getCoordString());
+					final double[][] counts = (double[][]) currentPlot
+							.getCounts();
+					final double area = inquire.getArea(counts, lim1,
+							cursorBin);
+					currentPlot.markChannel(cursorBin);
+					currentPlot.markArea(lim1, cursorBin);
+					textOut.messageOut(":  Area = "
+							+ numFormat.format(area), MessageHandler.END);
+				}
+			}
+			done();
 		}
 	}
 
@@ -355,7 +362,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			if (inCommand != null) {
 				if (inCommand.equals(CURSOR)) {
 					/* use cursor only if current command does not exist */
-					if (currentCommand.length()==0) {
+					if (currentCommand.length() == 0) {
 						currentCommand = inCommand;
 					}
 				} else {
@@ -556,7 +563,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 				.append("ex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\t");
 		buffer.append("d  - Display\to  - Overlay\tu  - Update\tg  - GoTo\t");
 		buffer.append("ar - Area\tn  - Net Area\tre - Rebin\tc  - Bin\t");
-		final Collection<String> commands = CommandManager.getInstance().getAllCommands();
+		final Collection<String> commands = CommandManager.getInstance()
+				.getAllCommands();
 		for (String command : commands) {
 			buffer.append(command).append('\t');
 		}

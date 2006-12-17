@@ -26,7 +26,7 @@ import javax.swing.border.Border;
  * @since JDK 1.1
  * @author Ken Swartz
  */
-public final class PlotContainer implements PlotPrefs, PlotSelectListener {
+public final class PlotContainer implements PlotSelectListener {
 
 	enum LayoutType {
 		/** Layout with axis labels without border */

@@ -1,5 +1,8 @@
 package jam.plot;
 
+import static jam.plot.PlotPrefs.DISPLAY_LABELS;
+import static jam.plot.PlotPrefs.ENABLE_SCROLLING;
+import static jam.plot.PlotPrefs.PREFS;
 import jam.data.AbstractHist1D;
 import jam.data.Gate;
 import jam.data.Histogram;
@@ -37,7 +40,7 @@ import javax.swing.JPanel;
  * @since JDK1.1
  */
 public final class PlotDisplay extends JPanel implements PlotSelectListener,
-		PreferenceChangeListener, PlotPrefs, Observer {
+		PreferenceChangeListener, Observer {
 
 	private transient final Action action; // handles display events
 

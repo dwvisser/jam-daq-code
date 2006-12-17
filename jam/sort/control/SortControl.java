@@ -1,5 +1,7 @@
 package jam.sort.control;
 
+import static jam.global.PropertyKeys.EVENT_OUTFILE;
+import static jam.global.PropertyKeys.EVENT_OUTPATH;
 import static java.util.logging.Level.SEVERE;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
@@ -40,7 +42,7 @@ import javax.swing.filechooser.FileFilter;
  * @version 1.0
  */
 public final class SortControl extends javax.swing.JDialog implements
-		Controller, jam.global.PropertyKeys {
+		Controller {
 
 	private static SortControl instance = null;
 
@@ -48,29 +50,34 @@ public final class SortControl extends javax.swing.JDialog implements
 
 	private final static JamStatus STATUS = JamStatus.getSingletonInstance();
 
+	private static final Object CLASS_MONITOR = new Object();
+
 	/**
 	 * 
 	 * @return the only instance of this class
 	 */
 	public static SortControl getInstance() {
-		if (instance == null) {
-			instance = new SortControl();
+		synchronized (CLASS_MONITOR) {
+			if (instance == null) {
+				instance = new SortControl();
+			}
+			return instance;
 		}
-		return instance;
 	}
 
 	/** check box for writing out events */
 	private transient final JCheckBox cout;
-	
+
 	/** Text field for output file */
-	private transient final JTextField textOutFile;	
+	private transient final JTextField textOutFile;
+
 	/**
 	 * button to get file brower
 	 */
 	private transient final JButton bbrowse;
 
 	private transient File fileOut, lastFile, outDirectory;
-	
+
 	/* daemon threads */
 	private transient AbstractStorageDaemon inputDaemon;
 
@@ -80,9 +87,7 @@ public final class SortControl extends javax.swing.JDialog implements
 
 	private transient SortDaemon sortDaemon;
 
-
 	private transient boolean writeEvents;
-	
 
 	private transient final Action beginAction = new AbstractAction() {
 		{// NOPMD
@@ -98,7 +103,6 @@ public final class SortControl extends javax.swing.JDialog implements
 		}
 	};
 
-
 	private transient final Action haltAction = new AbstractAction() {
 		{// NOPMD
 			putValue(Action.NAME, "Halt");
@@ -111,7 +115,6 @@ public final class SortControl extends javax.swing.JDialog implements
 			endSort();
 		}
 	};
-
 
 	private SortControl() {
 		super(STATUS.getFrame(), "Sorting", false);

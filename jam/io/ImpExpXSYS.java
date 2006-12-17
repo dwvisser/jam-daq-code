@@ -1,5 +1,32 @@
-package jam.io;
+package jam.io;//NOPMD
 
+import static jam.io.XsysHeader.CALIB_ENERGY;
+import static jam.io.XsysHeader.L_AREA_CALIB_COEF;
+import static jam.io.XsysHeader.L_AREA_NAME;
+import static jam.io.XsysHeader.L_BUFFER;
+import static jam.io.XsysHeader.L_INT;
+import static jam.io.XsysHeader.L_SCALER_TITLES;
+import static jam.io.XsysHeader.L_TITLE;
+import static jam.io.XsysHeader.NUMBER_SCALERS;
+import static jam.io.XsysHeader.P_AREA_CALIB_COEF;
+import static jam.io.XsysHeader.P_AREA_CALIB_FLAG;
+import static jam.io.XsysHeader.P_AREA_DATA_TYPE;
+import static jam.io.XsysHeader.P_AREA_LENGTH_PAGE;
+import static jam.io.XsysHeader.P_AREA_NAME;
+import static jam.io.XsysHeader.P_AREA_NUMBER;
+import static jam.io.XsysHeader.P_AREA_SIZE_X;
+import static jam.io.XsysHeader.P_AREA_SIZE_Y;
+import static jam.io.XsysHeader.P_HEADER;
+import static jam.io.XsysHeader.P_RUN_NUMBER;
+import static jam.io.XsysHeader.P_SCALERS;
+import static jam.io.XsysHeader.P_SCALER_TITLES;
+import static jam.io.XsysHeader.P_TITLE;
+import static jam.io.XsysHeader.XSYS1DI4;
+import static jam.io.XsysHeader.XSYS1DR4;
+import static jam.io.XsysHeader.XSYS2DI4;
+import static jam.io.XsysHeader.XSYSEVAL;
+import static jam.io.XsysHeader.HEADER;
+import static jam.io.XsysHeader.XSYS_BUFFER_SIZE;
 import jam.data.AbstractHist1D;
 import jam.data.DataBase;
 import jam.data.Histogram;
@@ -27,7 +54,8 @@ import javax.swing.filechooser.FileFilter;
  * @version 0.5
  * @author Ken Swartz
  */
-public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
+public class ImpExpXSYS extends AbstractImpExp {//NOPMD
+	
 
 	// XSYS dir information for each data area
 	private transient int areaNumber;
@@ -151,7 +179,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 			msg.append('.');
 			LOGGER.info(msg.toString());
 		} catch (IOException ioe) {
-			throw new ImpExpException(ioe.toString());
+			throw new ImpExpException(ioe);
 		}
 	}
 
@@ -176,21 +204,11 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 	private boolean unPackHeaderXSYS(final InputStream buffin)
 			throws IOException, ImpExpException {
 		final int[] buffer = new int[L_BUFFER];
-		boolean endOfFile = false;
-		/*
-		 * read in full buffer, because there is stuff in buffer we want to skip
-		 */
-		readBuffers: for (int i = 0; i < L_BUFFER; i++) {
-			buffer[i] = buffin.read();
-			if (buffer[i] == -1) {
-				endOfFile = true;
-				break readBuffers;
-			}
-		}
+		final boolean endOfFile = readBuffers(buffin, buffer);
 		if (!endOfFile) {
 			/* read header word */
 			final String header = bufferToString(buffer, P_HEADER, L_INT);
-			if (!(header.equals(XSYSHEADER))) {
+			if (!(header.equals(HEADER))) {
 				throw new ImpExpException(
 						"Not an XSYS file, no SPEC key word [ImpExpXsys]");
 			}
@@ -227,12 +245,42 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 				for (int i = 0; i < NUMBER_SCALERS; i++) {
 					scalerTitles[i] = bufferToString(buffer, P_SCALER_TITLES
 							+ L_SCALER_TITLES * i, L_SCALER_TITLES);
-					new Scaler(importGroup, scalerTitles[i], i);
+					createScaler(scalerTitles[i], i);
 				}
 			}
 			firstHeader = false;
 		}
 		return !endOfFile;
+	}
+
+	/**
+	 * @param scalerTitles
+	 * @param scalerId
+	 */
+	private void createScaler(final String scalerTitle, final int scalerId) {
+		new Scaler(importGroup, scalerTitle, scalerId);
+	}
+
+	/**
+	 * @param buffin
+	 * @param buffer
+	 * @param endOfFile
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean readBuffers(final InputStream buffin, final int[] buffer) throws IOException {
+		/*
+		 * read in full buffer, because there is stuff in buffer we want to skip
+		 */
+		boolean rval = false;
+		readBuffers: for (int i = 0; i < L_BUFFER; i++) {
+			buffer[i] = buffin.read();
+			if (buffer[i] == -1) {
+				rval = true;
+				break readBuffers;
+			}
+		}
+		return rval;
 	}
 
 	/*

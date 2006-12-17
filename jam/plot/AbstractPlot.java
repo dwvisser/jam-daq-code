@@ -1,5 +1,10 @@
 package jam.plot;
 
+import static jam.plot.PlotPrefs.AUTO_IGNORE_FULL;
+import static jam.plot.PlotPrefs.AUTO_IGNORE_ZERO;
+import static jam.plot.PlotPrefs.BLACK_BACKGROUND;
+import static jam.plot.PlotPrefs.HIGHLIGHT_GATE;
+import static jam.plot.PlotPrefs.PREFS;
 import jam.data.AbstractHist1D;
 import jam.data.Gate;
 import jam.data.HistDouble1D;
@@ -41,7 +46,7 @@ import javax.swing.SwingUtilities;
  * @since JDK 1.1
  * @author Ken Swartz
  */
-abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
+abstract class AbstractPlot implements PreferenceChangeListener {
 
 	class Size {
 		private transient final int sizeX, sizeY;

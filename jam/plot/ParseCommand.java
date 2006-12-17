@@ -149,7 +149,7 @@ final class ParseCommand implements CommandListener {
 		} else if (CMD_MAP.containsKey(command)) {
 			accept = true;
 			final String inCommand = CMD_MAP.get(command);
-			action.doCommand(inCommand, true);
+			action.doCommand(inCommand, parameters, true);
 			if (action.getIsCursorCommand()) {
 				final boolean vertical = PlotCommands.RANGE.equals(inCommand);
 				cursorChannel(parameters, vertical);

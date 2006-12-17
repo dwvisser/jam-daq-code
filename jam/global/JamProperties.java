@@ -1,5 +1,24 @@
 package jam.global;
 
+import static jam.global.PropertyKeys.EVENT_INPATH;
+import static jam.global.PropertyKeys.EVENT_INSTREAM;
+import static jam.global.PropertyKeys.EVENT_OUTFILE;
+import static jam.global.PropertyKeys.EVENT_OUTPATH;
+import static jam.global.PropertyKeys.EVENT_OUTSTREAM;
+import static jam.global.PropertyKeys.EXP_NAME;
+import static jam.global.PropertyKeys.HIST_PATH;
+import static jam.global.PropertyKeys.HOST_DATA_IP;
+import static jam.global.PropertyKeys.HOST_DATA_P_RECV;
+import static jam.global.PropertyKeys.HOST_IP;
+import static jam.global.PropertyKeys.HOST_PORT_RECV;
+import static jam.global.PropertyKeys.HOST_PORT_SEND;
+import static jam.global.PropertyKeys.JAM_HOME;
+import static jam.global.PropertyKeys.LOG_PATH;
+import static jam.global.PropertyKeys.SORT_CLASSPATH;
+import static jam.global.PropertyKeys.SORT_ROUTINE;
+import static jam.global.PropertyKeys.TARGET_IP;
+import static jam.global.PropertyKeys.TARGET_PORT;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,7 +61,7 @@ import java.util.logging.Logger;
  * @version 1.4
  * @since 0.5 17 January 1999
  */
-public final class JamProperties implements PropertyKeys {
+public final class JamProperties {
 	/**
 	 * Set <code>true</code> to default to the classpath used to launch Jam
 	 * instead of a given sort classpath.
@@ -52,12 +71,12 @@ public final class JamProperties implements PropertyKeys {
 	/**
 	 * Machine configuration file name
 	 */
-	static final String FILE_CONFIG = "JamConfig.ini";
+	private static final String FILE_CONFIG = "JamConfig.ini";
 
 	/**
 	 * User configuration file name
 	 */
-	static final String FILE_USER = "JamUser.ini";
+	private static final String FILE_USER = "JamUser.ini";
 
 	private static final Logger LOGGER = Logger.getLogger(JamProperties.class
 			.getPackage().getName());
@@ -139,7 +158,7 @@ public final class JamProperties implements PropertyKeys {
 	 */
 	public static boolean isMacOSX() {
 		final String operatingSystem = System.getProperty("os.name");
-		return operatingSystem.equals("Mac OS X");
+		return "Mac OS X".equals(operatingSystem);
 	}
 
 	/**
@@ -164,7 +183,7 @@ public final class JamProperties implements PropertyKeys {
 
 	private transient String loadError;
 
-	transient final String userCurrentDir = System.getProperty("user.dir");
+	private transient final String userCurrentDir = System.getProperty("user.dir");
 
 	/** message for loading user config */
 	private transient String userLoadMessage;
@@ -363,14 +382,14 @@ public final class JamProperties implements PropertyKeys {
 			LOGGER
 					.warning("Jam home variable not defined, to define use -Djam.home=<directory>");
 		}
-		if (loadError != NO_ERRORS) {
+		if (!NO_ERRORS.equals(loadError)) {
 			LOGGER.warning(loadError);
 		}
-		if (configLoadWarning != NO_WARNINGS) {
+		if (!NO_WARNINGS.equals(configLoadWarning)) {
 			LOGGER.warning(configLoadWarning);
 		}
 		LOGGER.info(configLoadMessage);
-		if (userLoadWarning != NO_WARNINGS) {
+		if (!NO_WARNINGS.equals(userLoadWarning)) {
 			LOGGER.warning(userLoadWarning);
 		}
 		LOGGER.info(userLoadMessage);

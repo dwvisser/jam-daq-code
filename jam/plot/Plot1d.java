@@ -5,6 +5,7 @@ import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
 import jam.data.Histogram;
 import jam.plot.color.PlotColorMap;
+import jam.util.NumberUtilities;
 
 import java.awt.AlphaComposite;
 import java.awt.Composite;
@@ -29,19 +30,20 @@ import javax.swing.SwingUtilities;
  */
 final class Plot1d extends AbstractPlot {
 
-	private double[] fitChannels, fitResiduals, fitBackground, fitTotal;
+	private transient double[] fitChannels, fitResiduals, fitBackground,
+			fitTotal;
 
-	private double[][] fitSignals;
+	private transient double[][] fitSignals;
 
-	private int areaMark1, areaMark2;
+	private transient int areaMark1, areaMark2;
 
-	private List<Integer> overlayNumber = Collections
+	private transient final List<Integer> overlayNumber = Collections
 			.synchronizedList(new ArrayList<Integer>());
 
-	private List<double[]> overlayCounts = Collections
+	private transient final List<double[]> overlayCounts = Collections
 			.synchronizedList(new ArrayList<double[]>());
 
-	private final PlotColorMap colorMap = PlotColorMap.getInstance();
+	private transient final PlotColorMap colorMap = PlotColorMap.getInstance();
 
 	private static double sensitivity = 3;
 
@@ -59,7 +61,7 @@ final class Plot1d extends AbstractPlot {
 	 */
 	Plot1d() {
 		super();
-		setPeakFind(PREFS.getBoolean(AUTO_PEAK_FIND, true));
+		setPeakFind(PlotPrefs.PREFS.getBoolean(PlotPrefs.AUTO_PEAK_FIND, true));
 	}
 
 	/**
@@ -71,21 +73,30 @@ final class Plot1d extends AbstractPlot {
 		overlayCounts.clear();
 		overlayNumber.clear();
 		for (AbstractHist1D hOver : overlayHists) {
-			final int sizex = hOver.getSizeX();
-			double[] ctOver = new double[sizex];
-			final Histogram.Type hoType = hOver.getType();
-			if (hoType == Histogram.Type.ONE_DIM_INT) {
-				final int[] countsInt = ((HistInt1D)hOver).getCounts();
-				for (int j = 0; j < sizex; j++) {
-					ctOver[j] = countsInt[j];
-				}
-			} else if (hoType == Histogram.Type.ONE_D_DOUBLE) {
-				System.arraycopy(((HistDouble1D)hOver).getCounts(), 0, ctOver, 0, sizex);
-			}
+			final double[] ctOver = getOverlayCounts(hOver);
 			overlayCounts.add(ctOver);
 			overlayNumber.add(hOver.getNumber());
 		}
 		panel.repaint();
+	}
+
+	/**
+	 * @param hOver
+	 * @return
+	 */
+	private double[] getOverlayCounts(final AbstractHist1D hOver) {
+		final int sizex = hOver.getSizeX();
+		double[] ctOver;
+		final Histogram.Type hoType = hOver.getType();
+		if (hoType == Histogram.Type.ONE_DIM_INT) {
+			final int[] countsInt = ((HistInt1D) hOver).getCounts();
+			ctOver = NumberUtilities.getInstance().intToDoubleArray(countsInt);
+		} else {// (hoType == Histogram.Type.ONE_D_DOUBLE)
+			ctOver = new double[sizex];
+			System.arraycopy(((HistDouble1D) hOver).getCounts(), 0, ctOver, 0,
+					sizex);
+		}
+		return ctOver;
 	}
 
 	void removeOverlays() {
@@ -93,7 +104,8 @@ final class Plot1d extends AbstractPlot {
 		overlayNumber.clear();
 	}
 
-	void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel) {
+	void displaySetGate(final GateSetMode mode, final Bin pChannel,
+			final Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
 			pointsGate.reset();
 			panel.setListenToMouse(true);
@@ -117,16 +129,16 @@ final class Plot1d extends AbstractPlot {
 		}
 	}
 
-	protected void paintSetGatePoints(Graphics g) {
-		g.setColor(colorMap.getGateShow());
+	protected void paintSetGatePoints(final Graphics graphics) {
+		graphics.setColor(colorMap.getGateShow());
 		graph.settingGate1d(graph.toView(pointsGate));
 	}
 
-	protected void paintSettingGate(Graphics g) {
-		g.setColor(colorMap.getGateDraw());
-		final int x1 = pointsGate.xpoints[pointsGate.npoints - 1];
-		final int x2 = graph.toDataHorz(lastMovePoint.x);
-		graph.markAreaOutline1d(x1, x2);
+	protected void paintSettingGate(final Graphics graphics) {
+		graphics.setColor(colorMap.getGateDraw());
+		final int xValue1 = pointsGate.xpoints[pointsGate.npoints - 1];
+		final int xValue2 = graph.toDataHorz(lastMovePoint.x);
+		graph.markAreaOutline1d(xValue1, xValue2);
 		panel.setMouseMoved(false);
 		clearMouseMoveClip();
 	}
@@ -140,22 +152,18 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Displays a fit, starting
 	 */
-	void displayFit(double[][] signals, double[] background,
-			double[] residuals, int ll) {
-		this.fitBackground = null;
-		this.fitChannels = null;
-		this.fitResiduals = null;
-		this.fitTotal = null;
+	void displayFit(final double[][] signals, final double[] background,
+			final double[] residuals, final int lowerLimit) {
+		this.fitBackground = new double[0];
+		this.fitChannels = new double[0];
+		this.fitResiduals = new double[0];
+		this.fitTotal = new double[0];
 		panel.setDisplayingFit(true);
 		int length = 0;
-		if (signals != null) {
-			length = signals[0].length;
-		} else {
-			length = background.length;
-		}
+		length = (signals == null) ? background.length : signals[0].length;
 		fitChannels = new double[length];
 		for (int i = 0; i < length; i++) {
-			this.fitChannels[i] = ll + i + 0.5;
+			this.fitChannels[i] = lowerLimit + i + 0.5;
 		}
 		if (signals != null) {
 			this.fitSignals = new double[signals.length][length];
@@ -169,22 +177,32 @@ final class Plot1d extends AbstractPlot {
 			}
 		}
 		if (background != null) {
-			this.fitBackground = new double[length];
-			System.arraycopy(background, 0, fitBackground, 0, length);
-			if (signals != null) {
-				for (int bin = 0; bin < length; bin++) {
-					fitTotal[bin] += background[bin];
-					for (int sig = 0; sig < signals.length; sig++) {
-						fitSignals[sig][bin] += background[bin];
-					}
-				}
-			}
+			setBackgroundAndSignals(signals, background, length);
 		}
 		if (residuals != null) {
 			this.fitResiduals = new double[length];
 			System.arraycopy(residuals, 0, fitResiduals, 0, length);
 		}
 		panel.repaint();
+	}
+
+	/**
+	 * @param signals
+	 * @param background
+	 * @param length
+	 */
+	private void setBackgroundAndSignals(final double[][] signals,
+			final double[] background, final int length) {
+		this.fitBackground = new double[length];
+		System.arraycopy(background, 0, fitBackground, 0, length);
+		if (signals != null) {
+			for (int bin = 0; bin < length; bin++) {
+				fitTotal[bin] += background[bin];
+				for (int sig = 0; sig < signals.length; sig++) {
+					fitSignals[sig][bin] += background[bin];
+				}
+			}
+		}
 	}
 
 	protected void paintMarkedChannels(final Graphics graphics) {
@@ -195,9 +213,9 @@ final class Plot1d extends AbstractPlot {
 		}
 	}
 
-	protected void paintSelectingArea(Graphics gc) {
-		Graphics2D g = (Graphics2D) gc;
-		g.setColor(colorMap.getArea());
+	protected void paintSelectingArea(final Graphics graphics) {
+		final Graphics2D graphics2D = (Graphics2D) graphics;
+		graphics2D.setColor(colorMap.getArea());
 		graph.markAreaOutline1d(selectStart.getX(), lastMovePoint.x);
 		panel.setMouseMoved(false);
 		clearSelectingAreaClip();
@@ -206,52 +224,52 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Mark Area. The y-values are ignored.
 	 * 
-	 * @param p1
+	 * @param bin1
 	 *            one limit
-	 * @param p2
+	 * @param bin2
 	 *            the other limit
 	 */
-	public void markArea(Bin p1, Bin p2) {
+	public void markArea(final Bin bin1, final Bin bin2) {
 		synchronized (this) {
-			panel.setAreaMarked((p1 != null) && (p2 != null));
+			panel.setAreaMarked((bin1 != null) && (bin2 != null));
 			if (panel.isAreaMarked()) {
-				final int x1 = p1.getX();
-				final int x2 = p2.getX();
-				areaMark1 = Math.min(x1, x2);
-				areaMark2 = Math.max(x1, x2);
+				final int xValue1 = bin1.getX();
+				final int xValue2 = bin2.getX();
+				areaMark1 = Math.min(xValue1, xValue2);
+				areaMark2 = Math.max(xValue1, xValue2);
 			}
 		}
 		panel.repaint();
 	}
 
-	protected void paintMarkArea(Graphics g) {
-		final Graphics2D g2 = (Graphics2D) g;
-		final Composite prev = g2.getComposite();
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-				0.5f));
-		g.setColor(colorMap.getArea());
-		graph.update(g, viewSize, limits);
+	protected void paintMarkArea(final Graphics graphics) {
+		final Graphics2D graphics2D = (Graphics2D) graphics;
+		final Composite prev = graphics2D.getComposite();
+		graphics2D.setComposite(AlphaComposite.getInstance(
+				AlphaComposite.SRC_OVER, 0.5f));
+		graphics.setColor(colorMap.getArea());
+		graph.update(graphics, viewSize, limits);
 		graph.markArea1d(areaMark1, areaMark2, counts);
-		g2.setComposite(prev);
+		graphics2D.setComposite(prev);
 	}
-	
+
 	/**
 	 * Draw the current histogram including title, border, tickmarks, tickmark
 	 * labels and last but not least update the scrollbars
 	 */
-	protected void paintHistogram(Graphics g) {
-		Histogram plotHist = getHistogram();
+	protected void paintHistogram(final Graphics graphics) {
+		final Histogram plotHist = getHistogram();
 		if (plotHist.getDimensionality() != 1) {
 			return;// not sure how this happens, but need to check
 		}
-		g.setColor(colorMap.getHistogram());
+		graphics.setColor(colorMap.getHistogram());
 		graph.drawHist(counts, binWidth);
 		if (autoPeakFind) {
 			graph.drawPeakLabels(((AbstractHist1D) plotHist).findPeaks(
 					sensitivity, width, pfcal));
 		}
 		/* draw ticks after histogram so they are on top */
-		g.setColor(colorMap.getForeground());
+		graphics.setColor(colorMap.getForeground());
 		graph.drawTitle(plotHist.getTitle(), PlotGraphics.TOP);
 
 		graph.drawTicks(PlotGraphics.BOTTOM);
@@ -259,22 +277,22 @@ final class Plot1d extends AbstractPlot {
 		graph.drawTicks(PlotGraphics.LEFT);
 		graph.drawLabels(PlotGraphics.LEFT);
 		final String axisLabelX = plotHist.getLabelX();
-		if (axisLabelX != null) {
-			graph.drawAxisLabel(axisLabelX, PlotGraphics.BOTTOM);
-		} else {
+		if (axisLabelX == null) {
 			graph.drawAxisLabel(X_LABEL_1D, PlotGraphics.BOTTOM);
+		} else {
+			graph.drawAxisLabel(axisLabelX, PlotGraphics.BOTTOM);
 		}
 		final String axisLabelY = plotHist.getLabelY();
-		if (axisLabelY != null) {
-			graph.drawAxisLabel(axisLabelY, PlotGraphics.LEFT);
-		} else {
+		if (axisLabelY == null) {
 			graph.drawAxisLabel(Y_LABEL_1D, PlotGraphics.LEFT);
+		} else {
+			graph.drawAxisLabel(axisLabelY, PlotGraphics.LEFT);
 		}
 	}
 
 	private static boolean autoPeakFind = true;
 
-	private static void setPeakFind(boolean which) {
+	private static void setPeakFind(final boolean which) {
 		autoPeakFind = which;
 	}
 
@@ -306,42 +324,42 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Paint a gate on the give graphics object
 	 */
-	protected void paintGate(Graphics g) {
-		final Graphics2D g2 = (Graphics2D) g;
-		Composite prev = g2.getComposite();
+	protected void paintGate(final Graphics graphics) {
+		final Graphics2D graphics2D = (Graphics2D) graphics;
+		final Composite prev = graphics2D.getComposite();
 		final boolean noFill = isNoFillMode();
 		if (!noFill) {
-			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-					0.5f));
+			graphics2D.setComposite(AlphaComposite.getInstance(
+					AlphaComposite.SRC_OVER, 0.5f));
 		}
-		g.setColor(colorMap.getGateShow());
-		int ll = currentGate.getLimits1d()[0];
-		int ul = currentGate.getLimits1d()[1];
-		graph.drawGate1d(ll, ul, noFill);
-		g2.setComposite(prev);
+		graphics.setColor(colorMap.getGateShow());
+		final int lowerLimit = currentGate.getLimits1d()[0];
+		final int upperLimit = currentGate.getLimits1d()[1];
+		graph.drawGate1d(lowerLimit, upperLimit, noFill);
+		graphics2D.setComposite(prev);
 	}
 
 	/**
 	 * paints a fit to a given graphics
 	 */
-	protected void paintFit(Graphics g) {
+	protected void paintFit(final Graphics graphics) {
 		if (fitChannels != null) {
 			if (fitBackground != null) {
-				g.setColor(colorMap.getFitBackground());
+				graphics.setColor(colorMap.getFitBackground());
 				graph.drawLine(fitChannels, fitBackground);
 			}
 			if (fitResiduals != null) {
-				g.setColor(colorMap.getFitResidual());
+				graphics.setColor(colorMap.getFitResidual());
 				graph.drawLine(fitChannels, fitResiduals);
 			}
 			if (fitSignals != null) {
-				g.setColor(colorMap.getFitSignal());
+				graphics.setColor(colorMap.getFitSignal());
 				for (int sig = 0; sig < fitSignals.length; sig++) {
 					graph.drawLine(fitChannels, fitSignals[sig]);
 				}
 			}
 			if (fitTotal != null) {
-				g.setColor(colorMap.getFitTotal());
+				graphics.setColor(colorMap.getFitTotal());
 				graph.drawLine(fitChannels, fitTotal);
 			}
 		}
@@ -350,8 +368,8 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Get the counts in a X channel, Y channel ignored.
 	 */
-	protected double getCount(Bin p) {
-		return counts[p.getX()];
+	protected double getCount(final Bin bin) {
+		return counts[bin.getX()];
 	}
 
 	/**
@@ -364,7 +382,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Find the maximum counts in the part of the histogram displayed
 	 */
-	protected final int findMaximumCounts() {
+	protected int findMaximumCounts() {
 		int chmax = limits.getMaximumX();
 		int chmin = limits.getMinimumX();
 		double maxCounts = 0;
@@ -386,7 +404,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Find the minimum counts in the part of the histogram displayed
 	 */
-	protected final int findMinimumCounts() {
+	protected int findMinimumCounts() {
 		int chmax = limits.getMaximumX();
 		int chmin = limits.getMinimumX();
 		int minCounts = 0;
@@ -404,18 +422,20 @@ final class Plot1d extends AbstractPlot {
 		}
 		return minCounts;
 	}
+
 	/**
 	 * 
 	 * @param hist
 	 */
-	void copy2dCounts(@SuppressWarnings("unused") Histogram hist){
+	void copy2dCounts(@SuppressWarnings("unused")
+	Histogram hist) {
 		throw new IllegalStateException("Should never be called.");
 	}
-	
+
 	/*
 	 * non-javadoc: Caller should have checked 'isCalibrated' first.
 	 */
-	double getEnergy(double channel) {
+	double getEnergy(final double channel) {
 		final AbstractHist1D plotHist = (AbstractHist1D) getHistogram();
 		return plotHist.getCalibration().getValue(channel);
 	}
@@ -423,7 +443,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Caller should have checked 'isCalibrated' first.
 	 */
-	int getChannel(double energy) {
+	int getChannel(final double energy) {
 		final AbstractHist1D plotHist = (AbstractHist1D) getHistogram();
 		return (int) Math.round(plotHist.getCalibration().getChannel(energy));
 	}
@@ -431,7 +451,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Called when the mouse has moved
 	 */
-	protected void mouseMoved(MouseEvent me) {
+	protected void mouseMoved(final MouseEvent event) {
 		panel.setMouseMoved(true);
 		if (panel.isSelectingArea()) {
 			if (isSelectingAreaClipClear()) {
@@ -440,37 +460,32 @@ final class Plot1d extends AbstractPlot {
 							selectStart.getX(), lastMovePoint.x));
 				}
 			}
-			setLastMovePoint(graph.toData(me.getPoint()).getPoint());
+			setLastMovePoint(graph.toData(event.getPoint()).getPoint());
 			addToSelectClip(selectStart, Bin.create(lastMovePoint));
 			synchronized (selectingAreaClip) {
 				panel.repaint(getClipBounds(selectingAreaClip, false));
 			}
-		} else if (panel.isSettingGate()) {
-			/* only if we have 1 or more */
-			if (pointsGate.npoints > 0) {
-				/* draw new line */
-				synchronized (lastMovePoint) {
-					if (isMouseMoveClipClear()) {
-						final Point p1 = graph.toViewLin(Bin.create(
-								pointsGate.xpoints[pointsGate.npoints - 1],
-								pointsGate.ypoints[pointsGate.npoints - 1]));
-						addToMouseMoveClip(p1.x, p1.y);
-						if (pointsGate.npoints > 1) {
-							final Point p2 = graph
-									.toViewLin(Bin
-											.create(
-													pointsGate.xpoints[pointsGate.npoints - 2],
-													pointsGate.ypoints[pointsGate.npoints - 2]));
-							addToMouseMoveClip(p2.x, p2.y);
-						}
-						addToMouseMoveClip(lastMovePoint.x, lastMovePoint.y);
+		} else if (panel.isSettingGate() && pointsGate.npoints > 0) {
+			/* draw new line */
+			synchronized (lastMovePoint) {
+				if (isMouseMoveClipClear()) {
+					final Point point1 = graph.toViewLin(Bin.create(
+							pointsGate.xpoints[pointsGate.npoints - 1],
+							pointsGate.ypoints[pointsGate.npoints - 1]));
+					addToMouseMoveClip(point1.x, point1.y);
+					if (pointsGate.npoints > 1) {
+						final Point point2 = graph.toViewLin(Bin.create(
+								pointsGate.xpoints[pointsGate.npoints - 2],
+								pointsGate.ypoints[pointsGate.npoints - 2]));
+						addToMouseMoveClip(point2.x, point2.y);
 					}
-					lastMovePoint.setLocation(me.getPoint());
 					addToMouseMoveClip(lastMovePoint.x, lastMovePoint.y);
 				}
-				synchronized (mouseMoveClip) {
-					panel.repaint(getClipBounds(mouseMoveClip, false));
-				}
+				lastMovePoint.setLocation(event.getPoint());
+				addToMouseMoveClip(lastMovePoint.x, lastMovePoint.y);
+			}
+			synchronized (mouseMoveClip) {
+				panel.repaint(getClipBounds(mouseMoveClip, false));
 			}
 		}
 	}
@@ -481,9 +496,9 @@ final class Plot1d extends AbstractPlot {
 		}
 	}
 
-	private void addToMouseMoveClip(int x, int y) {
+	private void addToMouseMoveClip(final int xcoord, final int ycoord) {
 		synchronized (mouseMoveClip) {
-			mouseMoveClip.addPoint(x, y);
+			mouseMoveClip.addPoint(xcoord, ycoord);
 		}
 	}
 
@@ -492,14 +507,14 @@ final class Plot1d extends AbstractPlot {
 	 * points to indicate the corners of a rectangular region of channels that
 	 * needs to be included.
 	 * 
-	 * @param p1
+	 * @param bin1
 	 *            in plot coordinates
-	 * @param p2
+	 * @param bin2
 	 *            in plot coordinates
 	 */
-	private final void addToSelectClip(Bin p1, Bin p2) {
+	private void addToSelectClip(final Bin bin1, final Bin bin2) {
 		synchronized (selectingAreaClip) {
-			selectingAreaClip.add(graph.getRectangleOutline1d(p1.getX(), p2
+			selectingAreaClip.add(graph.getRectangleOutline1d(bin1.getX(), bin2
 					.getX()));
 		}
 	}
@@ -517,8 +532,8 @@ final class Plot1d extends AbstractPlot {
 	 *            coordinates
 	 * @return a bounding rectangle in the graphics coordinates
 	 */
-	private Rectangle getClipBounds(Shape clipShape,
-			boolean shapeInChannelCoords) {
+	private Rectangle getClipBounds(final Shape clipShape,
+			final boolean shapeInChannelCoords) {
 		final Rectangle rval = clipShape.getBounds();
 		if (shapeInChannelCoords) {// shape is in channel coordinates
 			/* add one more plot channel around the edges */
@@ -532,13 +547,13 @@ final class Plot1d extends AbstractPlot {
 			 * Shape is in view coordinates. Recursively call back with a
 			 * polygon using channel coordinates.
 			 */
-			final Polygon p = new Polygon();
-			final Bin c1 = graph.toData(rval.getLocation());
-			final Bin c2 = graph.toData(new Point(rval.x + rval.width, rval.y
+			final Polygon shape = new Polygon();
+			final Bin bin1 = graph.toData(rval.getLocation());
+			final Bin bin2 = graph.toData(new Point(rval.x + rval.width, rval.y
 					+ rval.height));
-			p.addPoint(c1.getX(), c1.getY());
-			p.addPoint(c2.getX(), c2.getY());
-			rval.setBounds(getClipBounds(p, true));
+			shape.addPoint(bin1.getX(), bin1.getY());
+			shape.addPoint(bin2.getX(), bin2.getY());
+			rval.setBounds(getClipBounds(shape, true));
 		}
 		return rval;
 	}
@@ -546,9 +561,9 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * @see java.util.prefs.PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
 	 */
-	public void preferenceChange(PreferenceChangeEvent pce) {
+	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
-		if (key.equals(AUTO_PEAK_FIND)) {
+		if (key.equals(PlotPrefs.AUTO_PEAK_FIND)) {
 			setPeakFind(Boolean.valueOf(pce.getNewValue()).booleanValue());
 		} else {
 			super.preferenceChange(pce);
@@ -562,15 +577,15 @@ final class Plot1d extends AbstractPlot {
 
 	/* Preferences */
 
-	static void setSensitivity(double val) {
+	static void setSensitivity(final double val) {
 		sensitivity = val;
 	}
 
-	static void setWidth(double val) {
+	static void setWidth(final double val) {
 		width = val;
 	}
 
-	static void setPeakFindDisplayCal(boolean which) {
+	static void setPeakFindDisplayCal(final boolean which) {
 		pfcal = which;
 	}
 

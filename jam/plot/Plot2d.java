@@ -51,7 +51,8 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 	Plot2d() {
 		super();
 		COLOR_PREFS.addPreferenceChangeListener(this);
-		setSmoothColorScale(PREFS.getBoolean(ColorPrefs.SMOOTH_SCALE, true));
+		setSmoothColorScale(PlotPrefs.PREFS.getBoolean(ColorPrefs.SMOOTH_SCALE,
+				true));
 	}
 
 	public void preferenceChange(final PreferenceChangeEvent pce) {
@@ -521,8 +522,8 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 			box.add(box.x + box.width + 1, box.y + box.height + 1);
 			box.add(box.x - 1, box.y - 1);
 			final Bin bin1 = Bin.create(box.getLocation());
-			final Bin bin2 = Bin
-					.create(bin1.getX() + box.width, bin1.getY() + box.height);
+			final Bin bin2 = Bin.create(bin1.getX() + box.width, bin1.getY()
+					+ box.height);
 			/* now do conversion */
 			box.setBounds(graph.getRectangleOutline2d(bin1, bin2));
 			box.width += 1;
@@ -534,8 +535,8 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 			 */
 			final Polygon shape = new Polygon();
 			final Bin bin1 = graph.toData(box.getLocation());
-			final Bin bin2 = graph
-					.toData(new Point(box.x + box.width, box.y + box.height));
+			final Bin bin2 = graph.toData(new Point(box.x + box.width, box.y
+					+ box.height));
 			shape.addPoint(bin1.getX(), bin1.getY());
 			shape.addPoint(bin2.getX(), bin2.getY());
 			box = getClipBounds(shape, true);
