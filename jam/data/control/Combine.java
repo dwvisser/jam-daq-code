@@ -39,6 +39,7 @@ public class Combine extends AbstractManipulation implements Observer {
 	private transient final JComboBox cfrom1, cfrom2, cto;
 
 	private transient JCheckBox cnorm;
+
 	private transient final JCheckBox cplus, cminus, ctimes, cdiv;
 
 	private transient double fac1;
@@ -127,7 +128,7 @@ public class Combine extends AbstractManipulation implements Observer {
 
 		ctimes = new JCheckBox("Multiply", false);
 		ctimes.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
+			public void itemStateChanged(final ItemEvent event) {
 				enableInputWith(true);
 			}
 		});
@@ -136,7 +137,7 @@ public class Combine extends AbstractManipulation implements Observer {
 
 		cdiv = new JCheckBox("Divide", false);
 		cdiv.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
+			public void itemStateChanged(final ItemEvent event) {
 				enableInputWith(true);
 			}
 		});
@@ -170,7 +171,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		cto.setPreferredSize(dim);
 		cto.addItem(NEW_HIST);
 		cto.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
+			public void itemStateChanged(final ItemEvent event) {
 				if (cto.getSelectedItem() != null) {
 					setUseHist((String) cto.getSelectedItem());
 				}
@@ -207,10 +208,10 @@ public class Combine extends AbstractManipulation implements Observer {
 	 * @param pradio
 	 * @param cbg
 	 */
-	private void addNormCheckbox(JPanel pradio, ButtonGroup cbg) {
+	private void addNormCheckbox(final JPanel pradio, final ButtonGroup cbg) {
 		cnorm = new JCheckBox("Renormalize", true);
 		cnorm.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
+			public void itemStateChanged(final ItemEvent event) {
 				enableInputWith(false);
 			}
 		});
@@ -222,22 +223,16 @@ public class Combine extends AbstractManipulation implements Observer {
 	 * non-javadoc: Does the work of manipulating histograms
 	 */
 	private void combine() throws DataException {
-
 		final double[] in1, err1;
 		final double[] in2, err2;
 		final double[] out, errOut;
 		String operation = "";
-		int numChannels;
-
 		validateFactors();
-
 		final AbstractHist1D hfrom1 = (AbstractHist1D) Histogram
 				.getHistogram((String) cfrom1.getSelectedItem());
 		AbstractHist1D hfrom2 = null;
-
 		in1 = doubleCountsArray(hfrom1);
 		err1 = hfrom1.getErrors();
-
 		if (cfrom2.isEnabled()) {
 			hfrom2 = (AbstractHist1D) Histogram.getHistogram((String) cfrom2
 					.getSelectedItem());
@@ -247,69 +242,22 @@ public class Combine extends AbstractManipulation implements Observer {
 			in2 = null;
 			err2 = null;
 		}
-
-		// read in information for to histogram
-		String name = (String) cto.getSelectedItem();
-		if (isNewHistogram(name)) {
-			String histName = ttextto.getText().trim();
-			String groupName = parseGroupName(name);
-			hto = (AbstractHist1D) createNewDoubleHistogram(groupName,
-					histName, hfrom1.getSizeX());
-			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
-					+ "'");
-		} else {
-			hto = (AbstractHist1D) Histogram.getHistogram(name);
-		}
+		assignDestinationHistogram(hfrom1);
 		hto.setZero();
-
 		out = doubleCountsArray(hto);
 		errOut = hto.getErrors();
-
-		// Minimun size of both out an in1
-		numChannels = Math.min(out.length, in1.length);
-
-		// Minimun size of all out an in1 and in2
-		if (!cnorm.isSelected()) {
-			numChannels = Math.min(numChannels, in2.length);
-		}
-
+		final int numChannels = getNumChannels(in1, in2, out);
 		// Do calculation
 		if (cnorm.isSelected()) {
-			for (int i = 0; i < numChannels; i++) {
-				out[i] = fac1 * in1[i];
-				errOut[i] = fac1 * err1[i];
-			}
-			operation = " Normalized ";
+			operation = normalize(in1, err1, out, errOut, numChannels);
 		} else if (cplus.isSelected()) {
-			for (int i = 0; i < numChannels; i++) {
-				out[i] = fac1 * in1[i] + fac2 * in2[i];
-				errOut[i] = Math.sqrt(fac1 * fac1 * err1[i] * err1[i] + fac2
-						* fac2 * err2[i] * err2[i]);
-			}
-			operation = " Added with ";
+			operation = add(in1, err1, in2, err2, out, errOut, numChannels);
 		} else if (cminus.isSelected()) {
-			for (int i = 0; i < numChannels; i++) {
-				out[i] = fac1 * in1[i] - fac2 * in2[i];
-				errOut[i] = Math.sqrt(fac1 * fac1 * err1[i] * err1[i] + fac2
-						* fac2 * err2[i] * err2[i]);
-			}
-			operation = " Subtracted from ";
+			operation = subtract(in1, err1, in2, err2, out, errOut, numChannels);
 		} else if (ctimes.isSelected()) {
-			for (int i = 0; i < numChannels; i++) {
-				out[i] = fac1 * in1[i] * fac2 * in2[i];
-				errOut[i] = Math.sqrt(fac2 * fac2 * err1[i] * err1[i] + fac1
-						* fac1 * err2[i] * err2[i]);
-			}
-			operation = " Multiplied with ";
+			operation = multiply(in1, err1, in2, err2, out, errOut, numChannels);
 		} else if (cdiv.isSelected()) {
-			for (int i = 0; i < numChannels; i++) {
-				out[i] = fac1 * in1[i] / (fac2 * in2[i]);
-				errOut[i] = in1[i]
-						/ in2[i]
-						* Math.sqrt(fac1 * fac1 / (err1[i] * err1[i]) + fac2
-								* fac2 / (err2[i] * err2[i]));
-			}
-			operation = " Divided by ";
+			operation = divide(in1, err1, in2, err2, out, errOut, numChannels);
 		}
 		hto.setErrors(errOut);
 
@@ -327,6 +275,154 @@ public class Combine extends AbstractManipulation implements Observer {
 			LOGGER.info("Combine " + hfrom1.getFullName().trim() + operation
 					+ hfrom2.getFullName().trim() + " to " + hto.getFullName());
 		}
+	}
+
+	/**
+	 * @param in1
+	 * @param in2
+	 * @param out
+	 * @return
+	 */
+	private int getNumChannels(final double[] in1, final double[] in2,
+			final double[] out) {
+		// Minimun size of both out an in1
+		int numChannels = Math.min(out.length, in1.length);
+		// Minimun size of all out an in1 and in2
+		if (!cnorm.isSelected()) {
+			numChannels = Math.min(numChannels, in2.length);
+		}
+		return numChannels;
+	}
+
+	/**
+	 * @param hfrom1
+	 */
+	private void assignDestinationHistogram(final AbstractHist1D hfrom1) {
+		// read in information for to histogram
+		final String name = (String) cto.getSelectedItem();
+		if (isNewHistogram(name)) {
+			final String histName = ttextto.getText().trim();
+			final String groupName = parseGroupName(name);
+			hto = (AbstractHist1D) createNewDoubleHistogram(groupName,
+					histName, hfrom1.getSizeX());
+			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
+					+ "'");
+		} else {
+			hto = (AbstractHist1D) Histogram.getHistogram(name);
+		}
+	}
+
+	/**
+	 * @param in1
+	 * @param err1
+	 * @param in2
+	 * @param err2
+	 * @param out
+	 * @param errOut
+	 * @param numChannels
+	 * @return
+	 */
+	private String divide(final double[] in1, final double[] err1,
+			final double[] in2, final double[] err2, final double[] out,
+			final double[] errOut, final int numChannels) {
+		String operation;
+		for (int i = 0; i < numChannels; i++) {
+			out[i] = fac1 * in1[i] / (fac2 * in2[i]);
+			errOut[i] = in1[i]
+					/ in2[i]
+					* Math.sqrt(fac1 * fac1 / (err1[i] * err1[i]) + fac2 * fac2
+							/ (err2[i] * err2[i]));
+		}
+		operation = " Divided by ";
+		return operation;
+	}
+
+	/**
+	 * @param in1
+	 * @param err1
+	 * @param in2
+	 * @param err2
+	 * @param out
+	 * @param errOut
+	 * @param numChannels
+	 * @return
+	 */
+	private String multiply(final double[] in1, final double[] err1,
+			final double[] in2, final double[] err2, final double[] out,
+			final double[] errOut, final int numChannels) {
+		String operation;
+		for (int i = 0; i < numChannels; i++) {
+			out[i] = fac1 * in1[i] * fac2 * in2[i];
+			errOut[i] = Math.sqrt(fac2 * fac2 * err1[i] * err1[i] + fac1 * fac1
+					* err2[i] * err2[i]);
+		}
+		operation = " Multiplied with ";
+		return operation;
+	}
+
+	/**
+	 * @param in1
+	 * @param err1
+	 * @param in2
+	 * @param err2
+	 * @param out
+	 * @param errOut
+	 * @param numChannels
+	 * @return
+	 */
+	private String subtract(final double[] in1, final double[] err1,
+			final double[] in2, final double[] err2, final double[] out,
+			final double[] errOut, final int numChannels) {
+		String operation;
+		for (int i = 0; i < numChannels; i++) {
+			out[i] = fac1 * in1[i] - fac2 * in2[i];
+			errOut[i] = Math.sqrt(fac1 * fac1 * err1[i] * err1[i] + fac2 * fac2
+					* err2[i] * err2[i]);
+		}
+		operation = " Subtracted from ";
+		return operation;
+	}
+
+	/**
+	 * @param in1
+	 * @param err1
+	 * @param in2
+	 * @param err2
+	 * @param out
+	 * @param errOut
+	 * @param numChannels
+	 * @return
+	 */
+	private String add(final double[] in1, final double[] err1,
+			final double[] in2, final double[] err2, final double[] out,
+			final double[] errOut, final int numChannels) {
+		String operation;
+		for (int i = 0; i < numChannels; i++) {
+			out[i] = fac1 * in1[i] + fac2 * in2[i];
+			errOut[i] = Math.sqrt(fac1 * fac1 * err1[i] * err1[i] + fac2 * fac2
+					* err2[i] * err2[i]);
+		}
+		operation = " Added with ";
+		return operation;
+	}
+
+	/**
+	 * @param in1
+	 * @param err1
+	 * @param out
+	 * @param errOut
+	 * @param numChannels
+	 * @return
+	 */
+	private String normalize(final double[] in1, final double[] err1,
+			final double[] out, final double[] errOut, final int numChannels) {
+		String operation;
+		for (int i = 0; i < numChannels; i++) {
+			out[i] = fac1 * in1[i];
+			errOut[i] = fac1 * err1[i];
+		}
+		operation = " Normalized ";
+		return operation;
 	}
 
 	/**
@@ -357,7 +453,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		enableInputWith(!cnorm.isSelected());
 	}
 
-	private double[] doubleCountsArray(AbstractHist1D hist) {
+	private double[] doubleCountsArray(final AbstractHist1D hist) {
 		double[] dCounts;
 		if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
 			dCounts = NumberUtilities.getInstance().intToDoubleArray(
@@ -371,7 +467,7 @@ public class Combine extends AbstractManipulation implements Observer {
 	/*
 	 * non-javadoc: A second histogram is needed
 	 */
-	private void enableInputWith(boolean state) {
+	private void enableInputWith(final boolean state) {
 		cfrom2.setEnabled(state);
 		ttimes2.setEnabled(state);
 		lWith.setEnabled(state);
@@ -380,7 +476,7 @@ public class Combine extends AbstractManipulation implements Observer {
 	/*
 	 * non-javadoc: Set dialog box for new histogram to be created
 	 */
-	private void setUseHist(String name) {
+	private void setUseHist(final String name) {
 		if (isNewHistogram(name)) {
 			lname.setEnabled(true);
 			ttextto.setEnabled(true);
@@ -395,9 +491,9 @@ public class Combine extends AbstractManipulation implements Observer {
 	 * Implementation of Observable interface listeners for broadcast events.
 	 * broadcast events where there are new histograms or histograms added.
 	 */
-	public void update(Observable observable, Object o) {
-		final BroadcastEvent be = (BroadcastEvent) o;
-		final BroadcastEvent.Command command = be.getCommand();
+	public void update(final Observable observable, final Object object) {
+		final BroadcastEvent event = (BroadcastEvent) object;
+		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.HISTOGRAM_NEW
 				|| command == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			doSetup();
@@ -409,13 +505,13 @@ public class Combine extends AbstractManipulation implements Observer {
 			fac1 = Double.valueOf(ttimes1.getText().trim()).doubleValue();
 		} catch (NumberFormatException nfe) {
 			throw new DataException(
-					"First factor is not a valid number [Manipulations]");
+					"First factor is not a valid number.", nfe);
 		}
 		try {// read in information for second histogram
 			fac2 = Double.valueOf(ttimes2.getText().trim()).doubleValue();
 		} catch (NumberFormatException nfe) {
 			throw new DataException(
-					"Second factor is not a valid number [Manipulations]");
+					"Second factor is not a valid number.", nfe);
 		}
 		return true;
 	}

@@ -18,33 +18,33 @@ package jam.sort;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Apr 12, 2004
  */
-public interface ThreadPriorities {
+public final class ThreadPriorities {
 
 	/**
 	 * Priority value for <code>jam.sort.NetDaemon</code>. Note that
 	 * while this may seem like I/O, the arrival of a data packet
 	 * is an important <em>event</em> that must be handled ASAP.
 	 */
-	int NET = 9;
+	public static final int NET = 9;
 
 	/**
 	 * Priority value for <code>jam.VMECommunication</code>. Messages
 	 * from the VME are also events, but of a lower priority than
 	 * data packets.
 	 */
-	int MESSAGING = 7;
+	public static final int MESSAGING = 7;
 
 	/**
 	 * Priority value for <code>jam.sort.StorageDaemon</code>, a 
 	 * relatively high priority thread for writing event data to 
 	 * disk.
 	 */
-	int STORAGE = 6;
+	public static final int STORAGE = 6;
 	
 	/**
 	 * Priority value for <code>jam.sort.SortDaemon</code>, which
 	 * qualifies as background computation.
 	 */
-	int SORT = 3;
+	public static final int SORT = 3;
 	
 }

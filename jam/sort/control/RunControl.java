@@ -78,14 +78,18 @@ public class RunControl extends JDialog implements Controller {
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
+	private static final Object instanceMonitor = new Object();
+
 	/**
 	 * @return the only instance of this class
 	 */
 	static public RunControl getSingletonInstance() {
-		if (instance == null) {
-			instance = new RunControl(STATUS.getFrame());
+		synchronized (instanceMonitor) {
+			if (instance == null) {
+				instance = new RunControl(STATUS.getFrame());
+			}
+			return instance;
 		}
-		return instance;
 	}
 
 	private transient final Begin begin;
@@ -258,7 +262,7 @@ public class RunControl extends JDialog implements Controller {
 			RunInfo.runTitle = textRunTitle.getText().trim();
 			RunInfo.runStartTime = new Date();
 		} catch (NumberFormatException nfe) {
-			throw new JamException("Run number not an integer [RunControl]");
+			throw new JamException("Run number not an integer.", nfe);
 		}
 		if (device == Device.DISK) {// saving to disk
 			final String EVENT_EXT = ".evn";

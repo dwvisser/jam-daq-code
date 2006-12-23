@@ -30,7 +30,7 @@ public class ScalerZero extends AbstractControl {
 
 	private transient final JCheckBox chkDisable;
 
-	private final ScalersCmd scalersCmd;
+	private transient final ScalersCmd scalersCmd;
 
 	/**
 	 * Constructs a new dialog for zeroing scaler values.
@@ -49,7 +49,7 @@ public class ScalerZero extends AbstractControl {
 		pZero.add(pButton);
 		bzero2 = new JButton("Zero");
 		bzero2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			public void actionPerformed(final ActionEvent event) {
 				chkDisable.setSelected(true);
 				bzero2.setEnabled(false);
 				zero();
@@ -61,7 +61,7 @@ public class ScalerZero extends AbstractControl {
 
 		chkDisable = new JCheckBox("Disable Zero", true);
 		chkDisable.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent event) {
+			public void itemStateChanged(final ItemEvent event) {
 				if (chkDisable.isSelected()) {
 					bzero2.setEnabled(false);
 				} else {
@@ -72,7 +72,7 @@ public class ScalerZero extends AbstractControl {
 		pZero.add(chkDisable);
 
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent event) {
+			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
 		});

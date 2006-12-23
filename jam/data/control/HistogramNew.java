@@ -37,19 +37,18 @@ import javax.swing.border.EmptyBorder;
  */
 public class HistogramNew extends AbstractControl {
 
-	final int CHOOSER_SIZE = 200;
+	private static final int CHOOSER_SIZE = 200;
 
-	private final JComboBox comboGroup;
 
-	private DefaultComboBoxModel comboGroupModel;
+	private transient final DefaultComboBoxModel comboGroupModel;
 
-	private final JTextField textName;
+	private transient final JTextField textName;
 
-	private final JTextField textTitle;
+	private transient final JTextField textTitle;
 
-	private final JComboBox comboSize;
+	private transient final JComboBox comboSize;
 
-	private final JCheckBox coneInt, coneDbl, ctwoInt, ctwoDbl;
+	private transient final JCheckBox coneInt, coneDbl, ctwoInt, ctwoDbl;
 
 	private final static String[] DEFAULT_SIZES = { "64", "128", "256", "512",
 			"1024", "2048", "4096", "8192", };
@@ -71,16 +70,11 @@ public class HistogramNew extends AbstractControl {
 		final JPanel pLabels = new JPanel(new GridLayout(0, 1, 5, 5));
 		pLabels.setBorder(new EmptyBorder(10, 10, 0, 0));
 		cdialogNew.add(pLabels, BorderLayout.WEST);
-		final JLabel lg = new JLabel("Group", RIGHT);
-		pLabels.add(lg);
-		final JLabel ln = new JLabel("Name", RIGHT);
-		pLabels.add(ln);
-		final JLabel lti = new JLabel("Title", RIGHT);
-		pLabels.add(lti);
-		final JLabel lt = new JLabel("Type", RIGHT);
-		pLabels.add(lt);
-		final JLabel ls = new JLabel("Size", RIGHT);
-		pLabels.add(ls);
+		pLabels.add(new JLabel("Group", RIGHT));
+		pLabels.add(new JLabel("Name", RIGHT));
+		pLabels.add(new JLabel("Title", RIGHT));
+		pLabels.add(new JLabel("Type", RIGHT));
+		pLabels.add(new JLabel("Size", RIGHT));
 		/* Entires panel */
 		final JPanel pEntires = new JPanel(new GridLayout(0, 1, 5, 5));
 		pEntires.setBorder(new EmptyBorder(10, 0, 0, 10));
@@ -88,7 +82,7 @@ public class HistogramNew extends AbstractControl {
 		final JPanel pGroup = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		pEntires.add(pGroup);
 		comboGroupModel = new DefaultComboBoxModel();
-		comboGroup = new JComboBox(comboGroupModel);
+		final JComboBox comboGroup = new JComboBox(comboGroupModel);
 		Dimension dim = comboGroup.getPreferredSize();
 		dim.width = CHOOSER_SIZE;
 		comboGroup.setPreferredSize(dim);
@@ -133,28 +127,28 @@ public class HistogramNew extends AbstractControl {
 		final JPanel pbOuter = new JPanel();
 		pbOuter.setLayout(new FlowLayout(FlowLayout.CENTER));
 		cdialogNew.add(pbOuter, BorderLayout.SOUTH);
-		final JPanel pb = new JPanel(new GridLayout(1, 0, 5, 5));
-		pbOuter.add(pb);
+		final JPanel bottom = new JPanel(new GridLayout(1, 0, 5, 5));
+		pbOuter.add(bottom);
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent event) {
 				makeHistogram();
 				dispose();
 			}
 		});
-		pb.add(bok);
+		bottom.add(bok);
 		final JButton bapply = new JButton("Apply");
 		bapply.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent event) {
 				makeHistogram();
 			}
 		});
-		pb.add(bapply);
+		bottom.add(bapply);
 		final JButton bcancel = new JButton(new WindowCancelAction(this));
-		pb.add(bcancel);
+		bottom.add(bcancel);
 		pack();
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
+			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
 		});

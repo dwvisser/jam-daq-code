@@ -25,7 +25,7 @@ import javax.swing.JTextField;
 public class GateNew extends AbstractControl {
 
 	/* new gate dialog box */
-	private final JTextField textNew;
+	private transient final JTextField textNew;
 
 	/**
 	 * Construct a new "new gate" dialog.
@@ -54,7 +54,7 @@ public class GateNew extends AbstractControl {
 		pbutton.add(pbnew, BorderLayout.SOUTH);
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent event) {
 				makeGate();
 				dispose();
 			}
@@ -62,7 +62,7 @@ public class GateNew extends AbstractControl {
 		pbnew.add(bok);
 		final JButton bapply = new JButton("Apply");
 		bapply.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent event) {
 				makeGate();
 			}
 		});

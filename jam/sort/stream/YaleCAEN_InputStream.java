@@ -1,5 +1,12 @@
 package jam.sort.stream;
 
+import static jam.sort.stream.CAEN_StreamFields.BUFFER_DEPTH;
+import static jam.sort.stream.CAEN_StreamFields.BUFFER_END;
+import static jam.sort.stream.CAEN_StreamFields.BUFFER_PAD;
+import static jam.sort.stream.CAEN_StreamFields.END_PAD;
+import static jam.sort.stream.CAEN_StreamFields.NUM_CHANNELS;
+import static jam.sort.stream.CAEN_StreamFields.SCALER_BLOCK;
+import static jam.sort.stream.CAEN_StreamFields.STOP_PAD;
 import jam.data.Scaler;
 
 import java.io.EOFException;
@@ -20,8 +27,7 @@ import java.util.Map;
  * @see AbstractEventInputStream
  * @since JDK1.1
  */
-public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
-		CAEN_StreamFields {
+public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 
 	private static enum BufferStatus {
 	    /**
@@ -114,7 +120,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 
 	private transient final int[] tempData = new int[32];
 
-	private transient final int[] tempParams = new int[32];
+	//private transient final int[] tempParams = new int[32];
 
 	/**
 	 * Make sure to issue a setConsole() after using this constructor. It is
@@ -198,9 +204,10 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 			}
 			final int arrayIndex = getEventIndex(eventNumber);
 			/* copy data in, item by item */
-			for (int i = 0; i < numParams; i++) {
-				fifo[arrayIndex][tempParams[i]] = tempData[i];
-			}
+//			for (int i = 0; i < numParams; i++) {
+//				fifo[arrayIndex][tempParams[i]] = tempData[i];
+//			}
+			System.arraycopy(tempData, 0, fifo[arrayIndex], 0, numParams);
 		} else {
 			throw new EventException(
 					getClass().getName()
@@ -292,7 +299,6 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 		synchronized (this) {
 			EventInputStatus rval = EventInputStatus.EVENT;
 			int parameter = 0;
-			int endblock = 0;
 			final List<Integer> tval = new ArrayList<Integer>(32); // temporary array for scaler
 			// values, up
 			// to a max of 32
@@ -309,40 +315,9 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 					 */
 					final int header = dataInput.readInt();
 					if (isHeader(header)) {
-						/* ADC's & TDC's in slots 2-31 */
-						final int slot = (header >>> 27) & 0x1f;
-						boolean keepGoing = true;
-						int paramIndex = 0;
-						int numParams = 0;
-						while (keepGoing) {
-							parameter = dataInput.readInt();
-							if (isParameter(parameter)) {
-								numParams++;
-								final int channel = (parameter >>> 16) & 0x3f;
-								tempParams[paramIndex] = 32 * (slot - 2)
-										+ channel;
-								tempData[paramIndex] = parameter & 0xfff;
-								paramIndex++;
-							} else if (isEndBlock(parameter)) {
-								endblock = parameter;
-								keepGoing = false;
-							} else {
-								throw new EventException(
-										getClass().getName()
-												+ ".readEvent(): didn't get a Parameter or End-of-Block when expected, int datum = 0x"
-												+ Integer
-														.toHexString(parameter));
-							}
-						}
-						handleEndBlock(endblock, numParams);
+						parameter = handleHeader();
 					} else if (header == SCALER_BLOCK) {// read and ignore
-						// scaler
-						// values
-						final int numScalers = dataInput.readInt();
-						nScalrBlocks++;
-						for (int i = 0; i < numScalers; i++) {
-							tval.add(dataInput.readInt());
-						}
+						readScalers(tval);
 						Scaler.update(tval);
 						rval = EventInputStatus.SCALER_VALUE;
 						internalStat = BufferStatus.SCALER;
@@ -366,6 +341,53 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 						+ ".readEvent() parameter = " + parameter, e);
 			}
 			return rval;
+		}
+	}
+
+	/**
+	 * @param parameter
+	 * @return
+	 * @throws IOException
+	 * @throws EventException
+	 */
+	private int handleHeader() throws IOException, EventException {
+		/* ADC's & TDC's in slots 2-31 */
+		boolean keepGoing = true;
+		int paramIndex = 0;
+		int endblock = 0;
+		int parameter = 0;
+		while (keepGoing) {
+			parameter = dataInput.readInt();
+			if (isParameter(parameter)) {
+				tempData[paramIndex] = parameter & 0xfff;
+				paramIndex++;
+			} else if (isEndBlock(parameter)) {
+				endblock = parameter;
+				keepGoing = false;
+			} else {
+				throw new EventException(
+						getClass().getName()
+								+ ".readEvent(): didn't get a Parameter or End-of-Block when expected, int datum = 0x"
+								+ Integer
+										.toHexString(parameter));
+			}
+		}
+		handleEndBlock(endblock, paramIndex);
+		return parameter;
+	}
+
+	/**
+	 * @param tval
+	 * @return
+	 * @throws IOException
+	 */
+	private void readScalers(final List<Integer> tval) throws IOException {
+		// scaler
+		// values
+		final int numScalers = dataInput.readInt();
+		nScalrBlocks++;
+		for (int i = 0; i < numScalers; i++) {
+			tval.add(dataInput.readInt());
 		}
 	}
 

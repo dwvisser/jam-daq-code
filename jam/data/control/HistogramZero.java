@@ -55,7 +55,7 @@ public class HistogramZero extends AbstractControl {
 		pButton.add(one);
 		final JButton all = new JButton("   All   ");
 		all.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent event) {
 				zeroAll();
 				dispose();
 			}
@@ -63,7 +63,7 @@ public class HistogramZero extends AbstractControl {
 		pButton.add(all);
 		final JButton cancel = new JButton(" Cancel ");
 		cancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent event) {
 				dispose();
 			}
 		});
@@ -71,7 +71,7 @@ public class HistogramZero extends AbstractControl {
 		dzc.add(pButton);
 		pack();
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
+			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
 		});

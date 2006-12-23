@@ -32,11 +32,11 @@ import javax.swing.border.EmptyBorder;
  */
 public class MonitorDisplay extends AbstractControl implements Observer {
 
-	private final int borderHeight = 5;
+	private final static int BORDER_HEIGHT = 5;
 
-	private JToggleButton checkAudio;
+	private transient final JToggleButton checkAudio;
 
-	private JPanel pBars;
+	private transient final JPanel pBars;
 
 	/**
 	 * Constructs a new monitor display dialog.
@@ -49,8 +49,8 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 		Container cddisp = this.getContentPane();
 		cddisp.setLayout(new BorderLayout());
 		// Panel for the bars
-		pBars = new JPanel(new GridLayout(0, 1, borderHeight, 5));
-		pBars.setBorder(new EmptyBorder(borderHeight, 0, borderHeight, 0));
+		pBars = new JPanel(new GridLayout(0, 1, BORDER_HEIGHT, 5));
+		pBars.setBorder(new EmptyBorder(BORDER_HEIGHT, 0, BORDER_HEIGHT, 0));
 		// Scroll Panel
 		JScrollPane scrollPane = new JScrollPane(pBars);
 		scrollPane
@@ -89,26 +89,36 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 	 * Setup the display of monitors, inherited for AbstractControl
 	 */
 	public void doSetup() {
-		JPanel pm = null;
+		JPanel monitorPanel = null;
 		final List<Monitor> mlist = Monitor.getMonitorList();
 		final int numberMonitors = mlist.size();
 		pBars.removeAll();
 		for (Monitor monitor : mlist) {
-			pm = new JPanel();
-			pm.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-			pBars.add(pm);
-			final JLabel labelDisp = new JLabel(monitor.getName(),
-					SwingConstants.RIGHT);
-			pm.add(labelDisp);
-			final PlotBar plotBar = new PlotBar(monitor);
-			pm.add(plotBar);
+			monitorPanel = createPanel(monitor);
 		}
 		pack();
 		if (numberMonitors > 0) {
-			Dimension dialogDim = calculateScrollDialogSize(this, pm,
-					borderHeight, numberMonitors);
+			final Dimension dialogDim = calculateScrollDialogSize(this, monitorPanel,
+					BORDER_HEIGHT, numberMonitors);
 			setSize(dialogDim);
 		}
+	}
+
+	/**
+	 * @param monitor
+	 * @return
+	 */
+	private JPanel createPanel(final Monitor monitor) {
+		JPanel pMonitors;
+		pMonitors = new JPanel();
+		pMonitors.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+		pBars.add(pMonitors);
+		final JLabel labelDisp = new JLabel(monitor.getName(),
+				SwingConstants.RIGHT);
+		pMonitors.add(labelDisp);
+		final PlotBar plotBar = new PlotBar(monitor);
+		pMonitors.add(plotBar);
+		return pMonitors;
 	}
 
 	private void enableMonitors() {
@@ -121,16 +131,16 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 	 * 
 	 * @param observable
 	 *            not sure
-	 * @param o
+	 * @param object
 	 *            not sure
 	 */
-	public void update(Observable observable, Object o) {
-		BroadcastEvent be = (BroadcastEvent) o;
-		if (be.getCommand() == BroadcastEvent.Command.MONITORS_UPDATE) {
+	public void update(final Observable observable, final Object object) {
+		final BroadcastEvent event = (BroadcastEvent) object;
+		if (event.getCommand() == BroadcastEvent.Command.MONITORS_UPDATE) {
 			displayMonitors();
-		} else if (be.getCommand() == BroadcastEvent.Command.MONITORS_ENABLED) {
+		} else if (event.getCommand() == BroadcastEvent.Command.MONITORS_ENABLED) {
 			enableMonitors();
-		} else if (be.getCommand() == BroadcastEvent.Command.MONITORS_DISABLED) {
+		} else if (event.getCommand() == BroadcastEvent.Command.MONITORS_DISABLED) {
 			disableMonitors();
 		}
 	}

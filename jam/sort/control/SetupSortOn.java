@@ -7,6 +7,7 @@ import jam.JamException;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
 import jam.global.SortMode;
+import jam.sort.SortException;
 import jam.sort.SortRoutine;
 import jam.sort.DiskDaemon;
 import jam.sort.EventSizeMode;
@@ -22,6 +23,7 @@ import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.AbstractButton;
 import javax.swing.Box;
@@ -95,6 +97,8 @@ public final class SetupSortOn extends AbstractSetup {
 	private transient final AbstractButton clog = new JCheckBox("Log Commands",
 			false);
 
+	private transient final ConsoleLog consoleLog;
+
 	private transient File dataFolder, histFolder, logDirectory;
 
 	private transient DiskDaemon diskDaemon;
@@ -105,7 +109,9 @@ public final class SetupSortOn extends AbstractSetup {
 	private transient final jam.comm.FrontEndCommunication frontEnd = jam.comm.VMECommunication
 			.getSingletonInstance();
 
-	private transient final ConsoleLog consoleLog;
+	private transient final String hostDataIP;
+
+	private transient final int hostDataPort;
 
 	private transient NetDaemon netDaemon;
 
@@ -116,10 +122,6 @@ public final class SetupSortOn extends AbstractSetup {
 
 	private transient final JTextField textExpName, textPathHist, textPathData,
 			textPathLog;
-
-	private transient final String hostDataIP;
-
-	private transient final int hostDataPort;
 
 	private SetupSortOn(ConsoleLog console) {
 		super("Setup Online");
@@ -305,46 +307,7 @@ public final class SetupSortOn extends AbstractSetup {
 			/* lock setup so fields cant be edited */
 			if (STATUS.canSetup()) {
 
-				if (clog.isSelected()) { // if needed start logging to file
-					final File logPathTry = new File(textPathLog.getText(),
-							exptName);
-					final String logFile = consoleLog.setLogFileName(logPathTry
-							.getCanonicalPath());
-					LOGGER.info("Logging to file: " + logFile);
-					consoleLog.setLogFileOn(true);
-				} else {
-					consoleLog.setLogFileOn(false);
-				}
-				consoleLog
-						.messageOutln("Setup Online Data Acquisition,  Experiment Name: "
-								+ exptName);
-				/* Kill all existing Daemons and clear data areas */
-				resetAcq(false);
-				sortChooser.loadSorter(btnSpecifyPath.isSelected()); // load
-				// sorting
-				// routine
-				final SortRoutine sortRoutine = sortChooser.getSortRoutine();
-				if (sortRoutine != null) {
-					lockMode(true);
-					setupSort(); // create daemons
-					consoleLog.messageOutln("Loaded "
-							+ sortRoutine.getClass().getName() + ", "
-							+ inStream.getClass().getName() + " and "
-							+ outStream.getClass().getName());
-					consoleLog
-							.messageOutln("Communications and processing daemons successfully initiated.");
-					if (sortRoutine.getEventSizeMode() == EventSizeMode.CNAF) {
-						setupCamac(); // set the camac crate
-						consoleLog.messageOutln("CAMAC command lists sent.");
-					} else if (sortRoutine.getEventSizeMode() == EventSizeMode.VME_MAP) {
-						setupVMEmap();
-						consoleLog.messageOutln("VME map sent.");
-					}
-				}
-				STATUS.selectFirstSortHistogram();
-				if (dispose) {
-					dialog.dispose();
-				}
+				setup(dispose);
 			} else {
 				throw new JamException("Can't setup sorting, mode locked ");
 			}
@@ -475,6 +438,55 @@ public final class SetupSortOn extends AbstractSetup {
 		jam.data.DataBase.getInstance().clearAllLists();
 		jam.global.Broadcaster.getSingletonInstance().broadcast(
 				jam.global.BroadcastEvent.Command.HISTOGRAM_NEW);
+	}
+
+	/**
+	 * @param dispose
+	 * @throws JamException
+	 * @throws IOException
+	 * @throws SortException
+	 */
+	private void setup(final boolean dispose) throws JamException, IOException, SortException {
+		if (clog.isSelected()) { // if needed start logging to file
+			final File logPathTry = new File(textPathLog.getText(),
+					exptName);
+			final String logFile = consoleLog.setLogFileName(logPathTry
+					.getCanonicalPath());
+			LOGGER.info("Logging to file: " + logFile);
+			consoleLog.setLogFileOn(true);
+		} else {
+			consoleLog.setLogFileOn(false);
+		}
+		consoleLog
+				.messageOutln("Setup Online Data Acquisition,  Experiment Name: "
+						+ exptName);
+		/* Kill all existing Daemons and clear data areas */
+		resetAcq(false);
+		sortChooser.loadSorter(btnSpecifyPath.isSelected()); // load
+		// sorting
+		// routine
+		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+		if (sortRoutine != null) {
+			lockMode(true);
+			setupSort(); // create daemons
+			consoleLog.messageOutln("Loaded "
+					+ sortRoutine.getClass().getName() + ", "
+					+ inStream.getClass().getName() + " and "
+					+ outStream.getClass().getName());
+			consoleLog
+					.messageOutln("Communications and processing daemons successfully initiated.");
+			if (sortRoutine.getEventSizeMode() == EventSizeMode.CNAF) {
+				setupCamac(); // set the camac crate
+				consoleLog.messageOutln("CAMAC command lists sent.");
+			} else if (sortRoutine.getEventSizeMode() == EventSizeMode.VME_MAP) {
+				setupVMEmap();
+				consoleLog.messageOutln("VME map sent.");
+			}
+		}
+		STATUS.selectFirstSortHistogram();
+		if (dispose) {
+			dialog.dispose();
+		}
 	}
 
 	private void setupCamac() throws JamException {

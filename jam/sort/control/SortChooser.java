@@ -25,7 +25,7 @@ final class SortChooser extends JComboBox {
 	
 	private transient SortRoutine sortRoutine;
 
-	final List<Class<?>> listClasses = new ArrayList<Class<?>>();	
+	private transient final List<Class<?>> listClasses = new ArrayList<Class<?>>();	
 	
 	SortChooser() {
 		super();
@@ -80,10 +80,10 @@ final class SortChooser extends JComboBox {
 			}
 		} catch (InstantiationException ie) {
 			throw new JamException("Cannot instantiate sort routine: "
-					+ sortClass.getName());
+					+ sortClass.getName(), ie);
 		} catch (IllegalAccessException iae) {
 			throw new JamException("Cannot access sort routine: "
-					+ sortClass.getName());
+					+ sortClass.getName(), iae);
 		}
 	}
 	
@@ -137,7 +137,7 @@ final class SortChooser extends JComboBox {
 	 *  Select a sort class
 	 * @param className name of class to select 
 	 */ 
-	public void selectSortClass(String className) {
+	public void selectSortClass(final String className) {
 		for (Class clazz : getClassList()) {
 			final String name = clazz.getName();
 			if (name.equals(className)) {

@@ -1,6 +1,5 @@
 package jam.data.control;
 
-import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -28,9 +27,9 @@ import javax.swing.JPanel;
  */
 public final class GateAdd extends AbstractControl {
 
-	private Gate currentGateAdd;
+	private transient Gate currentGateAdd;
 
-	private final JComboBox cadd;
+	private transient final JComboBox cadd;
 
 	/**
 	 * Create a new "add gate" dialog.
@@ -50,7 +49,7 @@ public final class GateAdd extends AbstractControl {
 		cadd = new JComboBox(new GateComboBoxModel(GateComboBoxModel.Mode.ALL));
 		cadd.setRenderer(new GateListCellRenderer());
 		cadd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent event) {
 				final Object item = cadd.getSelectedItem();
 				if (item instanceof Gate) {
 					selectGateAdd((Gate) item);
@@ -69,7 +68,7 @@ public final class GateAdd extends AbstractControl {
 		pbuttonAdd.add(pbadd);
 		final JButton bokadd = new JButton("OK");
 		bokadd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent event) {
 				addGate();
 				dispose();
 			}
@@ -77,7 +76,7 @@ public final class GateAdd extends AbstractControl {
 		pbadd.add(bokadd);
 		final JButton bapplyadd = new JButton("Apply");
 		bapplyadd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent event) {
 				addGate();
 			}
 		});
@@ -85,7 +84,7 @@ public final class GateAdd extends AbstractControl {
 		final JButton bcanceladd = new JButton(new WindowCancelAction(this));
 		pbadd.add(bcanceladd);
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
+			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
 		});
@@ -112,7 +111,7 @@ public final class GateAdd extends AbstractControl {
 		}
 	}
 
-	void selectGateAdd(Gate gate) {
+	void selectGateAdd(final Gate gate) {
 		synchronized (this) {
 			currentGateAdd = gate;
 		}

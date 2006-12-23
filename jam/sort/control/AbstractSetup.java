@@ -45,17 +45,20 @@ abstract class AbstractSetup {
 
 	/**
 	 * Calls doApply if bok is the holder
+	 * 
 	 * @author dvk
-	 *
+	 * 
 	 */
 	protected final class ApplyAction extends AbstractAction {
 		private final static String APPLY = "Apply";
+
 		private final static String OK_TEXT = "OK";
+
 		private final transient boolean m_ok;
 
 		ApplyAction(boolean isOK) {
 			super(isOK ? OK_TEXT : APPLY);
-			m_ok=isOK;
+			m_ok = isOK;
 		}
 
 		/**
@@ -82,12 +85,11 @@ abstract class AbstractSetup {
 	 */
 	protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
-
 	/**
 	 * Apply button.
-	 */ 
+	 */
 	protected final transient AbstractButton bapply;
-	
+
 	/**
 	 * OK button
 	 */
@@ -107,7 +109,7 @@ abstract class AbstractSetup {
 	 * Toggle button for the default class path.
 	 */
 	protected transient final JToggleButton btnDefaultPath;
-	
+
 	/**
 	 * The dialog.
 	 */
@@ -145,37 +147,37 @@ abstract class AbstractSetup {
 	 */
 	protected transient final JTextField textSortPath;
 
-	
 	AbstractSetup(String dialogName) {
 		super();
-		//Jam properties needed
+		// Jam properties needed
 		final String defInStream = JamProperties
-		.getPropString(PropertyKeys.EVENT_INSTREAM);
+				.getPropString(PropertyKeys.EVENT_INSTREAM);
 		final String defOutStream = JamProperties
-		.getPropString(PropertyKeys.EVENT_OUTSTREAM);
+				.getPropString(PropertyKeys.EVENT_OUTSTREAM);
 		final String defSortPath = JamProperties
-		.getPropString(PropertyKeys.SORT_CLASSPATH);
+				.getPropString(PropertyKeys.SORT_CLASSPATH);
 		final boolean useDefault = (defSortPath
 				.equals(JamProperties.DEFAULT_SORTPATH));
 		final String defSortRoutine = JamProperties
-		.getPropString(PropertyKeys.SORT_ROUTINE);
+				.getPropString(PropertyKeys.SORT_ROUTINE);
 
-		specifiedClassPath = new File(defSortPath);			
-		
-		//Create GUI widgets	
+		specifiedClassPath = new File(defSortPath);
+
+		// Create GUI widgets
 		bok = new JButton(new ApplyAction(true));
 		bapply = new JButton(new ApplyAction(false));
 		dialog = new JDialog(STATUS.getFrame(), dialogName, false);
 		textSortPath = new JTextField(defSortPath);
 		textSortPath.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {			
-			specifiedClassPath=new File(textSortPath.getText());
+			public void actionPerformed(final ActionEvent event) {
+				specifiedClassPath = new File(textSortPath.getText());
 				sortChooser.loadChooserClassPath(specifiedClassPath);
 			}
 		});
-		//Radio buttons
+		// Radio buttons
 		btnSpecifyPath = new JRadioButton("Specify a classpath", !useDefault);
-		btnSpecifyPath.setToolTipText("Specify a path to load your sort routine from.");
+		btnSpecifyPath
+				.setToolTipText("Specify a path to load your sort routine from.");
 		btnSpecifyPath.addItemListener(new ItemListener() {
 			public void itemStateChanged(final ItemEvent itemEvent) {
 				if (btnSpecifyPath.isSelected()) {
@@ -196,9 +198,9 @@ abstract class AbstractSetup {
 				}
 			}
 		});
-		
+
 		sortChooser = new SortChooser();
-		
+
 		bbrowsef.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
 				specifiedClassPath = browseSortPath();
@@ -215,39 +217,41 @@ abstract class AbstractSetup {
 		textSortPath.setEditable(false);
 		textSortPath.setEnabled(false);
 
-		//Input streams
-		Set<Class<?>> inStreams=getClasses("jam.sort.stream", AbstractEventInputStream.class);		
+		// Input streams
+		Set<Class<?>> inStreams = getClasses("jam.sort.stream",
+				AbstractEventInputStream.class);
 		inChooser = new JComboBox(inStreams.toArray());
 		inChooser.setToolTipText("Select input event data format.");
 		selectName(inChooser, inStreams, defInStream);
-		
+
 		// Output streams
-		Set<Class<?>> outStreams=getClasses("jam.sort.stream", AbstractEventOutputStream.class);		
+		Set<Class<?>> outStreams = getClasses("jam.sort.stream",
+				AbstractEventOutputStream.class);
 		outChooser = new JComboBox(outStreams.toArray());
 		outChooser.setToolTipText("Select output event format.");
 		selectName(outChooser, outStreams, defOutStream);
 
-		selectPath(useDefault);		
+		selectPath(useDefault);
 		sortChooser.selectSortClass(defSortRoutine);
 	}
 
-	protected final void selectPath(boolean useDefault)
-	{
+	protected final void selectPath(final boolean useDefault) {
 		if (useDefault) {
 			bbrowsef.setEnabled(false);
 			textSortPath.setEnabled(false);
-			textSortPath.setEditable(false);					
+			textSortPath.setEditable(false);
 			textSortPath.setText("default");
-			sortChooser.loadChooserDefault();						
+			sortChooser.loadChooserDefault();
 		} else {
 			bbrowsef.setEnabled(true);
 			textSortPath.setEnabled(true);
 			textSortPath.setEditable(true);
 			textSortPath.setText(specifiedClassPath.getPath());
-			sortChooser.loadChooserClassPath(specifiedClassPath);						
+			sortChooser.loadChooserClassPath(specifiedClassPath);
 		}
-	
+
 	}
+
 	/**
 	 * Should be called when OK or Apply is actuated.
 	 * 
@@ -264,6 +268,7 @@ abstract class AbstractSetup {
 	public final JDialog getDialog() {
 		return dialog;
 	}
+
 	/**
 	 * Browses for the sort file.
 	 * 
@@ -284,7 +289,6 @@ abstract class AbstractSetup {
 		return rval;
 	}
 
-
 	/**
 	 * Initializes the sort routine.
 	 * 
@@ -292,51 +296,48 @@ abstract class AbstractSetup {
 	 *             error given with useful error message to the final user
 	 */
 	protected final void initializeSorter() throws JamException {
-		final StringBuffer message = new StringBuffer();
+		final StringBuffer message = new StringBuffer(400);
 		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 		final String sortName = sortRoutine.getClass().getName();
 		try {
 			sortRoutine.initialize();
 		} catch (Exception thrown) {
-			message.append("Exception in AbstractSortRoutine: ")
-					.append(sortName).append(".initialize(); Message= '")
-					.append(thrown.getClass().getName()).append(": ").append(
-							thrown.getMessage()).append('\'');
+			message.append("Exception in AbstractSortRoutine: ").append(
+					sortName).append(".initialize(); Message= '").append(
+					thrown.getClass().getName()).append(": ").append(
+					thrown.getMessage()).append('\'');
 			throw new JamException(message.toString(), thrown);
 		} catch (OutOfMemoryError thrown) {
-			message.append(sortName).append(
-					" attempts to allocate too much memory. ");
 			message
-					.append("Reduce its requirments or start Jam with more available heap space. ");
-			message
-					.append("The current maximum amount of memory available to the JVM is ");
+					.append(sortName)
+					.append(
+							" attempts to allocate too much memory. Reduce its requirments or start Jam with more available heap space. The current maximum amount of memory available to the JVM is ");
 			final double megabytes = Runtime.getRuntime().maxMemory()
 					/ (1024.0 * 1024.0);
-			message.append(megabytes).append(" MB.");
+			message.append(megabytes).append(" MB.");//NOPMD
 			throw new JamException(message.toString(), thrown);
 		} catch (Throwable thrown) {// NOPMD
 			message
 					.append("Couldn't load ")
 					.append(sortName)
-					.append("; You probably ")
-					.append(
-							"need to re-compile it against the current version of Jam.");
+					.append("; You probably need to re-compile it against the current version of Jam.");
 			throw new JamException(message.toString(), thrown);
 		}
 		/* setup scaler, parameter, monitors, gate, dialog boxes */
 		AbstractControl.setupAll();
 	}
-	
+
 	/**
 	 * Get list of classes implemented a interface
 	 */
-	private Set<Class<?>> getClasses(String inPackage, Class inClass) {
+	private Set<Class<?>> getClasses(final String inPackage, final Class inClass) {
 		final RTSI rtsi = RTSI.getSingletonInstance();
-		Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(rtsi.find(
-				inPackage, inClass, false));
-		lhs.remove(inClass);		
+		final Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(rtsi
+				.find(inPackage, inClass, false));
+		lhs.remove(inClass);
 		return lhs;
 	}
+
 	/**
 	 * Finds a class matching the given string in the collection, and attempts
 	 * to select it from the chooser.
@@ -351,14 +352,14 @@ abstract class AbstractSetup {
 	protected final void selectName(final JComboBox jcb,
 			final Collection<Class<?>> collection, final String defInStream) {
 		for (Class clazz : collection) {
-			final String name = clazz.getName(); 
+			final String name = clazz.getName();
 			if (name.equals(defInStream)) {
 				jcb.setSelectedItem(clazz);
 				break;
 			}
 		}
 	}
-	
+
 	/**
 	 * Locks up the setup so the fields cannot be edited.
 	 * 
@@ -377,5 +378,3 @@ abstract class AbstractSetup {
 	 */
 	protected abstract void setupSort() throws SortException, JamException;
 }
-
-
