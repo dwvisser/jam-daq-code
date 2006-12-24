@@ -1,5 +1,11 @@
 package jam.sort.stream;
 
+import static jam.sort.stream.L002Parameters.BUFFER_END_MARKER;
+import static jam.sort.stream.L002Parameters.EVENT_END_MARKER;
+import static jam.sort.stream.L002Parameters.EVENT_MASK;
+import static jam.sort.stream.L002Parameters.EVENT_PARAMETER;
+import static jam.sort.stream.L002Parameters.RUN_END_MARKER;
+
 import java.io.EOFException;
 
 /**
@@ -10,8 +16,7 @@ import java.io.EOFException;
  * @see AbstractEventInputStream
  * @since JDK1.1
  */
-public class YaleInputStream extends AbstractL002HeaderReader implements
-		L002Parameters {
+public class YaleInputStream extends AbstractL002HeaderReader {
 
 	private transient EventInputStatus status;
 
@@ -74,8 +79,7 @@ public class YaleInputStream extends AbstractL002HeaderReader implements
 			} catch (Exception e) {
 				status = EventInputStatus.UNKNOWN_WORD;
 				throw new EventException(getClass().getName()
-						+ ".readEvent() parameter = " + parameter
-						+ " Exception: " + e.toString());
+						+ ".readEvent() parameter = " + parameter, e);
 			}
 			return status;
 		}

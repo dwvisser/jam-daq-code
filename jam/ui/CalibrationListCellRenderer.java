@@ -41,13 +41,13 @@ public class CalibrationListCellRenderer
 			setForeground(list.getForeground());
 		}
 		
-		if (value!=null) {
-			setText(value.toString());
-			ImageIcon icon= AbstractCalibrationFunction.getIcon(value.toString());
-			setIcon(icon);
-		} else {
+		if (value==null) {
 			setText("null");
 			setIcon(null);
+		} else {
+			setText(value.toString());
+			final ImageIcon icon= AbstractCalibrationFunction.getIcon(value.toString());
+			setIcon(icon);
 		}
 		
 		setBorder(

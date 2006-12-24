@@ -1,5 +1,8 @@
 package jam.sort.stream;
 
+import static jam.sort.stream.L002Parameters.HEADER_START;
+import static jam.sort.stream.L002Parameters.IMAGE_LENGTH;
+import static jam.sort.stream.L002Parameters.TITLE_MAX;
 import jam.global.RunInfo;
 import jam.util.StringUtilities;
 
@@ -13,7 +16,7 @@ import java.util.TimeZone;
  * @author dvk
  *
  */
-public abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream implements L002Parameters {
+public abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream {
     
 	/**
 	 * Default constructor.
@@ -42,7 +45,10 @@ public abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream
      */
     public void writeHeader() throws EventException {
 		final StringUtilities stringUtilities=StringUtilities.getInstance();
-        final String dateString = formatter.format(RunInfo.runStartTime);	    //date
+		String dateString;
+		synchronized (formatter) {
+			dateString = formatter.format(RunInfo.runStartTime);	    //date
+		}
         final String title=RunInfo.runTitle;					    //title
         final int number=RunInfo.runNumber;					    //header number
         final byte [] reserved1=new byte [8];					    //reserved 1
@@ -67,7 +73,7 @@ public abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream
             dataOutput.write(reserved2, 0, reserved2.length);			    //reserved 2
             dataOutput.flush();
         } catch (IOException io){
-            throw new EventException("Writing header IOException "+io.getMessage()+" [L002OutputStream]");
+            throw new EventException("Problem writing header.", io);
 
         }
     }

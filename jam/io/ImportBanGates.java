@@ -25,14 +25,14 @@ public final class ImportBanGates extends AbstractImpExp {
 	/**
 	 * @see jam.io.AbstractImpExp#openFile(File, String)
 	 */
-	public boolean openFile(File f) throws ImpExpException {
-		return openFile(f, "Open BAN file");
+	public boolean openFile(final File file) throws ImpExpException {
+		return openFile(file, "Open BAN file");
 	}
 
 	/**
 	 * @see jam.io.AbstractImpExp#saveFile(jam.data.Histogram)
 	 */
-	public void saveFile(Histogram hist) throws ImpExpException {
+	public void saveFile(final Histogram hist) throws ImpExpException {
 		LOGGER.warning("Save BAN not implemented.");
 	}
 
@@ -57,7 +57,7 @@ public final class ImportBanGates extends AbstractImpExp {
 	/**
 	 * @see jam.io.AbstractImpExp#readData(java.io.InputStream)
 	 */
-	protected void readData(InputStream inStream) throws ImpExpException {
+	protected void readData(final InputStream inStream) throws ImpExpException {
 		final int[] gates;
 		final Reader reader = new InputStreamReader(inStream);
 		final StreamTokenizer tokens = new StreamTokenizer(reader);
@@ -67,66 +67,66 @@ public final class ImportBanGates extends AbstractImpExp {
 				readGate(tokens);
 			}
 		} catch (IOException e) {
-			throw new ImpExpException(e.toString());
+			throw new ImpExpException("Problem reading data.", e);
 		}
 	}
 
-	private int[] readHeader(StreamTokenizer st) throws IOException {
-		int i = 0;
+	private int[] readHeader(final StreamTokenizer parser) throws IOException {
+		int index = 0;
 		final int[] gates = new int[80];
-		while (st.nextToken() == StreamTokenizer.TT_NUMBER) {
-			final int n = (int) st.nval;
-			if (n > 0) {
-				gates[i] = n;
-				i++;
+		while (parser.nextToken() == StreamTokenizer.TT_NUMBER) {
+			final int number = (int) parser.nval;
+			if (number > 0) {
+				gates[index] = number;
+				index++;
 			}
 		} // fall out when we've read "INP"
-		st.pushBack();
-		final int[] rval = new int[i];
-		System.arraycopy(gates, 0, rval, 0, i);
+		parser.pushBack();
+		final int[] rval = new int[index];
+		System.arraycopy(gates, 0, rval, 0, index);
 		return rval;
 	}
 
-	private void readGate(StreamTokenizer st) throws IOException {
+	private void readGate(final StreamTokenizer parser) throws IOException {
 		final String CXY = "CXY";
 		final String INP = "INP";
 		/* first advance to start of record */
 		do {
-			st.nextToken();
-		} while (!INP.equals(st.sval));
-		st.nextToken(); // hisfilename
-		st.nextToken(); // hist #
-		final int hisNum = (int) st.nval;
+			parser.nextToken();
+		} while (!INP.equals(parser.sval));
+		parser.nextToken(); // hisfilename
+		parser.nextToken(); // hist #
+		final int hisNum = (int) parser.nval;
 		final Histogram his = Histogram.getHistogram(hisNum);
-		st.nextToken(); // gate number
-		final int gateNum = (int) st.nval;
-		st.nextToken(); // 0
-		st.nextToken(); // # points
-		final int numPoints = (int) st.nval;
-		while (!CXY.equals(st.sval)) {
-			st.nextToken();
+		parser.nextToken(); // gate number
+		final int gateNum = (int) parser.nval;
+		parser.nextToken(); // 0
+		parser.nextToken(); // # points
+		final int numPoints = (int) parser.nval;
+		while (!CXY.equals(parser.sval)) {
+			parser.nextToken();
 		}
-		final Polygon p = new Polygon();
+		final Polygon shape = new Polygon();
 		for (int i = 0; i < numPoints; i++) {
-			st.nextToken(); // x
-			if (st.ttype == StreamTokenizer.TT_WORD) {
-				st.nextToken(); // skip "CXY" 's
+			parser.nextToken(); // x
+			if (parser.ttype == StreamTokenizer.TT_WORD) {
+				parser.nextToken(); // skip "CXY" 's
 			}
-			final int x = (int) st.nval;
-			st.nextToken(); // y
-			final int y = (int) st.nval;
-			p.addPoint(x, y);
+			final int xval = (int) parser.nval;
+			parser.nextToken(); // y
+			final int yval = (int) parser.nval;
+			shape.addPoint(xval, yval);
 		}
 		final String name = String.valueOf(gateNum);
-		if (his != null) {
-			Gate g = Gate.getGate(name);
-			if (g == null || his.getDimensionality() != 2) {
-				g = new Gate(name, his);
-			}
-			g.setLimits(p);
-		} else {
+		if (his == null) {
 			LOGGER.warning("Couldn't load gate " + name
 					+ ". Expected histogram # " + hisNum + ".");
+		} else {
+			Gate gate = Gate.getGate(name);
+			if (gate == null || his.getDimensionality() != 2) {
+				gate = new Gate(name, his);
+			}
+			gate.setLimits(shape);
 		}
 	}
 
@@ -134,7 +134,7 @@ public final class ImportBanGates extends AbstractImpExp {
 	 * @see jam.io.AbstractImpExp#writeHist(java.io.OutputStream,
 	 *      jam.data.Histogram)
 	 */
-	protected void writeHist(OutputStream outStream, Histogram hist)
+	protected void writeHist(final OutputStream outStream, final Histogram hist)
 			throws ImpExpException {
 		// not implementing
 	}

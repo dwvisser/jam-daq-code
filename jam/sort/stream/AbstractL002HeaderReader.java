@@ -1,4 +1,5 @@
 package jam.sort.stream;
+import static jam.sort.stream.L002Parameters.HEADER_START;
 import jam.util.StringUtilities;
 
 import java.io.IOException;
@@ -11,7 +12,7 @@ import java.io.IOException;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Feb 2, 2004
  */
-public abstract class AbstractL002HeaderReader extends AbstractEventInputStream implements L002Parameters {
+public abstract class AbstractL002HeaderReader extends AbstractEventInputStream {
 
 	/**
 	 * Creates the input stream given an event size.
@@ -74,7 +75,7 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 			}
 			return headerKey.equals(HEADER_START);
 		} catch (IOException ioe) {
-			throw new EventException(getClass().getName()+".readHeader(): IOException "+ioe.getMessage());
+			throw new EventException("Problem reading header.", ioe);
 		}
 	}
 }

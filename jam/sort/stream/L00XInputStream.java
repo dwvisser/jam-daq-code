@@ -1,5 +1,6 @@
 package jam.sort.stream;
 
+import static jam.sort.stream.L002Parameters.*;
 import java.io.EOFException;
 
 /**
@@ -10,8 +11,7 @@ import java.io.EOFException;
  * @see AbstractEventInputStream
  * @since JDK1.1
  */
-public class L00XInputStream extends AbstractL002HeaderReader implements
-		L002Parameters {
+public class L00XInputStream extends AbstractL002HeaderReader {
 
 	private transient EventInputStatus status;
 
@@ -63,32 +63,32 @@ public class L00XInputStream extends AbstractL002HeaderReader implements
 			boolean gotParameter = false;
 			try {
 				while (isParameter(dataInput.readShort())) {// could be event or
-															// scaler parameter
+					// scaler parameter
 					gotParameter = true;
 					if (status == EventInputStatus.PARTIAL_EVENT) {
 						if (parameter >= eventSize) {// skip, since array
-														// index would be too
-														// great for event array
+							// index would be too
+							// great for event array
 							dataInput.readShort();
 						} else {// read into array
 							input[parameter] = dataInput.readShort(); // read
-																		// event
-																		// word
+							// event
+							// word
 						}
 					} else if (status == EventInputStatus.SCALER_VALUE) {
 						dataInput.readInt();// throw away scaler value
 					}
 				}
 			} catch (EOFException eofe) {// we got to the end of a file or
-											// stream
+				// stream
 				status = EventInputStatus.END_FILE;
-				LOGGER.warning(getClass().getName()
+				LOGGER
+						.warning(getClass().getName()
 								+ ".readEvent(): End of File reached...file may be corrupted, or run not ended properly.");
 			} catch (Exception e) {
 				status = EventInputStatus.UNKNOWN_WORD;
 				throw new EventException(getClass().getName()
-						+ ".readEvent() parameter = " + parameter
-						+ " Exception: " + e.toString());
+						+ ".readEvent() parameter = " + parameter, e);
 			}
 			if (!gotParameter && status == EventInputStatus.EVENT) {
 				status = EventInputStatus.IGNORE;
@@ -113,7 +113,7 @@ public class L00XInputStream extends AbstractL002HeaderReader implements
 			parameterSuccess = false;
 			status = EventInputStatus.END_RUN;
 			// get parameter value if not special type
-		} else if ((paramWord & EVENT_PARAMETER) != 0) {//NOPMD
+		} else if ((paramWord & EVENT_PARAMETER) != 0) {// NOPMD
 			final int paramNumber = paramWord & EVENT_MASK;
 			if (paramNumber < 2048) {
 				parameter = paramNumber - 1;// parameter number used in array

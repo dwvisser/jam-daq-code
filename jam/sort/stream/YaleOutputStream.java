@@ -1,5 +1,9 @@
 package jam.sort.stream;
 
+import static jam.sort.stream.L002Parameters.EVENT_END_MARKER;
+import static jam.sort.stream.L002Parameters.EVENT_PARAMETER;
+import static jam.sort.stream.L002Parameters.RUN_END_MARKER;
+
 import java.io.IOException;
 
 /**
@@ -43,17 +47,17 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 			}
 			dataOutput.writeShort(EVENT_END_MARKER);
 		} catch (IOException ie) {
-			throw new EventException("Can't write event: " + ie.toString());
+			throw new EventException("Can't write event.", ie);
 		}
 	}
 
-	 /**
-		 * Writes out a event in the L002 format Implemented
-		 * <code>EventOutputStream</code> abstract method.
-		 * 
-		 * @exception EventException
-		 *                thrown for unrecoverable errors
-		 */
+	/**
+	 * Writes out a event in the L002 format Implemented
+	 * <code>EventOutputStream</code> abstract method.
+	 * 
+	 * @exception EventException
+	 *                thrown for unrecoverable errors
+	 */
 	public void writeEvent(final short[] input) throws EventException {
 		try {
 			for (short i = 0; i < eventSize; i++) {
@@ -83,7 +87,7 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 						+ param);
 			}
 		} catch (IOException ioe) {
-			throw new EventException(ioe.toString());
+			throw new EventException("Problem writing parameter.", ioe);
 		}
 	}
 

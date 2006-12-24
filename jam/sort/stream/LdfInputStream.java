@@ -1,5 +1,10 @@
 package jam.sort.stream;
 
+import static jam.sort.stream.L002Parameters.BUFFER_END_MARKER;
+import static jam.sort.stream.L002Parameters.EVENT_END_MARKER;
+import static jam.sort.stream.L002Parameters.EVENT_MASK;
+import static jam.sort.stream.L002Parameters.EVENT_PARAMETER;
+import static jam.sort.stream.L002Parameters.RUN_END_MARKER;
 import jam.util.NumberUtilities;
 
 import java.io.EOFException;
@@ -14,8 +19,7 @@ import java.nio.ByteOrder;
  * @see AbstractEventInputStream
  * @since JDK1.1
  */
-public class LdfInputStream extends AbstractEventInputStream implements
-		L002Parameters {
+public class LdfInputStream extends AbstractEventInputStream {
 
 	private transient EventInputStatus status;
 
@@ -70,41 +74,15 @@ public class LdfInputStream extends AbstractEventInputStream implements
 	 *                thrown for errors in the event stream
 	 * @return status after attempt to read an event
 	 */
-	public EventInputStatus readEvent(int[] input) throws EventException {
+	public EventInputStatus readEvent(final int[] input) throws EventException {
 		synchronized (this) {
 			boolean gotParameter = false;
 			try {
 				if (skip) {
-					boolean stop = false;
-					do {
-						stop = dataInput.readShort() == ASCII_DA;
-						if (stop) {
-							stop = dataInput.readShort() == ASCII_TA;
-						}
-						if (stop) {
-							stop = dataInput.readInt() == REST;
-						}
-					} while (!stop);
+					skipLoop();
 					skip = false;
 				}
-				while (isParameter(readVaxShort())) {// could be event or
-					// scaler
-					// parameter
-					gotParameter = true;
-					if (status == EventInputStatus.PARTIAL_EVENT) {
-						if (parameter >= eventSize) {// skip, since array
-							// index
-							// would be too great for
-							// event array
-							dataInput.readShort();
-						} else {// read into array
-							input[parameter] = readVaxShort(); // read event
-							// word
-						}
-					} else if (status == EventInputStatus.SCALER_VALUE) {
-						dataInput.readInt();// throw away scaler value
-					}
-				}
+				gotParameter = readParameters(input, gotParameter);
 			} catch (EOFException eofe) {// we got to the end of a file or
 				// stream
 				status = EventInputStatus.END_FILE;
@@ -118,6 +96,53 @@ public class LdfInputStream extends AbstractEventInputStream implements
 			}
 			return status;
 		}
+	}
+
+	/**
+	 * @param input
+	 * @param gotParameter
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean readParameters(int[] input, final boolean gotParameter) throws IOException {
+		boolean rval = gotParameter;
+		while (isParameter(readVaxShort())) {// could be event or
+			// scaler
+			// parameter
+			rval = true;
+			if (status == EventInputStatus.PARTIAL_EVENT) {
+				if (parameter >= eventSize) {// skip, since array
+					// index
+					// would be too great for
+					// event array
+					dataInput.readShort();
+				} else {// read into array
+					input[parameter] = readVaxShort(); // read event
+					// word
+				}
+			} else if (status == EventInputStatus.SCALER_VALUE) {
+				dataInput.readInt();// throw away scaler value
+			}
+		}
+		return rval;
+	}
+
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean skipLoop() throws IOException {
+		boolean stop;
+		do {
+			stop = dataInput.readShort() == ASCII_DA;
+			if (stop) {
+				stop = dataInput.readShort() == ASCII_TA;
+			}
+			if (stop) {
+				stop = dataInput.readInt() == REST;
+			}
+		} while (!stop);
+		return stop;
 	}
 
 	/*
