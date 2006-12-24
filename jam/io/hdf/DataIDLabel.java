@@ -1,5 +1,7 @@
 package jam.io.hdf;
 
+import static jam.io.hdf.Constants.DFTAG_DIL;
+
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -28,10 +30,12 @@ final class DataIDLabel extends AbstractData {
 				break;
 			}
 		}
-//		if (rval==null) {
-//			throw new IllegalStateException("We should always have a result here. In a list of "+
-//					labels.size()+" labels, none pointed to tag="+tag.getName()+", ref="+ref+".");
-//		}
+		// if (rval==null) {
+		// throw new IllegalStateException("We should always have a result here.
+		// In a list of "+
+		// labels.size()+" labels, none pointed to tag="+tag.getName()+",
+		// ref="+ref+".");
+		// }
 		return rval;
 	}
 
@@ -51,8 +55,9 @@ final class DataIDLabel extends AbstractData {
 		bytes.putShort(object.getTag());
 		bytes.putShort(object.getRef());
 		putString(label);
-		
-		LOGGER.fine("DataIDLabel for Tag: "+object.getTag()+" Ref: "+object.getRef()+" Label: "+label);		
+
+		LOGGER.fine("DataIDLabel for Tag: " + object.getTag() + " Ref: "
+				+ object.getRef() + " Label: " + label);
 	}
 
 	DataIDLabel() {
@@ -66,11 +71,12 @@ final class DataIDLabel extends AbstractData {
 	 *                thrown if there is a problem interpreting the bytes
 	 */
 	protected void interpretBytes() throws HDFException {
-		bytes.position(0);		
+		bytes.position(0);
 		final short tagType = bytes.getShort();
 		final short reference = bytes.getShort();
 		label = getString(bytes.remaining());
-		LOGGER.fine("DataIDLabel for Tag: "+tagType+" Ref: "+reference+" Label: "+label);		
+		LOGGER.fine("DataIDLabel for Tag: " + tagType + " Ref: " + reference
+				+ " Label: " + label);
 		object = getObject(TYPES.get(tagType), reference);
 	}
 
@@ -82,19 +88,18 @@ final class DataIDLabel extends AbstractData {
 	}
 
 	public String toString() {
-		String rtnString;
-		if (object!=null)
-			rtnString= "(Label \"" +label+"\": "+object.toString()+')';
-		else 
-			rtnString= "(Label \"" +label+"\": "+"null)";
-		return rtnString;
+		final StringBuilder rval = new StringBuilder("(Label \"");
+		rval.append(label).append("\": ");
+		rval.append((object == null) ? "null" : object.toString());
+		rval.append(')');
+		return rval.toString();
 	}
 
 	/**
 	 * 
 	 * @return the object referred to
 	 */
-	private AbstractData getObject() {//NOPMD
+	private AbstractData getObject() {// NOPMD
 		return object;
 	}
 

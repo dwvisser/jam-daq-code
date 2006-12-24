@@ -1,5 +1,6 @@
 package jam.plot;
 
+import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 import jam.data.AbstractHist1D;
 import jam.data.Histogram;
 import jam.plot.color.ColorPrefs;
@@ -26,7 +27,7 @@ import javax.swing.SwingUtilities;
  * @author Ken Swartz
  */
 
-final class Plot2d extends AbstractPlot implements ColorPrefs {
+final class Plot2d extends AbstractPlot {
 
 	/** last pixel point added to gate list */
 	private transient final Point lastGatePoint = new Point();

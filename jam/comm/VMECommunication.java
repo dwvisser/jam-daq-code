@@ -107,7 +107,7 @@ public final class VMECommunication extends GoodThread implements
 					addressLocal = InetAddress.getByName(LOCAL_IP);
 				} catch (UnknownHostException ue) {
 					throw new JamException(getClass().getName()
-							+ ": Unknown local host " + LOCAL_IP);
+							+ ": Unknown local host " + LOCAL_IP, ue);
 				}
 				try {
 					addressVME = InetAddress.getByName(VME_IP);

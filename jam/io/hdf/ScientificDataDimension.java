@@ -1,5 +1,7 @@
 package jam.io.hdf;
 
+import static jam.io.hdf.Constants.DFTAG_SDD;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -29,7 +31,8 @@ final class ScientificDataDimension extends AbstractData {
 	static ScientificDataDimension create(final short rank, final int sizeX,
 			final int sizeY, final byte numberType) {
 		ScientificDataDimension rval = null;// return value
-		for (ScientificDataDimension sdd : AbstractData.ofType(ScientificDataDimension.class)) {
+		for (ScientificDataDimension sdd : AbstractData
+				.ofType(ScientificDataDimension.class)) {
 			if ((sdd.getRank() == rank) && (sdd.getType() == numberType)
 					&& (sdd.getSizeX() == sizeX) && (sdd.getSizeY() == sizeY)) {
 				rval = sdd;
@@ -91,7 +94,8 @@ final class ScientificDataDimension extends AbstractData {
 		sizeY = (rank == 2) ? bytes.getInt() : 0;
 		numberTag = bytes.getShort();
 		numberRef = bytes.getShort();
-		numberType = ((NumberType) getObject(TYPES.get(numberTag), numberRef)).getType();
+		numberType = ((NumberType) getObject(TYPES.get(numberTag), numberRef))
+				.getType();
 		/* We don't bother reading the scales */
 	}
 

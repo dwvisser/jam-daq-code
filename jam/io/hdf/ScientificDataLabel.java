@@ -1,5 +1,6 @@
 package jam.io.hdf;
 
+import static jam.io.hdf.Constants.DFTAG_SDL;
 
 /**
  * Class to represent an HDF <em>scientific data label</em> data object. The
@@ -11,35 +12,35 @@ package jam.io.hdf;
  */
 final class ScientificDataLabel extends AbstractData {
 
-    ScientificDataLabel() {
-        super(DFTAG_SDL);
-    }
+	ScientificDataLabel() {
+		super(DFTAG_SDL);
+	}
 
-    /**
-     * Implementation of <code>DataObject</code> abstract method.
-     */
-    public void interpretBytes() {
-        int[] lengths;
-        bytes.position(0);
-        int numLabels = 0;
-        int lenCounter = 0;
-        lengths = new int[10];
-        /*
-         * hard to imagine needing this many dimensions, so should be sufficient
-         */
-        for (bytes.rewind(); bytes.remaining() > 0; lenCounter++) {
-            final byte next = bytes.get();
-            if (next == (byte) 0) {
-                lengths[numLabels] = lenCounter;
-                numLabels++;
-                lenCounter = 0;
-            }
-        }
-        final String[] labels = new String[numLabels];
-        bytes.rewind();
-        for (int i = 0; i < numLabels; i++) {
-            labels[i] = getString(lengths[i]);
-            bytes.get(); // skip null character
-        }
-    }
+	/**
+	 * Implementation of <code>DataObject</code> abstract method.
+	 */
+	public void interpretBytes() {
+		int[] lengths;
+		bytes.position(0);
+		int numLabels = 0;
+		int lenCounter = 0;
+		lengths = new int[10];
+		/*
+		 * hard to imagine needing this many dimensions, so should be sufficient
+		 */
+		for (bytes.rewind(); bytes.remaining() > 0; lenCounter++) {
+			final byte next = bytes.get();
+			if (next == (byte) 0) {
+				lengths[numLabels] = lenCounter;
+				numLabels++;
+				lenCounter = 0;
+			}
+		}
+		final String[] labels = new String[numLabels];
+		bytes.rewind();
+		for (int i = 0; i < numLabels; i++) {
+			labels[i] = getString(lengths[i]);
+			bytes.get(); // skip null character
+		}
+	}
 }

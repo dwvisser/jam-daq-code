@@ -13,17 +13,22 @@ import java.util.prefs.Preferences;
  * @version November 9, 2004
  * @see java.util.prefs.Preferences
  */
-public interface ColorPrefs {
+public final class ColorPrefs {
+	
+	private ColorPrefs(){
+		super();
+	}
+	
     /**
      * The preferences node for this package.
      */
-	Preferences COLOR_PREFS = Preferences
+	static public final Preferences COLOR_PREFS = Preferences
 			.userNodeForPackage(ColorPrefs.class);
 
 	/**
 	 * Whether to use a continuous gradient or discrete color scale.
 	 */
-	String SMOOTH_SCALE = "ContinuousColorScale";
+	static public final String SMOOTH_SCALE = "ContinuousColorScale";
 }
 
 enum GradientSpecFieldsRGB {

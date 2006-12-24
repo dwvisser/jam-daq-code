@@ -1,5 +1,7 @@
 package jam.io.hdf;
 
+import static jam.io.hdf.Constants.DFTAG_VG;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,7 +102,7 @@ final class VirtualGroup extends AbstractData {
 			add(getObject(TYPES.get(tags[i]), refs[i]));
 		}
 		/* rest of element has no useful information */
-		LOGGER.fine("Initialized "+toString());
+		LOGGER.fine("Initialized " + toString());
 	}
 
 	/**

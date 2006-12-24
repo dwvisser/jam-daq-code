@@ -8,16 +8,19 @@ import java.util.prefs.Preferences;
 * 
 * @author Ken Swartz
 */
-public interface HDFPrefs {
+public final class HDFPrefs {
+	
+		private HDFPrefs(){
+			super();
+		}
 	   
 	   /**
 	    * The preferences node for the <code>jam</code> package.
 	    */
-		Preferences PREFS=Preferences.userNodeForPackage(JamPrefs.class);
+		public static final Preferences PREFS=Preferences.userNodeForPackage(JamPrefs.class);
 		
 		/**
 		 * Name for the empty write preference.
 		 */
-		String SUPPRES_EMPTY="Write Empty Histograms/Gates";
-		
+		public static final String SUPPRES_EMPTY="Write Empty Histograms/Gates";
 }

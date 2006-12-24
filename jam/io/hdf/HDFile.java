@@ -1,5 +1,9 @@
 package jam.io.hdf;
 
+import static jam.io.hdf.Constants.DFTAG_NULL;
+import static jam.io.hdf.Constants.HDF_HEADER;
+import static jam.io.hdf.Constants.HEADER_BYTES;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,19 +18,19 @@ import java.util.logging.Logger;
  * @author Ken Swartz
  * @since JDK1.1
  */
-public final class HDFile extends RandomAccessFile implements Constants {
+public final class HDFile extends RandomAccessFile {
 	private static class FractionTime {
 		private FractionTime() {
 			super();
 		}
 
-		static final float READ_ALL = 1.0f;
+		public static final float READ_ALL = 1.0f;
 
-		static final float READ_LAZY_HISTS = 0.7f;
+		public static final float READ_LAZY_HISTS = 0.7f;
 
-		static final float READ_NOT_HIST = 0.3f;
+		public static final float READ_NOT_HIST = 0.3f;
 
-		static final float WRITE_ALL = 1.0f;
+		public static final float WRITE_ALL = 1.0f;
 	}
 
 	private static final Logger LOGGER = Logger.getLogger(HDFile.class
@@ -107,17 +111,6 @@ public final class HDFile extends RandomAccessFile implements Constants {
 		return (magicInt == HDF_HEADER);
 	}
 
-	/**
-	 * First, calls <code>super.close()</code>, then clears collections of
-	 * temporary objects used to build the file, and then sets their references
-	 * to to <code>null</code>.
-	 * 
-	 * @see java.io.RandomAccessFile#close()
-	 */
-	public void close() throws IOException {
-		super.close();
-	}
-
 	/*
 	 * non-javadoc: Count objects in file
 	 * 
@@ -143,6 +136,8 @@ public final class HDFile extends RandomAccessFile implements Constants {
 		return numberObjects;
 	}
 
+	private static final String REF = " ref ";
+	
 	/*
 	 * non-javadoc: Fixes reference for old files @param ref
 	 */
@@ -150,7 +145,7 @@ public final class HDFile extends RandomAccessFile implements Constants {
 			final int length) throws IOException {
 		mark();
 		seek(offset);
-		LOGGER.info("Read Tag " + tag + " ref " + ref + " offset " + offset
+		LOGGER.info("Read Tag " + tag + REF + ref + " offset " + offset
 				+ " length " + length);
 		if (tag == Constants.DFTAG_NDG) {
 			final short propTag1 = readShort();
@@ -170,7 +165,7 @@ public final class HDFile extends RandomAccessFile implements Constants {
 				refs[i] = readShort();
 			}
 			for (int i = 0; i < numItems; i++) {
-				LOGGER.info("  VG  num " + i + " tag " + tags[i] + " ref "
+				LOGGER.info("  VG  num " + i + " tag " + tags[i] + REF
 						+ refs[i]);
 			}
 		}
@@ -248,7 +243,6 @@ public final class HDFile extends RandomAccessFile implements Constants {
 	 *                unrecoverable error
 	 */
 	public void readFile() throws HDFException {
-		int numObjSteps;
 		int countObjct = 0;
 		lazyLoadNum = 0;
 		lazyCount = 0;
@@ -256,13 +250,7 @@ public final class HDFile extends RandomAccessFile implements Constants {
 			if (!checkMagicWord()) {
 				throw new HDFException("Not an hdf file.");
 			}
-			if (lazyLoadData) {
-				numObjSteps = getNumberObjctProgressStep(countHDFOjects(),
-						FractionTime.READ_NOT_HIST);
-			} else {
-				numObjSteps = getNumberObjctProgressStep(countHDFOjects(),
-						FractionTime.READ_ALL);
-			}
+			final int numObjSteps = getNumberOfSteps();
 			seek(HEADER_BYTES);
 			boolean hasNextBlock = true;
 			while (hasNextBlock) {
@@ -272,20 +260,12 @@ public final class HDFile extends RandomAccessFile implements Constants {
 					final short tag = readShort();
 					final short ref = readShort();
 					final int offset = readInt();
-					final int length = readInt();					
-					//Debug
-					LOGGER.fine("Read Tag "+tag+" ref "+ref+" offset "+offset+" length "+length );						
+					final int length = readInt();
+					// Debug
+					LOGGER.fine("Read Tag " + tag + REF + ref + " offset "
+							+ offset + " length " + length);
 					if (tag != DFTAG_NULL) {// Not an empty tag
-						// Load scientific data as last moment needed
-						if (lazyLoadData && tag == Constants.DFTAG_SD) {
-							AbstractData.create(ScientificData.class, ref,
-									offset, length);
-							lazyLoadNum++;
-						} else {
-							final byte[] bytes = readBytes(offset, length);
-							AbstractData.create(bytes, AbstractData.TYPES
-									.get(tag), ref);
-						}
+						loadDataObject(tag, ref, offset, length);
 					}
 					countObjct++;
 					// Update progress bar
@@ -302,6 +282,43 @@ public final class HDFile extends RandomAccessFile implements Constants {
 		} catch (IOException e) {
 			throw new HDFException("Problem reading HDF file objects. ", e);
 		}
+	}
+
+	/**
+	 * @param tag
+	 * @param ref
+	 * @param offset
+	 * @param length
+	 * @throws HDFException
+	 * @throws IOException
+	 */
+	private void loadDataObject(final short tag, final short ref, final int offset, final int length) throws HDFException, IOException {
+		// Load scientific data as last moment needed
+		if (lazyLoadData && tag == Constants.DFTAG_SD) {
+			AbstractData.create(ScientificData.class, ref,
+					offset, length);
+			lazyLoadNum++;
+		} else {
+			final byte[] bytes = readBytes(offset, length);
+			AbstractData.create(bytes, AbstractData.TYPES
+					.get(tag), ref);
+		}
+	}
+
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	private int getNumberOfSteps() throws IOException {
+		int numObjSteps;
+		if (lazyLoadData) {
+			numObjSteps = getNumberObjctProgressStep(countHDFOjects(),
+					FractionTime.READ_NOT_HIST);
+		} else {
+			numObjSteps = getNumberObjctProgressStep(countHDFOjects(),
+					FractionTime.READ_ALL);
+		}
+		return numObjSteps;
 	}
 
 	/**
@@ -389,9 +406,12 @@ public final class HDFile extends RandomAccessFile implements Constants {
 					writeShort(dataObject.getRef());
 					writeInt(dataObject.getOffset());
 					writeInt(dataObject.getBytes().capacity());
-					//Debug 
-					LOGGER.fine("Write Tag "+dataObject.getTag()+" ref "+dataObject.getRef()+" offset "+dataObject.getOffset()+" length "+dataObject.getBytes().capacity() );
-					
+					// Debug
+					LOGGER.fine("Write Tag " + dataObject.getTag() + REF
+							+ dataObject.getRef() + " offset "
+							+ dataObject.getOffset() + " length "
+							+ dataObject.getBytes().capacity());
+
 				}
 			} catch (IOException e) {
 				throw new HDFException("Problem writing DD block.", e);

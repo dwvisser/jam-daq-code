@@ -1,5 +1,7 @@
 package jam.io.hdf;
 
+import static jam.io.hdf.Constants.DFTAG_DIA;
+
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -108,7 +110,7 @@ final class DataIDAnnotation extends AbstractData {
 		return note;
 	}
 
-	private AbstractData getObject() {//NOPMD
+	private AbstractData getObject() {// NOPMD
 		return object;
 	}
 

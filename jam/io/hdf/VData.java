@@ -1,5 +1,6 @@
 package jam.io.hdf;
 
+import static jam.io.hdf.Constants.DFTAG_VS;
 import jam.util.StringUtilities;
 
 import java.nio.ByteBuffer;

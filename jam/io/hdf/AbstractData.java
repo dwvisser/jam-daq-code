@@ -1,5 +1,20 @@
 package jam.io.hdf;
 
+import static jam.io.hdf.Constants.DFTAG_DIA;
+import static jam.io.hdf.Constants.DFTAG_DIL;
+import static jam.io.hdf.Constants.DFTAG_FD;
+import static jam.io.hdf.Constants.DFTAG_FID;
+import static jam.io.hdf.Constants.DFTAG_MT;
+import static jam.io.hdf.Constants.DFTAG_NDG;
+import static jam.io.hdf.Constants.DFTAG_NT;
+import static jam.io.hdf.Constants.DFTAG_SD;
+import static jam.io.hdf.Constants.DFTAG_SDD;
+import static jam.io.hdf.Constants.DFTAG_SDL;
+import static jam.io.hdf.Constants.DFTAG_SDS;
+import static jam.io.hdf.Constants.DFTAG_VER;
+import static jam.io.hdf.Constants.DFTAG_VG;
+import static jam.io.hdf.Constants.DFTAG_VH;
+import static jam.io.hdf.Constants.DFTAG_VS;
 import jam.util.StringUtilities;
 
 import java.nio.ByteBuffer;
@@ -18,7 +33,7 @@ import java.util.logging.Logger;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since JDK1.1
  */
-public abstract class AbstractData implements Constants {
+public abstract class AbstractData {
 
 	/**
 	 * For logging debugging messages only.

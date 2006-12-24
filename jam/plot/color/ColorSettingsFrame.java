@@ -1,5 +1,6 @@
 package jam.plot.color;
 
+import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 import jam.global.JamStatus;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -32,8 +33,7 @@ import javax.swing.event.ChangeListener;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  * @version 2004-11-08
  */
-public class ColorSettingsFrame extends JDialog implements ChangeListener,
-		ColorPrefs {
+public class ColorSettingsFrame extends JDialog implements ChangeListener {
 
 	static private final ColorSettingsFrame CSF = new ColorSettingsFrame();
 
@@ -148,7 +148,7 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		csChooser.addItemListener(new ItemListener() {
 			public void itemStateChanged(final ItemEvent itemEvent) {
 				final String selection = (String) csChooser.getSelectedItem();
-				if (selection.equals("Greyscale")) {
+				if ("Greyscale".equals(selection)) {
 					x0RSlider.setValue(100);
 					x0GSlider.setValue(100);
 					x0BSlider.setValue(100);
@@ -162,7 +162,7 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 					aRSlider.setValue(50);
 					aGSlider.setValue(40);
 					aBSlider.setValue(30);
-				} else if (selection.equals("Purple Haze")) {
+				} else if ("Purple Haze".equals(selection)) {
 					x0RSlider.setValue(100);
 					x0GSlider.setValue(0);
 					x0BSlider.setValue(100);
