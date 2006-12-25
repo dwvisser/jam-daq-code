@@ -37,6 +37,13 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 	public AbstractL002HeaderReader(){
 		super();
 	}
+	
+	/**
+	 * Implementers must describe their particular
+	 * variant of L002 in plain English.
+	 * @return a string description
+	 */
+	public abstract String getFormatDescription();
 
 	/**
 	 * @see jam.sort.stream.AbstractEventInputStream#readHeader()

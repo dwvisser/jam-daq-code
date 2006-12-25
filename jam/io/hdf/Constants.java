@@ -8,6 +8,10 @@ package jam.io.hdf;
  */
 public final class Constants {
 
+	private Constants() {
+		super();
+	}
+
 	/**
 	 * Byte pattern for bytes 0-3 of any standard v4.1r2 HDF file.
 	 */

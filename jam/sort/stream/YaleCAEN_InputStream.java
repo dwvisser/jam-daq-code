@@ -148,6 +148,10 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 		super(console, eventSize);
 	}
 
+	public String getFormatDescription(){
+		return "Not an L002 format, but uses similar delimiters for special blocks.";
+	}
+
 	private void addEventIndex(final int eventNumber) {
 		eventNumbers[posPut] = eventNumber;
 		// automatically initialized to all zeros

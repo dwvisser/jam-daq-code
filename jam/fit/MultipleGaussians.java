@@ -118,31 +118,38 @@ public class MultipleGaussians extends AbstractNonLinearFit {
 		addParameter(paramB);
 		addParameter(paramC);
 		for (int i = 0; i < POSSIBLE_PEAKS; i++) {
-			S_AREA[i] = "Area " + (i + 1);
-			S_WIDTH[i] = "Width " + (i + 1);
-			S_CENTROID[i] = "Centroid " + (i + 1);
-			area[i] =
-				new Parameter(
-					S_AREA[i],
-					Parameter.DOUBLE,
-					Parameter.FIX,
-					Parameter.ESTIMATE);
-			area[i].setEstimate(true);
-			centroid[i] =
-				new Parameter(
-					S_CENTROID[i],
-					Parameter.DOUBLE,
-					Parameter.FIX,
-					Parameter.MOUSE);
-			centroid[i].setValue(100.0);
-			width[i] =
-				new Parameter(S_WIDTH[i], Parameter.DOUBLE, Parameter.FIX, Parameter.ESTIMATE);
-			width[i].setEstimate(true);
-			width[i].setValue(10.0);
-			addParameter(centroid[i]);
-			addParameter(width[i]);
-			addParameter(area[i]);
+			addPeakParameters(i);
 		}
+	}
+
+	/**
+	 * @param index
+	 */
+	private void addPeakParameters(final int index) {
+		S_AREA[index] = "Area " + (index + 1);
+		S_WIDTH[index] = "Width " + (index + 1);
+		S_CENTROID[index] = "Centroid " + (index + 1);
+		area[index] =
+			new Parameter(
+				S_AREA[index],
+				Parameter.DOUBLE,
+				Parameter.FIX,
+				Parameter.ESTIMATE);
+		area[index].setEstimate(true);
+		centroid[index] =
+			new Parameter(
+				S_CENTROID[index],
+				Parameter.DOUBLE,
+				Parameter.FIX,
+				Parameter.MOUSE);
+		centroid[index].setValue(100.0);
+		width[index] =
+			new Parameter(S_WIDTH[index], Parameter.DOUBLE, Parameter.FIX, Parameter.ESTIMATE);
+		width[index].setEstimate(true);
+		width[index].setValue(10.0);
+		addParameter(centroid[index]);
+		addParameter(width[index]);
+		addParameter(area[index]);
 	}
 
 	/**

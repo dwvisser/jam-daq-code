@@ -7,34 +7,38 @@ package jam.sort.stream;
  * @author 	Dale Visser
  * @since       JDK1.1
  */
-public interface L003Parameters {
+public final class L003Parameters {
+	
+	private L003Parameters(){
+		super();
+	}
 
     /**
      * Any word for a parameter number value bitwise 'and'ed with this gives the event 
      * parameter number.
      */
-    short EVENT_MASK  =(short)0x07FF;
+    static public final short EVENT_MASK  =(short)0x07FF;
 
     
     /**
      * All header blocks must begin with an ASCII version of this.
      */
-    String HEADER_START="HHIRF   L003    LIST DATA       ";    
+    static public final String HEADER_START="HHIRF   L003    LIST DATA       ";    
     
     
     /**
      * Length of a event data record in bytes.
      */
-    int EVENT_RECORD_SIZE=8192;
+    static public final int EVENT_RECORD_SIZE=8192;
     
     /**
      * Size of scaler records in bytes. (?)
      */
-    int SCALER_REC_SIZE=32000;
+    static public final int SCALER_REC_SIZE=32000;
     
     /**
      * Size of scaler buffers in bytes. (?) 
      */
-    int SCALER_BUFF_SIZE=256;
+    static public final int SCALER_BUFF_SIZE=256;
 }
     

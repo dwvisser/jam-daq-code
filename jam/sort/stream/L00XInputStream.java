@@ -47,6 +47,10 @@ public class L00XInputStream extends AbstractL002HeaderReader {
 	public L00XInputStream(boolean console, int eventSize) {
 		super(console, eventSize);
 	}
+	
+	public String getFormatDescription(){
+		return "A later modification, used by UConn, I think.";
+	}
 
 	/**
 	 * Reads an event from the input stream Expects the stream position to be

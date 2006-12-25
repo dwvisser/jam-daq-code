@@ -50,6 +50,10 @@ public class L002InputStream extends AbstractL002HeaderReader {
 	public L002InputStream(boolean console, int eventSize) {
 		super(console, eventSize);
 	}
+	
+	public String getFormatDescription(){
+		return "Original implementation of ORNL L002 format at Yale.";
+	}
 
 	/**
 	 * Reads an event from the input stream Expects the stream position to be

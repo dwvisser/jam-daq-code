@@ -1,5 +1,19 @@
 package jam.sort.stream;
 
+import static jam.sort.stream.UconnStreamConstants.ADC_CHAN_MASK;
+import static jam.sort.stream.UconnStreamConstants.ADC_CHAN_SHFT;
+import static jam.sort.stream.UconnStreamConstants.ADC_DATA_MASK;
+import static jam.sort.stream.UconnStreamConstants.ADC_OFFSET;
+import static jam.sort.stream.UconnStreamConstants.HEAD_SIZE;
+import static jam.sort.stream.UconnStreamConstants.NUMBER_SCALERS;
+import static jam.sort.stream.UconnStreamConstants.SCALER_MASK;
+import static jam.sort.stream.UconnStreamConstants.TDC_CHAN_MASK;
+import static jam.sort.stream.UconnStreamConstants.TDC_CHAN_SHFT;
+import static jam.sort.stream.UconnStreamConstants.TDC_DATA_MASK;
+import static jam.sort.stream.UconnStreamConstants.TDC_OFFSET;
+import static jam.sort.stream.UconnStreamConstants.VSN_MARKER;
+import static jam.sort.stream.UconnStreamConstants.VSN_MASK;
+import static jam.sort.stream.UconnStreamConstants.VSN_TDC;
 import jam.data.Scaler;
 
 import java.io.EOFException;
@@ -17,8 +31,7 @@ import java.util.List;
  * @see AbstractEventInputStream
  * @since JDK1.1
  */
-public final class UconnInputStream extends AbstractEventInputStream implements
-		UconnStreamConstants {
+public final class UconnInputStream extends AbstractEventInputStream {
 
 	private transient int blockCurrSize;
 
@@ -88,8 +101,7 @@ public final class UconnInputStream extends AbstractEventInputStream implements
 		} catch (EOFException eof) {
 			showMessage("end of file readBlockHeader");
 		} catch (IOException ioe) {
-			throw new EventException("Reading Block header," + ioe.getMessage()
-					+ " [UconnInputStream]");
+			throw new EventException("Reading Block header.", ioe);
 		}
 		return rval;
 	}
@@ -138,12 +150,10 @@ public final class UconnInputStream extends AbstractEventInputStream implements
 				}
 			} catch (EOFException eof) {
 				status = EventInputStatus.END_FILE;
-				throw new EventException("Reading event EOFException "
-						+ eof.getMessage() + " [UconnInputStream]");
+				throw new EventException("Reading event.",eof);
 			} catch (IOException io) {
 				status = EventInputStatus.END_FILE;
-				throw new EventException("Reading event IOException "
-						+ io.getMessage() + " [ConnInputStream]");
+				throw new EventException("Reading event.",io);
 			}
 			return status;
 		}

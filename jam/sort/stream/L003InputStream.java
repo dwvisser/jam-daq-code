@@ -1,5 +1,10 @@
 package jam.sort.stream;
 
+import static jam.sort.stream.L003Parameters.EVENT_MASK;
+import static jam.sort.stream.L003Parameters.HEADER_START;
+import static jam.sort.stream.L003Parameters.SCALER_BUFF_SIZE;
+import static jam.sort.stream.L003Parameters.SCALER_REC_SIZE;
+
 import java.io.EOFException;
 import java.io.IOException;
 
@@ -14,8 +19,7 @@ import java.io.IOException;
  * @see AbstractEventInputStream
  * @since JDK1.1
  */
-public final class L003InputStream extends AbstractEventInputStream implements
-		L003Parameters {
+public final class L003InputStream extends AbstractEventInputStream {
 
 	private transient int eventValue;
 
@@ -23,7 +27,7 @@ public final class L003InputStream extends AbstractEventInputStream implements
 
 	private transient EventInputStatus status;
 
-	private transient int byteCounter = 0;//NOPMD
+	private transient int byteCounter = 0;// NOPMD
 
 	/**
 	 * Needed to create an instance with newInstance().
@@ -71,9 +75,7 @@ public final class L003InputStream extends AbstractEventInputStream implements
 
 			} catch (IOException io) {
 				status = EventInputStatus.ERROR;
-				throw new EventException("Reading Event from IOException "
-						+ io.getMessage() + " [L003InputStream]");
-
+				throw new EventException("Problem reading event.", io);
 			}
 			return status; // if event read return ok
 		}
@@ -148,11 +150,11 @@ public final class L003InputStream extends AbstractEventInputStream implements
 				status = EventInputStatus.END_RUN;
 				// get parameter value if not special type
 			} else if (0 == (paramWord & L002Parameters.EVENT_PARAMETER)) {
-                rval = false;
-                status = EventInputStatus.UNKNOWN_WORD;
-                throw new EventException("L003InputStream parameter value: "
-                        + paramWord + " [L003InputStream]");
-            } else {
+				rval = false;
+				status = EventInputStatus.UNKNOWN_WORD;
+				throw new EventException("L003InputStream parameter value: "
+						+ paramWord + " [L003InputStream]");
+			} else {
 				parameter = (paramWord & EVENT_MASK) - 1;
 				// parameter number
 				eventValue = readVaxShort();

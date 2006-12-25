@@ -45,6 +45,10 @@ public class YaleInputStream extends AbstractL002HeaderReader {
 		super(console, eventSize);
 	}
 
+	public String getFormatDescription(){
+		return "Later implementation of ORNL L002 format at Yale.";
+	}
+	
 	/**
 	 * Reads an event from the input stream Expects the stream position to be
 	 * the beginning of an event. It is up to the user to ensure this.

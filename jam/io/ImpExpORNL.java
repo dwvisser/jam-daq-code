@@ -47,7 +47,7 @@ public class ImpExpORNL extends AbstractImpExp {
 	/**
 	 * sequence of ASCII encoded characters to begin <code>drr</code> file.
 	 */
-	static final String SIGNATURE = "HHIRFDIR0001";
+	private static final String SIGNATURE = "HHIRFDIR0001";
 
 	private transient ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
 
@@ -160,28 +160,32 @@ public class ImpExpORNL extends AbstractImpExp {
 		disDrr.read(numHistByte); // number of histograms
 		byteOrder = ByteOrder.nativeOrder(); // assume file was created
 												// locally
-		final StringBuffer msg = new StringBuffer("Native byte order: ");
-		msg.append(byteOrder).append(", ");
-		if (!isCorrectByteOrder(NUM_UTIL.bytesToInt(numHistByte, 0, byteOrder))) {
-			if (byteOrder == ByteOrder.BIG_ENDIAN) {
-				byteOrder = ByteOrder.LITTLE_ENDIAN;
-			} else {
-				byteOrder = ByteOrder.BIG_ENDIAN;
-			}
-		}
+		final StringBuffer msg = new StringBuffer(40);
+		msg.append("Native byte order: ");
+		msg.append(byteOrder).append(", ");//NOPMD
+		getCorrectByteOrder(numHistByte);
 		msg.append("file byte order: ").append(byteOrder);
 		LOGGER.info(msg.toString());
 		totalHist = NUM_UTIL.bytesToInt(numHistByte, 0, byteOrder); // number of
 																	// histograms
 		numHalfWords = readInt(disDrr); // total number of 16 bit words
-		readInt(disDrr); // space nothing defined
-		readInt(disDrr); // year
-		readInt(disDrr); // month
-		readInt(disDrr); // day of month
-		readInt(disDrr); // hour
-		readInt(disDrr); // minutes
-		readInt(disDrr); // seconds
+		readIgnoredSection(disDrr);
 		disDrr.read(bChilText); // ASCII text from CHIL file
+		readDrrInfo(parLabelb, titleb, disDrr);
+		/* read in id list */
+		for (int i = 0; i < totalHist; i++) {
+			iDnumber[i] = readInt(disDrr); // Id number
+		}
+		disDrr.close();
+	}
+
+	/**
+	 * @param parLabelb
+	 * @param titleb
+	 * @param disDrr
+	 * @throws IOException
+	 */
+	private void readDrrInfo(final byte[] parLabelb, final byte[] titleb, final DataInputStream disDrr) throws IOException {
 		/* Histogram info in Drr file */
 		dim = new int[totalHist]; // Histogram dimensionality
 		chSize = new int[totalHist]; // half words per channel
@@ -252,11 +256,33 @@ public class ImpExpORNL extends AbstractImpExp {
 			disDrr.read(titleb); // sub-Title
 			titleDrr[i] = String.valueOf(titleb);
 		}
-		/* read in id list */
-		for (int i = 0; i < totalHist; i++) {
-			iDnumber[i] = readInt(disDrr); // Id number
+	}
+
+	/**
+	 * @param disDrr
+	 * @throws IOException
+	 */
+	private void readIgnoredSection(final DataInputStream disDrr) throws IOException {
+		readInt(disDrr); // space nothing defined
+		readInt(disDrr); // year
+		readInt(disDrr); // month
+		readInt(disDrr); // day of month
+		readInt(disDrr); // hour
+		readInt(disDrr); // minutes
+		readInt(disDrr); // seconds
+	}
+
+	/**
+	 * @param numHistByte
+	 */
+	private void getCorrectByteOrder(final byte[] numHistByte) {
+		if (!isCorrectByteOrder(NUM_UTIL.bytesToInt(numHistByte, 0, byteOrder))) {
+			if (byteOrder == ByteOrder.BIG_ENDIAN) {
+				byteOrder = ByteOrder.LITTLE_ENDIAN;
+			} else {
+				byteOrder = ByteOrder.BIG_ENDIAN;
+			}
 		}
-		disDrr.close();
 	}
 
 	private boolean isCorrectByteOrder(final int numHists) {
@@ -276,64 +302,91 @@ public class ImpExpORNL extends AbstractImpExp {
 		final int sizeX = lenParScal1[index];
 		final int sizeY = lenParScal2[index];
 		if (type == 2) { // Read in 2D histogram
-			int[][] counts2d = new int[sizeX][sizeY];
-			fileHis.seek((long) offSet[index] * 2);
-			final int bytesToRead = sizeX * sizeY * 4;
-			final byte[] inBuffer = new byte[bytesToRead];
-			fileHis.read(inBuffer); // read in byte array
-			if (wordCh == 2) { // four byte data
-				int offset = 0;
-				for (int j = 0; j < sizeY; j++) {
-					for (int i = 0; i < sizeX; i++) {
-						counts2d[i][j] = NUM_UTIL.bytesToInt(inBuffer, offset,
-								byteOrder);
-						offset += 4;
-					}
-				}
-			} else if (wordCh == 1) { // two byte data
-				int offset = 0;
-				for (int j = 0; j < sizeY; j++) {
-					for (int i = 0; i < sizeX; i++) {
-						counts2d[i][j] = NUM_UTIL.bytesToShort(inBuffer,
-								offset, byteOrder);
-						offset += 2;
-					}
-				}
-			} else { // not able to handle data
-				throw new IOException("File uses " + wordCh
-						+ " words/channel, which I don't know how to read.");
-			}
-			final Histogram hist = Histogram.createHistogram(importGroup,
-					counts2d, name);
-			hist.setNumber(number);
+			read2dHistogram(fileHis, index, name, number, wordCh, sizeX, sizeY);
 		} else { // Read in 1D Histogram
-			int[] counts = new int[sizeX];
-			fileHis.seek((long) offSet[index] * 2);
-			final int bytesToRead = sizeX * 4;
-			final byte[] inBuffer = new byte[bytesToRead];
-			fileHis.read(inBuffer); // read in byte array
-			if (wordCh == 2) { // four byte data
-				int offset = 0;
+			read1dHistogram(fileHis, index, name, number, wordCh, sizeX);
+		}
+	}
+
+	/**
+	 * @param fileHis
+	 * @param index
+	 * @param name
+	 * @param number
+	 * @param wordCh
+	 * @param sizeX
+	 * @throws IOException
+	 */
+	private void read1dHistogram(final RandomAccessFile fileHis, final int index, final String name, final int number, final int wordCh, final int sizeX) throws IOException {
+		int[] counts = new int[sizeX];
+		fileHis.seek((long) offSet[index] * 2);
+		final int bytesToRead = sizeX * 4;
+		final byte[] inBuffer = new byte[bytesToRead];
+		fileHis.read(inBuffer); // read in byte array
+		if (wordCh == 2) { // four byte data
+			int offset = 0;
+			for (int i = 0; i < sizeX; i++) {
+				counts[i] = NUM_UTIL
+						.bytesToInt(inBuffer, offset, byteOrder);
+				offset += 4;
+			}
+		} else if (wordCh == 1) { // two byte data
+			int offset = 0;
+			for (int i = 0; i < sizeX; i++) {
+				counts[i] = NUM_UTIL.bytesToShort(inBuffer, offset,
+						byteOrder);
+				offset += 2;
+			}
+		} else { // unable to handle data type
+			throw new IOException("File uses " + wordCh
+					+ " words/channel, which can't be read.");
+		}
+		final Histogram hist = Histogram.createHistogram(importGroup,
+				counts, name);
+		hist.setNumber(number);
+	}
+
+	/**
+	 * @param fileHis
+	 * @param index
+	 * @param name
+	 * @param number
+	 * @param wordCh
+	 * @param sizeX
+	 * @param sizeY
+	 * @throws IOException
+	 */
+	private void read2dHistogram(final RandomAccessFile fileHis, final int index, final String name, final int number, final int wordCh, final int sizeX, final int sizeY) throws IOException {
+		int[][] counts2d = new int[sizeX][sizeY];
+		fileHis.seek((long) offSet[index] * 2);
+		final int bytesToRead = sizeX * sizeY * 4;
+		final byte[] inBuffer = new byte[bytesToRead];
+		fileHis.read(inBuffer); // read in byte array
+		if (wordCh == 2) { // four byte data
+			int offset = 0;
+			for (int j = 0; j < sizeY; j++) {
 				for (int i = 0; i < sizeX; i++) {
-					counts[i] = NUM_UTIL
-							.bytesToInt(inBuffer, offset, byteOrder);
+					counts2d[i][j] = NUM_UTIL.bytesToInt(inBuffer, offset,
+							byteOrder);
 					offset += 4;
 				}
-			} else if (wordCh == 1) { // two byte data
-				int offset = 0;
+			}
+		} else if (wordCh == 1) { // two byte data
+			int offset = 0;
+			for (int j = 0; j < sizeY; j++) {
 				for (int i = 0; i < sizeX; i++) {
-					counts[i] = NUM_UTIL.bytesToShort(inBuffer, offset,
-							byteOrder);
+					counts2d[i][j] = NUM_UTIL.bytesToShort(inBuffer,
+							offset, byteOrder);
 					offset += 2;
 				}
-			} else { // unable to handle data type
-				throw new IOException("File uses " + wordCh
-						+ " words/channel, which can't be read.");
 			}
-			final Histogram hist = Histogram.createHistogram(importGroup,
-					counts, name);
-			hist.setNumber(number);
+		} else { // not able to handle data
+			throw new IOException("File uses " + wordCh
+					+ " words/channel, which I don't know how to read.");
 		}
+		final Histogram hist = Histogram.createHistogram(importGroup,
+				counts2d, name);
+		hist.setNumber(number);
 	}
 
 	/**
