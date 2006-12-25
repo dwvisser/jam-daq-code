@@ -39,8 +39,7 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 *             if there's a problem
 	 */
 	public String getTestString() throws RemoteException {
-		final String message = "Remote from jam";
-		return message;
+		return "Remote from jam";
 	}
 
 	/**

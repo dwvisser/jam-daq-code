@@ -172,8 +172,8 @@ public final class GaussianFit extends AbstractNonLinearFit {
 	 */
 	public double valueAt(final double val) {
 		final double diff = diff(val);
-		final double temp = p("A") + p("B") * diff + p("C") * diff * diff
-				+ p(AREA) / p(WIDTH) * MAGIC_A * exp(diff);
+		final double temp = getValue("A") + getValue("B") * diff + getValue("C") * diff * diff
+				+ getValue(AREA) / getValue(WIDTH) * MAGIC_A * exp(diff);
 		return temp;
 	}
 
@@ -187,11 +187,11 @@ public final class GaussianFit extends AbstractNonLinearFit {
 	}
 
 	private double diff(final double val) {
-		return val - p(CENTROID);
+		return val - getValue(CENTROID);
 	}
 
 	private double exp(final double diff) {
-		return Math.exp(-MAGIC_B * diff * diff / (p(WIDTH) * p(WIDTH)));
+		return Math.exp(-MAGIC_B * diff * diff / (getValue(WIDTH) * getValue(WIDTH)));
 	}
 
 	boolean hasBackground() {
@@ -200,7 +200,7 @@ public final class GaussianFit extends AbstractNonLinearFit {
 
 	double calculateBackground(final int channel) {
 		final double diff = diff(channel);
-		return p("A") + p("B") * diff + p("C") * diff * diff;
+		return getValue("A") + getValue("B") * diff + getValue("C") * diff * diff;
 	}
 
 	/**
@@ -218,16 +218,16 @@ public final class GaussianFit extends AbstractNonLinearFit {
 		final double diff = diff(val);
 		final double exp = exp(diff);
 		if (parName.equals(AREA)) {
-			rval = MAGIC_A / p(WIDTH) * exp;
+			rval = MAGIC_A / getValue(WIDTH) * exp;
 		} else if (parName.equals(CENTROID)) {
-			rval = MAGIC_2AB * p(AREA) * exp * diff
-					/ (p(WIDTH) * p(WIDTH) * p(WIDTH)) - p("B") - 2 * p("C")
+			rval = MAGIC_2AB * getValue(AREA) * exp * diff
+					/ (getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH)) - getValue("B") - 2 * getValue("C")
 					* diff;
 		} else if (parName.equals(WIDTH)) {
-			final double temp = -MAGIC_A * p(AREA) * exp
-					/ (p(WIDTH) * p(WIDTH));
-			rval = temp + MAGIC_2AB * p(AREA) * exp * diff * diff
-					/ (p(WIDTH) * p(WIDTH) * p(WIDTH) * p(WIDTH));
+			final double temp = -MAGIC_A * getValue(AREA) * exp
+					/ (getValue(WIDTH) * getValue(WIDTH));
+			rval = temp + MAGIC_2AB * getValue(AREA) * exp * diff * diff
+					/ (getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH));
 		} else if ("A".equals(parName)) {
 			rval = 1.0;
 		} else if ("B".equals(parName)) {

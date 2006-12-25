@@ -112,11 +112,11 @@ public final class ImpExpSPE extends AbstractImpExp {
 			Histogram.createHistogram(importGroup, counts, nameHist);
 			dis.close();
 		} catch (IOException ioe) {
-			throw new ImpExpException(ioe.toString());
+			throw new ImpExpException("Problem reading spectrum file.", ioe);
 		}
 	}
 
-	public void writeHist(OutputStream outStream, Histogram hist)
+	public void writeHist(final OutputStream outStream, final Histogram hist)
 			throws ImpExpException {
 		try {
 			final DataOutputStream dos = new DataOutputStream(outStream);
@@ -174,7 +174,7 @@ public final class ImpExpSPE extends AbstractImpExp {
 
 	private float[] copyIntToFloat(final int[] countsInt, final int size) {
 		final float[] countsFlt = new float[size];
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++) {//NOPMD
 			countsFlt[i] = countsInt[i];
 		}
 		return countsFlt;

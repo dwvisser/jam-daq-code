@@ -21,7 +21,7 @@ import javax.swing.SwingConstants;
  */
 public class GroupNew extends AbstractControl {
 
-	private final JTextField textName;
+	private transient final JTextField textName;
 	
 	/**
 	 * Constructs a "new group" dialog command.

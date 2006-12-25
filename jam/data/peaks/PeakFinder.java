@@ -35,7 +35,7 @@ public class PeakFinder {
      * Maximum separation in sigma between peaks to count them as being in the
      * same multiplet.
      */
-    static final double MAX_SEP = 1.3;
+    private static final double MAX_SEP = 1.3;
 
     /**
      * Given a spectrum and search parameters, performs a digital filter peak

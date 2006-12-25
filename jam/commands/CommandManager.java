@@ -49,21 +49,29 @@ public class CommandManager implements CommandListener {
 		CMD_MAP.put(CommandNames.SAVE_GATES, SaveGatesCmd.class);
 		CMD_MAP.put(CommandNames.SAVE_GROUP, SaveGroupHDFCmd.class);
 		CMD_MAP.put(CommandNames.SAVE_SORT, SaveSortGroupHDFCmd.class);
-		CMD_MAP.put(CommandNames.SAVE_HISTOGRAMS, SaveSelectHistogramsHDFCmd.class);
+		CMD_MAP.put(CommandNames.SAVE_HISTOGRAMS,
+				SaveSelectHistogramsHDFCmd.class);
 
 		CMD_MAP.put(CommandNames.ADD_HDF, AddHDF.class);
 		CMD_MAP.put(CommandNames.RELOAD_HDF, ReloadHDFCmd.class);
 
 		CMD_MAP.put(CommandNames.SHOW_NEW_GROUP, ShowDialogNewGroup.class);
-		CMD_MAP.put(CommandNames.SHOW_RENAME_GROUP, ShowDialogRenameGroup.class);
+		CMD_MAP
+				.put(CommandNames.SHOW_RENAME_GROUP,
+						ShowDialogRenameGroup.class);
 		CMD_MAP.put(CommandNames.DELETE_GROUP, DeleteGroup.class);
 
 		/* Histogram Menu */
-		CMD_MAP.put(CommandNames.SHOW_NEW_HIST, ShowDialogNewHistogramCmd.class);
+		CMD_MAP
+				.put(CommandNames.SHOW_NEW_HIST,
+						ShowDialogNewHistogramCmd.class);
 		CMD_MAP.put(CommandNames.SHOW_HIST_ZERO, ShowDialogZeroHistogram.class);
-		CMD_MAP.put(CommandNames.SHOW_HIST_COMBINE, ShowDialogHistManipulationsCmd.class);
-		CMD_MAP.put(CommandNames.SHOW_HIST_PROJECT, ShowDialogHistProjectionCmd.class);
-		CMD_MAP.put(CommandNames.SHOW_HIST_FIT, ShowDialogCalibrationFitCmd.class);
+		CMD_MAP.put(CommandNames.SHOW_HIST_COMBINE,
+				ShowDialogHistManipulationsCmd.class);
+		CMD_MAP.put(CommandNames.SHOW_HIST_PROJECT,
+				ShowDialogHistProjectionCmd.class);
+		CMD_MAP.put(CommandNames.SHOW_HIST_FIT,
+				ShowDialogCalibrationFitCmd.class);
 		CMD_MAP.put(CommandNames.SHOW_GAIN_SHIFT, ShowDialogGainShiftCmd.class);
 		/* Gate Menu */
 		CMD_MAP.put(CommandNames.SHOW_NEW_GATE, ShowDialogNewGateCmd.class);
@@ -78,7 +86,8 @@ public class CommandManager implements CommandListener {
 		CMD_MAP.put(CommandNames.CLEAR, FileNewClearCmd.class);
 		CMD_MAP.put(CommandNames.PARAMETERS, ShowDialogParametersCmd.class);
 		CMD_MAP.put(CommandNames.DISPLAY_SCALERS, ShowDialogScalersCmd.class);
-		CMD_MAP.put(CommandNames.SHOW_ZERO_SCALERS, ShowDialogZeroScalersCmd.class);
+		CMD_MAP.put(CommandNames.SHOW_ZERO_SCALERS,
+				ShowDialogZeroScalersCmd.class);
 		CMD_MAP.put(CommandNames.SCALERS, ScalersCmd.class);
 		CMD_MAP.put(CommandNames.EXPORT_TABLE, ExportSummaryTableCmd.class);
 		CMD_MAP.put(CommandNames.EXPORT_TEXT, ExportTextFileCmd.class);
@@ -128,16 +137,20 @@ public class CommandManager implements CommandListener {
 		CMD_MAP.put(CommandNames.SHOW_SETUP_REMOTE, ShowSetupRemote.class);
 	}
 
+	private static final Object classMonitor = new Object();
+
 	/**
 	 * Singleton accessor.
 	 * 
 	 * @return the unique instance of this class
 	 */
 	public static CommandManager getInstance() {
-		if (instance == null) {
-			instance = new CommandManager();
+		synchronized (classMonitor) {
+			if (instance == null) {
+				instance = new CommandManager();
+			}
+			return instance;
 		}
-		return instance;
 	}
 
 	private transient Commandable currentCom;
@@ -149,7 +162,7 @@ public class CommandManager implements CommandListener {
 	private CommandManager() {
 		super();
 	}
-	
+
 	private static final Commandable NO_COMMAND = new NoCommand();
 
 	/**
@@ -178,7 +191,7 @@ public class CommandManager implements CommandListener {
 								(Observer) currentCom);
 					}
 				} catch (InstantiationException ie) {
-				/*
+					/*
 					 * There was a problem resolving the command class or with
 					 * creating an instance. This should never happen if
 					 * exists==true.
@@ -287,4 +300,4 @@ public class CommandManager implements CommandListener {
 	public void setEnabled(final String cmd, final boolean enable) {
 		getAction(cmd).setEnabled(enable);
 	}
-}//NOPMD
+}// NOPMD

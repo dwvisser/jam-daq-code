@@ -47,38 +47,43 @@ public class SetupRemote extends JDialog implements ActionListener,
 		/**
 		 * linked to a remote server process
 		 */
-		LINK, 
-		
+		LINK,
+
 		/**
 		 * acting as a server
 		 */
-		SERVER, 
-		
+		SERVER,
+
 		/**
-		 * getting a snapshot of data on a remote server 
+		 * getting a snapshot of data on a remote server
 		 */
 		SNAP
 	}
 
-	static final String DEFAULT_NAME = "jam";
+	private static final String DEFAULT_NAME = "jam";
 
-	static final String DEFAULT_URL = "rmi://meitner.physics.yale.edu/jam";
+	private static final String DEFAULT_URL = "rmi://meitner.physics.yale.edu/jam";
 
 	private static SetupRemote instance;
 
-	private static final Logger LOGGER = Logger.getLogger(SetupRemote.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(SetupRemote.class
+			.getPackage().getName());
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
+
+	private static final Object classMonitor = new Object();
 
 	/**
 	 * 
 	 * @return the only instance of this class
 	 */
 	public static SetupRemote getInstance() {
-		if (instance == null) {
-			instance = new SetupRemote();
+		synchronized (classMonitor) {
+			if (instance == null) {
+				instance = new SetupRemote();
+			}
+			return instance;
 		}
-		return instance;
 	}
 
 	private transient final JButton bapply, bok;
@@ -90,10 +95,6 @@ public class SetupRemote extends JDialog implements ActionListener,
 	private transient final JLabel lname;
 
 	private transient Mode mode; // mode server, snap or link
-
-	transient RemoteAccess remoteAccess;
-
-	transient RemoteData remoteData;
 
 	private transient final JTextField textName;
 
@@ -272,7 +273,7 @@ public class SetupRemote extends JDialog implements ActionListener,
 	 */
 	public void server(final String name) throws JamException {
 		try {
-			remoteAccess = new RemoteAccess();
+			final RemoteAccess remoteAccess = new RemoteAccess();
 			Naming.rebind(name, remoteAccess);
 			lockFields(true);
 		} catch (UnknownHostException unhe) {
@@ -283,8 +284,8 @@ public class SetupRemote extends JDialog implements ActionListener,
 			throw new JamException("Creating remote server " + re.getMessage()
 					+ " [SetupRemote]", re);
 		} catch (java.net.MalformedURLException mue) {
-			throw new JamException(
-					"Creating remote Server malformed URL [SetupRemote]");
+			throw new JamException("Creating remote Server, malformed URL.",
+					mue);
 		}
 	}
 
@@ -314,6 +315,7 @@ public class SetupRemote extends JDialog implements ActionListener,
 	 *                the console
 	 */
 	public void snap(final String url) throws JamException {
+		final RemoteData remoteData;
 		try {
 			if (STATUS.canSetup()) {
 				remoteData = (RemoteData) Naming.lookup(url);
@@ -327,7 +329,8 @@ public class SetupRemote extends JDialog implements ActionListener,
 		} catch (java.net.MalformedURLException mue) {
 			throw new JamException("Remote look up malformed URL: " + url);
 		} catch (NotBoundException nbe) {
-			throw new JamException("Remote look up could not find name " + url);
+			throw new JamException("Remote look up could not find name " + url,
+					nbe);
 		}
 		try {
 			Histogram.setHistogramList(remoteData.getHistogramList());

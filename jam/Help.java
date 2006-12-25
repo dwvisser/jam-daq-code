@@ -99,7 +99,7 @@ public class Help extends JDialog {
 	private static void setLookAndFeel() {
 		final String linux = "Linux";
 		final String kunststoff = "com.incors.plaf.kunststoff.KunststoffLookAndFeel";
-		boolean bKunststoff = linux.equals(System.getProperty("os.name"));
+		boolean bKunststoff = linux.equals(System.getProperty("os.name"));//NOPMD
 		if (bKunststoff) {
 			try {
 				UIManager.setLookAndFeel(kunststoff);

@@ -29,12 +29,12 @@ public class SqrtEnergyFunction extends AbstractCalibrationFunction {
 	 * @param	channel	value at which to get calibration
 	 * @return	calibration value of the channel
 	 */
-	public double getValue(double channel) {
+	public double getValue(final double channel) {
 		return (coeff[0] + coeff[1] * channel)
 			* (coeff[0] + coeff[1] * channel);
 	}
 
-	public double getChannel(double energy) {
+	public double getChannel(final double energy) {
 		return ((Math.sqrt(energy) - coeff[0]) / coeff[1]);
 	}
 
@@ -49,7 +49,7 @@ public class SqrtEnergyFunction extends AbstractCalibrationFunction {
 		setCoeff(linearRegression(ptsChannel, sqrtE));
 	}
 	
-	protected void updateFormula(NumberFormat numFormat){
+	protected void updateFormula(final NumberFormat numFormat){
 		formula.setLength(0);
 		formula.append("\u221aE = ").append(numFormat.format(coeff[0]))
 		       .append(" + ").append(numFormat.format(coeff[1])).append("\u2219ch");

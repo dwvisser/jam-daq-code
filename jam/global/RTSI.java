@@ -28,18 +28,18 @@ import javax.swing.JOptionPane;
  */
 public class RTSI {
 
-	static final String CLASS_EXT = ".class";
+	private static final String CLASS_EXT = ".class";
 
-	static final ClassLoader DEF_LOADER = ClassLoader.getSystemClassLoader();
+	private static final ClassLoader DEF_LOADER = ClassLoader.getSystemClassLoader();
 
 	private static final RTSI instance = new RTSI();
 
 	private static final Logger LOGGER = Logger.getLogger(RTSI.class
 			.getPackage().getName());
 
-	static final String PERIOD = ".";
+	private static final String PERIOD = ".";
 
-	static final String SLASH = "/";
+	private static final String SLASH = "/";
 
 	/**
 	 * @return true if <code>c</code> can have instances and is assignable as

@@ -191,13 +191,13 @@ public abstract class Histogram implements DataElement {
 	/**
 	 * default axis labels
 	 */
-	static final String X_LABEL_1D = "Channels";
+	private static final String X_LABEL_1D = "Channels";
 
-	static final String X_LABEL_2D = "Channels";
+	private static final String X_LABEL_2D = "Channels";
 
-	static final String Y_LABEL_1D = "Counts";
+	private static final String Y_LABEL_1D = "Counts";
 
-	static final String Y_LABEL_2D = "Channels";
+	private static final String Y_LABEL_2D = "Channels";
 
 	static {
 		DIM_LIST.add(0, new ArrayList<Histogram>());

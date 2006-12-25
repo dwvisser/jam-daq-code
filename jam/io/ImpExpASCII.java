@@ -42,12 +42,7 @@ import javax.swing.filechooser.FileFilter;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  * @version 1.0
  */
-public class ImpExpASCII extends AbstractImpExp {
-
-	/**
-	 * maximum number of channels per histogram
-	 */
-	static final int MAX_CHANNELS = 8192;
+public class ImpExpASCII extends AbstractImpExp {//NOPMD
 
 	private transient boolean line1isTitle = false;
 
@@ -137,7 +132,7 @@ public class ImpExpASCII extends AbstractImpExp {
 				break;
 			}
 		} catch (IOException ioe) {
-			throw new ImpExpException(ioe.toString());
+			throw new ImpExpException("Problem importing ASCII.", ioe);
 		}
 	}
 
@@ -261,7 +256,7 @@ public class ImpExpASCII extends AbstractImpExp {
 			line1isTitle = true;
 		} else {
 			rval = getFileName(getLastFile());
-			rval = rval.substring(0, rval.indexOf("."));
+			rval = rval.substring(0, rval.indexOf('.'));
 		}
 		isr.close();
 		return rval;

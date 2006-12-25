@@ -166,8 +166,8 @@ public class MultipleGaussians extends AbstractNonLinearFit {
 				setParameter(S_WIDTH[i], width[1].getDoubleValue());
 			}
 		}
-		final int _minCH = lo.getIntValue();
-		final int _maxCH = hi.getIntValue();
+		final int _minCH = lowChannel.getIntValue();
+		final int _maxCH = highChannel.getIntValue();
 		for (int i = 0; i < npeak; i++) {
 			dCentroid[i] = centroid[i].getDoubleValue();
 			dWidth[i] = width[i].getDoubleValue();
@@ -225,18 +225,18 @@ public class MultipleGaussians extends AbstractNonLinearFit {
 	private void orderParameters()  {
 		final SortedSet<Double> list = new TreeSet<Double>();
 		/* must use Double so Comparator interface works */
-		list.add((double)lo.getIntValue());
-		list.add((double)hi.getIntValue());
+		list.add((double)lowChannel.getIntValue());
+		list.add((double)highChannel.getIntValue());
 		final int npeaks=numPeaks.getIntValue();
 		for (int i = 0; i < npeaks; i++) {
 			list.add(centroid[i].getDoubleValue());
 		}
 		final Iterator<Double> iter = list.iterator();
-		lo.setValue(iter.next());
+		lowChannel.setValue(iter.next());
 		for (int i = 0; i < npeaks; i++) {
 			centroid[i].setValue(iter.next());
 		}
-		hi.setValue(iter.next());
+		highChannel.setValue(iter.next());
 	}
 
 	/**
@@ -247,9 +247,9 @@ public class MultipleGaussians extends AbstractNonLinearFit {
 	 */
 	public double valueAt(final double xval) {
 		setGlobalNumbers(xval);
-		return p("A")
-			+ p("B") * diffCenter
-			+ p("C") * diffCenter * diffCenter
+		return getValue("A")
+			+ getValue("B") * diffCenter
+			+ getValue("C") * diffCenter * diffCenter
 			+ peakSum;
 	}
 
@@ -259,7 +259,7 @@ public class MultipleGaussians extends AbstractNonLinearFit {
 
 	double calculateBackground(final int channel) {
 		setGlobalNumbers(channel);
-		return p("A") + p("B") * diffCenter + p("C") * diffCenter * diffCenter;
+		return getValue("A") + getValue("B") * diffCenter + getValue("C") * diffCenter * diffCenter;
 	}
 
 	int getNumberOfSignals() {
@@ -274,7 +274,7 @@ public class MultipleGaussians extends AbstractNonLinearFit {
 	private static final double LAST_SET = -1.0;
 	private void setGlobalNumbers(final double xval) {
 		if (xval != LAST_SET) {
-			final double rangeCenter = 0.5 * (lo.getDoubleValue() + hi.getDoubleValue());
+			final double rangeCenter = 0.5 * (lowChannel.getDoubleValue() + highChannel.getDoubleValue());
 			diffCenter = xval - rangeCenter;
 			npeak = numPeaks.getIntValue();
 			for (int i = 0; i < npeak; i++) {

@@ -3,7 +3,7 @@
  */
 package jam.fit;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * This abstract class uses LevenbergMarquadt to do non-linear parametric
@@ -27,32 +27,32 @@ public abstract class AbstractNonLinearFit extends AbstractFit {
 	/**
 	 * does the actual matrix algebra to find the best fit
 	 */
-	protected LevenbergMarquadt lm;
+	protected transient LevenbergMarquadt fitter;
 
 	/**
 	 * the low channel limit for the fit
 	 */
-	protected Parameter lo;
+	protected transient Parameter lowChannel;
 
 	/**
 	 * the high channel limit for the fit
 	 */
-	protected Parameter hi;
+	protected transient Parameter highChannel;
 
 	/**
 	 * the calculated reduced chi-squared statistic
 	 */
-	protected Parameter chisq;
+	protected transient Parameter chisq;
 
 	/**
 	 * the <code>int</code> value of <code>lo</code>
 	 */
-	protected int minCH;
+	protected transient int minCH;
 
 	/**
 	 * the <code>int</code> value of <code>hi</code>
 	 */
-	protected int maxCH;
+	protected transient int maxCH;
 
 	/**
 	 * the name of <code>lo</code>
@@ -73,26 +73,26 @@ public abstract class AbstractNonLinearFit extends AbstractFit {
 	 */
 	public AbstractNonLinearFit(String name) {
 		super(name);
-		parameters = new Vector<Parameter>();
+		parameters = new ArrayList<Parameter>();
 		chisq = new Parameter("ChiSq/dof", Parameter.DOUBLE, Parameter.KNOWN,
 				Parameter.OUTPUT);
 		addParameter(chisq);
-		lo = new Parameter(FIT_LOW, Parameter.INT, Parameter.KNOWN,
+		lowChannel = new Parameter(FIT_LOW, Parameter.INT, Parameter.KNOWN,
 				Parameter.MOUSE);
-		addParameter(lo);
-		hi = new Parameter(FIT_HIGH, Parameter.INT, Parameter.KNOWN,
+		addParameter(lowChannel);
+		highChannel = new Parameter(FIT_HIGH, Parameter.INT, Parameter.KNOWN,
 				Parameter.MOUSE);
-		addParameter(hi);
+		addParameter(highChannel);
 	}
 
 	/**
 	 * Evaluates at x for given parameters.
 	 * 
-	 * @param x
+	 * @param xValue
 	 *            value at which to evaluate the fit function
 	 * @return value of fit function at <code>x</code>
 	 */
-	public abstract double valueAt(double x);
+	public abstract double valueAt(double xValue);
 
 	/**
 	 * Evaluates derivative with respect to <code>parameterName</code> at
@@ -100,11 +100,11 @@ public abstract class AbstractNonLinearFit extends AbstractFit {
 	 * 
 	 * @param parameterName
 	 *            the name of the parameter to differentiate with respect to
-	 * @param x
+	 * @param xValue
 	 *            value to evalueate at
 	 * @return df(<code>x</code>)/d(<code>parameterName</code>) at x
 	 */
-	public abstract double derivative(double x, String parameterName);
+	public abstract double derivative(double xValue, String parameterName);
 
 	/**
 	 * Perform fit calulation and return a status <code>String</code>. Calls
@@ -122,47 +122,48 @@ public abstract class AbstractNonLinearFit extends AbstractFit {
 		int numIter = 1;
 		final int MAX_ITERATIONS = 10;
 		final int MAX_SMALL = 2; // total non- or marginal improvements
-									// before giving up
+		// before giving up
 		boolean close;
 		boolean quit;
 		int smallCounter = 0;
 		String returnVal = "Note: errors not independent.";
-		lm = new LevenbergMarquadt(this);
+		fitter = new LevenbergMarquadt(this);
 		// function.setParameters(parameters);
 		minCH = getParameter(FIT_LOW).getIntValue();
 		lowerLimit = minCH;
 		maxCH = getParameter(FIT_HIGH).getIntValue();
 		upperLimit = maxCH;
-		lm.setup(counts, errors, minCH, maxCH);
+		fitter.setup(counts, errors, minCH, maxCH);
 
 		try {
-			lm.iterate(LevenbergMarquadt.FIRST_ITERATION);
+			fitter.iterate(LevenbergMarquadt.FIRST_ITERATION);
 		} catch (Exception e) {
 			returnVal = e.toString();
 		}
-		chiSq = lm.getChiSq();
+		chiSq = fitter.getChiSq();
 		do {
 			try {
-				lm.iterate(LevenbergMarquadt.NEXT_ITERATION);
+				fitter.iterate(LevenbergMarquadt.NEXT_ITERATION);
 			} catch (Exception e) {
 				returnVal = e.toString();
 			}
-			newChiSq = lm.getChiSq();
+			newChiSq = fitter.getChiSq();
 			numIter++;
 			close = (Math.abs(newChiSq - chiSq) < 0.01);// didn't improve or
-														// improved marginally
-			if (close)
+			// improved marginally
+			if (close) {
 				smallCounter++;
+			}
 			quit = ((smallCounter >= MAX_SMALL) || (numIter >= MAX_ITERATIONS));
 			chiSq = newChiSq;
 		} while (!quit);
 		// do last iteration
 		try {
-			lm.iterate(LevenbergMarquadt.LAST_ITERATION);
-			returnVal = (numIter + " iterations, d.o.f. = " + lm
+			fitter.iterate(LevenbergMarquadt.LAST_ITERATION);
+			returnVal = (numIter + " iterations, d.o.f. = " + fitter
 					.getDegreesOfFreedom());
 			textInfo.messageOutln(numIter + " iterations, d.o.f. = "
-					+ lm.getDegreesOfFreedom());
+					+ fitter.getDegreesOfFreedom());
 		} catch (Exception e) {
 			returnVal = e.toString();
 		}
@@ -177,7 +178,7 @@ public abstract class AbstractNonLinearFit extends AbstractFit {
 	 *            the name of the parameter
 	 * @return the current value of the parameter
 	 */
-	public double p(String which) {
+	public double getValue(final String which) {
 		return getParameter(which).getDoubleValue();
 	}
 
@@ -189,7 +190,7 @@ public abstract class AbstractNonLinearFit extends AbstractFit {
 	 * @param value
 	 *            the value to assign
 	 */
-	public void setParameter(String which, double value) {
+	public void setParameter(final String which, final double value) {
 		getParameter(which).setValue(value);
 	}
 
@@ -200,7 +201,7 @@ public abstract class AbstractNonLinearFit extends AbstractFit {
 	 *            the channel to evaluate the function at
 	 * @return the value of the function at <code>channel</code>
 	 */
-	public double calculate(int channel) {
+	public double calculate(final int channel) {
 		double rval = 0.0;
 		if (channel >= minCH && channel <= maxCH) {
 			rval = valueAt(channel);

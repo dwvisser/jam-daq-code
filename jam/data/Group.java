@@ -170,7 +170,7 @@ public final class Group implements Nameable {
 	 * @return the classname, minus any packages
 	 */
 	public static String parseSortClassName(final String name) {
-		final int index = name.lastIndexOf(".");
+		final int index = name.lastIndexOf('.');
 		return name.substring(index + 1, name.length());
 	}
 

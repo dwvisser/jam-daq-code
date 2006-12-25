@@ -84,7 +84,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {// N
 					state = bParam0.booleanValue();
 				}
 			} else {
-				state = !state;
+				state = !state;//NOPMD
 			}
 			prefsNode.putBoolean(key, state);
 			changeIcon();

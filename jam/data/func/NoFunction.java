@@ -24,7 +24,7 @@ public final class NoFunction extends AbstractCalibrationFunction {
 	}
 
 	@Override
-	protected void updateFormula(NumberFormat numFormatCoeff) {
+	protected void updateFormula(final NumberFormat numFormatCoeff) {
 		// do nothing
 
 	}

@@ -22,9 +22,9 @@ import javax.swing.JFileChooser;
 abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
         HDFIO.AsyncListener {
 
-    final transient HDFIO hdfio;
+    protected final transient HDFIO hdfio;
 
-    transient Group loadGroup;
+    protected transient Group loadGroup;
 
     /**
      * Mode under which to do the loading.

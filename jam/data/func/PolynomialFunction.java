@@ -1,4 +1,5 @@
 package jam.data.func;
+
 import java.text.NumberFormat;
 
 import jam.data.DataException;
@@ -9,13 +10,14 @@ import jam.data.DataException;
 public class PolynomialFunction extends AbstractCalibrationFunction {
 
 	/**
-	 * Creates a new <code>CalibrationFunction</code> object of the specified 
-	 * polynomial order. 
-	 *
-	 * @param numberTerms terms in the polynomial (including a constant term)
+	 * Creates a new <code>CalibrationFunction</code> object of the specified
+	 * polynomial order.
+	 * 
+	 * @param numberTerms
+	 *            terms in the polynomial (including a constant term)
 	 */
 	public PolynomialFunction(int numberTerms) {
-		super(PolynomialFunction.class, "Polynomial",numberTerms);
+		super(PolynomialFunction.class, "Polynomial", numberTerms);
 		title = "E = a0 + a1\u2219ch + a2\u2219(ch)\u00b2 + ...";
 		coeff = new double[numberTerms];
 		labels = new String[numberTerms];
@@ -23,15 +25,15 @@ public class PolynomialFunction extends AbstractCalibrationFunction {
 			labels[0] = "a(" + i + ")";
 		}
 	}
-	
+
 	/**
 	 * Get the calibration value at a specified channel.
 	 * 
-	 * @param	channel	value at which to get calibration
-	 * @return	calibration value of the channel
+	 * @param channel
+	 *            value at which to get calibration
+	 * @return calibration value of the channel
 	 */
-	public double getValue(double channel) {
-
+	public double getValue(final double channel) {
 		double chanMult;
 		double value = 0.0;
 		chanMult = 1.0;
@@ -43,47 +45,50 @@ public class PolynomialFunction extends AbstractCalibrationFunction {
 	}
 
 	// To be implemented later when This Function Works
-	public double getChannel(double energy) {
+	public double getChannel(final double energy) {
 		return ((energy - coeff[0]) / coeff[1]);
 	}
+
 	/**
 	 * do a fit of x y values
 	 */
 	public void fit() throws DataException {
-		//does nothing so far
+		// does nothing so far
 	}
-	
-	public void updateFormula(NumberFormat numFormat){
+
+	public void updateFormula(final NumberFormat numFormat) {
 		formula.setLength(0);
-		formula.append("Polynomial fit not yet implemented");		
+		formula.append("Polynomial fit not yet implemented");
 	}
+
 	/**
 	 * Test of polynomial fit
+	 * 
 	 * @param args
 	 */
 	public static void main(final String args[]) {
-		
-		PolynomialFunction pf= new PolynomialFunction(1);
-		double []x=new double [3];
-		double []y= new double [3];
-		double [] coeff;
-		
-		x[0]=1; y[0]=2;
-		x[1]=2; y[1]=5;
-		x[2]=3; y[2]=10;
-		
-		try {
-			coeff= pf.polynomialFit(x, y, 2);
-			System.out.println("Coeff ");//NOPMD
-			for (int i=0; i< 3;i++)
-			{
-				System.out.println(""+coeff[i]);//NOPMD
-			}
-		}
-		catch(DataException de) {
-			System.out.println(de);//NOPMD
-		}
 
+		final PolynomialFunction function = new PolynomialFunction(1);
+		double[] xval = new double[3];
+		double[] yval = new double[3];
+		double[] coeff;
+
+		xval[0] = 1;
+		yval[0] = 2;
+		xval[1] = 2;
+		yval[1] = 5;
+		xval[2] = 3;
+		yval[2] = 10;
+
+		try {
+			coeff = function.polynomialFit(xval, yval, 2);
+			System.out.println("Coeff ");// NOPMD
+			for (int i = 0; i < 3; i++) {
+				System.out.println("" + coeff[i]);// NOPMD
+			}
+		} catch (DataException de) {
+			System.out.println(de);// NOPMD
+		}
 
 	}
 

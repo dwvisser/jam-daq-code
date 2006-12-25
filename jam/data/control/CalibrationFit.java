@@ -79,7 +79,8 @@ public class CalibrationFit extends AbstractControl {
 
 	private transient boolean isUpdate;
 	
-	private NumberFormat numFormatCoeff;
+	private transient final NumberFormat numFormatCoeff;
+	
 	/**
 	 * Constructs a calibration fitting dialog.
 	 */
@@ -449,32 +450,7 @@ public class CalibrationFit extends AbstractControl {
 			final double[] coeff = hcf.getCoeff();
 			/* Calibrated with points */
 			if (isCalPts) {
-				for (int i = 0; i < NUM_POINTS; i++) {
-					if (i < ptsChannel.length) {
-						tChannel[i].setText(String.valueOf(ptsChannel[i]));
-						tEnergy[i].setText(String.valueOf(ptsEnergy[i]));
-					} else {
-						tChannel[i].setText("");
-						tEnergy[i].setText("");
-					}
-					tChannel[i].setEditable(true);
-					tChannel[i].setEnabled(true);
-					tEnergy[i].setEditable(true);
-					tEnergy[i].setEnabled(true);
-				}
-				for (int i = 0; i < MAX_TERMS; i++) {
-					if (i < numberTerms) {
-						lcoeff[i].setText(labels[i]);
-						tcoeff[i].setText(numFormatCoeff.format(coeff[i]));
-						tcoeff[i].setEnabled(false);
-						tcoeff[i].setEditable(true);
-					} else {
-						lcoeff[i].setText(BLANK_LABEL);
-						tcoeff[i].setText("");
-						tcoeff[i].setEnabled(false);
-						tcoeff[i].setEditable(false);
-					}
-				}
+				setCalibratedWithPoints(ptsChannel, ptsEnergy, labels, coeff);
 				// Coeffients set for fit
 			} else {
 				for (int i = 0; i < NUM_POINTS; i++) {
@@ -520,6 +496,41 @@ public class CalibrationFit extends AbstractControl {
 
 		}
 
+	}
+
+	/**
+	 * @param ptsChannel
+	 * @param ptsEnergy
+	 * @param labels
+	 * @param coeff
+	 */
+	private void setCalibratedWithPoints(final double[] ptsChannel, final double[] ptsEnergy, final String[] labels, final double[] coeff) {
+		for (int i = 0; i < NUM_POINTS; i++) {
+			if (i < ptsChannel.length) {
+				tChannel[i].setText(String.valueOf(ptsChannel[i]));
+				tEnergy[i].setText(String.valueOf(ptsEnergy[i]));
+			} else {
+				tChannel[i].setText("");
+				tEnergy[i].setText("");
+			}
+			tChannel[i].setEditable(true);
+			tChannel[i].setEnabled(true);
+			tEnergy[i].setEditable(true);
+			tEnergy[i].setEnabled(true);
+		}
+		for (int i = 0; i < MAX_TERMS; i++) {
+			if (i < numberTerms) {
+				lcoeff[i].setText(labels[i]);
+				tcoeff[i].setText(numFormatCoeff.format(coeff[i]));
+				tcoeff[i].setEnabled(false);
+				tcoeff[i].setEditable(true);
+			} else {
+				lcoeff[i].setText(BLANK_LABEL);
+				tcoeff[i].setText("");
+				tcoeff[i].setEnabled(false);
+				tcoeff[i].setEditable(false);
+			}
+		}
 	}
 
 	private AbstractHist1D getCurrentHistogram() {

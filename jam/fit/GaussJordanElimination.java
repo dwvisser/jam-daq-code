@@ -2,18 +2,14 @@ package jam.fit;
 
 final class GaussJordanElimination {
 
-	private final Matrix inputMatrix; // n by n
-	private final Matrix inputVectors; // n by m
+	private transient final Matrix inputMatrix; // n by n
+	private transient final Matrix inputVectors; // n by m
 
-	private int[] rowIndex;
-	private int[] columnIndex;
-	//private int[] pivot;
+	private transient int[] rowIndex;
+	private transient int[] columnIndex;
 
-	private final int rows;
-	private final int columns;
-
-	//private int pivotRow;
-	//private int pivotColumn;
+	private transient final int rows;
+	private transient final int columns;
 
 	GaussJordanElimination(Matrix inMatrix, Matrix InputVector) {
 		this.inputMatrix = new Matrix(inMatrix);

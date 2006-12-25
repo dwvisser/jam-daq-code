@@ -14,11 +14,6 @@ public class GateTest extends TestCase {
 
     private transient Gate gate1, gate2; //1d and 2d, respectively
 
-
-
-
-    int npoints = 4;
-
     /**
      * Constructor for GateTest.
      * 

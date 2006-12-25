@@ -20,13 +20,13 @@ abstract class AbstractPrintingCommand extends AbstractCommand {// NOPMD
 	}
 
 	// stuff for printing, margins in inches, font
-	static final double MARGIN_TOP = 0.5;
+	private static final double MARGIN_TOP = 0.5;
 
-	static final double MARGIN_BOTTOM = 0.5;
+	private static final double MARGIN_BOTTOM = 0.5;
 
-	static final double MARGIN_LEFT = 0.5;
+	private static final double MARGIN_LEFT = 0.5;
 
-	static final double MARGIN_RIGHT = 0.5;
+	private static final double MARGIN_RIGHT = 0.5;
 
 	/**
 	 * Page format object common to all printing commands.
