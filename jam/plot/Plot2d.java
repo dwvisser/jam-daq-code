@@ -1,7 +1,11 @@
 package jam.plot;
 
+import static jam.plot.Constants.BOTTOM;
+import static jam.plot.Constants.LEFT;
+import static jam.plot.Constants.TOP;
 import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 import jam.data.AbstractHist1D;
+import jam.data.DataException;
 import jam.data.Histogram;
 import jam.plot.color.ColorPrefs;
 import jam.plot.color.DiscreteColorScale;
@@ -350,23 +354,23 @@ final class Plot2d extends AbstractPlot {
 		}
 		/* draw labels/ticks after histogram so they are on top */
 		context.setColor(plotColorMap.getForeground());
-		graph.drawTitle(plotHist.getTitle(), PlotGraphics.TOP);
+		graph.drawTitle(plotHist.getTitle(), TOP);
 		graph.drawNumber(plotHist.getNumber(), new int[0]);
-		graph.drawTicks(PlotGraphics.BOTTOM);
-		graph.drawLabels(PlotGraphics.BOTTOM);
-		graph.drawTicks(PlotGraphics.LEFT);
-		graph.drawLabels(PlotGraphics.LEFT);
+		graph.drawTicks(BOTTOM);
+		graph.drawLabels(BOTTOM);
+		graph.drawTicks(LEFT);
+		graph.drawLabels(LEFT);
 		final String axisLabelX = plotHist.getLabelX();
 		if (axisLabelX == null) {
-			graph.drawAxisLabel(X_LABEL_2D, PlotGraphics.BOTTOM);
+			graph.drawAxisLabel(X_LABEL_2D, BOTTOM);
 		} else {
-			graph.drawAxisLabel(axisLabelX, PlotGraphics.BOTTOM);
+			graph.drawAxisLabel(axisLabelX, BOTTOM);
 		}
 		final String axisLabelY = plotHist.getLabelY();
 		if (axisLabelY == null) {
-			graph.drawAxisLabel(Y_LABEL_2D, PlotGraphics.LEFT);
+			graph.drawAxisLabel(Y_LABEL_2D, LEFT);
 		} else {
-			graph.drawAxisLabel(axisLabelY, PlotGraphics.LEFT);
+			graph.drawAxisLabel(axisLabelY, LEFT);
 		}
 		context.setPaintMode();
 		context.setColor(plotColorMap.getForeground());

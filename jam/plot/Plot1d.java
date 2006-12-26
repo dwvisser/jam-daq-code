@@ -1,5 +1,8 @@
 package jam.plot;
 
+import static jam.plot.Constants.BOTTOM;
+import static jam.plot.Constants.LEFT;
+import static jam.plot.Constants.TOP;
 import jam.data.AbstractHist1D;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
@@ -270,23 +273,23 @@ final class Plot1d extends AbstractPlot {
 		}
 		/* draw ticks after histogram so they are on top */
 		graphics.setColor(colorMap.getForeground());
-		graph.drawTitle(plotHist.getTitle(), PlotGraphics.TOP);
+		graph.drawTitle(plotHist.getTitle(), TOP);
 
-		graph.drawTicks(PlotGraphics.BOTTOM);
-		graph.drawLabels(PlotGraphics.BOTTOM);
-		graph.drawTicks(PlotGraphics.LEFT);
-		graph.drawLabels(PlotGraphics.LEFT);
+		graph.drawTicks(BOTTOM);
+		graph.drawLabels(BOTTOM);
+		graph.drawTicks(LEFT);
+		graph.drawLabels(LEFT);
 		final String axisLabelX = plotHist.getLabelX();
 		if (axisLabelX == null) {
-			graph.drawAxisLabel(X_LABEL_1D, PlotGraphics.BOTTOM);
+			graph.drawAxisLabel(X_LABEL_1D, BOTTOM);
 		} else {
-			graph.drawAxisLabel(axisLabelX, PlotGraphics.BOTTOM);
+			graph.drawAxisLabel(axisLabelX, BOTTOM);
 		}
 		final String axisLabelY = plotHist.getLabelY();
 		if (axisLabelY == null) {
-			graph.drawAxisLabel(Y_LABEL_1D, PlotGraphics.LEFT);
+			graph.drawAxisLabel(Y_LABEL_1D, LEFT);
 		} else {
-			graph.drawAxisLabel(axisLabelY, PlotGraphics.LEFT);
+			graph.drawAxisLabel(axisLabelY, LEFT);
 		}
 	}
 
