@@ -43,6 +43,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -133,7 +134,7 @@ public final class ScalerScan {
 		browse.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
 				final String command = event.getActionCommand();
-				if (command.equals("browse")) {
+				if ("browse".equals(command)) {
 					final File temp = getFile(true);
 					if (temp != null) {
 						txtPath.setText(temp.getAbsolutePath());
@@ -210,24 +211,7 @@ public final class ScalerScan {
 					final String filename = runText + i + ".hdf";
 					final File infile = new File(pathToRuns, filename);// NOPMD
 					if (infile.exists()) {
-						updateProgressBar("Processing " + infile.getName(), i);
-						final HDFile inHDF = new HDFile(infile, "r");// NOPMD
-						inHDF.seek(0);
-						inHDF.readFile();
-						if (i == firstRun) {
-							outText.append("Run");
-							final String[] names = getScalerNames();
-							for (int j = 0; j < names.length; j++) {
-								outText.append(TAB).append(names[j]);
-							}
-							outText.append(carriage);
-						}
-						outText.append(i);
-						final int[] values = getScalerValues();
-						for (int j = 0; j < values.length; j++) {
-							outText.append(TAB).append(values[j]);
-						}
-						outText.append(carriage);
+						processFile(carriage, outText, firstRun, i, infile);
 					} else {
 						LOGGER.warning(infile.getPath()
 								+ " does not exist.  Skipping.");
@@ -246,6 +230,46 @@ public final class ScalerScan {
 		} catch (HDFException e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * @param carriage
+	 * @param outText
+	 * @param firstRun
+	 * @param index
+	 * @param infile
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws HDFException
+	 */
+	private void processFile(final char carriage, final StringBuffer outText, final int firstRun, final int index, final File infile) throws FileNotFoundException, IOException, HDFException {
+		updateProgressBar("Processing " + infile.getName(), index);
+		final HDFile inHDF = new HDFile(infile, "r");// NOPMD
+		inHDF.seek(0);
+		inHDF.readFile();
+		if (index == firstRun) {
+			writeHeaderLine(carriage, outText);
+		}
+		outText.append(index);
+		final int[] values = getScalerValues();
+		for (int j = 0; j < values.length; j++) {
+			outText.append(TAB).append(values[j]);
+		}
+		outText.append(carriage);
+	}
+
+	/**
+	 * @param carriage
+	 * @param outText
+	 */
+	private void writeHeaderLine(final char carriage, final StringBuffer outText) {
+		outText.append("Run");
+		final String[] names = getScalerNames();
+		for (int j = 0; j < names.length; j++) {
+			outText.append(TAB).append(names[j]);
+		}
+		outText.append(carriage);
 	}
 
 	private String[] getScalerNames() {

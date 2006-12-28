@@ -21,13 +21,13 @@ final class PlotGraphicsLayout {
 	};
 
 	class Border {
-		final transient int top;
+		final transient int top;// NOPMD
 
-		final transient int left;
+		final transient int left;// NOPMD
 
-		final transient int bottom;
+		final transient int bottom;// NOPMD
 
-		final transient int right;
+		final transient int right;// NOPMD
 
 		Border(int top, int left, int bottom, int right) {
 			super();
@@ -39,112 +39,89 @@ final class PlotGraphicsLayout {
 	}
 
 	// border outside of plot
-	final transient Border border;
+	final transient Border border;// NOPMD
 
 	// tickmark stuff
 	class Tick {
-		final transient int size;
+		final transient int minor;// NOPMD
 
-		final transient int minor;
+		final transient int major;// NOPMD
 
-		final transient int major;
-
-		Tick(int size, int minor, int major) {
+		Tick(int minor, int major) {
 			super();
-			this.size = size;
 			this.minor = minor;
 			this.major = major;
 		}
 	}
-	
-	final Tick tick = new Tick(10,5,10);
+
+	final Tick tick = new Tick(5, 10);// NOPMD
 
 	// title stuff
 	class TitleOffsets {
 
-		final transient int main;
+		final transient int top;// NOPMD
 
-		final transient int top;
+		final transient int left;// NOPMD
 
-		final transient int bottom;
+		final transient int date;// NOPMD
 
-		final transient int left;
-
-		final transient int date;
-
-		TitleOffsets(int main, int top, int bottom, int left, int date) {
+		TitleOffsets(int top, int left, int date) {
 			super();
-			this.main = main;
 			this.top = top;
-			this.bottom = bottom;
 			this.left = left;
 			this.date = date;
 		}
 
 	}
 
-	final transient TitleOffsets titleOffsets;
+	final transient TitleOffsets titleOffsets;// NOPMD
 
 	// tickmarks
 	class LabelOffsets {
-		final transient int main;
+		final transient int bottom;// NOPMD
 
-		final transient int top;
+		final transient int left;// NOPMD
 
-		final transient int botttom;
-
-		final transient int left;
-
-		LabelOffsets(int main, int top, int bottom, int left) {
+		LabelOffsets(int bottom, int left) {
 			super();
-			this.main = main;
-			this.top = top;
-			this.botttom = bottom;
+			this.bottom = bottom;
 			this.left = left;
 		}
 	}
 
-	final LabelOffsets labelOffsets = new LabelOffsets(5, 5, 3, 3);
+	final LabelOffsets labelOffsets = new LabelOffsets(3, 3);// NOPMD
 
 	// axis labels
 	class AxisLabelOffsets {
-		final transient int top;
+		final transient int bottom;// NOPMD
 
-		final transient int bottom;
+		final transient int left;// NOPMD
 
-		final transient int left;
-
-		final transient int right;
-
-		AxisLabelOffsets(int top, int bottom, int left, int right) {
+		AxisLabelOffsets(int bottom, int left) {
 			super();
-			this.top = top;
 			this.bottom = bottom;
 			this.left = left;
-			this.right = right;
 		}
 	}
 
-	final AxisLabelOffsets axisLabelOffsets = new AxisLabelOffsets(20, 20, 35,
-			20);
+	final AxisLabelOffsets axisLabelOffsets = new AxisLabelOffsets(20, 35);// NOPMD
 
-	// stuff for channel marker
-	final static transient int MARK_MIN_LENGTH=20;
-
-	final static transient int MARK_OFFSET=3;
-
-	// fonts
-	final static transient float SCREEN_FONT_SIZE=12;
-
-	final static float TITLE_SCREEN_SIZE=SCREEN_FONT_SIZE + 2;
+	final static transient float SCREEN_FONT_SIZE = 12;// NOPMD
 
 	class ColorScale {
 		// stuff for two d color scale
-		final transient int offset; // distance from right side of plot
 
-		final transient int labelOffset;
+		/**
+		 * distance from right side of plot
+		 */
+		final transient int offset; // NOPMD
 
-		final transient int size; // size of a color swatch
+		final transient int labelOffset;// NOPMD
+
+		/**
+		 * size of a color swatch
+		 */
+		final transient int size; // NOPMD
 
 		ColorScale(int offset, int labelOffset, int size) {
 			super();
@@ -154,14 +131,7 @@ final class PlotGraphicsLayout {
 		}
 	}
 
-	final ColorScale colorScale = new ColorScale(
-			10, 5, 15);
-
-	final static transient int PRINT_FONT_SIZE=12;
-
-	final transient int TILE_PRINT_SIZE=PRINT_FONT_SIZE + 2;
-
-	final static String FONT_CLASS = "Serif";
+	final ColorScale colorScale = new ColorScale(10, 5, 15);//NOPMD
 
 	private PlotGraphicsLayout(Type type) {
 		super();
@@ -169,12 +139,12 @@ final class PlotGraphicsLayout {
 			// border outside of plot
 			border = new Border(40, 60, 40, 60);
 			// title stuff
-			titleOffsets = new TitleOffsets(10, 10, 25, 0, 25);
+			titleOffsets = new TitleOffsets(10, 0, 25);
 		} else {
 			// border outside of plot
 			border = new Border(0, 0, 0, 0);
 			// title stuff
-			titleOffsets = new TitleOffsets(10, -13, 35, 20, 25);
+			titleOffsets = new TitleOffsets(-13, 20, 25);
 		}
 	}
 
@@ -185,8 +155,7 @@ final class PlotGraphicsLayout {
 	/**
 	 * Layout with axis labels.
 	 */
-	static final PlotGraphicsLayout LABELS = new PlotGraphicsLayout(
-			Type.WITH_LABELS);
+	static final PlotGraphicsLayout LABELS = new PlotGraphicsLayout(Type.WITH_LABELS);//NOPMD
 
 	/**
 	 * Layout without axis labels.

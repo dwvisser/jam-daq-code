@@ -157,7 +157,7 @@ final class PlotGraphics {
 		/* some initial layout stuff */
 		border = new Insets(graphLayout.border.top, graphLayout.border.left,
 				graphLayout.border.bottom, graphLayout.border.right);
-		final Font screenFont = new Font(PlotGraphicsLayout.FONT_CLASS,
+		final Font screenFont = new Font(PlotGraphics.FONT_CLASS,
 				Font.BOLD, (int) PlotGraphicsLayout.SCREEN_FONT_SIZE);
 		setGraphicsFont(screenFont);
 	}
@@ -190,6 +190,15 @@ final class PlotGraphics {
 	}
 
 	private transient final Object limitsLock = new Object();
+
+	private final static String FONT_CLASS = "Serif";
+
+	private final static float TITLE_SCREEN_SIZE=PlotGraphicsLayout.SCREEN_FONT_SIZE + 2;
+
+	private final static transient int MARK_OFFSET=3;
+
+	// stuff for channel marker
+	private final static transient int MARK_MIN_LENGTH=20;
 
 	/**
 	 * updates the current display parameters the most basic update this one
@@ -297,7 +306,7 @@ final class PlotGraphics {
 		yPos = viewTop - graphLayout.titleOffsets.top;
 		if (side == TOP) {
 			setGraphicsFont(font
-					.deriveFont(PlotGraphicsLayout.TITLE_SCREEN_SIZE));
+					.deriveFont(PlotGraphics.TITLE_SCREEN_SIZE));
 			graphics2d.drawString(title, xPos, yPos);
 			setGraphicsFont(font
 					.deriveFont(PlotGraphicsLayout.SCREEN_FONT_SIZE));
@@ -493,7 +502,7 @@ final class PlotGraphics {
 			final int offset = metrics.stringWidth(label); // length of string
 			final int xCoordinate = toViewHorzLin(ticksMajor[i]) - offset / 2;
 			final int yCoordinate = viewBottom + metrics.getAscent()
-					+ graphLayout.labelOffsets.botttom;
+					+ graphLayout.labelOffsets.bottom;
 			graphics2d.drawString(label, xCoordinate, yCoordinate);
 		}
 	}
@@ -1172,15 +1181,15 @@ final class PlotGraphics {
 			yValue2 = toViewVertLog(count);
 		}
 		// draw the line at least a mark min length
-		if ((yValue1 - yValue2) < PlotGraphicsLayout.MARK_MIN_LENGTH) {
-			yValue2 = viewBottom - PlotGraphicsLayout.MARK_MIN_LENGTH;
+		if ((yValue1 - yValue2) < PlotGraphics.MARK_MIN_LENGTH) {
+			yValue2 = viewBottom - PlotGraphics.MARK_MIN_LENGTH;
 		}
 		// are we inside the plot area
 		if (xValue1 >= viewLeft && xValue1 <= viewRight) {
 			graphics2d.drawLine(xValue1, yValue1, xValue2, yValue2);
 			final String label = "" + channel;
 			graphics2d.drawString(label, xValue2, yValue2
-					- PlotGraphicsLayout.MARK_OFFSET);
+					- PlotGraphics.MARK_OFFSET);
 		}
 	}
 
@@ -1216,8 +1225,8 @@ final class PlotGraphics {
 		final String label = "" + bin.getX() + "," + bin.getY();
 		graphics2d.draw(rectangle);
 		graphics2d.drawString(label, (int) rectangle.getMaxX()
-				+ PlotGraphicsLayout.MARK_OFFSET, rectangle.y
-				- PlotGraphicsLayout.MARK_OFFSET);
+				+ PlotGraphics.MARK_OFFSET, rectangle.y
+				- PlotGraphics.MARK_OFFSET);
 	}
 
 	/*

@@ -21,9 +21,9 @@ public final class RingBuffer {
 	public static final int BUFFER_SIZE = 8 * 1024;
 
 	/**
-	 * Number of buffers in ring, a power of 2.
+	 * Number of buffers in ring, must be a power of 2.
 	 */
-	static final int NUMBER_BUFFERS = 1 << 6; // 64 buffers in ring
+	static final int NUMBER_BUFFERS = 1 << 6; //NOPMD
 
 	private static final int CLOSE_TO_CAPACITY = NUMBER_BUFFERS >> 5;
 
@@ -80,7 +80,7 @@ public final class RingBuffer {
 		synchronized (this) {
 			assert !isNull() : "Attempted putBuffer() on 'null' ring buffer.";
 			if (isFull()) {
-				final StringBuffer message = new StringBuffer();
+				final StringBuffer message = new StringBuffer(50);
 				message.append("Lost a buffer in thread \"");
 				message.append(Thread.currentThread().getName());
 				message
@@ -209,7 +209,6 @@ public final class RingBuffer {
 	 * @return a fresh byte array equal in size to one of the buffers
 	 */
 	public static byte[] freshBuffer() {
-		final ByteBuffer rval = ByteBuffer.allocate(BUFFER_SIZE);
-		return rval.array();
+		return ByteBuffer.allocate(BUFFER_SIZE).array();
 	}
 }
