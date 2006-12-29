@@ -115,11 +115,9 @@ public final class Icons {
 		URL urlGateDef2D = LOADER.getResource("jam/ui/gateDefined2D.png");
 		URL urlBegin = LOADER.getResource("jam/ui/begin.png");
 		URL urlEnd = LOADER.getResource("jam/ui/end.png");
-		if (urlStop == null || urlGo == null || urlClear == null
-				|| urlCaution == null || urlHist1D == null || urlGate1D == null
-				|| urlHist2D == null || urlGate2D == null
-				|| urlGateDef1D == null || urlGateDef2D == null
-				|| urlBegin == null || urlEnd == null) {
+		if (areAnyNull(urlStop, urlGo, urlClear, urlCaution, urlHist1D,
+				urlGate1D, urlHist2D, urlGate2D, urlGateDef1D, urlGateDef2D,
+				urlBegin, urlEnd)) {
 			JOptionPane.showMessageDialog(null,
 					"Can't load resource: jam/ui/*.png");
 			STOP = GO_GREEN = CLEAR = CAUTION = GROUP_SORT = GROUP_FILE = GROUP_TEMP = HIST1D = HIST2D = GATE1D = GATE2D = GATE_DEF1D = GATE_DEF2D = BEGIN = END = null;
@@ -140,5 +138,16 @@ public final class Icons {
 			BEGIN = new ImageIcon(urlBegin);
 			END = new ImageIcon(urlEnd);
 		}
+	}
+
+	boolean areAnyNull(final URL... urls) {
+		boolean rval = false;
+		for (int i = urls.length - 1; i >= 0; i--) {
+			if (urls[i] == null) {
+				rval = true;
+				break;
+			}
+		}
+		return rval;
 	}
 }

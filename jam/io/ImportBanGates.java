@@ -21,6 +21,10 @@ import javax.swing.filechooser.FileFilter;
  * @version Feb 13, 2004
  */
 public final class ImportBanGates extends AbstractImpExp {
+	
+	public ImportBanGates(){//NOPMD
+		super();
+	}
 
 	/**
 	 * @see jam.io.AbstractImpExp#openFile(File, String)

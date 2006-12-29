@@ -1,9 +1,8 @@
 package help.sortfiles;
 
+import jam.data.DataParameter;
 import jam.data.Gate;
 import jam.data.HistInt1D;
-import jam.data.Scaler;
-import jam.data.DataParameter;
 import jam.sort.SortException;
 import jam.sort.SortRoutine;
 
@@ -16,20 +15,14 @@ import jam.sort.SortRoutine;
 public final class CamacSortTemplate extends SortRoutine {
 
 	/** variables declarations */
-	static final int PARAM_ID = 0; //id number for event word from cnaf
+	private static final int PARAM_ID = 0; //id number for event word from cnaf
 
-	static final int SCALER_ID = 0; //id number for scaler from cnaf
+	private transient final HistInt1D myHist; //declare histogram myHist
 
-	transient final HistInt1D myHist; //declare histogram myHist
+	private transient final HistInt1D myHistGated; //declare histogram myHistGated
 
-	transient final HistInt1D myHistGated; //declare histogram myHistGated
-
-	transient final Gate myGate; //declare gate myGate;
-
-	transient final Scaler myScal; //declare scaler myScal;
+	private transient final Gate myGate; //declare gate myGate;
 	
-	transient final DataParameter myParam;
-
 	/**
 	 * Constructor, not usually used. 
 	 *
@@ -43,8 +36,7 @@ public final class CamacSortTemplate extends SortRoutine {
 		myHist = createHist1D(hist1d, "detector1", "my detector");
 		myHistGated = createHist1D(hist1d, "detecGated", "my detector gated");
 		myGate = new Gate("detector1", myHist);
-		myScal = createScaler("scaler1", SCALER_ID);
-		myParam = new DataParameter("ParamAdjust");
+		new DataParameter("ParamAdjust");
 	}
 
 	/**

@@ -124,7 +124,7 @@ final class PlotFit {
 	void getNetArea(final double[] netArea, double[] netAreaError,
 			double[] channelBkgd, double[] fwhm, double[] centroid,
 			double[] centroidErr, final Bin[] clicks, final double grossArea,
-			final int numChannels, final double[] counts) {//NOPMD
+			final int numChannels, final double[] counts) {
 		double netBkgd = 0;
 		double[] channel = new double[numChannels];
 		double countsHigh = 0;

@@ -30,13 +30,6 @@ public class NetDaemonTest extends TestCase {
 		runControl.setupOn("Test", null, null, null, netDaemon, null);
 	}
 
-	/*
-	 * @see TestCase#tearDown()
-	 */
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-
 	/**
 	 * JUnit test.
 	 * 

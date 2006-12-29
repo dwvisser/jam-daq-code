@@ -115,7 +115,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	/** Is there a command present */
 	private transient boolean commandPresent;
 
-	private transient int countLow, countHigh;// NOPMD
+	private transient int countLow; //NOPMD
+	private transient int countHigh; //NOPMD
 
 	/** current command being processed */
 	private transient String currentCommand = "";

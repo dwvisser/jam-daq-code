@@ -34,11 +34,11 @@ import javax.swing.border.EmptyBorder;
  */
 public final class SaveSelectedHistogram {
 
-	private final Frame frame;
+	private transient final Frame frame;
 
-	private final JDialog dialog;
+	private transient final JDialog dialog;
 
-	private final JList listHist;
+	private transient final JList listHist;
 
 	/**
 	 * Constructs a dialog to save a selection of histograms out of an HDF file.
@@ -71,7 +71,7 @@ public final class SaveSelectedHistogram {
 		pLower.add(pButtons);
 		final AbstractButton bSave = new JButton("Save");
 		bSave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				doSave();
 			}
 		});

@@ -146,6 +146,6 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 	public void completedIO(final String message, final String errorMessage) {
 		hdfio.removeListener();
 		notifyApp(openFile);
-		openFile = null;
+		openFile = null;//NOPMD
 	}
 }

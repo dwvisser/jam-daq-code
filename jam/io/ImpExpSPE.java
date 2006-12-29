@@ -20,7 +20,7 @@ import javax.swing.filechooser.FileFilter;
  * @version 0.5
  * @author Ken Swartz
  */
-public final class ImpExpSPE extends AbstractImpExp {
+public final class ImpExpSPE extends AbstractImpExp {//NOPMD
 
 	private static final int NAME_LENGTH = 8;
 

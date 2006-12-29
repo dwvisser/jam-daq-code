@@ -21,20 +21,24 @@ import java.util.List;
  */
 final class LevenbergMarquadt {
 
-	/**
-	 * <code>int</code> used when calling to calculate the first iteration
-	 */
-	public static final int FIRST_ITERATION = 0;
+	protected enum Iteration {
 
-	/**
-	 * <code>int</code> used when calling to calculate subsequent iterations
-	 */
-	public static final int NEXT_ITERATION = 1;
+		/**
+		 * <code>int</code> used when calling to calculate the first iteration
+		 */
+		FIRST_ITERATION,
 
-	/**
-	 * <code>int</code> used when calling to calculate the last iteration
-	 */
-	public static final int LAST_ITERATION = 2;
+		/**
+		 * <code>int</code> used when calling to calculate subsequent
+		 * iterations
+		 */
+		NEXT_ITERATION,
+
+		/**
+		 * <code>int</code> used when calling to calculate the last iteration
+		 */
+		LAST_ITERATION
+	}
 
 	/**
 	 * counts how many iterations have bee called
@@ -62,17 +66,17 @@ final class LevenbergMarquadt {
 	 * smooth variation parameter between using exact solution, or a small step
 	 * in that direction
 	 */
-	private transient double lambda = -1.0;// NOPMD
+	private transient double lambda = -1.0;
 
 	/**
 	 * alpha*da=beta is the equation to be solved. alpha and space are similar
 	 */
-	private transient Matrix alpha;// NOPMD
+	private transient Matrix alpha;
 
 	/**
 	 * beta and vec are similar
 	 */
-	private transient Matrix beta;// NOPMD
+	private transient Matrix beta;
 
 	/**
 	 * second holder of alpha, expanded at end
@@ -82,7 +86,7 @@ final class LevenbergMarquadt {
 	/**
 	 * contains trial changes to parameter values
 	 */
-	private transient Matrix deltaA;// NOPMD
+	private transient Matrix deltaA;
 
 	/**
 	 * array containing all parameters
@@ -92,7 +96,7 @@ final class LevenbergMarquadt {
 	/**
 	 * contains trial values for calculation
 	 */
-	private transient Parameter[] tryParameters;// NOPMD
+	private transient Parameter[] tryParameters;
 
 	/**
 	 * the low channel limit for fitting
@@ -138,7 +142,7 @@ final class LevenbergMarquadt {
 	/**
 	 * previous chi-squared value
 	 */
-	private transient double oChiSq;// NOPMD
+	private transient double oChiSq;
 
 	private transient final MessageHandler messages;
 
@@ -200,52 +204,17 @@ final class LevenbergMarquadt {
 	 * @see #LAST_ITERATION
 	 * @see AbstractNonLinearFit#doFit
 	 */
-	public void iterate(int iteration) throws Exception {// NOPMD
+	public void iterate(final Iteration iteration) throws ArithmeticException {
 		int index;
 		Matrix oneda = new Matrix(nPar, 1);
-		boolean firstCall;
-		boolean lastCall;
 		boolean allDone = false;
-
-		firstCall = (iteration == FIRST_ITERATION);
-		lastCall = (iteration == LAST_ITERATION);
-
-		// first iteration, initialize
+		final boolean firstCall = (iteration == Iteration.FIRST_ITERATION);
+		final boolean lastCall = (iteration == Iteration.LAST_ITERATION);
 		if (firstCall) {
-			deltaA = new Matrix(nPar, 1, 0.0);
-			beta = new Matrix(nPar, 1, 0.0);
-			nVar = 0;
-			for (index = 0; index < nPar; index++) {
-				if (!parameters[index].isFixed()) {
-					// increment number of variable function parameters
-					nVar++;
-				}
-			}
-			dof = maxChannel - minChannel + 1 - nVar;
-			// set working space variables (used in calculate())
-			vec = new Matrix(nVar, 1, 0.0);
-			space = new Matrix(nVar, nVar, 0.0);
-
-			alpha = new Matrix(nVar, nVar, 0.0);
-			oneda = new Matrix(nVar, 1, 0.0);
-			// mfit x 1 matrix filled w/ zeroes
-			lambda = 0.001;
-			// call calculate w/ parameters, retrieve results into
-			// alpha,beta,chiSq is updated
-			calculate(parameters);
-			alpha = new Matrix(space);
-			beta = new Matrix(vec);
-
-			oChiSq = chiSq;
-			tryParameters = new Parameter[parameters.length];
-			System
-					.arraycopy(parameters, 0, tryParameters, 0,
-							parameters.length);
+			initializeIterations();
 		}
-
 		// Entering main iteration, must have alpha and beta from last
 		// calculation,and oChiSq
-
 		// Alter linearized fitting matrix, by augmenting diagonal elements
 		covar = new Matrix(alpha); // make a copy of alpha into covar
 		oneda = new Matrix(beta); // make a copy of beta into oneda
@@ -259,7 +228,8 @@ final class LevenbergMarquadt {
 		}
 
 		// Matrix solution using covar and oneda
-		final GaussJordanElimination gje = new GaussJordanElimination(covar, oneda);
+		final GaussJordanElimination gje = new GaussJordanElimination(covar,
+				oneda);
 		gje.doIt();
 		covar = gje.getMatrix();
 		oneda = gje.getVectors();
@@ -269,7 +239,7 @@ final class LevenbergMarquadt {
 		deltaA = new Matrix(oneda);
 		// expand if last call, otherwise output iterationCount
 		if (lastCall) { // final call (converged presumably) evaluate covariance
-						// matrix
+			// matrix
 			expandCovarianceMatrix();
 			setParameterErrors();
 			allDone = true;
@@ -310,6 +280,44 @@ final class LevenbergMarquadt {
 				System.arraycopy(parameters, 0, tryParameters, 0, nPar);
 				// alpha and beta left the same
 				// old parameters copied into tryParameters for next iteration
+			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void initializeIterations() {
+		deltaA = new Matrix(nPar, 1, 0.0);
+		beta = new Matrix(nPar, 1, 0.0);
+		countVariableParameters();
+		dof = maxChannel - minChannel + 1 - nVar;
+		// set working space variables (used in calculate())
+		vec = new Matrix(nVar, 1, 0.0);
+		space = new Matrix(nVar, nVar, 0.0);
+		alpha = new Matrix(nVar, nVar, 0.0);
+		// mfit x 1 matrix filled w/ zeroes
+		lambda = 0.001;
+		// call calculate w/ parameters, retrieve results into
+		// alpha,beta,chiSq is updated
+		calculate(parameters);
+		alpha = new Matrix(space);
+		beta = new Matrix(vec);
+		oChiSq = chiSq;
+		tryParameters = new Parameter[parameters.length];
+		System.arraycopy(parameters, 0, tryParameters, 0, parameters.length);
+	}
+
+	/**
+	 * 
+	 */
+	private void countVariableParameters() {
+		int index;
+		nVar = 0;
+		for (index = 0; index < nPar; index++) {
+			if (!parameters[index].isFixed()) {
+				// increment number of variable function parameters
+				nVar++;
 			}
 		}
 	}
@@ -358,8 +366,8 @@ final class LevenbergMarquadt {
 					for (int m = 0; m <= l; m++) {
 						if (!params[m].isFixed()) {
 							column++;
-							space.element[row][column] = space.element[row][column] + weight
-									* dyda[m];
+							space.element[row][column] = space.element[row][column]
+									+ weight * dyda[m];
 						}
 					}
 					vec.element[row][0] = vec.element[row][0] + deltaY * weight;

@@ -108,14 +108,12 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 *                thrown for errors in the event stream
 	 * @return status resulting after read attempt
 	 */
-	public EventInputStatus readEvent(int[] input) throws EventException {
+	public EventInputStatus readEvent(final int[] input) throws EventException {
 		EventInputStatus rval = null;
 		synchronized (this) {
 			try {
 				if (newBlock) {// if a new block read in block header
-					if (!readBlockHeader()) {
-						rval = EventInputStatus.END_FILE;
-					}
+					rval = readAndCheckBlockHeader(rval);
 					newBlock = false;
 					countEvent = 0;
 					// check if we are done with this block
@@ -124,11 +122,7 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 					newBlock = true;
 					rval = EventInputStatus.END_BUFFER;
 				} else if (blockEventType == 5) {
-					final short size = eventsze.get(4);
-					for (int parameter = 0; parameter < size; parameter++) {
-						// read parameter word
-						input[parameter] = dataInput.readInt();
-					}
+					readTypeFiveParams(input);
 					rval = EventInputStatus.EVENT;
 				} else if (blockEventType < 5) {
 					final short size = eventsze.get(blockEventType - 1);
@@ -152,6 +146,31 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 			}
 			return rval;
 		}
+	}
+
+	/**
+	 * @param input
+	 * @throws IOException
+	 */
+	private void readTypeFiveParams(int[] input) throws IOException {
+		final short size = eventsze.get(4);
+		for (int parameter = 0; parameter < size; parameter++) {
+			// read parameter word
+			input[parameter] = dataInput.readInt();
+		}
+	}
+
+	/**
+	 * @param rval
+	 * @return
+	 * @throws EventException
+	 */
+	private EventInputStatus readAndCheckBlockHeader(final EventInputStatus status) throws EventException {
+		EventInputStatus rval = status;
+		if (!readBlockHeader()) {
+			rval = EventInputStatus.END_FILE;
+		}
+		return rval;
 	}
 
 	/**

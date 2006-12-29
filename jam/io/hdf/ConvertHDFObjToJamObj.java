@@ -113,7 +113,7 @@ final class ConvertHDFObjToJamObj {
 				} catch (DataException de) {
 					throw new HDFException(
 							"Cannot create fit for calibration function "
-									+ funcName);
+									+ funcName, de);
 				}
 			} else if (dataTypeName.equals(TYPE_COEFF)) {
 				double[] coeff = new double[numbPts];
@@ -678,9 +678,9 @@ final class ConvertHDFObjToJamObj {
 				calFunc = (AbstractCalibrationFunction) calClass.newInstance();
 			}
 		} catch (InstantiationException e) {
-			throw new HDFException("Cannot create calibration  " + funcName);
+			throw new HDFException("Cannot create calibration  " + funcName, e);
 		} catch (IllegalAccessException e) {
-			throw new HDFException("Cannot create calibration  " + funcName);
+			throw new HDFException("Cannot create calibration  " + funcName, e);
 		}
 		return calFunc;
 	}

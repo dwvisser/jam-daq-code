@@ -44,7 +44,7 @@ public class EventSizeMode {//NOPMD
 	public static final EventSizeMode VME_MAP = new EventSizeMode(
 			SET_VME_MAP);
 
-	final transient int mode;
+	private final transient int mode;
 
 	private EventSizeMode(int value) {
 		super();

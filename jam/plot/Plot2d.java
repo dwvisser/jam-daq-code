@@ -5,7 +5,6 @@ import static jam.plot.Constants.LEFT;
 import static jam.plot.Constants.TOP;
 import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 import jam.data.AbstractHist1D;
-import jam.data.DataException;
 import jam.data.Histogram;
 import jam.plot.color.ColorPrefs;
 import jam.plot.color.DiscreteColorScale;

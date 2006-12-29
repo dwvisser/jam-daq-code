@@ -70,8 +70,7 @@ public class XsysInputStream extends AbstractEventInputStream {
 				}
 			} catch (IOException io) {
 				status = EventInputStatus.ERROR;
-				throw new EventException("Reading Event from IOException "
-						+ io.getMessage() + " [XsysInputStream]");
+				throw new EventException("Problem Reading Event.", io);
 
 			}
 			return status;

@@ -136,14 +136,14 @@ public abstract class AbstractNonLinearFit extends AbstractFit {
 		fitter.setup(counts, errors, minCH, maxCH);
 
 		try {
-			fitter.iterate(LevenbergMarquadt.FIRST_ITERATION);
+			fitter.iterate(LevenbergMarquadt.Iteration.FIRST_ITERATION);
 		} catch (Exception e) {
 			returnVal = e.toString();
 		}
 		chiSq = fitter.getChiSq();
 		do {
 			try {
-				fitter.iterate(LevenbergMarquadt.NEXT_ITERATION);
+				fitter.iterate(LevenbergMarquadt.Iteration.NEXT_ITERATION);
 			} catch (Exception e) {
 				returnVal = e.toString();
 			}
@@ -159,7 +159,7 @@ public abstract class AbstractNonLinearFit extends AbstractFit {
 		} while (!quit);
 		// do last iteration
 		try {
-			fitter.iterate(LevenbergMarquadt.LAST_ITERATION);
+			fitter.iterate(LevenbergMarquadt.Iteration.LAST_ITERATION);
 			returnVal = (numIter + " iterations, d.o.f. = " + fitter
 					.getDegreesOfFreedom());
 			textInfo.messageOutln(numIter + " iterations, d.o.f. = "

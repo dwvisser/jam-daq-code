@@ -42,7 +42,7 @@ import javax.swing.filechooser.FileFilter;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @version 0.5
  */
-public class ImpExpORNL extends AbstractImpExp {
+public class ImpExpORNL extends AbstractImpExp {//NOPMD
 
 	/**
 	 * sequence of ASCII encoded characters to begin <code>drr</code> file.

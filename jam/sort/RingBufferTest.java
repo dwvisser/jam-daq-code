@@ -41,15 +41,6 @@ public class RingBufferTest extends TestCase {
 	}
 
 	/**
-	 * Initialize local variables for the tests.
-	 * 
-	 * @see TestCase#setUp()
-	 */
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
-
-	/**
 	 * Test for <code>putBuffer()</code>.
 	 * 
 	 * @see RingBuffer#putBuffer(byte [])

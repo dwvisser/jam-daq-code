@@ -28,7 +28,7 @@ public final class VME_Map {
 
 	private transient int maxParamNum = 0;
 
-	private transient final StringBuffer messages = new StringBuffer();
+	private transient final StringBuffer messages = new StringBuffer(120);
 
 	/**
 	 * Constructs a new VME map for the given <code>AbstractSortRoutine</code>.

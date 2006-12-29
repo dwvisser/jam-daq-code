@@ -19,6 +19,10 @@ package jam.sort;
  * @version Apr 12, 2004
  */
 public final class ThreadPriorities {
+	
+	private ThreadPriorities(){
+		super();
+	}
 
 	/**
 	 * Priority value for <code>jam.sort.NetDaemon</code>. Note that
