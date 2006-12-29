@@ -43,6 +43,7 @@ final class ParseCommand implements CommandListener {
 		CMD_MAP.put("re", PlotCommands.REBIN);
 		CMD_MAP.put("s", PlotCommands.SCALE);
 	}
+
 	private transient final Action action;
 
 	ParseCommand(Action action) {
@@ -58,9 +59,10 @@ final class ParseCommand implements CommandListener {
 	 * @return the number
 	 * @throws NumberFormatException
 	 */
-	private double convertNumber(final String string) throws NumberFormatException {
-		return (string.indexOf('.') >= 0) ? Double.parseDouble(string) : Integer
-				.parseInt(string);
+	private double convertNumber(final String string)
+			throws NumberFormatException {
+		return (string.indexOf('.') >= 0) ? Double.parseDouble(string)
+				: Integer.parseInt(string);
 	}
 
 	/*
@@ -69,15 +71,14 @@ final class ParseCommand implements CommandListener {
 	private List<Double> convertParameters(final String[] cmdParams) {
 		final int numberParams = cmdParams.length;
 		final List<Double> rval = new ArrayList<Double>(numberParams);
-		/* The parameters must be numbers. */
-		try {
-			int countParam = 0;
-			while (countParam < numberParams) {
-				rval.add(countParam, convertNumber(cmdParams[countParam]));
-				countParam++;
-			}
-		} catch (NumberFormatException nfe) {
-			throw new NumberFormatException("Input parameter not a number.");
+		/*
+		 * The parameters must be numbers or a NumberFormatException can be
+		 * thrown.
+		 */
+		int countParam = 0;
+		while (countParam < numberParams) {
+			rval.add(countParam, convertNumber(cmdParams[countParam]));
+			countParam++;
 		}
 		return rval;
 	}

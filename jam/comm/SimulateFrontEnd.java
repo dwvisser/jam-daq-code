@@ -28,19 +28,19 @@ import java.nio.ShortBuffer;
  */
 public final class SimulateFrontEnd extends GoodThread {
 
-	final static String HOST_IP = "localhost";
+	private final static String HOST_IP = "localhost";
 
-	final static String FRONTEND_IP = "localhost";
+	private final static String FRONTEND_IP = "localhost";
 
-	final static int PORT_RECIEVE = 6002;
+	private final static int PORT_RECIEVE = 6002;
 
-	final static int PORT_SEND = 6003;
+	private final static int PORT_SEND = 6003;
 
-	final static int PORT_SEND_HOST = 5002;
+	private final static int PORT_SEND_HOST = 5002;
 
-	final static int PORT_DATA = 6005;
+	private final static int PORT_DATA = 6005;
 
-	final static int PORT_DATA_HOST = 10205;
+	private final static int PORT_DATA_HOST = 10205;
 
 	private transient InetAddress addressHost = null;// NOPMD
 
@@ -112,22 +112,31 @@ public final class SimulateFrontEnd extends GoodThread {
 				} else if (status == ERROR.intValue()) {
 					final String text = unPackMessage(byteBuffer);
 					LOGGER.info("Error:" + text);
-				} else if (status == SCALER.intValue()) {
-					LOGGER.info("Scaler:");
-				} else if (status == CNAF.intValue()) {
-					LOGGER.info("CNAF:");
-				} else if (status == COUNTER.intValue()) {
-					LOGGER.info("Counte:r");
-				} else if (status == VME_ADDRESS.intValue()) {
-					LOGGER.info("VME Address:");
-				} else if (status == INTERVAL.intValue()) {
-					LOGGER.info("Interval:");
 				} else {
-					LOGGER.info("Message Unknown:");
+					logStatus(status);
 				}
 			}// end of receive message forever loop
 		} catch (IOException ioe) {
 			LOGGER.info("Error in receiving messages");
+		}
+	}
+
+	/**
+	 * @param status
+	 */
+	private void logStatus(final int status) {
+		if (status == SCALER.intValue()) {
+			LOGGER.info("Scaler:");
+		} else if (status == CNAF.intValue()) {
+			LOGGER.info("CNAF:");
+		} else if (status == COUNTER.intValue()) {
+			LOGGER.info("Counte:r");
+		} else if (status == VME_ADDRESS.intValue()) {
+			LOGGER.info("VME Address:");
+		} else if (status == INTERVAL.intValue()) {
+			LOGGER.info("Interval:");
+		} else {
+			LOGGER.info("Message Unknown:");
 		}
 	}
 
@@ -157,12 +166,12 @@ public final class SimulateFrontEnd extends GoodThread {
 	}
 
 	private void performTask(final String task) {
-		if (task.equals("START")) {
+		if ("START".equals(task)) {
 			setRunState(true);
 			replyMessage("Performed Start");
-		} else if (task.equals("STOP")) {
+		} else if ("STOP".equals(task)) {
 			setRunState(false);
-		} else if (task.equals("END")) {
+		} else if ("END".equals(task)) {
 			setRunState(false);
 		}
 	}

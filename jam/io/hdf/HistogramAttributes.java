@@ -45,12 +45,6 @@ public final class HistogramAttributes {
 
 	private transient int number;
 
-	private transient int sizeX;
-
-	private transient int sizeY;
-
-	private transient int histDim;
-
 	HistogramAttributes(String groupName, String name, String title, int number) {
 		super();
 		this.groupName = groupName;
@@ -106,20 +100,7 @@ public final class HistogramAttributes {
 		return title;
 	}
 
-	int getHistDim() {
-		return histDim;
-	}
-
 	int getNumber() {
 		return number;
 	}
-
-	int getSizeX() {
-		return sizeX;
-	}
-
-	int getSizeY() {
-		return sizeY;
-	}
-
 }

@@ -1,7 +1,6 @@
 package jam.util;
 
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -44,8 +43,7 @@ public final class StringUtilities {
 	 * @return array of ASCII bytes representing the input string
 	 */
 	public byte[] getASCIIarray(final String input) {
-		final ByteBuffer buffer = ASCII.encode(input);
-		return buffer.array();
+		return ASCII.encode(input).array();
 	}
 
 	/**
@@ -57,8 +55,7 @@ public final class StringUtilities {
 	 */
 	public String getASCIIstring(final byte[] input) {
 		final ByteBuffer buffer = ByteBuffer.wrap(input);
-		final CharBuffer charBuffer = ASCII.decode(buffer);
-		return charBuffer.toString();
+		return ASCII.decode(buffer).toString();
 	}
 
 	/**

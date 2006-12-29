@@ -39,7 +39,6 @@ final class Toolbar extends JToolBar implements ActionListener {
 	 * Class to render rebin selections
 	 */
 	class ReBinComboBoxRenderer extends JLabel implements ListCellRenderer {
-		transient Icon icon = iRebin;
 
 		ReBinComboBoxRenderer() {
 			super();
@@ -69,7 +68,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 			setFont(list.getFont());
 
 			// Set the icon and text.
-			setIcon(icon);
+			setIcon(iRebin);
 			setText(REBIN_RATIOS[selectedIndex]);
 
 			return this;
@@ -85,7 +84,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 
 	private static final Preferences PREFS;
 
-	static final String[] REBIN_RATIOS = { "1", "2", "4", "8", "16" };
+	private static final String[] REBIN_RATIOS = { "1", "2", "4", "8", "16" };
 
 	static {
 		final String defaultVal = BorderLayout.NORTH;
@@ -103,7 +102,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 
 	private transient JComboBox comboBinRatio;
 
-	final transient Icon iRebin;
+	private final transient Icon iRebin;
 
 	/** Is a syncronize event, so don't fire events */
 	private transient boolean isSyncEvent;
@@ -345,8 +344,8 @@ final class Toolbar extends JToolBar implements ActionListener {
 		bnetarea.setEnabled(enable1D);
 		isSyncEvent = true;
 		/* Convert double to int string */
-		final String strBinWidth = Integer.valueOf(new Double(binWidth).intValue())
-				.toString();
+		final String strBinWidth = Integer.valueOf(
+				new Double(binWidth).intValue()).toString();
 		comboBinRatio.setSelectedIndex(0);
 		for (int i = 0; i < REBIN_RATIOS.length; i++) {
 			if (strBinWidth.equals(REBIN_RATIOS[i])) {

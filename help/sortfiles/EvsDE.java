@@ -22,23 +22,15 @@ import jam.sort.SortRoutine;
 public class EvsDE extends SortRoutine {
 
 	/* histograms */
-	transient final HistInt1D hEnergy, hDE, hSum, hSumGate;
+	private transient final HistInt1D hEnergy, hDE, hSum, hSumGate;
 	
-	transient final HistInt2D hEvsDE;
+	private transient final HistInt2D hEvsDE;
 
 	/* gates */
-	transient final Gate gEvsDE;
-
-	/* scalers */
-	transient final Scaler sBeam, sClck, sEvntRaw, sEvntAccpt;
-
-	//rate monitors
-	transient final Monitor mBeam, mClck, mEvntRt;
+	private transient final Gate gEvsDE;
 
 	//id numbers for the signals;
-	transient int idE;
-
-	transient int idDE;
+	private transient int idE, idDE; //NOPMD
 
 	/**
 	 * Constructor, not usually necessary, but be sure to
@@ -63,19 +55,19 @@ public class EvsDE extends SortRoutine {
 		/* Particle ID gate */
 		gEvsDE = new Gate("PID", hEvsDE);
 		/* Integrated beam current (BIC) */
-		sBeam = createScaler("Beam", 0);
+		Scaler sBeam = createScaler("Beam", 0);
 		/* A clock */
-		sClck = createScaler("Clock", 1);
+		Scaler sClck = createScaler("Clock", 1);
 		/* Total events seen */
-		sEvntRaw = createScaler("Event Raw", 2);
+		Scaler sEvntRaw = createScaler("Event Raw", 2);
 		/* Total events used */
-		sEvntAccpt = createScaler("Event Accept", 3);
+		createScaler("Event Accept", 3);
 		/* Monitor of rate of the BIC scaler */
-		mBeam = new Monitor("Beam ", sBeam);
+		new Monitor("Beam ", sBeam);
 		/* Monitor of the rate of the clock */
-		mClck = new Monitor("Clock", sClck);
+		new Monitor("Clock", sClck);
 		/* Moniter of the rate of accepted events */
-		mEvntRt = new Monitor("Event Rate", sEvntRaw);
+		new Monitor("Event Rate", sEvntRaw);
 	}
 
 	/**

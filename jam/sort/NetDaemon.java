@@ -120,19 +120,10 @@ public final class NetDaemon extends GoodThread {
 	public void setEmptyBefore(final boolean state) {
 		synchronized (this) {
 			if (!emptyBefore && state) {
-				final StringBuffer mesg = new StringBuffer();
-				mesg
-						.append("The sorting process lost a buffer. Click 'OK' to\n");
-				mesg
-						.append("end the current run, 'Cancel' to have Jam attempt to\n");
-				mesg
-						.append("continue automatically sampling events in order to keep\n");
-				mesg
-						.append("up with the acquisition with no further warnings.\n");
+				final String mesg = "The sorting process lost a buffer. Click 'OK' to\nend the current run, 'Cancel' to have Jam attempt to\ncontinue automatically sampling events in order to keep\nup with the acquisition with no further warnings.\n";
 				final boolean confirmed = JOptionPane.showConfirmDialog(
-						JamStatus.getSingletonInstance().getFrame(), mesg
-								.toString(), "Buffer lost. End run?",
-						JOptionPane.OK_CANCEL_OPTION,
+						JamStatus.getSingletonInstance().getFrame(), mesg,
+						"Buffer lost. End run?", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
 				if (confirmed) {
 					new JButton(endAction).doClick();

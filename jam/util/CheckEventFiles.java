@@ -168,26 +168,10 @@ public class CheckEventFiles {
 					blockNum++;
 					final int numScalers = fromStream.readInt();
 					if (blockNum == 1) {
-						val.clear();
-						lastVal.clear();
-						for (int i = 0; i < numScalers; i++) {
-							lastVal.add(-1);
-							val.add(-1);
-						}
+						initializeLists(lastVal, val, numScalers);
 					}
-					for (int i = 0; i < numScalers; i++) {
-						final int value = fromStream.readInt();
-						val.set(i, value);
-						csvStream.write(Integer.toString(value));
-						if (i < numScalers) {
-							csvStream.write(",");
-						}
-						if (value < lastVal.get(i)) {
-							LOGGER.info("Scaler " + i
-									+ " out of sequence, block " + blockNum);
-						}
-						lastVal.set(i, value);
-					}
+					processScalerBlock(csvStream, fromStream, blockNum,
+							lastVal, val, numScalers);
 					csvStream.write("\n");
 				}
 			}
@@ -204,6 +188,49 @@ public class CheckEventFiles {
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 			}
+		}
+	}
+
+	/**
+	 * @param csvStream
+	 * @param fromStream
+	 * @param blockNum
+	 * @param lastVal
+	 * @param val
+	 * @param numScalers
+	 * @throws IOException
+	 */
+	private void processScalerBlock(final FileWriter csvStream,
+			final DataInputStream fromStream, final int blockNum,
+			final List<Integer> lastVal, final List<Integer> val,
+			final int numScalers) throws IOException {
+		for (int i = 0; i < numScalers; i++) {
+			final int value = fromStream.readInt();
+			val.set(i, value);
+			csvStream.write(Integer.toString(value));
+			if (i < numScalers) {
+				csvStream.write(",");
+			}
+			if (value < lastVal.get(i)) {
+				LOGGER.info("Scaler " + i + " out of sequence, block "
+						+ blockNum);
+			}
+			lastVal.set(i, value);
+		}
+	}
+
+	/**
+	 * @param lastVal
+	 * @param val
+	 * @param numScalers
+	 */
+	private void initializeLists(final List<Integer> lastVal,
+			final List<Integer> val, final int numScalers) {
+		val.clear();
+		lastVal.clear();
+		for (int i = 0; i < numScalers; i++) {
+			lastVal.add(-1);
+			val.add(-1);
 		}
 	}
 }
