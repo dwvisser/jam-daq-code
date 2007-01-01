@@ -220,17 +220,15 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 		}
 	}
 
-	private EventInputStatus handleSpecialHeaders(final int header,
-			final EventInputStatus init) {
-		EventInputStatus rval = init;
+	private void handleSpecialHeaders(final int header) {
 		if (header == BUFFER_END) {// return end of buffer
 			// to
 			// SortDaemon
 			/* no need to flush here */
-			rval = EventInputStatus.END_BUFFER;
+			eventInputStatus = EventInputStatus.END_BUFFER;
 			internalStat = BufferStatus.PADDING;
 		} else if (header == BUFFER_PAD) {
-			rval = EventInputStatus.IGNORE;
+			eventInputStatus = EventInputStatus.IGNORE;
 			internalStat = BufferStatus.PADDING;
 		} else if (header == STOP_PAD) {
 			internalStat = BufferStatus.FIFO_FLUSH;
@@ -240,10 +238,9 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 			nScalrBlocks = 0;
 		} else {
 			/* using IGNORE since UNKNOWN WORD causes annoying beeps */
-			rval = EventInputStatus.IGNORE;
+			eventInputStatus = EventInputStatus.IGNORE;
 			internalStat = BufferStatus.PADDING;
 		}
-		return rval;
 	}
 
 	private void incrementGet() {
@@ -291,7 +288,12 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 	private boolean isParameter(final int data) {
 		return (data & TYPE_MASK) == PARM_COMPARE;
 	}
-
+	
+	//pre-allocated objects used by readEvent() allocated here
+	//to avoid allocation every time readEvent() is called
+	private transient final List<Integer> tempScalerValues = new ArrayList<Integer>(32); //NOPMD	
+	private transient EventInputStatus eventInputStatus = null; //NOPMD
+	
 	/**
 	 * Reads an event from the input stream Expects the stream position to be
 	 * the beginning of an event. It is up to the user to ensure this.
@@ -301,11 +303,8 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 	 */
 	public EventInputStatus readEvent(final int[] data) throws EventException {
 		synchronized (this) {
-			EventInputStatus rval = EventInputStatus.EVENT;
+			eventInputStatus = EventInputStatus.EVENT;
 			int parameter = 0;
-			final List<Integer> tval = new ArrayList<Integer>(32); // temporary array for scaler
-			// values, up
-			// to a max of 32
 			try {
 				/*
 				 * internal_status may also be in a "flush" mode in which case
@@ -321,30 +320,30 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 					if (isHeader(header)) {
 						parameter = handleHeader();
 					} else if (header == SCALER_BLOCK) {// read and ignore
-						readScalers(tval);
-						Scaler.update(tval);
-						rval = EventInputStatus.SCALER_VALUE;
+						readScalers(tempScalerValues);
+						Scaler.update(tempScalerValues);
+						eventInputStatus = EventInputStatus.SCALER_VALUE;
 						internalStat = BufferStatus.SCALER;
 					} else {
-						rval = handleSpecialHeaders(header, rval);
+						handleSpecialHeaders(header);
 					}
 				}// end of while loop
-				rval = readWhenNotFilling(data, rval);
+				readWhenNotFilling(data);
 			} catch (EOFException eofe) {// we got to the end of a file or
 				// stream
-				rval = EventInputStatus.END_FILE;
+				eventInputStatus = EventInputStatus.END_FILE;
 				LOGGER.warning(getClass().getName()
 								+ ".readEvent(): End of File reached...file may be corrupted, or run not ended properly.");
 			} catch (IOException ioe) {// we got to the end of a file or stream
-				rval = EventInputStatus.UNKNOWN_WORD;
+				eventInputStatus = EventInputStatus.UNKNOWN_WORD;
 				LOGGER.warning(getClass().getName()
 						+ ".readEvent(): Problem reading integer from stream.");
 			} catch (EventException e) {
-				rval = EventInputStatus.UNKNOWN_WORD;
+				eventInputStatus = EventInputStatus.UNKNOWN_WORD;
 				throw new EventException(getClass().getName()
 						+ ".readEvent() parameter = " + parameter, e);
 			}
-			return rval;
+			return eventInputStatus;
 		}
 	}
 
@@ -401,20 +400,18 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 	 * encountered buffer pad or scaler) The first case is handled here, if it's
 	 * true.
 	 */
-	private EventInputStatus readWhenNotFilling(final int[] data,
-			final EventInputStatus init) {
-		EventInputStatus rval = init;
+	private void readWhenNotFilling(final int[] data) {
 		if (inFlushState()) {// in one of the 2 flush states
 			if (fifoEmpty()) {
 				if (internalStat == BufferStatus.FIFO_FLUSH) {
-					rval = EventInputStatus.END_BUFFER;
+					eventInputStatus = EventInputStatus.END_BUFFER;
 				} else {// internal status must be "endrun flush"
-					rval = EventInputStatus.END_RUN;
+					eventInputStatus = EventInputStatus.END_RUN;
 				}
 				internalStat = BufferStatus.FIFO_FILLING;
 			} else {// all events flushed, make ready for next event
 				getFirstEvent(data);
-				rval = EventInputStatus.EVENT;
+				eventInputStatus = EventInputStatus.EVENT;
 			}
 			/*
 			 * The other possibility is that the FIFO is full and we need to
@@ -423,11 +420,10 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 		} else if (internalStat == BufferStatus.FIFO_FULL) {
 			getFirstEvent(data);// routine retrieves data and updates
 			// tracking variables
-			rval = EventInputStatus.EVENT;
+			eventInputStatus = EventInputStatus.EVENT;
 		} else {// internal status=SCALER or PADDING
 			/* set to FIFO_FILLING so next call will enter loop */
 			internalStat = BufferStatus.FIFO_FILLING;
 		}
-		return rval;
 	}
 }
