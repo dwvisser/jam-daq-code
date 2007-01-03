@@ -27,7 +27,8 @@ import java.util.List;
  * can handle.
  * 
  * @version 0.5 April 98
- * @author Ken Swartz Jim McDonald
+ * @author Ken Swartz
+ * @author Jim McDonald
  * @see AbstractEventInputStream
  * @since JDK1.1
  */
@@ -39,6 +40,10 @@ public final class UconnInputStream extends AbstractEventInputStream {
 
 	private transient int blockNumEvnt;
 
+	/**
+	 * Internal event counter, needs persistence beyond
+	 * the readEvent() methos.
+	 */
 	private transient int countEvent = 0;// NOPMD
 
 	private transient short eventNumWord;
@@ -105,6 +110,11 @@ public final class UconnInputStream extends AbstractEventInputStream {
 		}
 		return rval;
 	}
+	
+	/**
+	 * One allocation instead of many on readEvent() calls.
+	 */
+	private transient EventInputStatus eventInputStatus;//NOPMD
 
 	/**
 	 * Reads an event from the input stream Expects the stream position to be
@@ -114,48 +124,45 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	 *                thrown for errors in the event stream
 	 */
 	public EventInputStatus readEvent(int[] input) throws EventException {
-		EventInputStatus status;
-		long numSkip;
-
 		synchronized (this) {
 			try {
-				status = EventInputStatus.ERROR;
+				eventInputStatus = EventInputStatus.ERROR;
 				// if a new block read in block header
 				if (newBlock) {
 					if (readBlockHeader()) {
 						newBlock = false;
 						countEvent = 0;
 					} else {
-						status = EventInputStatus.END_FILE;
+						eventInputStatus = EventInputStatus.END_FILE;
 					}
 					// check if we are done with this buffer
 				} else if (countEvent == blockNumEvnt) {
 					// are we done with this block
-					numSkip = blockFullSize - blockCurrSize;
+					final long numSkip = blockFullSize - blockCurrSize;
 					dataInput.skip(numSkip);
 					newBlock = true;
-					status = EventInputStatus.END_BUFFER;
+					eventInputStatus = EventInputStatus.END_BUFFER;
 				} else {
 					// read in the event header
 					readEventHeader();
 					unpackData(input);
 					// flush out rest of event
-					numSkip = eventSize - 2 * HEAD_SIZE - 2 * eventNumWord;
+					final long numSkip = eventSize - 2 * HEAD_SIZE - 2 * eventNumWord;
 					dataInput.skip(numSkip);
 					// event state
 					input[64] = eventState;
 					countEvent++;
-					status = EventInputStatus.EVENT;
+					eventInputStatus = EventInputStatus.EVENT;
 					// we got to the end of a file or stream
 				}
 			} catch (EOFException eof) {
-				status = EventInputStatus.END_FILE;
+				eventInputStatus = EventInputStatus.END_FILE;
 				throw new EventException("Reading event.",eof);
 			} catch (IOException io) {
-				status = EventInputStatus.END_FILE;
+				eventInputStatus = EventInputStatus.END_FILE;
 				throw new EventException("Reading event.",io);
 			}
-			return status;
+			return eventInputStatus;
 		}
 	}
 

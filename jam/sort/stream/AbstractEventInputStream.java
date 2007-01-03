@@ -28,6 +28,11 @@ public abstract class AbstractEventInputStream {
 	 */
 	public enum EventInputStatus {
 		/**
+		 * Value to initialize to instead of null.
+		 */
+		NONE,
+		
+		/**
 		 * Status if just read an event.
 		 */
 		END_BUFFER,

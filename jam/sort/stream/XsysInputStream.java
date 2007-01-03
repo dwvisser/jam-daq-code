@@ -37,7 +37,12 @@ public class XsysInputStream extends AbstractEventInputStream {
 	public XsysInputStream(boolean console, int eventSize) {
 		super(console, eventSize);
 	}
-
+	
+	/**
+	 * One allocation instead of many on readEvent() calls.
+	 */
+	private transient EventInputStatus eventInputStatus;//NOPMD	
+	
 	/**
 	 * Reads an event from the input stream Expects the stream position to be
 	 * the beginning of an event. It is up to the user to ensure this.
@@ -47,17 +52,17 @@ public class XsysInputStream extends AbstractEventInputStream {
 	 */
 	public EventInputStatus readEvent(int[] input) throws EventException {
 		synchronized (this) {
-			EventInputStatus status = EventInputStatus.ERROR;
+			eventInputStatus = EventInputStatus.ERROR;
 			try {
 				if (bufferCount < bufferSize) {
 					for (int i = 0; i < eventSize; i++) {
 						input[i] = readVaxShort();
 						bufferCount++;
 						if (input[i] < 0) {
-							status = EventInputStatus.END_FILE;
+							eventInputStatus = EventInputStatus.END_FILE;
 							break; // jumps out of for-loop
 						}
-						status = EventInputStatus.EVENT;
+						eventInputStatus = EventInputStatus.EVENT;
 					}
 				} else {
 					final int bufferMarker = dataInput.read();
@@ -65,15 +70,15 @@ public class XsysInputStream extends AbstractEventInputStream {
 						throw new EventException(
 								"Incorrect end of record marker");
 					}
-					status = EventInputStatus.END_BUFFER;
+					eventInputStatus = EventInputStatus.END_BUFFER;
 					bufferCount = 0;
 				}
 			} catch (IOException io) {
-				status = EventInputStatus.ERROR;
+				eventInputStatus = EventInputStatus.ERROR;
 				throw new EventException("Problem Reading Event.", io);
 
 			}
-			return status;
+			return eventInputStatus;
 		}
 	}
 

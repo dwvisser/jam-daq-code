@@ -98,6 +98,10 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 		return rval;
 	}
 
+	//allocated and re-used rather than having add memory
+	//pressure by many calls to readEvent
+	private transient EventInputStatus eventInputStatus=EventInputStatus.NONE;
+	
 	/**
 	 * Reads an event from the input stream Expects the stream position to be
 	 * the beginning of an event. It is up to the user to ensure this.
@@ -109,42 +113,42 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 * @return status resulting after read attempt
 	 */
 	public EventInputStatus readEvent(final int[] input) throws EventException {
-		EventInputStatus rval = null;
+		eventInputStatus = EventInputStatus.NONE;
 		synchronized (this) {
 			try {
 				if (newBlock) {// if a new block read in block header
-					rval = readAndCheckBlockHeader(rval);
+					readAndCheckBlockHeader();
 					newBlock = false;
 					countEvent = 0;
 					// check if we are done with this block
 				} else if (countEvent > blockNumEvnt) {
 					// are we done with this block
 					newBlock = true;
-					rval = EventInputStatus.END_BUFFER;
+					eventInputStatus = EventInputStatus.END_BUFFER;
 				} else if (blockEventType == 5) {
 					readTypeFiveParams(input);
-					rval = EventInputStatus.EVENT;
+					eventInputStatus = EventInputStatus.EVENT;
 				} else if (blockEventType < 5) {
 					final short size = eventsze.get(blockEventType - 1);
 					for (int parameter = 0; parameter < size; parameter++) {
 						dataInput.readInt();// header padding
 					}
-					rval = EventInputStatus.ERROR;
+					eventInputStatus = EventInputStatus.ERROR;
 				} else {
 					throw new IllegalStateException(getClass().getName()
 							+ ": Block Event Type >5: " + blockEventType);
 				}
 				// we got to the end of a file or stream
 			} catch (EOFException e) {
-				rval = EventInputStatus.END_FILE;
+				eventInputStatus = EventInputStatus.END_FILE;
 			} catch (IOException ioe) {
 				LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
-				rval = EventInputStatus.ERROR;
+				eventInputStatus = EventInputStatus.ERROR;
 			} catch (Exception e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-				rval = EventInputStatus.ERROR;
+				eventInputStatus = EventInputStatus.ERROR;
 			}
-			return rval;
+			return eventInputStatus;
 		}
 	}
 
@@ -165,12 +169,10 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 * @return
 	 * @throws EventException
 	 */
-	private EventInputStatus readAndCheckBlockHeader(final EventInputStatus status) throws EventException {
-		EventInputStatus rval = status;
+	private void readAndCheckBlockHeader() throws EventException {
 		if (!readBlockHeader()) {
-			rval = EventInputStatus.END_FILE;
+			eventInputStatus = EventInputStatus.END_FILE;
 		}
-		return rval;
 	}
 
 	/**
