@@ -185,21 +185,21 @@ public class SortDaemon extends GoodThread {
 		}
 	}
 
-	private void handleStatusOffline(final EventInputStatus status) {
-		if (status == EventInputStatus.END_BUFFER) {
+	private void handleStatusOffline() {
+		if (eventInputStatus == EventInputStatus.END_BUFFER) {
 			if (!atBuffer) {
 				atBuffer = true;
 				bufferCount++;
 			}
 			endSort = false;
-		} else if (status == EventInputStatus.END_RUN) {
+		} else if (eventInputStatus == EventInputStatus.END_RUN) {
 			updateCounters();
 			endSort = true; // tell control we are done
-		} else if (status == EventInputStatus.END_FILE) {
+		} else if (eventInputStatus == EventInputStatus.END_FILE) {
 			LOGGER.info("End of file reached");
 			updateCounters();
 			endSort = true; // tell control we are done
-		} else if (status == EventInputStatus.UNKNOWN_WORD) {
+		} else if (eventInputStatus == EventInputStatus.UNKNOWN_WORD) {
 			LOGGER.warning(getClass().getName()
 					+ ".sortOffline(): Unknown word in event stream.");
 		} else {
@@ -207,28 +207,28 @@ public class SortDaemon extends GoodThread {
 			endSort = true;
 			if (!offlineSortingCanceled()) {
 				throw new IllegalStateException(
-						"Illegal post-readEvent() status = " + status);
+						"Illegal post-readEvent() status = " + eventInputStatus);
 			}
 		}
 	}
 
-	private void handleStatusOnline(final EventInputStatus status)
+	private void handleStatusOnline()
 			throws SortException {
-		if (status == EventInputStatus.END_BUFFER) {
+		if (eventInputStatus == EventInputStatus.END_BUFFER) {
 			/* We have reached the end of a buffer. */
 			incrementBufferCount();
 			yield();
-		} else if (status == EventInputStatus.END_RUN) {
+		} else if (eventInputStatus == EventInputStatus.END_RUN) {
 			incrementBufferCount();
 			yield();
-		} else if (status == EventInputStatus.UNKNOWN_WORD) {
+		} else if (eventInputStatus == EventInputStatus.UNKNOWN_WORD) {
 			LOGGER.warning("Unknown word in event stream.");
-		} else if (status == EventInputStatus.END_FILE) {
+		} else if (eventInputStatus == EventInputStatus.END_FILE) {
 			LOGGER.warning("Tried to read past end of event input stream.");
 		} else {// we have unknown status
 			/* unrecoverable error should not be here */
 			throw new SortException("Sorter stopped due to unknown status: "
-					+ status);
+					+ eventInputStatus);
 		}
 	}
 
@@ -396,10 +396,10 @@ public class SortDaemon extends GoodThread {
 	 * @exception Exception
 	 *                thrown if an unrecoverable error occurs during sorting
 	 */
-	public void sortOffline() throws Exception {// NOPMD
+	public void sortOffline() throws Exception {//NOPMD
 		final SortControl sortControl = (SortControl) controller;
 		final int[] eventData = new int[eventSize];
-		EventInputStatus status = EventInputStatus.IGNORE;
+		eventInputStatus = EventInputStatus.IGNORE;
 		/*
 		 * Next statement causes checkState() to immediately suspend this
 		 * thread.
@@ -413,9 +413,9 @@ public class SortDaemon extends GoodThread {
 			/* Loop for each new sort file. */
 			while (!offlineSortingCanceled() && sortControl.openNextFile()) {
 				while (!offlineSortingCanceled() && !endSort) {// buffer loop
-					status = sortEventsInFile(eventData);
+					sortEventsInFile(eventData);
 					/* we get to this point if status was not EVENT */
-					handleStatusOffline(status);
+					handleStatusOffline();
 					yield();
 				}// end buffer loop
 			}// end isSortNext loop
@@ -429,19 +429,17 @@ public class SortDaemon extends GoodThread {
 	 * @throws EventException
 	 * @throws Exception
 	 */
-	private EventInputStatus sortEventsInFile(final int[] eventData)//NOPMD
+	private void sortEventsInFile(final int[] eventData)//NOPMD
 			throws EventException, Exception {//NOPMD
-		EventInputStatus status;
 		/* Zero the event container. */
 		Arrays.fill(eventData, 0);
 		/* Loop to read & sort one event at a time. */
-		status = eventInputStream.readEvent(eventData);
+		eventInputStatus = eventInputStream.readEvent(eventData);
 		while (!offlineSortingCanceled()
-				&& (status == EventInputStatus.EVENT
-						|| status == EventInputStatus.SCALER_VALUE || status == EventInputStatus.IGNORE)) {
-			status = sortEvent(eventData, status);
+				&& (eventInputStatus == EventInputStatus.EVENT
+						|| eventInputStatus == EventInputStatus.SCALER_VALUE || eventInputStatus == EventInputStatus.IGNORE)) {
+			sortEvent(eventData);
 		}// end read&sort event-at-a-time loop
-		return status;
 	}
 
 	/**
@@ -451,12 +449,10 @@ public class SortDaemon extends GoodThread {
 	 * @throws Exception
 	 * @throws EventException
 	 */
-	private EventInputStatus sortEvent(final int[] eventData,
-			final EventInputStatus status) throws Exception, EventException {//NOPMD
-		EventInputStatus rval = status;
+	private void sortEvent(final int[] eventData) throws Exception, EventException {//NOPMD
 		if (offlineSortingCanceled()) {
-			rval = EventInputStatus.END_RUN;
-		} else if (rval == EventInputStatus.EVENT) {
+			eventInputStatus = EventInputStatus.END_RUN;
+		} else if (eventInputStatus == EventInputStatus.EVENT) {
 			sorter.sort(eventData);
 			incrementEventCount();
 			incrementSortedCount();
@@ -472,9 +468,8 @@ public class SortDaemon extends GoodThread {
 		 * which means something ignorable in the event stream
 		 */
 		if (!offlineSortingCanceled()) {
-			rval = eventInputStream.readEvent(eventData);
+			eventInputStatus = eventInputStream.readEvent(eventData);
 		}
-		return rval;
 	}
 
 	/**
@@ -488,6 +483,12 @@ public class SortDaemon extends GoodThread {
 			yield();
 		}
 	}
+	
+	/**
+	 * allocate only once to avoid GC having to collect abandoned
+	 * references in sortOnline() loop
+	 */
+	EventInputStatus eventInputStatus;//NOPMD
 
 	/**
 	 * Performs the online sorting until an end-of-run state is reached in the
@@ -496,7 +497,7 @@ public class SortDaemon extends GoodThread {
 	 * @exception Exception
 	 *                thrown if an unrecoverable error occurs during sorting
 	 */
-	public void sortOnline() throws Exception {// NOPMD
+	public void sortOnline() throws Exception {//NOPMD
 		final RingInputStream ringInputStream = new RingInputStream();
 		final int[] eventData = new int[eventSize];
 		final byte[] buffer = RingBuffer.freshBuffer();
@@ -516,27 +517,34 @@ public class SortDaemon extends GoodThread {
 			eventInputStream.setInputStream(ringInputStream);
 			/* Zero event array. */
 			Arrays.fill(eventData, 0);
-			EventInputStatus status;
-			status = eventInputStream.readEvent(eventData);
-			while (((status == EventInputStatus.EVENT)
-					|| (status == EventInputStatus.SCALER_VALUE) || (status == EventInputStatus.IGNORE))) {
-				if (status == EventInputStatus.EVENT) {
-					/* Sort only the sortInterval'th events. */
-					if (getCallSort()
-							&& getEventCount() % getSortInterval() == 0) {
-						sorter.sort(eventData);
-						incrementSortedCount();
-					}
-					incrementEventCount();
-					/* Zero event array and get ready for next event. */
-					Arrays.fill(eventData, 0);
+			eventInputStatus = eventInputStream.readEvent(eventData);
+			while (((eventInputStatus == EventInputStatus.EVENT)
+					|| (eventInputStatus == EventInputStatus.SCALER_VALUE) || (eventInputStatus == EventInputStatus.IGNORE))) {
+				if (eventInputStatus == EventInputStatus.EVENT) {
+					checkIntervalAndSortEvent(eventData);
 				}
 				// else SCALER_VALUE, assume sort stream took care and move on
-				status = eventInputStream.readEvent(eventData);
+				eventInputStatus = eventInputStream.readEvent(eventData);
 			}
-			handleStatusOnline(status);
+			handleStatusOnline();
 			yield();
 		}// end infinite loop
+	}
+
+	/**
+	 * @param eventData
+	 * @throws Exception
+	 */
+	private void checkIntervalAndSortEvent(final int[] eventData) throws Exception {//NOPMD
+		/* Sort only the sortInterval'th events. */
+		if (getCallSort()
+				&& getEventCount() % getSortInterval() == 0) {
+			sorter.sort(eventData);
+			incrementSortedCount();
+		}
+		incrementEventCount();
+		/* Zero event array and get ready for next event. */
+		Arrays.fill(eventData, 0);
 	}
 
 	/**
