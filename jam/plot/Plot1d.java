@@ -48,6 +48,11 @@ final class Plot1d extends AbstractPlot {
 
 	private transient final PlotColorMap colorMap = PlotColorMap.getInstance();
 
+	/**
+	 * Bin width to use when plotting (1D only).
+	 */
+	private double binWidth = 1.0;
+
 	private static double sensitivity = 3;
 
 	private static double width = 12;
@@ -57,6 +62,14 @@ final class Plot1d extends AbstractPlot {
 	private static final String X_LABEL_1D = "Channels";
 
 	private static final String Y_LABEL_1D = "Counts";
+
+	/** clip to use when repainting for mouse movement, in graphics coordinates */
+	private transient final Polygon mouseMoveClip = new Polygon();
+
+	/**
+	 * 1D counts.
+	 */
+	private transient double[] counts;
 
 	/**
 	 * Constructor.
@@ -81,6 +94,31 @@ final class Plot1d extends AbstractPlot {
 			overlayNumber.add(hOver.getNumber());
 		}
 		panel.repaint();
+	}
+
+	protected void copyCounts(final Histogram hist) {
+		final Histogram.Type type = hist.getType();
+		size = new Size(hist.getSizeX(), hist.getSizeY());
+		if (type == Histogram.Type.ONE_DIM_INT) {
+			final int[] temp = ((HistInt1D) hist).getCounts();
+			counts = NumberUtilities.getInstance().intToDoubleArray(temp);
+		} else {// must be floating point
+			counts = ((HistDouble1D) hist).getCounts();
+		}
+	}
+
+	void reset() {
+		super.reset();
+		setBinWidth(1.0);
+	}
+
+	void displayHistogram(final Histogram hist) {
+		synchronized (this) {
+			if (hist == null) {
+				counts = new double[100];
+			}
+			super.displayHistogram(hist);
+		}
 	}
 
 	/**
@@ -219,7 +257,7 @@ final class Plot1d extends AbstractPlot {
 	protected void paintSelectingArea(final Graphics graphics) {
 		final Graphics2D graphics2D = (Graphics2D) graphics;
 		graphics2D.setColor(colorMap.getArea());
-		graph.markAreaOutline1d(selectStart.getX(), lastMovePoint.x);
+		graph.markAreaOutline1d(plotSelection.start.getX(), lastMovePoint.x);
 		panel.setMouseMoved(false);
 		clearSelectingAreaClip();
 	}
@@ -266,7 +304,7 @@ final class Plot1d extends AbstractPlot {
 			return;// not sure how this happens, but need to check
 		}
 		graphics.setColor(colorMap.getHistogram());
-		graph.drawHist(counts, binWidth);
+		graph.drawHist(counts, getBinWidth());
 		if (autoPeakFind) {
 			graph.drawPeakLabels(((AbstractHist1D) plotHist).findPeaks(
 					sensitivity, width, pfcal));
@@ -315,7 +353,7 @@ final class Plot1d extends AbstractPlot {
 			for (int num : overlayNumber) {
 				overlayInts[index] = num;
 				graphics2d.setColor(colorMap.getOverlay(index));
-				graph.drawHist(overlayCounts.get(index), binWidth);
+				graph.drawHist(overlayCounts.get(index), getBinWidth());
 				index++;
 			}
 			final Histogram plotHist = getHistogram();
@@ -324,13 +362,25 @@ final class Plot1d extends AbstractPlot {
 
 	}
 
+	double getBinWidth() {
+		synchronized (this) {
+			return binWidth;
+		}
+	}
+
+	void setBinWidth(final double width) {
+		synchronized (this) {
+			binWidth = width;
+		}
+	}
+
 	/**
 	 * Paint a gate on the give graphics object
 	 */
 	protected void paintGate(final Graphics graphics) {
 		final Graphics2D graphics2D = (Graphics2D) graphics;
 		final Composite prev = graphics2D.getComposite();
-		final boolean noFill = isNoFillMode();
+		final boolean noFill = options.isNoFillMode();
 		if (!noFill) {
 			graphics2D.setComposite(AlphaComposite.getInstance(
 					AlphaComposite.SRC_OVER, 0.5f));
@@ -389,11 +439,11 @@ final class Plot1d extends AbstractPlot {
 		int chmax = limits.getMaximumX();
 		int chmin = limits.getMinimumX();
 		double maxCounts = 0;
-		if ((chmin == 0) && (ignoreChZero)) {
+		if ((chmin == 0) && (options.isIgnoreChZero())) {
 			chmin = 1;
 		}
 		final int sizeX = size.getSizeX();
-		if ((chmax == (sizeX - 1)) && (ignoreChFull)) {
+		if ((chmax == (sizeX - 1)) && (options.isIgnoreChFull())) {
 			chmax = sizeX - 2;
 		}
 		for (int i = chmin; i <= chmax; i++) {
@@ -411,11 +461,11 @@ final class Plot1d extends AbstractPlot {
 		int chmax = limits.getMaximumX();
 		int chmin = limits.getMinimumX();
 		int minCounts = 0;
-		if ((chmin == 0) && (ignoreChZero)) {
+		if ((chmin == 0) && (options.isIgnoreChZero())) {
 			chmin = 1;
 		}
 		final int sizeX = size.getSizeX();
-		if ((chmax == (sizeX - 1)) && (ignoreChFull)) {
+		if ((chmax == (sizeX - 1)) && (options.isIgnoreChFull())) {
 			chmax = sizeX - 2;
 		}
 		for (int i = chmin; i <= chmax; i++) {
@@ -458,15 +508,16 @@ final class Plot1d extends AbstractPlot {
 		panel.setMouseMoved(true);
 		if (panel.isSelectingArea()) {
 			if (isSelectingAreaClipClear()) {
-				synchronized (selectingAreaClip) {
-					selectingAreaClip.setBounds(graph.getRectangleOutline1d(
-							selectStart.getX(), lastMovePoint.x));
+				synchronized (plotSelection.areaClip) {
+					plotSelection.areaClip.setBounds(graph
+							.getRectangleOutline1d(plotSelection.start.getX(),
+									lastMovePoint.x));
 				}
 			}
 			setLastMovePoint(graph.toData(event.getPoint()).getPoint());
-			addToSelectClip(selectStart, Bin.create(lastMovePoint));
-			synchronized (selectingAreaClip) {
-				panel.repaint(getClipBounds(selectingAreaClip, false));
+			addToSelectClip(plotSelection.start, Bin.create(lastMovePoint));
+			synchronized (plotSelection.areaClip) {
+				panel.repaint(getClipBounds(plotSelection.areaClip, false));
 			}
 		} else if (panel.isSettingGate() && pointsGate.npoints > 0) {
 			/* draw new line */
@@ -516,9 +567,9 @@ final class Plot1d extends AbstractPlot {
 	 *            in plot coordinates
 	 */
 	private void addToSelectClip(final Bin bin1, final Bin bin2) {
-		synchronized (selectingAreaClip) {
-			selectingAreaClip.add(graph.getRectangleOutline1d(bin1.getX(), bin2
-					.getX()));
+		synchronized (plotSelection.areaClip) {
+			plotSelection.areaClip.add(graph.getRectangleOutline1d(bin1.getX(),
+					bin2.getX()));
 		}
 	}
 

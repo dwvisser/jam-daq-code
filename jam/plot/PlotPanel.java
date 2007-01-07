@@ -153,7 +153,7 @@ final class PlotPanel extends JPanel {
 	protected void paintComponent(final Graphics graphics) {
 		super.paintComponent(graphics);
 		final PlotColorMap pcm = PlotColorMap.getInstance();
-		if (plot.isPrinting()) { // output to printer
+		if (plot.options.isPrinting()) { // output to printer
 			// FIXME KBS font not set
 			// graph.setFont(printFont);
 			pcm.setColorMap(Mode.PRINT);
@@ -176,10 +176,13 @@ final class PlotPanel extends JPanel {
 		final Histogram plotHist = plot.getHistogram();
 		if (plotHist != null) {
 			plot.paintHeader(graphics);
-			if (plot.binWidth > plotHist.getSizeX()) {
-				plot.binWidth = 1.0;
-				plot
+			if (plot instanceof Plot1d){
+				final Plot1d plot1d = (Plot1d)plot;
+				if (plot1d.getBinWidth() > plotHist.getSizeX()) {
+					plot1d.setBinWidth(1.0);
+					plot
 						.warning("Bin width > hist size, so setting bin width back to 1.");
+				}
 			}
 			plot.paintHistogram(graphics);
 			paintAdditional(graphics);

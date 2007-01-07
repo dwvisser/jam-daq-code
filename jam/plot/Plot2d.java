@@ -5,6 +5,8 @@ import static jam.plot.Constants.LEFT;
 import static jam.plot.Constants.TOP;
 import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 import jam.data.AbstractHist1D;
+import jam.data.HistDouble2D;
+import jam.data.HistInt2D;
 import jam.data.Histogram;
 import jam.plot.color.ColorPrefs;
 import jam.plot.color.DiscreteColorScale;
@@ -49,6 +51,9 @@ final class Plot2d extends AbstractPlot {
 
 	private transient final Object monitor = new Object();
 
+	/** clip to use when repainting for mouse movement, in graphics coordinates */
+	private transient final Polygon mouseMoveClip = new Polygon();
+
 	/**
 	 * Creates a Plot object for displaying 2D histograms.
 	 */
@@ -74,6 +79,30 @@ final class Plot2d extends AbstractPlot {
 		});
 	}
 
+	protected void copyCounts(final Histogram hist) {
+		final Histogram.Type type = hist.getType();
+		size = new Size(hist.getSizeX(), hist.getSizeY());
+		counts2d = new double[size.getSizeX()][size.getSizeY()];
+		if (type == Histogram.Type.TWO_DIM_INT) {
+			copyCounts2dInt((HistInt2D) hist);
+		} else {// must be floating point
+			final double[][] counts2dDble = ((HistDouble2D) hist).getCounts();
+			for (int i = 0; i < hist.getSizeX(); i++) {
+				System.arraycopy(counts2dDble[i], 0, counts2d[i], 0, hist
+						.getSizeY());
+			}
+		}
+	}
+
+	private void copyCounts2dInt(final HistInt2D hist) {
+		final int[][] counts2dInt = hist.getCounts();
+		for (int i = 0; i < hist.getSizeX(); i++) {
+			for (int j = 0; j < hist.getSizeY(); j++) {
+				counts2d[i][j] = counts2dInt[i][j];
+			}
+		}
+	}
+
 	private void setSmoothColorScale(final boolean bool) {
 		synchronized (monitor) {
 			smoothScale = bool;
@@ -93,6 +122,15 @@ final class Plot2d extends AbstractPlot {
 		}
 	}
 
+	void displayHistogram(final Histogram hist) {
+		synchronized (this) {
+			if (hist == null) {
+				counts2d = null;
+			}
+			super.displayHistogram(hist);
+		}
+	}
+
 	/**
 	 * Paint call while selecting an area.
 	 */
@@ -100,7 +138,8 @@ final class Plot2d extends AbstractPlot {
 		final Graphics2D context2d = (Graphics2D) context;
 		context2d.setColor(plotColorMap.getArea());
 		synchronized (lastMovePoint) {
-			graph.markArea2dOutline(selectStart, Bin.create(lastMovePoint));
+			graph.markArea2dOutline(plotSelection.start, Bin
+					.create(lastMovePoint));
 		}
 		panel.setMouseMoved(false);
 		clearSelectingAreaClip();
@@ -280,7 +319,7 @@ final class Plot2d extends AbstractPlot {
 
 	private int getChannelMin(final int channel) {
 		int rval = channel;
-		if ((channel == 0) && (ignoreChZero)) {
+		if ((channel == 0) && (options.isIgnoreChZero())) {
 			rval = 1;
 		}
 		return rval;
@@ -288,7 +327,7 @@ final class Plot2d extends AbstractPlot {
 
 	private int getChannelMax(final int channel, final int sizeIn) {
 		int rval = channel;
-		if (((channel == sizeIn - 1)) && (ignoreChFull)) {
+		if (((channel == sizeIn - 1)) && (options.isIgnoreChFull())) {
 			rval = sizeIn - 2;
 		}
 		return rval;
@@ -322,6 +361,8 @@ final class Plot2d extends AbstractPlot {
 
 	// only used in one method, but don't want to keep creating
 	private transient final Rectangle clipBounds = new Rectangle();// NOPMD
+
+	protected transient double[][] counts2d;
 
 	/**
 	 * Called to draw a 2d histogram, including title, border, tickmarks,
@@ -386,7 +427,7 @@ final class Plot2d extends AbstractPlot {
 		graphics2d.setComposite(AlphaComposite.getInstance(
 				AlphaComposite.SRC_OVER, 0.5f));
 		graphics2d.setColor(plotColorMap.getGateShow());
-		if (isNoFillMode()) {
+		if (options.isNoFillMode()) {
 			paintPolyGate(graphics2d);
 		} else {
 			graph.drawGate2d(currentGate.getLimits2d());
@@ -476,15 +517,16 @@ final class Plot2d extends AbstractPlot {
 		} else if (panel.isSelectingArea()) {
 			synchronized (lastMovePoint) {
 				if (isSelectingAreaClipClear()) {
-					addToSelectClip(selectStart, Bin.create(lastMovePoint));
+					addToSelectClip(plotSelection.start, Bin
+							.create(lastMovePoint));
 				}
 				lastMovePoint.setLocation(graph.toData(event.getPoint())
 						.getPoint());
-				addToSelectClip(selectStart, Bin.create(lastMovePoint));
+				addToSelectClip(plotSelection.start, Bin.create(lastMovePoint));
 			}
 			panel.setMouseMoved(true);
-			synchronized (selectingAreaClip) {
-				panel.repaint(getClipBounds(selectingAreaClip, false));
+			synchronized (plotSelection.areaClip) {
+				panel.repaint(getClipBounds(plotSelection.areaClip, false));
 			}
 		}
 	}
@@ -500,8 +542,8 @@ final class Plot2d extends AbstractPlot {
 	 *            in plot coordinates
 	 */
 	private void addToSelectClip(final Bin bin1, final Bin bin2) {
-		synchronized (selectingAreaClip) {
-			selectingAreaClip.add(graph.getRectangleOutline2d(bin1, bin2));
+		synchronized (plotSelection.areaClip) {
+			plotSelection.areaClip.add(graph.getRectangleOutline2d(bin1, bin2));
 		}
 	}
 

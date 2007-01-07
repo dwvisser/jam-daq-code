@@ -161,7 +161,6 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			currentPlot.addPlotMouseListener(action);
 			currentPlot.setMarkArea(false);
 			currentPlot.setMarkingChannels(false);
-
 			toolbar.setHistogramProperties(hist.getDimensionality(),
 					currentPlot.getBinWidth());
 		}

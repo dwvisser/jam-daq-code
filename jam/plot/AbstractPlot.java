@@ -7,15 +7,10 @@ import static jam.plot.PlotPrefs.HIGHLIGHT_GATE;
 import static jam.plot.PlotPrefs.PREFS;
 import jam.data.AbstractHist1D;
 import jam.data.Gate;
-import jam.data.HistDouble1D;
-import jam.data.HistDouble2D;
-import jam.data.HistInt1D;
-import jam.data.HistInt2D;
 import jam.data.Histogram;
 import jam.global.ComponentPrintable;
 import jam.global.RunInfo;
 import jam.plot.color.PlotColorMap;
-import jam.util.NumberUtilities;
 
 import java.awt.Component;
 import java.awt.Cursor;
@@ -23,7 +18,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Polygon;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 import java.text.DateFormat;
@@ -48,59 +42,17 @@ import javax.swing.SwingUtilities;
  */
 abstract class AbstractPlot implements PreferenceChangeListener {
 
-	class Size {
-		private transient final int sizeX, sizeY;
-
-		Size(int... size) {
-			super();
-			sizeX = size[0];
-			sizeY = (size.length > 1) ? size[1] : 0;
-		}
-
-		int getSizeX() {
-			return sizeX;
-		}
-
-		int getSizeY() {
-			return sizeY;
-		}
-	}
-
-	/**
-	 * Bin width to use when plotting (1D only).
-	 */
-	protected double binWidth = 1.0;
-
-	/**
-	 * 1D counts.
-	 */
-	protected transient double[] counts;
-
-	/* Histogram related stuff. */
-
-	protected transient double [][] counts2d;
+	protected transient final Options options = new Options();
 
 	/**
 	 * The currently selected gate.
 	 */
 	protected transient Gate currentGate;
 
-	/* Gate stuff. */
-
 	/**
 	 * Plot graphics handler.
 	 */
 	protected transient final PlotGraphics graph;
-
-	/**
-	 * Dont use full scale ch for auto scale
-	 */
-	protected transient boolean ignoreChFull;
-
-	/**
-	 * Dont use 0 ch for auto scale
-	 */
-	protected transient boolean ignoreChZero;
 
 	/**
 	 * last point mouse moved to, uses plot coordinates when selecting an area,
@@ -109,14 +61,15 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 	protected transient final Point lastMovePoint = new Point();
 
 	/**
+	 * Descriptor of domain and range of histogram to plot.
+	 */
+	protected transient Limits limits;
+
+	/**
 	 * Channels that have been marked by clicking or typing.
 	 */
 	protected transient final List<Bin> markedChannels = new ArrayList<Bin>();
 
-	/** clip to use when repainting for mouse movement, in graphics coordinates */
-	protected transient final Polygon mouseMoveClip = new Polygon();
-
-	private boolean noFillMode;
 
 	/**
 	 * The actual panel.
@@ -125,53 +78,21 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 
 	/** Number of Histogram to plot */
 	private transient int plotHistNum = -1;
-
-	/**
-	 * Descriptor of domain and range of histogram to plot.
-	 */
-	protected transient Limits limits;
-	
-	/**
-	 * @return limits are how the histogram is to be drawn
-	 */
-	Limits getLimits() {
-		return limits;
-	}
 	
 	/* Gives channels of mouse click. */
 	protected transient final PlotMouse plotMouse;
-
-	PlotMouse getPlotMouse() {
-		return plotMouse;
-	}
 	
+	protected transient final PlotSelection plotSelection = new PlotSelection();
+
 	/** Gate points in plot coordinates (channels). */
 	protected final Polygon pointsGate = new Polygon();
-
-	protected transient boolean printing = false;
 	
-	boolean isPrinting() {
-		return printing;
-	}
-
 	private transient Scroller scrollbars;
-
-	/**
-	 * Repaint clip to use when repainting during area selection.
-	 */
-	protected transient final Rectangle selectingAreaClip = new Rectangle();
-
-	/** selection start point in plot coordinates */
-	protected transient Bin selectStart = Bin.create();
-
+	
 	/**
 	 * Size of plot window in channels.
 	 */
 	protected transient Size size = new Size(0);
-	
-	Size getSize() {
-		return size;
-	}
 
 	/**
 	 * configuration for screen plotting
@@ -193,14 +114,14 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 		initPrefs();
 		PREFS.addPreferenceChangeListener(this);
 	}
-
+	
 	/*
 	 * non-javadoc: add scrollbars
 	 */
 	void addScrollBars(final Scroller scroller) {
 		scrollbars = scroller;
 	}
-
+	
 	/**
 	 * Autoscale the counts scale. Set maximum scale to 110 percent of maximum
 	 * number of counts in view. Can't call refresh because we need to use the
@@ -225,46 +146,12 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 	 * 
 	 */
 	protected final void clearSelectingAreaClip() {
-		synchronized (selectingAreaClip) {
-			selectingAreaClip.setSize(0, 0);
+		synchronized (plotSelection.areaClip) {
+			plotSelection.areaClip.setSize(0, 0);
 		}
 	}
 	
-	/*
-	 * non-javadoc: Copies the counts into the local array--needed by scroller.
-	 */
-	private final void copyCounts(final Histogram hist) {
-		final Histogram.Type type = hist.getType();
-		size = new Size(hist.getSizeX(), hist.getSizeY());
-		if (type.getDimensionality() == 2) {
-			counts2d = new double[size.getSizeX()][size.getSizeY()];
-			if (type == Histogram.Type.TWO_DIM_INT) {
-				copyCounts2dInt((HistInt2D)hist);
-			} else {// must be floating point
-				final double[][] counts2dDble = ((HistDouble2D)hist).getCounts();
-				for (int i = 0; i < hist.getSizeX(); i++) {
-					System.arraycopy(counts2dDble[i], 0, counts2d[i], 0, hist
-							.getSizeY());
-				}
-			}
-		} else {// dim==1
-			if (type == Histogram.Type.ONE_DIM_INT) {
-				final int[] temp = ((HistInt1D)hist).getCounts();
-				counts = NumberUtilities.getInstance().intToDoubleArray(temp);
-			} else {// must be floating point
-				counts = ((HistDouble1D) hist).getCounts();
-			}
-		}
-	}
-	
-	private final void copyCounts2dInt(final HistInt2D hist) {
-		final int[][] counts2dInt = hist.getCounts();
-		for (int i = 0; i < hist.getSizeX(); i++) {
-			for (int j = 0; j < hist.getSizeY(); j++) {
-				counts2d[i][j] = counts2dInt[i][j];
-			}
-		}
-	}
+	protected abstract void copyCounts(Histogram hist);
 
 	abstract void displayFit(double[][] signals, double[] background,
 			double[] residuals, int lowerLimit);
@@ -288,7 +175,7 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 			}
 		}
 	}
-
+	
 	/*
 	 * non-javadoc: Set the histogram to plot. If the plot limits are null, make
 	 * one save all neccessary histogram parameters to local variables. Allows
@@ -299,8 +186,6 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 			limits = Limits.getLimits(hist);
 			if (hist == null) {// we have a null histogram so fake it
 				plotHistNum = -1;
-				counts = new double[100];
-				counts2d = null;// NOPMD
 				size = new Size(100);
 			} else {
 				plotHistNum = hist.getNumber();
@@ -313,7 +198,7 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 			panel.setDisplayingFit(false);
 		}
 	}
-
+	
 	/**
 	 * Show the making of a gate, point by point.
 	 * 
@@ -384,12 +269,6 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 	 */
 	protected abstract int findMinimumCounts();
 
-	double getBinWidth() {
-		synchronized (this) {
-			return binWidth;
-		}
-	}
-
 	abstract int getChannel(double energy);
 
 	final Component getComponent() {
@@ -441,6 +320,21 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 		}
 	}
 
+	/**
+	 * @return limits are how the histogram is to be drawn
+	 */
+	Limits getLimits() {
+		return limits;
+	}
+
+	PlotMouse getPlotMouse() {
+		return plotMouse;
+	}
+
+	Size getSize() {
+		return size;
+	}
+
 	/*
 	 * non-javadoc: Plot has a valid histogram
 	 * 
@@ -457,32 +351,23 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 	 */
 	protected final void initializeSelectingArea(final Bin bin) {
 		setSelectingArea(true);
-		selectStart.setChannel(bin);
+		plotSelection.start.setChannel(bin);
 		setLastMovePoint(bin.getPoint());
 	}
 
 	private final void initPrefs() {
-		setIgnoreChFull(PREFS.getBoolean(AUTO_IGNORE_FULL, true));
-		setIgnoreChZero(PREFS.getBoolean(AUTO_IGNORE_ZERO, true));
+		options.setIgnoreChFull(PREFS.getBoolean(AUTO_IGNORE_FULL, true));
+		options.setIgnoreChZero(PREFS.getBoolean(AUTO_IGNORE_ZERO, true));
 		panel.setColorMode(PREFS.getBoolean(BLACK_BACKGROUND, false));
-		setNoFillMode(!PREFS.getBoolean(HIGHLIGHT_GATE, true));
-	}
-
-	/**
-	 * @return if we are in the "no fill mode"
-	 */
-	protected final boolean isNoFillMode() {
-		synchronized (this) {
-			return noFillMode;
-		}
+		options.setNoFillMode(!PREFS.getBoolean(HIGHLIGHT_GATE, true));
 	}
 
 	/**
 	 * @return <code>true</code> if the area selection clip is clear
 	 */
 	protected final boolean isSelectingAreaClipClear() {
-		synchronized (selectingAreaClip) {
-			return selectingAreaClip.height == 0;
+		synchronized (plotSelection.areaClip) {
+			return plotSelection.areaClip.height == 0;
 		}
 	}
 
@@ -540,7 +425,7 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 	 */
 	void paintHeader(final Graphics graphics) {
 		graphics.setColor(PlotColorMap.getInstance().getForeground());
-		if (printing) { // output to printer
+		if (options.isPrinting()) { // output to printer
 			graph.drawDate(getDate()); // date
 			graph.drawRun(RunInfo.runNumber); // run number
 		}
@@ -631,19 +516,19 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
 		if (key.equals(PlotPrefs.AUTO_IGNORE_ZERO)) {
-			setIgnoreChZero(Boolean.valueOf(newValue).booleanValue());
+			options.setIgnoreChZero(Boolean.valueOf(newValue).booleanValue());
 			if (plotDataExists()) {
 				autoCounts();
 			}
 		} else if (key.equals(PlotPrefs.AUTO_IGNORE_FULL)) {
-			setIgnoreChFull(Boolean.valueOf(newValue).booleanValue());
+			options.setIgnoreChFull(Boolean.valueOf(newValue).booleanValue());
 			if (plotDataExists()) {
 				autoCounts();
 			}
 		} else if (key.equals(PlotPrefs.BLACK_BACKGROUND)) {
 			panel.setColorMode(Boolean.valueOf(newValue).booleanValue());
 		} else if (key.equals(PlotPrefs.HIGHLIGHT_GATE)) {
-			setNoFillMode(!Boolean.valueOf(newValue).booleanValue());
+			options.setNoFillMode(!Boolean.valueOf(newValue).booleanValue());
 		}
 	}
 
@@ -673,13 +558,6 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 			panel.setSelectingArea(false);
 			panel.setAreaMarked(false);
 			setMarkingChannels(false);
-			binWidth = 1.0;
-		}
-	}
-
-	void setBinWidth(final double width) {
-		synchronized (this) {
-			binWidth = width;
 		}
 	}
 
@@ -700,19 +578,6 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 		refresh();
 	}
 
-	/*
-	 * non-javadoc: ignore channel full scale on auto scale
-	 */
-	private final void setIgnoreChFull(final boolean state) {
-		ignoreChFull = state;
-	}
-
-	/*
-	 * non-javadoc: ignore channel zero on auto scale
-	 */
-	private final void setIgnoreChZero(final boolean state) {
-		ignoreChZero = state;
-	}
 
 	/**
 	 * Set the last point the cursor was moved to.
@@ -786,12 +651,6 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 
 	/* End Plot mouse methods */
 
-	private void setNoFillMode(final boolean bool) {
-		synchronized (this) {
-			noFillMode = bool;
-		}
-	}
-
 	/*
 	 * non-javadoc: method to set Counts scale
 	 */
@@ -808,7 +667,7 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 
 	void setRenderForPrinting(final boolean rfp, final PageFormat format) {
 		synchronized (this) {
-			printing = rfp;
+			options.setPrinting(rfp);
 			panel.setPageFormat(format);
 		}
 	}

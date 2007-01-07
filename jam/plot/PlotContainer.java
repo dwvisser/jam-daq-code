@@ -4,7 +4,6 @@ import jam.data.AbstractHist1D;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.ComponentPrintable;
-import jam.plot.AbstractPlot.Size;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -417,11 +416,19 @@ public final class PlotContainer implements PlotSelectListener {
 	}
 
 	void setBinWidth(final double width) {
-		getPlot().setBinWidth(width);
+		final AbstractPlot plot = getPlot();
+		if (plot instanceof Plot1d){
+			((Plot1d)plot).setBinWidth(width);
+		}
 	}
 
 	double getBinWidth() {
-		return getPlot().getBinWidth();
+		final AbstractPlot plot = getPlot();
+		double rval = 1.0;
+		if (plot instanceof Plot1d){
+			rval = ((Plot1d)plot).getBinWidth();
+		}
+		return rval;
 	}
 
 	void setSelectingArea(final boolean isSelectingArea) {
