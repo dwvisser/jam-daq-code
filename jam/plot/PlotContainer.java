@@ -139,12 +139,12 @@ public final class PlotContainer implements PlotSelectListener {
 		layoutType = type;
 		// Plot labels
 		if ((type == LayoutType.LABELS_BORDER) || (type == LayoutType.LABELS)) {
-			plot1d.setLayout(PlotGraphicsLayout.Type.WITH_LABELS);
-			plot2d.setLayout(PlotGraphicsLayout.Type.WITH_LABELS);
+			plot1d.setLayout(GraphicsLayout.Type.WITH_LABELS);
+			plot2d.setLayout(GraphicsLayout.Type.WITH_LABELS);
 		} else if ((type == LayoutType.NO_LABELS_BORDER)
 				|| (type == LayoutType.NO_LABELS)) {
-			plot1d.setLayout(PlotGraphicsLayout.Type.WO_LABELS);
-			plot2d.setLayout(PlotGraphicsLayout.Type.WO_LABELS);
+			plot1d.setLayout(GraphicsLayout.Type.WO_LABELS);
+			plot2d.setLayout(GraphicsLayout.Type.WO_LABELS);
 
 		}
 		// Plot border

@@ -52,7 +52,7 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 	/**
 	 * Plot graphics handler.
 	 */
-	protected transient final PlotGraphics graph;
+	protected transient final Painter graph;
 
 	/**
 	 * last point mouse moved to, uses plot coordinates when selecting an area,
@@ -106,7 +106,7 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 		super();
 		panel.setOpaque(true);
 		panel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-		graph = new PlotGraphics(this);
+		graph = new Painter(this);
 		// Create plot mouse
 		plotMouse = new PlotMouse(graph);
 		panel.addMouseListener(plotMouse);
@@ -594,7 +594,7 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 	/*
 	 * non-javadoc: Update layout.
 	 */
-	void setLayout(final PlotGraphicsLayout.Type type) {
+	void setLayout(final GraphicsLayout.Type type) {
 		graph.setLayout(type);
 	}
 

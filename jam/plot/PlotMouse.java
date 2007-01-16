@@ -19,7 +19,7 @@ class PlotMouse extends MouseAdapter {
 	private transient final List<PlotMouseListener> listenersList = new ArrayList<PlotMouseListener>();
 
 	/* converts screen pixels to data values */
-	private transient final PlotGraphics plotGraphics;
+	private transient final Painter plotGraphics;
 
 	/* Called so a change in select plot can be made */
 	private transient PlotSelectListener plotListener;
@@ -28,7 +28,7 @@ class PlotMouse extends MouseAdapter {
 	 * non-javadoc: Construction, PlotMouseListener belongs to a Plot. this plot
 	 * will now call PlotMouseListener for mouse events.
 	 */
-	PlotMouse(PlotGraphics plotGraphics) {
+	PlotMouse(Painter plotGraphics) {
 		super();
 		this.plotGraphics = plotGraphics;
 	}

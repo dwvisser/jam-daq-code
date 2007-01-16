@@ -68,6 +68,11 @@ final class Limits {
 	private Scale scale = Scale.LINEAR; // is it in log or linear
 
 	/**
+	 * Use for initial value instead of null reference.
+	 */
+	public static final Limits NULL = new Limits();
+	
+	/**
 	 * Creates the display limits for the specified histogram, specifying
 	 * whether to ignore first and/or last channels for auto-scaling.
 	 * 

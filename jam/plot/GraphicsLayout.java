@@ -6,7 +6,7 @@ package jam.plot;
  * @version 0.5
  * @author Ken Swartz
  */
-final class PlotGraphicsLayout {
+final class GraphicsLayout {
 
 	enum Type {
 		/**
@@ -133,7 +133,7 @@ final class PlotGraphicsLayout {
 
 	final ColorScale colorScale = new ColorScale(10, 5, 15);//NOPMD
 
-	private PlotGraphicsLayout(Type type) {
+	private GraphicsLayout(Type type) {
 		super();
 		if (type == Type.WITH_LABELS) {
 			// border outside of plot
@@ -148,18 +148,18 @@ final class PlotGraphicsLayout {
 		}
 	}
 
-	static PlotGraphicsLayout getLayout(final Type type) {
+	static GraphicsLayout getLayout(final Type type) {
 		return type == Type.WITH_LABELS ? LABELS : NO_LABELS;
 	}
 
 	/**
 	 * Layout with axis labels.
 	 */
-	static final PlotGraphicsLayout LABELS = new PlotGraphicsLayout(Type.WITH_LABELS);//NOPMD
+	static final GraphicsLayout LABELS = new GraphicsLayout(Type.WITH_LABELS);//NOPMD
 
 	/**
 	 * Layout without axis labels.
 	 */
-	private static final PlotGraphicsLayout NO_LABELS = new PlotGraphicsLayout(
+	private static final GraphicsLayout NO_LABELS = new GraphicsLayout(
 			Type.WO_LABELS);
 }
