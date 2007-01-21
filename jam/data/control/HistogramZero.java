@@ -37,7 +37,7 @@ public class HistogramZero extends AbstractControl {
 		setLocation(20, 50);
 		dzc.setLayout(new FlowLayout(FlowLayout.CENTER));
 		final JPanel pButton = new JPanel(new GridLayout(1, 0, 5, 10));
-		Border border = new EmptyBorder(10, 10, 10, 10);
+		final Border border = new EmptyBorder(10, 10, 10, 10);
 		pButton.setBorder(border);
 
 		final JButton one = new JButton("Displayed");

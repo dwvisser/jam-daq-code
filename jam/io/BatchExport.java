@@ -89,13 +89,13 @@ public class BatchExport extends JDialog implements Observer {
 					.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 			histList.setSelectedIndex(0);
 			histList.setVisibleRowCount(10);
-			JScrollPane listPane = new JScrollPane(histList);
+			final JScrollPane listPane = new JScrollPane(histList);
 			listPane.setBorder(new EmptyBorder(10, 10, 0, 10));
 			container.add(listPane, BorderLayout.CENTER);
 			/* Lower panel with buttons */
 			final JPanel pLower = new JPanel(new FlowLayout());
 			container.add(pLower, BorderLayout.SOUTH);
-			JButton bButton = new JButton("OK");
+			final JButton bButton = new JButton("OK");
 			pLower.add(bButton);
 			bButton.addActionListener(new ActionListener() {
 				public void actionPerformed(final ActionEvent actionEvent) {
@@ -168,7 +168,7 @@ public class BatchExport extends JDialog implements Observer {
 
 		super(JamStatus.getSingletonInstance().getFrame(),
 				"Batch Histogram Export");
-		Broadcaster broadcaster = Broadcaster.getSingletonInstance();
+		final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 		broadcaster.addObserver(this);
 		buildGUI();
 		setupHistChooser();

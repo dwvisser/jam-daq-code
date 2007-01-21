@@ -122,11 +122,14 @@ public final class VDataDescription extends AbstractData {
 					"All array parameters must have same length != 0.");
 		}
 		interlace = INTERLACE;
-		fldnm = names;
-		datatypes = types;
-		order = orders;
-		nvert = size;
 		nfields = (short) (names.length);
+		fldnm = new String[nfields];
+		System.arraycopy(names, 0, fldnm, 0, nfields);
+		datatypes = new short[nfields];
+		System.arraycopy(types, 0, datatypes, 0, nfields);
+		datatypes = new short[nfields];
+		System.arraycopy(orders, 0, order, 0, nfields);
+		nvert = size;
 		this.name = name;
 		dataTypeName = classtype;
 		isize = new short[nfields];

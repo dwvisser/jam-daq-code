@@ -58,7 +58,7 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 			pNames.add(new JLabel("Name", SwingConstants.RIGHT));
 			/* Name combo box */
 			comboNames = new JComboBox();
-			Dimension dim = comboNames.getPreferredSize();
+			final Dimension dim = comboNames.getPreferredSize();
 			dim.width = 200;
 			comboNames.setPreferredSize(dim);
 			pNames.add(comboNames);

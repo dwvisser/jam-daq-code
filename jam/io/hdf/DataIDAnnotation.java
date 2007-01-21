@@ -79,7 +79,7 @@ final class DataIDAnnotation extends AbstractData {
 		super(DFTAG_DIA); // sets tag
 		this.object = obj;
 		this.note = note;
-		int byteLength = 4 + note.length();
+		final int byteLength = 4 + note.length();
 		bytes = ByteBuffer.allocate(byteLength);
 		bytes.putShort(object.getTag());
 		bytes.putShort(object.getRef());

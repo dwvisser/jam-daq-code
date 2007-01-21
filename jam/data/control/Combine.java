@@ -71,7 +71,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		setLocation(20, 50);
 
 		// Labels panel
-		JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
+		final JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
 		pLabels.setBorder(new EmptyBorder(10, 10, 0, 0));
 		cdmanip.add(pLabels, BorderLayout.WEST);
 		lWith = new JLabel("With histogram", SwingConstants.RIGHT);
@@ -81,12 +81,12 @@ public class Combine extends AbstractManipulation implements Observer {
 		pLabels.add(new JLabel("To histogram", SwingConstants.RIGHT));
 
 		// Entries Panel
-		JPanel pEntries = new JPanel(new GridLayout(0, 1, hgap, vgap));
+		final JPanel pEntries = new JPanel(new GridLayout(0, 1, hgap, vgap));
 		pEntries.setBorder(new EmptyBorder(10, 0, 0, 10));
 		cdmanip.add(pEntries, BorderLayout.CENTER);
 
 		// From Panel
-		JPanel pfrom1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		final JPanel pfrom1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pfrom1);
 		cfrom1 = new JComboBox();
 		meanCharWidth = getMeanCharWidth(cfrom1
@@ -102,9 +102,9 @@ public class Combine extends AbstractManipulation implements Observer {
 		pfrom1.add(ttimes1);
 
 		// Operation Panel
-		JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pradio);
-		ButtonGroup cbg = new ButtonGroup();
+		final ButtonGroup cbg = new ButtonGroup();
 
 		addNormCheckbox(pradio, cbg);
 
@@ -145,7 +145,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		pradio.add(cdiv);
 
 		// With panel
-		JPanel pfrom2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		final JPanel pfrom2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pfrom2);
 		cfrom2 = new JComboBox();
 		meanCharWidth = getMeanCharWidth(cfrom2
@@ -161,7 +161,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		enableInputWith(true);
 
 		// To panel
-		JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		final JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pto);
 		cto = new JComboBox();
 		meanCharWidth = getMeanCharWidth(cfrom1

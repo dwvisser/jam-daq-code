@@ -122,7 +122,7 @@ public final class JamMain extends JFrame implements Observer {
 		contents.add(splitCenter, BorderLayout.CENTER);
 		setJMenuBar(MenuBar.getMenuBar());
 		/* Histogram selection tree */
-		SelectionTree selectTree = new SelectionTree();
+		final SelectionTree selectTree = new SelectionTree();
 		contents.add(selectTree, BorderLayout.WEST);
 		final JSplitPane splitTree = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT, true, selectTree, splitCenter);

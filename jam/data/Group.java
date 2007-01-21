@@ -218,7 +218,7 @@ public final class Group implements Nameable {
 		} else if (noGroup) {
 			tempFullName = groupName;
 		}
-		String uniqueName = stringUtil.makeUniqueName(tempFullName, NAME_MAP
+		final String uniqueName = stringUtil.makeUniqueName(tempFullName, NAME_MAP
 				.keySet());
 		this.type = type;
 		this.groupName = groupName;

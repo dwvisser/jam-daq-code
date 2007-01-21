@@ -154,7 +154,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		super();
 		plotDisplay = disp;
 		textOut = console.getLog();
-		ParseCommand parseCommand = new ParseCommand(this);
+		final ParseCommand parseCommand = new ParseCommand(this);
 		console.addCommandListener(parseCommand);
 		cursorBin = Bin.create();
 		commandPresent = false;
@@ -181,7 +181,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * inquire methods to this class?
 	 */
 	@SuppressWarnings("unused")
-	private void area() {
+	private void area() {//NOPMD
 		if (commandPresent) {
 			areaCommandPresent();
 		} else {
@@ -258,7 +258,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * 
 	 */
 	@SuppressWarnings("unused")
-	private void cancel() {
+	private void cancel() {//NOPMD
 		isCursorCommand = false;
 		textOut.messageOutln();
 		done();
@@ -268,7 +268,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * non-javadoc: display the counts at cursor
 	 */
 	@SuppressWarnings("unused")
-	private void cursor() {
+	private void cursor() {//NOPMD
 		/* output counts for the channel */
 		final double count;
 		final int xch;
@@ -426,7 +426,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Expand the region to view.
 	 */
 	@SuppressWarnings("unused")
-	private void expand() {
+	private void expand() {//NOPMD
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		if (commandPresent) {
 			if (clicks.size() == 0) {
@@ -458,7 +458,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Display the full histogram.
 	 */
 	@SuppressWarnings("unused")
-	private void full() {
+	private void full() {//NOPMD
 		isCursorCommand = false;
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		currentPlot.setFull();
@@ -486,7 +486,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Goto input channel
 	 */
 	@SuppressWarnings("unused")
-	private void go() {
+	private void go() {//NOPMD
 		final String cal = "calibrated";
 		final char space = ' ';
 		final String intro = "Goto (click on spectrum or type the ";
@@ -556,14 +556,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * non-javadoc: Display help
 	 */
 	@SuppressWarnings("unused")
-	private void help() {
-		final StringBuffer buffer = new StringBuffer("Commands:\t");
-		buffer
-				.append("li - Linear Scale\tlo - Log Scale\ta  - Auto Scale\tra - Range\t");
-		buffer
-				.append("ex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\t");
-		buffer.append("d  - Display\to  - Overlay\tu  - Update\tg  - GoTo\t");
-		buffer.append("ar - Area\tn  - Net Area\tre - Rebin\tc  - Bin\t");
+	private void help() {//NOPMD
+		final StringBuffer buffer = new StringBuffer(240);
+		buffer.append("Commands:\tli - Linear Scale\tlo - Log Scale\ta  - Auto Scale\tra - Range\tex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\td  - Display\to  - Overlay\tu  - Update\tg  - GoTo\tar - Area\tn  - Net Area\tre - Rebin\tc  - Bin\t");
 		final Collection<String> commands = CommandManager.getInstance()
 				.getAllCommands();
 		for (String command : commands) {
@@ -615,7 +610,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final double[] channelBackground = new double[currentPlot.getSizeX()];
 		final int nclicks = clicks.size();
 		final String crt = "\n\t";
-		if (!commandPresent) {
+		if (!commandPresent) {//NOPMD
 			isCursorCommand = true;
 			init();
 			final String name = hist.getFullName().trim();
@@ -912,7 +907,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Change the scale for linear to log or log to linear
 	 */
 	@SuppressWarnings("unused")
-	private void scale() {
+	private void scale() {//NOPMD
 		isCursorCommand = false;
 		if (plotDisplay.getPlotContainer().getLimits().getScale() == Scale.LINEAR) {
 			log();

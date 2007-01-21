@@ -149,7 +149,7 @@ public class SetupRemote extends JDialog implements ActionListener,
 		panelB.add(bapply);
 		bapply.setActionCommand("apply");
 		bapply.addActionListener(this);
-		Button bcancel = new Button(" Cancel ");
+		final Button bcancel = new Button(" Cancel ");
 		panelB.add(bcancel);
 		bcancel.setActionCommand("cancel");
 		bcancel.addActionListener(this);

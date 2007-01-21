@@ -69,7 +69,7 @@ public final class Projections extends AbstractManipulation implements java.util
 		setLocation(20, 50);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		addWindowOpenListener();
-		JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
+		final JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
 		pLabels.setBorder(new EmptyBorder(20, 10, 0, 0));
 		cdproject.add(pLabels, BorderLayout.WEST);
 		pLabels.add(new JLabel("Project histogram", RIGHT));

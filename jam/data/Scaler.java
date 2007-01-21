@@ -106,7 +106,7 @@ public final class Scaler implements DataElement {
 		super();
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		// Set of names of gates for histogram this gate belongs to
-		Set<String> scalerNames = new TreeSet<String>();
+		final Set<String> scalerNames = new TreeSet<String>();
 		for (Scaler scaler : group.getScalerList()) {
 			scalerNames.add(scaler.getName());
 		}

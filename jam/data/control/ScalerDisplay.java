@@ -72,7 +72,7 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 		setLocation(20, 50);
 		cddisp.setLayout(new BorderLayout());
 		pScalers = new JPanel(new GridLayout(0, 1, BORDER_HEIGHT, 5));
-		Border borderScalers = new EmptyBorder(BORDER_HEIGHT, 10,
+		final Border borderScalers = new EmptyBorder(BORDER_HEIGHT, 10,
 				BORDER_HEIGHT, 10);
 		pScalers.setBorder(borderScalers);
 		final JScrollPane scrollPane = new JScrollPane(pScalers);

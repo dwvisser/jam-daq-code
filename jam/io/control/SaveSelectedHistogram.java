@@ -55,7 +55,7 @@ public final class SaveSelectedHistogram {
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
 		/* Selection list */
-		DefaultListModel listModel = new DefaultListModel();
+		final DefaultListModel listModel = new DefaultListModel();
 		listHist = new JList(listModel);
 		listHist
 				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

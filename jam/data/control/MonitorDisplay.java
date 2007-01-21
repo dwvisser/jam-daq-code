@@ -46,13 +46,13 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 		// >> dialog box to display Monitors
 		setResizable(true);
 		setLocation(20, 50);
-		Container cddisp = this.getContentPane();
+		final Container cddisp = this.getContentPane();
 		cddisp.setLayout(new BorderLayout());
 		// Panel for the bars
 		pBars = new JPanel(new GridLayout(0, 1, BORDER_HEIGHT, 5));
 		pBars.setBorder(new EmptyBorder(BORDER_HEIGHT, 0, BORDER_HEIGHT, 0));
 		// Scroll Panel
-		JScrollPane scrollPane = new JScrollPane(pBars);
+		final JScrollPane scrollPane = new JScrollPane(pBars);
 		scrollPane
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		cddisp.add(scrollPane, BorderLayout.CENTER);

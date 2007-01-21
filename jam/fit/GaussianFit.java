@@ -65,9 +65,9 @@ public final class GaussianFit extends AbstractNonLinearFit {
 	public GaussianFit() {
 		super("GaussianFit");
 
-		Parameter background = new Parameter("Background: ", Parameter.TEXT);
+		final Parameter background = new Parameter("Background: ", Parameter.TEXT);
 		background.setValue("A+B(x-Centroid)+C(x-Centroid)\u00b2");
-		Parameter equation = new Parameter("Peak: ", Parameter.TEXT);
+		final Parameter equation = new Parameter("Peak: ", Parameter.TEXT);
 		equation
 				.setValue("2.354\u2219Area/(\u221a(2\u03c0)Width)\u2219exp[-2.354\u00b2(x-Centroid)\u00b2/(2 Width\u00b2)]");
 		area = new Parameter(AREA, Parameter.DOUBLE, Parameter.FIX,

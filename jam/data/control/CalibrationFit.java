@@ -91,11 +91,11 @@ public class CalibrationFit extends AbstractControl {
 		final Container cdialogCalib = getContentPane();
 		cdialogCalib.setLayout(new BorderLayout(5, 5));
 		/* Selection panel at the top */
-		JPanel pSelection = new JPanel(new GridLayout(0, 1, 5, 0));
+		final JPanel pSelection = new JPanel(new GridLayout(0, 1, 5, 0));
 		pSelection.setBorder(new EmptyBorder(10, 0, 0, 0));
 		cdialogCalib.add(pSelection, BorderLayout.NORTH);
 		/* Equation chooser */
-		JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		final JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		pChoose.add(new JLabel("Function: "));
 		funcChooser = new JComboBox(new CalibrationComboBoxModel());
 		funcChooser.setRenderer(new CalibrationListCellRenderer());
@@ -137,10 +137,10 @@ public class CalibrationFit extends AbstractControl {
 		/* Tabbed panel with fit points an coefficients */
 		tabPane = new JTabbedPane();
 		cdialogCalib.add(tabPane, BorderLayout.CENTER);
-		JPanel ptsPanel = createAllPointsPanel();
+		final JPanel ptsPanel = createAllPointsPanel();
 		tabPane.addTab("Points", null, ptsPanel,
 				"Channels and Energies to fit.");
-		JPanel histPanel = createCoeffPanel();
+		final JPanel histPanel = createCoeffPanel();
 		tabPane.addTab("Coefficients", null, histPanel, "Fit coefficients.");
 		/* button panel */
 		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(

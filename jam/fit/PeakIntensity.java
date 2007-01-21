@@ -44,7 +44,7 @@ public class PeakIntensity extends AbstractFit {
 	 */
 	public PeakIntensity() {
 		super("Peak Intensity");
-		Parameter comment = new Parameter("Comment", Parameter.TEXT);
+		final Parameter comment = new Parameter("Comment", Parameter.TEXT);
 		comment.setValue("Checking \"Fixed\" on Slope fixes the value to 0.");
 		addParameter(lowChannel);
 		addParameter(highChannel);

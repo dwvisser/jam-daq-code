@@ -70,10 +70,10 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 		contents.setLayout(new BorderLayout());
 		setLocation(20, 50);
 		/* panel with chooser */
-		JPanel pChooser = new JPanel();
+		final JPanel pChooser = new JPanel();
 		pChooser.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
 		cgate = new JComboBox(new GateComboBoxModel());
-		Dimension dimset = cgate.getPreferredSize();
+		final Dimension dimset = cgate.getPreferredSize();
 		dimset.width = 200;
 		cgate.setPreferredSize(dimset);
 		cgate.setRenderer(new GateListCellRenderer());
@@ -104,7 +104,7 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 		/* panel with buttons add remove buttons */
 		final JPanel pedit = new JPanel();
 		pedit.setLayout(new GridLayout(3, 1, 5, 5));
-		Border border = new EmptyBorder(0, 0, 10, 30);
+		final Border border = new EmptyBorder(0, 0, 10, 30);
 		pedit.setBorder(border);
 		addP = new JButton("Add");
 		addP.addActionListener(new ActionListener() {

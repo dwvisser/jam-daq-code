@@ -29,7 +29,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 	OpenAdditionalHDF() {
 		super();
 		putValue(NAME, "Open Additional\u2026");
-		Frame frame = STATUS.getFrame();
+		final Frame frame = STATUS.getFrame();
 		hdfio = new HDFIO(frame);
 		final Icon iOpenAdd = loadToolbarIcon("jam/ui/OpenAddHDF.png");
 		putValue(Action.SMALL_ICON, iOpenAdd);

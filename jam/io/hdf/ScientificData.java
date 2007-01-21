@@ -60,7 +60,7 @@ final class ScientificData extends AbstractData {
 		super(DFTAG_SD);
 	}
 
-	ScientificData(double[] counts) {
+	ScientificData(double[] counts) {//NOPMD
 		super(DFTAG_SD); // sets tag
 		numberType = NumberType.DOUBLE;
 		inputMode = InputMode.STORE;
@@ -71,7 +71,7 @@ final class ScientificData extends AbstractData {
 		this.countsD = counts;
 	}
 
-	ScientificData(double[][] counts2d) {
+	ScientificData(double[][] counts2d) {//NOPMD
 		super(DFTAG_SD); // sets tag
 		numberType = NumberType.DOUBLE;
 		inputMode = InputMode.STORE;
@@ -83,7 +83,7 @@ final class ScientificData extends AbstractData {
 		this.counts2dD = counts2d;
 	}
 
-	ScientificData(int[] counts) {
+	ScientificData(int[] counts) {//NOPMD
 		super(DFTAG_SD); // sets tag
 		numberType = NumberType.INT;
 		inputMode = InputMode.STORE;
@@ -94,7 +94,7 @@ final class ScientificData extends AbstractData {
 		this.counts = counts;
 	}
 
-	ScientificData(int[][] counts2d) {
+	ScientificData(int[][] counts2d) {//NOPMD
 		super(DFTAG_SD); // sets tag
 		numberType = NumberType.INT;
 		inputMode = InputMode.STORE;

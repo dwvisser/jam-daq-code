@@ -25,7 +25,7 @@ public final class InitialHistograms {
 	 */
 	public InitialHistograms() {
 		super();
-		Group group = Group.createGroup("Initial", Group.Type.FILE);
+		final Group group = Group.createGroup("Initial", Group.Type.FILE);
 		/* histogram with Jam name 2d */
 		final Histogram histJam2d = Histogram.createHistogram(group,
 				histNameJam2d(), "Histogram2D", "Jam Name 2D");

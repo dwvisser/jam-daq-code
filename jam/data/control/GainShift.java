@@ -76,8 +76,8 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		chan2i = 1.0;
 		chan1f = 0.0;
 		chan2f = 1.0;
-		int hgap = 5;
-		int vgap = 10;
+		final int hgap = 5;
+		final int vgap = 10;
 		int meanCharWidth;
 		Dimension dim;
 		// UI Layout
@@ -95,7 +95,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			}
 		});
 		// Labels panel
-		JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
+		final JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
 		pLabels.setBorder(new EmptyBorder(20, 10, 0, 0));
 		cdgain.add(pLabels, BorderLayout.WEST);
 		pLabels.add(new JLabel("Shift histogram", SwingConstants.RIGHT));
@@ -106,10 +106,10 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		pLabels.add(label3);
 		pLabels.add(new JLabel("To  histogram", SwingConstants.RIGHT));
 		// Entries Panel
-		JPanel pEntries = new JPanel(new GridLayout(0, 1, hgap, vgap));
+		final JPanel pEntries = new JPanel(new GridLayout(0, 1, hgap, vgap));
 		pEntries.setBorder(new EmptyBorder(20, 0, 0, 10));
 		cdgain.add(pEntries, BorderLayout.CENTER);
-		JPanel pfrom = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+		final JPanel pfrom = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
 		cfrom = new JComboBox(new HistogramComboBoxModel(
 				HistogramComboBoxModel.Mode.ONE_D));
 		meanCharWidth = getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
@@ -119,8 +119,8 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		cfrom.setEditable(false);
 		pfrom.add(cfrom);
 		pEntries.add(pfrom);
-		JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-		ButtonGroup cbg = new ButtonGroup();
+		final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+		final ButtonGroup cbg = new ButtonGroup();
 		cchan = new JCheckBox("Channels", false);
 		cbg.add(cchan);
 		cchan.addItemListener(this);
@@ -130,7 +130,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		pradio.add(cchan);
 		pradio.add(ccoeff);
 		pEntries.add(pradio);
-		JPanel pinfields = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+		final JPanel pinfields = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
 		text1 = new JTextField("0.0", 8);
 		pinfields.add(text1);
 		label2 = new JLabel(""); // set by setUILabels
@@ -138,7 +138,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		text2 = new JTextField("1.0", 8);
 		pinfields.add(text2);
 		pEntries.add(pinfields);
-		JPanel poutfields = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+		final JPanel poutfields = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
 		text3 = new JTextField("0.0", 8);
 		poutfields.add(text3);
 		label4 = new JLabel(""); // set by setUILabels
@@ -146,7 +146,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		text4 = new JTextField("1.0", 8);
 		poutfields.add(text4);
 		pEntries.add(poutfields);
-		JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+		final JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
 		cto = new JComboBox();
 		meanCharWidth = getMeanCharWidth(cto.getFontMetrics(cto.getFont()));
 		dim = cto.getPreferredSize();

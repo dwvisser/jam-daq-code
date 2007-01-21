@@ -33,7 +33,7 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
 
     AbstractLoaderHDF() {
     	super();
-        Frame frame = STATUS.getFrame();
+        final Frame frame = STATUS.getFrame();
         hdfio = new HDFIO(frame);
     }
 

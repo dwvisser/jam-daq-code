@@ -42,7 +42,7 @@ public class AboutDialog {
 		dialog.setLocation(POS_X, POS_Y);
 		cad.setLayout(new BorderLayout());
 		final JPanel pcenter = new JPanel(new GridLayout(0, 1));
-		Border border = new EmptyBorder(20,20,20,20);
+		final Border border = new EmptyBorder(20,20,20,20);
 		pcenter.setBorder(border);
 		cad.add(pcenter, BorderLayout.CENTER);
 		pcenter.add(

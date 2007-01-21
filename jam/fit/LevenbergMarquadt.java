@@ -156,10 +156,10 @@ final class LevenbergMarquadt {
 		super();
 		nonLinFit = nlf;
 		messages = nlf.getTextInfo();
-		List<Parameter> temp2 = new ArrayList<Parameter>();
+		final List<Parameter> temp2 = new ArrayList<Parameter>();
 		for (Parameter param : nonLinFit.getParameters()) {
 			if (param.isDouble()) {
-				boolean variableParameter = !(param.isOutputOnly() || param
+				final boolean variableParameter = !(param.isOutputOnly() || param
 						.isKnown());
 				if (variableParameter) {
 					temp2.add(param);

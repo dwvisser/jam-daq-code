@@ -35,7 +35,7 @@ public class GroupRename extends AbstractControl {
 		setResizable(false);
 		final Container cdialog = getContentPane();
 		cdialog.setLayout(new BorderLayout(10, 10));
-		JPanel pMiddle = new JPanel(new FlowLayout(FlowLayout.LEFT, 10,10));
+		final JPanel pMiddle = new JPanel(new FlowLayout(FlowLayout.LEFT, 10,10));
 		cdialog.add(pMiddle, BorderLayout.CENTER);
 		final JLabel lName = new JLabel("Name", SwingConstants.RIGHT);
 		pMiddle.add(lName);

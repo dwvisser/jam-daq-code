@@ -49,7 +49,7 @@ class SplashWindow extends JWindow {
 	 */
 	public SplashWindow(Frame frame, int waitTime) {
 		super(frame);
-		ClassLoader classLoader = getClass().getClassLoader();
+		final ClassLoader classLoader = getClass().getClassLoader();
 		urlNukeIcon = classLoader.getResource("jam/nukeicon.png");
 		if (urlNukeIcon == null) {
 			JOptionPane.showMessageDialog(frame,
@@ -76,7 +76,7 @@ class SplashWindow extends JWindow {
 				dispose();
 			}
 		};
-		Runnable waitRunner = new Runnable() {
+		final Runnable waitRunner = new Runnable() {
 			public void run() {
 				try {
 					Thread.sleep(pause);
@@ -93,7 +93,7 @@ class SplashWindow extends JWindow {
 			}
 		};
 		setVisible(true);
-		Thread splashThread = new Thread(waitRunner, "SplashThread");
+		final Thread splashThread = new Thread(waitRunner, "SplashThread");
 		splashThread.start();
 	}
 

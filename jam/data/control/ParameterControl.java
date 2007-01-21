@@ -78,14 +78,14 @@ public final class ParameterControl extends AbstractControl {
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		cddisp.add(scrollPane, BorderLayout.CENTER);
 		/* Buttons for display dialog */
-		JPanel pLower = new JPanel(new GridLayout(0, 1, 0, 0));
+		final JPanel pLower = new JPanel(new GridLayout(0, 1, 0, 0));
 		pLower.setBorder(new EmptyBorder(5, 0, 0, 0));
 		cddisp.add(pLower, BorderLayout.SOUTH);
-		JPanel pButtonsTop = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		final JPanel pButtonsTop = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pLower.add(pButtonsTop);
-		JPanel pLoadSave = new JPanel(new GridLayout(1, 0, 5, 5));
+		final JPanel pLoadSave = new JPanel(new GridLayout(1, 0, 5, 5));
 		pButtonsTop.add(pLoadSave);
-		JButton bload = new JButton("Load\u2026");
+		final JButton bload = new JButton("Load\u2026");
 		bload.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
 				load();
@@ -93,7 +93,7 @@ public final class ParameterControl extends AbstractControl {
 		});
 		pLoadSave.add(bload);
 
-		JButton bsave = new JButton("Save\u2026");
+		final JButton bsave = new JButton("Save\u2026");
 		bsave.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
 				save();
@@ -101,9 +101,9 @@ public final class ParameterControl extends AbstractControl {
 		});
 		pLoadSave.add(bsave);
 
-		JPanel pButtonsBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		final JPanel pButtonsBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pLower.add(pButtonsBottom);
-		JPanel pOKApplyCancel = new JPanel(new GridLayout(1, 0, 5, 5));
+		final JPanel pOKApplyCancel = new JPanel(new GridLayout(1, 0, 5, 5));
 		pButtonsBottom.add(pOKApplyCancel);
 
 		final JButton brecall = new JButton("Recall");

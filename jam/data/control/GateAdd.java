@@ -56,7 +56,7 @@ public final class GateAdd extends AbstractControl {
 				}
 			}
 		});
-		Dimension dimadd = cadd.getPreferredSize();
+		final Dimension dimadd = cadd.getPreferredSize();
 		dimadd.width = 200;
 		cadd.setPreferredSize(dimadd);
 		ptadd.add(cadd);

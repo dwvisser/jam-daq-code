@@ -50,7 +50,7 @@ final class DataIDLabel extends AbstractData {
 		super(DFTAG_DIL); // sets tag
 		object = obj;
 		this.label = label;
-		int byteLength = 4 + label.length();
+		final int byteLength = 4 + label.length();
 		bytes = ByteBuffer.allocate(byteLength);
 		bytes.putShort(object.getTag());
 		bytes.putShort(object.getRef());

@@ -1,8 +1,8 @@
 package jam.global;
 
-import java.util.List;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -27,7 +27,7 @@ public class LoggerConfig {
 		super();
 		logger = Logger.getLogger(name);
 		logger.setLevel(Level.FINE);
-		List<Handler> handlers = Arrays.asList(logger.getHandlers());
+		final Collection<Handler> handlers = Arrays.asList(logger.getHandlers());
 		for (Handler handler : handlers) {
 			logger.removeHandler(handler);
 		}
@@ -47,7 +47,7 @@ public class LoggerConfig {
 	 */
 	public LoggerConfig(String name, final MessageHandler msgHandler) {
 		this(name);
-		List<Handler> handlers = Arrays.asList(logger.getHandlers());
+		final Collection<Handler> handlers = Arrays.asList(logger.getHandlers());
 		for (Handler handler : handlers) {
 			if (handler instanceof ConsoleHandler) {
 				logger.removeHandler(handler);

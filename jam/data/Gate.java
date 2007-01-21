@@ -169,7 +169,7 @@ public final class Gate implements DataElement {
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		histUniqueName = hist.getFullName();
 		// Set of names of gates for histogram this gate belongs to
-		Set<String> gateNames = new TreeSet<String>();
+		final Set<String> gateNames = new TreeSet<String>();
 		for (Gate gate : hist.getGates()) {
 			gateNames.add(gate.getName());
 		}

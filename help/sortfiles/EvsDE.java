@@ -55,11 +55,11 @@ public class EvsDE extends SortRoutine {
 		/* Particle ID gate */
 		gEvsDE = new Gate("PID", hEvsDE);
 		/* Integrated beam current (BIC) */
-		Scaler sBeam = createScaler("Beam", 0);
+		final Scaler sBeam = createScaler("Beam", 0);
 		/* A clock */
-		Scaler sClck = createScaler("Clock", 1);
+		final Scaler sClck = createScaler("Clock", 1);
 		/* Total events seen */
-		Scaler sEvntRaw = createScaler("Event Raw", 2);
+		final Scaler sEvntRaw = createScaler("Event Raw", 2);
 		/* Total events used */
 		createScaler("Event Accept", 3);
 		/* Monitor of rate of the BIC scaler */
@@ -98,8 +98,8 @@ public class EvsDE extends SortRoutine {
 	 */
 	public void sort(final int[] dataEvent) {
 		/* Variables for the raw signal values. */
-		final int energy = dataEvent[0];
-		final int eDE = dataEvent[1];
+		final int energy = dataEvent[idE];
+		final int eDE = dataEvent[idDE];
 		/* Variables for the compressed version of the signal values. */
 		final int ecE = energy >> 3; //compress by 8
 		final int ecDE = eDE >> 3;

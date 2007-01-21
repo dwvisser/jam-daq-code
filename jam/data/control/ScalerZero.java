@@ -38,11 +38,11 @@ public class ScalerZero extends AbstractControl {
 	public ScalerZero() {
 		super("Zero Scalers", true);
 		scalersCmd = new ScalersCmd();
-		Container dzc = getContentPane();
+		final Container dzc = getContentPane();
 		setResizable(false);
 		setLocation(20, 50);
 		final JPanel pZero = new JPanel(new GridLayout(1, 0, 10, 10));
-		Border border = new EmptyBorder(10, 10, 10, 10);
+		final Border border = new EmptyBorder(10, 10, 10, 10);
 		pZero.setBorder(border);
 
 		final JPanel pButton = new JPanel(new FlowLayout(FlowLayout.CENTER));

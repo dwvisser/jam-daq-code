@@ -35,13 +35,13 @@ public abstract class AbstractCalibrationFunction implements Function {
 	static {
 		clearAll();
 		addFunction(noFunc.getName(), noFunc.getClass());
-		AbstractCalibrationFunction linearFunc = new LinearFunction();
+		final AbstractCalibrationFunction linearFunc = new LinearFunction();
 		addFunction(linearFunc.getName(), linearFunc.getClass());
-		AbstractCalibrationFunction quadFunc = new QuadraticFunction();
+		final AbstractCalibrationFunction quadFunc = new QuadraticFunction();
 		addFunction(quadFunc.getName(), quadFunc.getClass());
-		AbstractCalibrationFunction cubicFunc = new CubicFunction();
+		final AbstractCalibrationFunction cubicFunc = new CubicFunction();
 		addFunction(cubicFunc.getName(), cubicFunc.getClass());
-		AbstractCalibrationFunction sqrtEFunc = new SqrtEnergyFunction();
+		final AbstractCalibrationFunction sqrtEFunc = new SqrtEnergyFunction();
 		addFunction(sqrtEFunc.getName(), sqrtEFunc.getClass());
 	}
 
@@ -169,10 +169,11 @@ public abstract class AbstractCalibrationFunction implements Function {
 		return ICONS.get(name);
 	}
 
-	static void loadIcon(final AbstractCalibrationFunction calFunc, final String iconFile) {
+	static void loadIcon(final AbstractCalibrationFunction calFunc,
+			final String iconFile) {
 		final ClassLoader loader = ClassLoader.getSystemClassLoader();
 
-		URL urlIcon = loader.getResource(iconFile);
+		final URL urlIcon = loader.getResource(iconFile);
 		if (urlIcon == null) {
 			JOptionPane.showMessageDialog(null,
 					"Can't load resource for calibration function icon "
@@ -380,20 +381,17 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @return channel for the given energy
 	 */
 	public double getChannel(final double energy) {
-
-		double ch = 0;
-		double bestDiff = Math.abs(getValue(ch) - energy);
+		double channel = 0;
+		final double bestDiff = Math.abs(getValue(channel) - energy);
 		double diff;
-
 		for (int i = 0; i < sizeHistogram; i++) {
 			diff = Math.abs(getValue(i) - energy);
 			if (diff < bestDiff) {
-				ch = i;
+				channel = i;
 			}
 
 		}
-
-		return ch;
+		return channel;
 	}
 
 	/**
@@ -466,8 +464,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @return with polynomial coefficents
 	 */
 	protected double[] polynomialFit(final double[] xVal, final double[] yVal,
-			int order) throws DataException {
-
+			final int order) throws DataException {
 		double[] xNorm = new double[xVal.length];
 		double matrixA[][] = null;
 		double vectorB[] = null;
@@ -481,11 +478,11 @@ public abstract class AbstractCalibrationFunction implements Function {
 		numTerms = order + 1;
 
 		// Check data
-		if (xVal.length < numTerms){
+		if (xVal.length < numTerms) {
 			throw new DataException(
 					"Need more positions than order for polynomial fit");
 		}
-		if (xVal.length != yVal.length){
+		if (xVal.length != yVal.length) {
 			throw new DataException(
 					"Need same number of x and y points for polynomial fit");
 		}
@@ -508,7 +505,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 
 		// Copy vector b into a column matrix
 		gaussMatrixB = new double[vectorB.length][1];
-		for (int i = 0; i < vectorB.length; i++) {
+		for (int i = 0; i < vectorB.length; i++) {// NOPMD
 			gaussMatrixB[i][0] = vectorB[i];
 		}
 
@@ -535,8 +532,8 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 *            order of polynomial
 	 * @return matrixA the matrix to do gaussj on.
 	 */
-	protected void buildPolyMatrix(double xVal[], double yVal[], int order,
-			double[][] matrixA, double[] vectorB) {
+	protected void buildPolyMatrix(final double xVal[], final double yVal[],
+			final int order, double[][] matrixA, double[] vectorB) {
 		double sum;
 
 		// Alpha matrix part
@@ -563,6 +560,8 @@ public abstract class AbstractCalibrationFunction implements Function {
 
 	}
 
+	//TODO can this call jam.fit.GaussJordanElimination instead?
+	
 	/**
 	 * gauss jordon reduction from numerical recipes
 	 * 
@@ -574,46 +573,44 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 */
 	protected double[][] gaussj(double[][] alpha, double[][] beta)
 			throws DataException {
-
-		int j, k, l, ll;
 		int icol, irow;
 		int[] indxc, indxr, ipiv;
 		double big, dum, pivinv, temp;
 
-		int n = alpha.length;
-		int m = beta[1].length;
+		final int alphaLength = alpha.length;
+		final int betaColumns = beta[1].length;
 		icol = 0;
 		irow = 0;
-		indxc = new int[n];
-		indxr = new int[n];
-		ipiv = new int[n];
+		indxc = new int[alphaLength];
+		indxr = new int[alphaLength];
+		ipiv = new int[alphaLength];
 
-		for (j = 0; j < n; j++)
+		for (int j = 0; j < alphaLength; j++) {
 			ipiv[j] = 0;
-
+		}
 		// loop over cols
-		for (int i = 0; i < n; i++) {
+		for (int i = 0; i < alphaLength; i++) {
 			// search for pivot
 			big = 0.0;
-			for (j = 0; j < n; j++)
-				if (ipiv[j] != 1)
-					for (k = 0; k < n; k++) {
-						if (ipiv[k] == 0) {
-							if (Math.abs(alpha[j][k]) >= big) {
-								big = Math.abs(alpha[j][k]);
-								irow = j;
-								icol = k;
-							}
+			for (int j = 0; j < alphaLength; j++) {
+				if (ipiv[j] != 1) {
+					for (int k = 0; k < alphaLength; k++) {
+						if (ipiv[k] == 0 && Math.abs(alpha[j][k]) >= big) {
+							big = Math.abs(alpha[j][k]);
+							irow = j;
+							icol = k;
 						}
 					}
+				}
+			}
 			++(ipiv[icol]);
 			if (irow != icol) {
-				for (l = 0; l < n; l++) {
+				for (int l = 0; l < alphaLength; l++) {
 					temp = alpha[irow][l];
 					alpha[irow][l] = alpha[icol][l];
 					alpha[icol][l] = temp;
 				}
-				for (l = 0; l < m; l++) {
+				for (int l = 0; l < betaColumns; l++) {
 					temp = beta[irow][l];
 					beta[irow][l] = beta[icol][l];
 					beta[icol][l] = temp;
@@ -622,29 +619,34 @@ public abstract class AbstractCalibrationFunction implements Function {
 			indxr[i] = irow;
 			indxc[i] = icol;
 
-			if (alpha[icol][icol] == 0.0)
+			if (alpha[icol][icol] == 0.0) {
 				throw new DataException("gaussj: Singular Matrix");
-
+			}
 			pivinv = 1.0 / alpha[icol][icol];
 			alpha[icol][icol] = 1.0;
-			for (l = 0; l < n; l++)
+			for (int l = 0; l < alphaLength; l++) {
 				alpha[icol][l] *= pivinv;
-			for (l = 0; l < m; l++)
+			}
+			for (int l = 0; l < betaColumns; l++) {
 				beta[icol][l] *= pivinv;
-			for (ll = 0; ll < n; ll++)
+			}
+			for (int ll = 0; ll < alphaLength; ll++) {
 				if (ll != icol) {
 					dum = alpha[ll][icol];
 					alpha[ll][icol] = 0.0;
-					for (l = 0; l < n; l++)
+					for (int l = 0; l < alphaLength; l++) {
 						alpha[ll][l] -= alpha[icol][l] * dum;
-					for (l = 0; l < m; l++)
+					}
+					for (int l = 0; l < betaColumns; l++) {
 						beta[ll][l] -= beta[icol][l] * dum;
+					}
 				}
+			}
 		}
 
-		for (l = n - 1; l >= 0; l--) {
+		for (int l = alphaLength - 1; l >= 0; l--) {
 			if (indxr[l] != indxc[l]) {
-				for (k = 0; k < n; k++) {
+				for (int k = 0; k < alphaLength; k++) {
 					temp = alpha[k][indxr[l]];
 					alpha[k][indxr[l]] = alpha[k][indxc[l]];
 					alpha[k][indxc[l]] = temp;

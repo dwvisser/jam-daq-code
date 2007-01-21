@@ -103,7 +103,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		histList.setSelectedIndex(0);
 		histList.setVisibleRowCount(10);
-		JScrollPane listPane = new JScrollPane(histList);
+		final JScrollPane listPane = new JScrollPane(histList);
 		listPane.setBorder(new EmptyBorder(0, 10, 0, 10));
 		container.add(listPane, BorderLayout.CENTER);
 		/* Lower panel with buttons */

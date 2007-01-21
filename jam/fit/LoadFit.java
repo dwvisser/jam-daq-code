@@ -67,12 +67,12 @@ public class LoadFit {
 		contents.setLayout(new BorderLayout());
 		// panel for fit file
 		final JPanel pFit = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		Border border = new EmptyBorder(20, 20, 20, 20);
+		final Border border = new EmptyBorder(20, 20, 20, 20);
 		pFit.setBorder(border);
 		final JLabel lFit = new JLabel("Fit class: ", SwingConstants.RIGHT);
 		pFit.add(lFit);
 		final JComboBox chooseFit = new JComboBox(this.getFitClasses());
-		Dimension dim = chooseFit.getPreferredSize();
+		final Dimension dim = chooseFit.getPreferredSize();
 		dim.width = 200;
 		chooseFit.setPreferredSize(dim);
 		pFit.add(chooseFit);

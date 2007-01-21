@@ -95,7 +95,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		border = new EmptyBorder(BORDER_HEIGHT, 0, BORDER_HEIGHT, 0);
 		pMonitors.setBorder(border);
 		// Scroll Panel
-		JScrollPane scrollPane = new JScrollPane(pMonitors);
+		final JScrollPane scrollPane = new JScrollPane(pMonitors);
 		scrollPane
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		cddisp.add(scrollPane, BorderLayout.CENTER);
@@ -116,7 +116,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		pupdate.add(spinnerUpdate);
 		pupdate.add(new JLabel("sec", LEFT));
 		/* panel for buttons */
-		JPanel pbutton = new JPanel(new GridLayout(1, 0, 5, 5));
+		final JPanel pbutton = new JPanel(new GridLayout(1, 0, 5, 5));
 		pLower.add(pbutton);
 		final JButton brecall = new JButton("Recall");
 		brecall.addActionListener(new ActionListener() {

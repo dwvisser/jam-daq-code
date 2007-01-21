@@ -83,7 +83,7 @@ public class HistogramNew extends AbstractControl {
 		pEntires.add(pGroup);
 		comboGroupModel = new DefaultComboBoxModel();
 		final JComboBox comboGroup = new JComboBox(comboGroupModel);
-		Dimension dim = comboGroup.getPreferredSize();
+		final Dimension dim = comboGroup.getPreferredSize();
 		dim.width = CHOOSER_SIZE;
 		comboGroup.setPreferredSize(dim);
 		/*

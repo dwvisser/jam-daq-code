@@ -38,7 +38,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 		super("Open\u2026");
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O,
 				CTRL_MASK));
-		Frame frame = STATUS.getFrame();
+		final Frame frame = STATUS.getFrame();
 		hdfio = new HDFIO(frame);
 		final Icon iOpen = loadToolbarIcon("jam/ui/OpenHDF.png");
 		putValue(Action.SMALL_ICON, iOpen);

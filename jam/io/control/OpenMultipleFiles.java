@@ -96,12 +96,12 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 				parent.getLocation().y + 50);
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
-		JTabbedPane tabPane = new JTabbedPane();
+		final JTabbedPane tabPane = new JTabbedPane();
 		container.add(tabPane, BorderLayout.CENTER);
 		multiChooser = new MultipleFileChooser(frame);
 		multiChooser.setFileFilter(new HDFileFilter(true));
 		tabPane.addTab("Files", null, multiChooser, "Select Files to open");
-		JPanel histPanel = createHistSelectPanel();
+		final JPanel histPanel = createHistSelectPanel();
 		tabPane.addTab("Histograms", null, histPanel,
 				"Select Histograms to open");
 		tabPane.addChangeListener(new ChangeListener() {
@@ -119,14 +119,14 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 		pLower.add(pLoad, BorderLayout.NORTH);
 		final JPanel pLoadButtons = new JPanel(new GridLayout(1, 0, 10, 0));
 		pLoad.add(pLoadButtons, BorderLayout.NORTH);
-		JButton bLoadlist = new JButton("Load List");
+		final JButton bLoadlist = new JButton("Load List");
 		pLoadButtons.add(bLoadlist);
 		bLoadlist.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent actionEvent) {
 				multiChooser.loadList();
 			}
 		});
-		JButton bSavelist = new JButton("Save List");
+		final JButton bSavelist = new JButton("Save List");
 		pLoadButtons.add(bSavelist);
 		chkBoxAdd = new JCheckBox("Sum Histograms");
 		pLoad.add(chkBoxAdd);
