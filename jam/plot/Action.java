@@ -115,8 +115,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	/** Is there a command present */
 	private transient boolean commandPresent;
 
-	private transient int countLow; //NOPMD
-	private transient int countHigh; //NOPMD
+	private transient int countLow; // NOPMD
+
+	private transient int countHigh; // NOPMD
 
 	/** current command being processed */
 	private transient String currentCommand = "";
@@ -181,7 +182,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * inquire methods to this class?
 	 */
 	@SuppressWarnings("unused")
-	private void area() {//NOPMD
+	private void area() {// NOPMD
 		if (commandPresent) {
 			areaCommandPresent();
 		} else {
@@ -212,32 +213,31 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			if (currentPlot.getDimensionality() == 1) {
 				synchronized (cursorBin) {
 					textOut.messageOut(String.valueOf(cursorBin.getX()));
-					final double[] counts = (double[]) currentPlot
-							.getCounts();
-					final double area = inquire.getArea(counts, lim1,
+					final double[] counts = (double[]) currentPlot.getCounts();
+					final double area = inquire
+							.getArea(counts, lim1, cursorBin);
+					final double centroid = inquire.getCentroid(counts, lim1,
 							cursorBin);
-					final double centroid = inquire.getCentroid(counts,
-							lim1, cursorBin);
-					final double fwhm = inquire.getFWHM(counts, lim1,
-							cursorBin);
+					final double fwhm = inquire
+							.getFWHM(counts, lim1, cursorBin);
 					currentPlot.markChannel(cursorBin);
 					currentPlot.markArea(lim1, cursorBin);
-					textOut.messageOut(":  Area = "
-							+ numFormat.format(area) + ", Centroid = "
-							+ numFormat.format(centroid) + ", FWHM = "
-							+ numFormat.format(fwhm), MessageHandler.END);
+					textOut.messageOut(":  Area = " + numFormat.format(area)
+							+ ", Centroid = " + numFormat.format(centroid)
+							+ ", FWHM = " + numFormat.format(fwhm),
+							MessageHandler.END);
 				}
 			} else {// 2D histogram
 				synchronized (cursorBin) {
 					textOut.messageOut(cursorBin.getCoordString());
 					final double[][] counts = (double[][]) currentPlot
 							.getCounts();
-					final double area = inquire.getArea(counts, lim1,
-							cursorBin);
+					final double area = inquire
+							.getArea(counts, lim1, cursorBin);
 					currentPlot.markChannel(cursorBin);
 					currentPlot.markArea(lim1, cursorBin);
-					textOut.messageOut(":  Area = "
-							+ numFormat.format(area), MessageHandler.END);
+					textOut.messageOut(":  Area = " + numFormat.format(area),
+							MessageHandler.END);
 				}
 			}
 			done();
@@ -258,7 +258,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * 
 	 */
 	@SuppressWarnings("unused")
-	private void cancel() {//NOPMD
+	private void cancel() {// NOPMD
 		isCursorCommand = false;
 		textOut.messageOutln();
 		done();
@@ -268,7 +268,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * non-javadoc: display the counts at cursor
 	 */
 	@SuppressWarnings("unused")
-	private void cursor() {//NOPMD
+	private void cursor() {// NOPMD
 		/* output counts for the channel */
 		final double count;
 		final int xch;
@@ -426,7 +426,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Expand the region to view.
 	 */
 	@SuppressWarnings("unused")
-	private void expand() {//NOPMD
+	private void expand() {// NOPMD
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		if (commandPresent) {
 			if (clicks.size() == 0) {
@@ -458,7 +458,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Display the full histogram.
 	 */
 	@SuppressWarnings("unused")
-	private void full() {//NOPMD
+	private void full() {// NOPMD
 		isCursorCommand = false;
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		currentPlot.setFull();
@@ -486,7 +486,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Goto input channel
 	 */
 	@SuppressWarnings("unused")
-	private void go() {//NOPMD
+	private void go() {// NOPMD
 		final String cal = "calibrated";
 		final char space = ' ';
 		final String intro = "Goto (click on spectrum or type the ";
@@ -556,9 +556,10 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * non-javadoc: Display help
 	 */
 	@SuppressWarnings("unused")
-	private void help() {//NOPMD
+	private void help() {// NOPMD
 		final StringBuffer buffer = new StringBuffer(240);
-		buffer.append("Commands:\tli - Linear Scale\tlo - Log Scale\ta  - Auto Scale\tra - Range\tex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\td  - Display\to  - Overlay\tu  - Update\tg  - GoTo\tar - Area\tn  - Net Area\tre - Rebin\tc  - Bin\t");
+		buffer
+				.append("Commands:\tli - Linear Scale\tlo - Log Scale\ta  - Auto Scale\tra - Range\tex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\td  - Display\to  - Overlay\tu  - Update\tg  - GoTo\tar - Area\tn  - Net Area\tre - Rebin\tc  - Bin\t");
 		final Collection<String> commands = CommandManager.getInstance()
 				.getAllCommands();
 		for (String command : commands) {
@@ -599,18 +600,11 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Background subtracted intensity of 1-d plots
 	 */
 	@SuppressWarnings("unused")
-	private void netarea() {
+	private void netarea() {//NOPMD
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
-		final double[] netArea = new double[1];
-		final double[] netAreaError = new double[1];
-		final double[] fwhm = new double[2];
-		final double[] centroidError = new double[2];
-		final double[] centroid = new double[1];
-		final double[] channelBackground = new double[currentPlot.getSizeX()];
 		final int nclicks = clicks.size();
-		final String crt = "\n\t";
-		if (!commandPresent) {//NOPMD
+		if (!commandPresent) {// NOPMD
 			isCursorCommand = true;
 			init();
 			final String name = hist.getFullName().trim();
@@ -626,13 +620,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			synchronized (cursorBin) {
 				addClick(cursorBin);
 				currentPlot.markChannel(cursorBin);
-				if (currentPlot.getDimensionality() == 1) {
-					textOut.messageOut(crt + "Background " + cursorBin.getX()
-							+ S_TO, MessageHandler.CONTINUE);
-				} else {
-					textOut.messageOut(cursorBin.getCoordString() + S_TO,
-							MessageHandler.CONTINUE);
-				}
+				markClick1inUI(currentPlot);
 			}
 		} else if (nclicks == 1) {
 			// ************ Second Background marker
@@ -641,13 +629,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				addClick(cursorBin);
 				final Bin bin1 = getClick(0);
 				currentPlot.markChannel(cursorBin);
-				if (currentPlot.getDimensionality() == 1) {
-					currentPlot.markArea(bin1, cursorBin);
-					textOut.messageOut(Integer.toString(cursorBin.getX()));
-				} else {
-					textOut.messageOut(cursorBin.getCoordString(),
-							MessageHandler.CONTINUE);
-				}
+				markClick2inUI(currentPlot, bin1);
 			}
 		} else if (nclicks == 2) {
 			// ************ Third Background Marker
@@ -655,13 +637,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			synchronized (cursorBin) {
 				addClick(cursorBin);
 				currentPlot.markChannel(cursorBin);
-				if (currentPlot.getDimensionality() == 1) {
-					textOut.messageOut(" and " + cursorBin.getX() + S_TO);
-
-				} else {
-					textOut.messageOut(cursorBin.getCoordString() + S_TO,
-							MessageHandler.CONTINUE);
-				}
+				markClick3inUI(currentPlot);
 			}
 		} else if (nclicks == 3) {
 			// ************ Fourth Background Marker
@@ -670,14 +646,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				addClick(cursorBin);
 				final Bin bin1 = getClick(2);
 				currentPlot.markChannel(cursorBin);
-				if (currentPlot.getDimensionality() == 1) {
-					currentPlot.markArea(bin1, cursorBin);
-					textOut.messageOut(String.valueOf(cursorBin.getX()),
-							MessageHandler.CONTINUE);
-				} else {
-					textOut.messageOut(cursorBin.getCoordString(),
-							MessageHandler.CONTINUE);
-				}
+				markClick4inUI(currentPlot, bin1);
 			}
 		} else if (nclicks == 4) {
 			// ************ First Region Marker
@@ -686,69 +655,180 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				currentPlot.initializeSelectingArea(cursorBin);
 				addClick(cursorBin);
 				currentPlot.markChannel(cursorBin);
-				if (currentPlot.getDimensionality() == 1) {
-					textOut.messageOut("." + crt + "Peak " + cursorBin.getX()
-							+ S_TO, MessageHandler.CONTINUE);
-				} else {
-
-					textOut.messageOut(cursorBin.getCoordString() + S_TO,
-							MessageHandler.CONTINUE);
-				}
+				markClick5inUI(currentPlot);
 			}
 		} else if (nclicks == 5) {
-			// ************ Second Region Marker
-			// *********************************
-			currentPlot.setSelectingArea(false);
-			final Bin bin4;
-			synchronized (cursorBin) {
-				addClick(cursorBin);
-				bin4 = getClick(4);
-				currentPlot.markChannel(cursorBin);
-				if (currentPlot.getDimensionality() == 1) {
-					currentPlot.markArea(bin4, cursorBin);
-					textOut.messageOut(cursorBin.getX() + ". ",
+			handleClick6(currentPlot, hist);
+		}
+	}
+
+	/**
+	 * @param currentPlot
+	 * @param hist
+	 * @param netArea
+	 * @param netAreaError
+	 * @param fwhm
+	 * @param centroidError
+	 * @param centroid
+	 * @param channelBackground
+	 * @param crt
+	 */
+	private void handleClick6(final PlotContainer currentPlot, final Histogram hist) {
+		final double[] netArea = new double[1];
+		final double[] netAreaError = new double[1];
+		final double[] fwhm = new double[2];
+		final double[] centroidError = new double[2];
+		final double[] centroid = new double[1];
+		final double[] channelBackground = new double[currentPlot.getSizeX()];
+		// ************ Second Region Marker
+		// *********************************
+		currentPlot.setSelectingArea(false);
+		final Bin bin4;
+		synchronized (cursorBin) {
+			addClick(cursorBin);
+			bin4 = getClick(4);
+			currentPlot.markChannel(cursorBin);
+			markClick6inUI(currentPlot, bin4);
+		}
+		final double[] counts = (double[]) currentPlot.getCounts();
+		final double grossArea = inquire.getArea(counts, bin4, cursorBin);
+		final Bin[] passClicks = new Bin[clicks.size()];
+		clicks.toArray(passClicks);
+		/* results of next call are passed back in the parameters */
+		inquire.getNetArea(netArea, netAreaError, channelBackground, fwhm,
+				centroid, centroidError, passClicks, grossArea, currentPlot
+						.getSizeX(), counts);
+		getCalibratedPeakStatistics(currentPlot, hist, fwhm, centroidError,
+				centroid);
+		final char plusMinus = '\u00b1';
+		final String crt = "\n\t";
+		textOut.messageOut(crt + "Gross Area = " + grossArea + plusMinus
+				+ numFormat.format(Math.sqrt(grossArea)) + crt
+				+ "NetArea = " + numFormat.format(netArea[0]) + plusMinus
+				+ numFormat.format(netAreaError[0]) + crt + "Centroid = "
+				+ numFormat.format(centroid[0]) + plusMinus
+				+ numFormat.format(centroidError[0]) + crt + "FWHM = "
+				+ numFormat.format(fwhm[0]), MessageHandler.END);
+		/* Draw Fit on screen by calling DisplayFit in Display.java */
+		final int[] bgdPts = { getClick(0).getX(), getClick(1).getX(),
+				getClick(2).getX(), getClick(3).getX() };
+		Arrays.sort(bgdPts);
+		final int lowerLimit = bgdPts[0];
+		final int upperLimit = bgdPts[3] + 1;
+		final double[] bkgd = new double[upperLimit - lowerLimit + 1];
+		System.arraycopy(channelBackground, lowerLimit, bkgd, 0,
+				bkgd.length);
+		plotDisplay.displayFit(null, bkgd, null, lowerLimit);
+		done();
+	}
+
+	/**
+	 * @param currentPlot
+	 * @param bin1
+	 */
+	private void markClick2inUI(final PlotContainer currentPlot, final Bin bin1) {
+		if (currentPlot.getDimensionality() == 1) {
+			currentPlot.markArea(bin1, cursorBin);
+			textOut.messageOut(Integer.toString(cursorBin.getX()));
+		} else {
+			textOut.messageOut(cursorBin.getCoordString(),
+					MessageHandler.CONTINUE);
+		}
+	}
+
+	/**
+	 * @param currentPlot
+	 * @param crt
+	 */
+	private void markClick1inUI(final PlotContainer currentPlot) {
+		final String crt = "\n\t";
+		if (currentPlot.getDimensionality() == 1) {
+			textOut.messageOut(crt + "Background " + cursorBin.getX() + S_TO,
+					MessageHandler.CONTINUE);
+		} else {
+			textOut.messageOut(cursorBin.getCoordString() + S_TO,
+					MessageHandler.CONTINUE);
+		}
+	}
+
+	/**
+	 * @param currentPlot
+	 */
+	private void markClick3inUI(final PlotContainer currentPlot) {
+		if (currentPlot.getDimensionality() == 1) {
+			textOut.messageOut(" and " + cursorBin.getX() + S_TO);
+
+		} else {
+			textOut.messageOut(cursorBin.getCoordString() + S_TO,
+					MessageHandler.CONTINUE);
+		}
+	}
+
+	/**
+	 * @param currentPlot
+	 * @param bin1
+	 */
+	private void markClick4inUI(final PlotContainer currentPlot, final Bin bin1) {
+		if (currentPlot.getDimensionality() == 1) {
+			currentPlot.markArea(bin1, cursorBin);
+			textOut.messageOut(String.valueOf(cursorBin.getX()),
+					MessageHandler.CONTINUE);
+		} else {
+			textOut.messageOut(cursorBin.getCoordString(),
+					MessageHandler.CONTINUE);
+		}
+	}
+
+	/**
+	 * @param currentPlot
+	 * @param crt
+	 */
+	private void markClick5inUI(final PlotContainer currentPlot) {
+		final String crt = "\n\t";
+		if (currentPlot.getDimensionality() == 1) {
+			textOut.messageOut("." + crt + "Peak " + cursorBin.getX() + S_TO,
+					MessageHandler.CONTINUE);
+		} else {
+
+			textOut.messageOut(cursorBin.getCoordString() + S_TO,
+					MessageHandler.CONTINUE);
+		}
+	}
+
+	/**
+	 * @param currentPlot
+	 * @param bin4
+	 */
+	private void markClick6inUI(final PlotContainer currentPlot, final Bin bin4) {
+		if (currentPlot.getDimensionality() == 1) {
+			currentPlot.markArea(bin4, cursorBin);
+			textOut
+					.messageOut(cursorBin.getX() + ". ",
 							MessageHandler.CONTINUE);
-				} else {
-					textOut.messageOut(cursorBin.getCoordString() + ". ",
-							MessageHandler.CONTINUE);
-				}
-			}
-			final double[] counts = (double[]) currentPlot.getCounts();
-			final double grossArea = inquire.getArea(counts, bin4, cursorBin);
-			final Bin[] passClicks = new Bin[clicks.size()];
-			clicks.toArray(passClicks);
-			/* results of next call are passed back in the parameters */
-			inquire.getNetArea(netArea, netAreaError, channelBackground, fwhm,
-					centroid, centroidError, passClicks, grossArea, currentPlot
-							.getSizeX(), counts);
-			if (isCalibrated(hist)) {
-				centroid[0] = currentPlot.getEnergy(centroid[0]);
-				fwhm[0] = currentPlot.getEnergy(fwhm[0]);
-				fwhm[1] = currentPlot.getEnergy(0.0);
-				centroidError[0] = currentPlot.getEnergy(centroidError[0]);
-				centroidError[1] = currentPlot.getEnergy(0.0);
-				fwhm[0] = fwhm[0] - fwhm[1];
-				centroidError[0] = centroidError[0] - centroidError[1];
-			}
-			final char plusMinus = '\u00b1';
-			textOut.messageOut(crt + "Gross Area = " + grossArea + plusMinus
-					+ numFormat.format(Math.sqrt(grossArea)) + crt
-					+ "NetArea = " + numFormat.format(netArea[0]) + plusMinus
-					+ numFormat.format(netAreaError[0]) + crt + "Centroid = "
-					+ numFormat.format(centroid[0]) + plusMinus
-					+ numFormat.format(centroidError[0]) + crt + "FWHM = "
-					+ numFormat.format(fwhm[0]), MessageHandler.END);
-			/* Draw Fit on screen by calling DisplayFit in Display.java */
-			final int[] bgdPts = { getClick(0).getX(), getClick(1).getX(),
-					getClick(2).getX(), getClick(3).getX() };
-			Arrays.sort(bgdPts);
-			final int lowerLimit = bgdPts[0];
-			final int upperLimit = bgdPts[3] + 1;
-			final double[] bkgd = new double[upperLimit - lowerLimit + 1];
-			System.arraycopy(channelBackground, lowerLimit, bkgd, 0,
-					bkgd.length);
-			plotDisplay.displayFit(null, bkgd, null, lowerLimit);
-			done();
+		} else {
+			textOut.messageOut(cursorBin.getCoordString() + ". ",
+					MessageHandler.CONTINUE);
+		}
+	}
+
+	/**
+	 * @param currentPlot
+	 * @param hist
+	 * @param fwhm
+	 * @param centroidError
+	 * @param centroid
+	 */
+	private void getCalibratedPeakStatistics(final PlotContainer currentPlot,
+			final Histogram hist, final double[] fwhm,
+			final double[] centroidError, final double[] centroid) {
+		if (isCalibrated(hist)) {
+			centroid[0] = currentPlot.getEnergy(centroid[0]);
+			fwhm[0] = currentPlot.getEnergy(fwhm[0]);
+			fwhm[1] = currentPlot.getEnergy(0.0);
+			centroidError[0] = currentPlot.getEnergy(centroidError[0]);
+			centroidError[1] = currentPlot.getEnergy(0.0);
+			fwhm[0] = fwhm[0] - fwhm[1];
+			centroidError[0] = centroidError[0] - centroidError[1];
 		}
 	}
 
@@ -907,7 +987,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Change the scale for linear to log or log to linear
 	 */
 	@SuppressWarnings("unused")
-	private void scale() {//NOPMD
+	private void scale() {// NOPMD
 		isCursorCommand = false;
 		if (plotDisplay.getPlotContainer().getLimits().getScale() == Scale.LINEAR) {
 			log();
@@ -954,15 +1034,13 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * @see PlotContainer#update()
 	 */
 	@SuppressWarnings("unused")
-	private void update() {
+	private void update() {// NOPMD
 		isCursorCommand = false;
 		BROADCASTER.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
 		plotDisplay.update();
-
 		// Reset rebin to 1
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		currentPlot.setBinWidth(1.0);
-
 		done();
 		/*
 		 * following to recover the chooser if user just overlayed a histogram
@@ -974,7 +1052,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Expand the region to view.
 	 */
 	@SuppressWarnings("unused")
-	private void zoomhorz() {
+	private void zoomhorz() {// NOPMD
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		final boolean noCommand = !commandPresent;
 		if (noCommand) {
@@ -1005,7 +1083,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Zoom in on the histogram
 	 */
 	@SuppressWarnings("unused")
-	private void zoomin() {
+	private void zoomin() {// NOPMD
 		isCursorCommand = false;
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		currentPlot.zoom(PlotContainer.Zoom.IN);
@@ -1019,7 +1097,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Zoom out on the histogram.
 	 */
 	@SuppressWarnings("unused")
-	private void zoomout() {
+	private void zoomout() {// NOPMD
 		isCursorCommand = false;
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		currentPlot.zoom(PlotContainer.Zoom.OUT);
@@ -1030,7 +1108,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	}
 
 	@SuppressWarnings("unused")
-	private void zoomvert() {
+	private void zoomvert() {// NOPMD
 		// do-nothing
 	}
 }

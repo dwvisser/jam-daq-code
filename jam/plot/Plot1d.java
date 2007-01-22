@@ -396,12 +396,12 @@ final class Plot1d extends AbstractPlot {
 	 * paints a fit to a given graphics
 	 */
 	protected void paintFit(final Graphics graphics) {
-		if (fitChannels != null) {
+		if (fitChannels != null & fitChannels.length > 0) {
 			if (fitBackground != null) {
 				graphics.setColor(colorMap.getFitBackground());
 				graph.drawLine(fitChannels, fitBackground);
 			}
-			if (fitResiduals != null) {
+			if (fitResiduals != null && fitResiduals.length > 0) {
 				graphics.setColor(colorMap.getFitResidual());
 				graph.drawLine(fitChannels, fitResiduals);
 			}
@@ -411,7 +411,7 @@ final class Plot1d extends AbstractPlot {
 					graph.drawLine(fitChannels, fitSignals[sig]);
 				}
 			}
-			if (fitTotal != null) {
+			if (fitTotal != null && fitTotal.length > 0) {
 				graphics.setColor(colorMap.getFitTotal());
 				graph.drawLine(fitChannels, fitTotal);
 			}
@@ -474,15 +474,6 @@ final class Plot1d extends AbstractPlot {
 			}
 		}
 		return minCounts;
-	}
-
-	/**
-	 * 
-	 * @param hist
-	 */
-	void copy2dCounts(@SuppressWarnings("unused")
-	Histogram hist) {
-		throw new IllegalStateException("Should never be called.");
 	}
 
 	/*
