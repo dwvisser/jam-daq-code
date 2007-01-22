@@ -74,7 +74,6 @@ public abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream
             dataOutput.flush();
         } catch (IOException io){
             throw new EventException("Problem writing header.", io);
-
         }
     }
 

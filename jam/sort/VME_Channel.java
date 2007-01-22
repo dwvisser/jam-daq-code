@@ -71,7 +71,7 @@ public final class VME_Channel {
 					+ " base address = 0x" + Integer.toHexString(baseAddress));
 		}
 		if (threshold >= 0 && threshold < 4096) {
-			int threshNum = (int) Math.round(threshold / 16.0);
+			final int threshNum = (int) Math.round(threshold / 16.0);
 			map.appendMessage("Requested threshold: " + threshold
 					+ ", truncated to: " + threshNum + ", actual threshold: "
 					+ threshNum * 16 + "\n");

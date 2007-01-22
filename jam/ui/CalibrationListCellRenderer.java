@@ -16,8 +16,8 @@ import javax.swing.UIManager;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 17 Dec 2003
  */
-public class CalibrationListCellRenderer extends DefaultListCellRenderer {
-
+public class CalibrationListCellRenderer extends DefaultListCellRenderer {//NOPMD
+	
 	/**
 	 * Returns a <code>JLabel</code> for the gate, with name and number, and a
 	 * red or green icon indicating if the gate is set.
@@ -36,7 +36,6 @@ public class CalibrationListCellRenderer extends DefaultListCellRenderer {
 			setBackground(list.getBackground());
 			setForeground(list.getForeground());
 		}
-
 		if (value == null) {
 			setText("null");
 			setIcon(null);
@@ -46,7 +45,6 @@ public class CalibrationListCellRenderer extends DefaultListCellRenderer {
 					.toString());
 			setIcon(icon);
 		}
-
 		setBorder((cellHasFocus) ? UIManager
 				.getBorder("List.focusCellHighlightBorder") : noFocusBorder);
 		return this;

@@ -131,8 +131,7 @@ public class ConsoleLog implements MessageHandler {
 		final DateFormat datef = DateFormat.getDateTimeInstance();
 		// medium date time format
 		datef.setTimeZone(TimeZone.getDefault()); // set time zone
-		final String stime = datef.format(date); // format time
-		return stime;
+		return datef.format(date); // format time
 	}
 
 	/*
@@ -142,8 +141,7 @@ public class ConsoleLog implements MessageHandler {
 		final Date date = new java.util.Date(); // get time
 		final DateFormat datef = DateFormat.getTimeInstance(DateFormat.MEDIUM);
 		datef.setTimeZone(TimeZone.getDefault()); // set time zone
-		final String stime = datef.format(date); // format time
-		return stime;
+		return datef.format(date); // format time
 	}
 
 	/**

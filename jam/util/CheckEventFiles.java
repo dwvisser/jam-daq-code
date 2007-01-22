@@ -86,7 +86,7 @@ public class CheckEventFiles {
 
 	private CheckEventFiles(File dir, File outDir) {
 		super();
-		File[] eventFiles = getEventFiles(dir);
+		final File[] eventFiles = getEventFiles(dir);
 		if (eventFiles.length > 0) {
 			LOGGER.info("Found event files, starting to examine...");
 			checkFirstBuffer(eventFiles);

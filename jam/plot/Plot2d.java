@@ -125,7 +125,7 @@ final class Plot2d extends AbstractPlot {
 	void displayHistogram(final Histogram hist) {
 		synchronized (this) {
 			if (hist == null) {
-				counts2d = null;
+				counts2d = EMPTY;
 			}
 			super.displayHistogram(hist);
 		}
@@ -362,7 +362,9 @@ final class Plot2d extends AbstractPlot {
 	// only used in one method, but don't want to keep creating
 	private transient final Rectangle clipBounds = new Rectangle();// NOPMD
 
-	protected transient double[][] counts2d;
+	private static final double [][] EMPTY = new double[0][0];
+	
+	private transient double[][] counts2d=EMPTY;
 
 	/**
 	 * Called to draw a 2d histogram, including title, border, tickmarks,

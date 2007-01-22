@@ -81,7 +81,7 @@ public final class MultipleFileChooser extends JPanel {
 		listFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.add(new JScrollPane(listFiles), BorderLayout.CENTER);
 		// Commands Panel
-		JPanel pLeft = new JPanel();
+		final JPanel pLeft = new JPanel();
 		pLeft.setLayout(new BoxLayout(pLeft, BoxLayout.Y_AXIS));
 		pLeft.setBorder(new EmptyBorder(0, 5, 0, 0));
 		this.add(pLeft, BorderLayout.WEST);

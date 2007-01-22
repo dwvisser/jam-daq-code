@@ -46,7 +46,7 @@ public class Console extends JPanel {
 	 */
 	private final static int STACK_SIZE = 50;
 
-	private transient final LinkedList<String> cmdStack = new LinkedList<String>();
+	private transient final LinkedList<String> cmdStack = new LinkedList<String>();//NOPMD
 
 	private transient int lastCmdIndex;
 

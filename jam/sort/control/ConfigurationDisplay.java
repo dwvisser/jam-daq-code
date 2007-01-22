@@ -56,20 +56,18 @@ public class ConfigurationDisplay extends JDialog {
 		textConfig.setDisabledTextColor(Color.BLACK);
 
 		// Panel so text wrap is disable
-		JPanel noWrapPanel = new JPanel();
+		final JPanel noWrapPanel = new JPanel();
 		noWrapPanel.setLayout(new BorderLayout());
 		noWrapPanel.add(textConfig);
 		// Scroll Panel
-		JScrollPane scrollPane = new JScrollPane(noWrapPanel,
+		final JScrollPane scrollPane = new JScrollPane(noWrapPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
 		contents.add(scrollPane, BorderLayout.CENTER);
-
 		// Low panel buttons
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		final JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		contents.add(buttonPanel, BorderLayout.SOUTH);
-		JButton btnClose = new JButton("Close");
+		final JButton btnClose = new JButton("Close");
 		buttonPanel.add(btnClose);
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent actionEvent) {

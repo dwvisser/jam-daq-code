@@ -64,8 +64,7 @@ public class FileUtilities {
 		final String fileName = changeExtension(fileIn.getName(), extension,
 				mode);
 		final String fileFullName = path + File.separator + fileName;
-		final File appendFile = new File(fileFullName);
-		return appendFile;
+		return new File(fileFullName);
 	}
 
 	/**
@@ -127,7 +126,7 @@ public class FileUtilities {
 	public String removeExtensionFileName(final String fileNameIn) {
 		String fileName;
 		int index;
-		index = fileNameIn.lastIndexOf(".");
+		index = fileNameIn.lastIndexOf('.');
 		// Extension 3 or less characters, index -1 if not found
 		if (index > 0) {
 			if (index >= fileNameIn.length() - 4) {

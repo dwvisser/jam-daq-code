@@ -188,10 +188,10 @@ public final class SetupSortOn extends AbstractSetup {
 		textExpName.setColumns(20);
 		pEntries.add(textExpName);
 		/* Radio buttons for path */
-		JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER, noSpace,
+		final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER, noSpace,
 				noSpace));
 		pEntries.add(pradio);
-		ButtonGroup pathType = new ButtonGroup();
+		final ButtonGroup pathType = new ButtonGroup();
 		pathType.add(btnDefaultPath);
 		pradio.add(btnDefaultPath);
 		pathType.add(btnSpecifyPath);
@@ -220,12 +220,12 @@ public final class SetupSortOn extends AbstractSetup {
 		textPathLog.setToolTipText("Path to save the console log.");
 		textPathLog.setEditable(true);
 		pEntries.add(textPathLog);
-		JPanel pInterval = new JPanel(new GridLayout(1, 2, 40, 0));
+		final JPanel pInterval = new JPanel(new GridLayout(1, 2, 40, 0));
 		pEntries.add(pInterval);
 		pInterval.add(cdisk);
 		clog.setSelected(true);
 		/* Browse panel */
-		JPanel pBrowse = new JPanel(new GridLayout(0, 1, 5, 5));
+		final JPanel pBrowse = new JPanel(new GridLayout(0, 1, 5, 5));
 		pBrowse.setBorder(new EmptyBorder(10, 0, 0, 10));
 		dcp.add(pBrowse, BorderLayout.EAST);
 		final Dimension dummyDim = new Dimension(10, 10);
@@ -243,7 +243,7 @@ public final class SetupSortOn extends AbstractSetup {
 		pBrowse.add(bbrowsel);
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		/* panel for buttons */
-		JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		dcp.add(pbutton, BorderLayout.SOUTH);
 		final JPanel pBottom = new JPanel(new GridLayout(1, 4, 5, 5));
 		pbutton.add(pBottom);

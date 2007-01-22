@@ -100,21 +100,21 @@ public final class Icons {
 	private Icons() {
 		super();
 		final ClassLoader LOADER = ClassLoader.getSystemClassLoader();
-		URL urlStop = LOADER.getResource("jam/ui/stop.png");
-		URL urlGo = LOADER.getResource("jam/ui/go.png");
-		URL urlClear = LOADER.getResource("jam/ui/clear.png");
-		URL urlCaution = LOADER.getResource("jam/ui/caution.png");
-		URL urlSort = LOADER.getResource("jam/ui/groupsort.png");
-		URL urlFile = LOADER.getResource("jam/ui/groupfile.png");
-		URL urlTemp = LOADER.getResource("jam/ui/grouptemp.png");
-		URL urlHist1D = LOADER.getResource("jam/ui/hist1D.png");
-		URL urlGate1D = LOADER.getResource("jam/ui/gate1D.png");
-		URL urlHist2D = LOADER.getResource("jam/ui/hist2D.png");
-		URL urlGate2D = LOADER.getResource("jam/ui/gate2D.png");
-		URL urlGateDef1D = LOADER.getResource("jam/ui/gateDefined1D.png");
-		URL urlGateDef2D = LOADER.getResource("jam/ui/gateDefined2D.png");
-		URL urlBegin = LOADER.getResource("jam/ui/begin.png");
-		URL urlEnd = LOADER.getResource("jam/ui/end.png");
+		final URL urlStop = LOADER.getResource("jam/ui/stop.png");
+		final URL urlGo = LOADER.getResource("jam/ui/go.png");
+		final URL urlClear = LOADER.getResource("jam/ui/clear.png");
+		final URL urlCaution = LOADER.getResource("jam/ui/caution.png");
+		final URL urlSort = LOADER.getResource("jam/ui/groupsort.png");
+		final URL urlFile = LOADER.getResource("jam/ui/groupfile.png");
+		final URL urlTemp = LOADER.getResource("jam/ui/grouptemp.png");
+		final URL urlHist1D = LOADER.getResource("jam/ui/hist1D.png");
+		final URL urlGate1D = LOADER.getResource("jam/ui/gate1D.png");
+		final URL urlHist2D = LOADER.getResource("jam/ui/hist2D.png");
+		final URL urlGate2D = LOADER.getResource("jam/ui/gate2D.png");
+		final URL urlGateDef1D = LOADER.getResource("jam/ui/gateDefined1D.png");
+		final URL urlGateDef2D = LOADER.getResource("jam/ui/gateDefined2D.png");
+		final URL urlBegin = LOADER.getResource("jam/ui/begin.png");
+		final URL urlEnd = LOADER.getResource("jam/ui/end.png");
 		if (areAnyNull(urlStop, urlGo, urlClear, urlCaution, urlHist1D,
 				urlGate1D, urlHist2D, urlGate2D, urlGateDef1D, urlGateDef2D,
 				urlBegin, urlEnd)) {

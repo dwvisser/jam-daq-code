@@ -40,7 +40,7 @@ public abstract class AbstractSwingWorker {
 		}
 	}
 
-	private transient ThreadVar threadVar;
+	private transient final ThreadVar threadVar;
 
 	/**
 	 * Get the value produced by the worker thread, or null if it hasn't been
@@ -129,8 +129,7 @@ public abstract class AbstractSwingWorker {
 				finished();
 			}
 		};
-
-		Runnable doConstruct = new Runnable() {
+		final Runnable doConstruct = new Runnable() {
 			public void run() {
 				try {
 					setValue(construct());
@@ -141,8 +140,7 @@ public abstract class AbstractSwingWorker {
 				SwingUtilities.invokeLater(doFinished);
 			}
 		};
-
-		Thread tempThread = new Thread(doConstruct);
+		final Thread tempThread = new Thread(doConstruct);
 		threadVar = new ThreadVar(tempThread);
 	}
 

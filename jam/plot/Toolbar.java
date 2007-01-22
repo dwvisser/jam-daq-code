@@ -165,8 +165,8 @@ final class Toolbar extends JToolBar implements ActionListener {
 				intVector.add(i, i);
 			}
 			comboBinRatio = new JComboBox(intVector);
-			Dimension dimMax = comboBinRatio.getMaximumSize();
-			Dimension dimPref = comboBinRatio.getPreferredSize();
+			final Dimension dimMax = comboBinRatio.getMaximumSize();
+			final Dimension dimPref = comboBinRatio.getPreferredSize();
 			dimMax.width = dimPref.width + 40;
 			comboBinRatio.setMaximumSize(dimMax);
 			comboBinRatio.setRenderer(new ReBinComboBoxRenderer());

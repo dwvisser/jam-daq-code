@@ -103,8 +103,8 @@ public class FixEventFile {
 		 * directory list of run#'s
 		 */
 		try {
-			FileReader fileReader = new FileReader(inputFile);
-			StreamTokenizer tokenizer = new StreamTokenizer(fileReader);
+			final FileReader fileReader = new FileReader(inputFile);
+			final StreamTokenizer tokenizer = new StreamTokenizer(fileReader);
 			tokenizer.eolIsSignificant(false);
 			tokenizer.slashSlashComments(true);
 			tokenizer.slashStarComments(true);
@@ -126,7 +126,7 @@ public class FixEventFile {
 			do {
 				tokenizer.nextToken();
 				if (tokenizer.ttype == StreamTokenizer.TT_NUMBER) {
-					int temp = (int) tokenizer.nval;
+					final int temp = (int) tokenizer.nval;
 					LOGGER.info(temp + " ");
 					runNumberSet.add(temp);
 				}

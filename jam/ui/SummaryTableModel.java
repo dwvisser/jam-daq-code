@@ -58,7 +58,7 @@ final class SummaryTableModel implements TableModel {
 	/** The number of columns */
 	private transient int numColumns;
 
-	private transient NumberFormat numFormat;
+	private transient final NumberFormat numFormat;
 
 	private transient Group selectedGroup;
 

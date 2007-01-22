@@ -173,7 +173,7 @@ public class RunControl extends JDialog implements Controller {
 		textRunTitle.setColumns(40);
 		pRunTitle.add(textRunTitle);
 		/* Zero Panel */
-		JPanel pZero = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, -2));
+		final JPanel pZero = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, -2));
 		pZero.add(cHistZero);
 		zeroScalers = new JCheckBox("Scalers", true);
 		pZero.add(zeroScalers);

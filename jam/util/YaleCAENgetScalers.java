@@ -99,13 +99,8 @@ public class YaleCAENgetScalers {
 				if (readVal == SCALER_HEADER) {
 					final int numScalers = dis.readInt();
 					counter += 4;
-					for (int i = 1; i <= numScalers; i++) {
-						strBuff.append(dis.readInt());
-						counter += 4;
-						if (i < numScalers) {
-							strBuff.append('\t');
-						}
-					}
+					counter = appendScalerValues(strBuff, dis, counter,
+							numScalers);
 					strBuff.append('\n');
 				}
 				if (counter >= mega) {
@@ -135,6 +130,28 @@ public class YaleCAENgetScalers {
 		fileName = events.getName();
 		strScalerText = strBuff.toString();
 		return rtnState;
+	}
+
+	/**
+	 * @param strBuff
+	 * @param dis
+	 * @param counter
+	 * @param numScalers
+	 * @return
+	 * @throws IOException
+	 */
+	private int appendScalerValues(final StringBuffer strBuff,
+			final DataInputStream dis, final int counter, final int numScalers)
+			throws IOException {
+		int rval = counter;
+		for (int i = 1; i <= numScalers; i++) {
+			strBuff.append(dis.readInt());
+			rval += 4;
+			if (i < numScalers) {
+				strBuff.append('\t');
+			}
+		}
+		return rval;
 	}
 
 	private String getErrorTxt() {

@@ -218,14 +218,14 @@ abstract class AbstractSetup {
 		textSortPath.setEnabled(false);
 
 		// Input streams
-		Set<Class<?>> inStreams = getClasses("jam.sort.stream",
+		final Set<Class<?>> inStreams = getClasses("jam.sort.stream",
 				AbstractEventInputStream.class);
 		inChooser = new JComboBox(inStreams.toArray());
 		inChooser.setToolTipText("Select input event data format.");
 		selectName(inChooser, inStreams, defInStream);
 
 		// Output streams
-		Set<Class<?>> outStreams = getClasses("jam.sort.stream",
+		final Set<Class<?>> outStreams = getClasses("jam.sort.stream",
 				AbstractEventOutputStream.class);
 		outChooser = new JComboBox(outStreams.toArray());
 		outChooser.setToolTipText("Select output event format.");
