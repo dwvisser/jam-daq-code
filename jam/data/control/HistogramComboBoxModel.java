@@ -19,7 +19,7 @@ class HistogramComboBoxModel extends DefaultComboBoxModel {
 
 	private transient Object selection = null;
 
-	private transient int lastSize = 0;//NOPMD
+	private transient int lastSize = 0;// NOPMD
 
 	/**
 	 * The possible modes for a histogram combo box.
@@ -112,11 +112,11 @@ class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 */
 	public int getSize() {
 		final int rval = Math.max(1, numHists());
-		if (rval != lastSize) {
-			synchronized (this) {
+		synchronized (this) {
+			if (rval != lastSize) {
 				lastSize = rval;
+				changeOccured();
 			}
-			changeOccured();
 		}
 		return rval;
 	}

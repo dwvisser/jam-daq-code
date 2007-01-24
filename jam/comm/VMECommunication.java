@@ -129,9 +129,11 @@ public final class VMECommunication extends GoodThread implements
 				} catch (BindException be) {
 					throw new JamException(
 							getClass().getName()
-									+ "Problem binding receive socket. (Is another Jam running online?)", be);
+									+ "Problem binding receive socket. (Is another Jam running online?)",
+							be);
 				} catch (SocketException se) {
-					throw new JamException("Problem creating receive socket.", se);
+					throw new JamException("Problem creating receive socket.",
+							se);
 				}
 				// setup and start receiving deamon
 				setDaemon(true);
@@ -482,7 +484,9 @@ public final class VMECommunication extends GoodThread implements
 			final DatagramPacket packetIn = new DatagramPacket(bufferIn,
 					bufferIn.length);
 			while (true) {// loop forever receiving packets
-				socketReceive.receive(packetIn);
+				synchronized (this) {
+					socketReceive.receive(packetIn);
+				}
 				final ByteBuffer byteBuffer = ByteBuffer.wrap(packetIn
 						.getData());
 				final int status = byteBuffer.getInt();// .readInt();

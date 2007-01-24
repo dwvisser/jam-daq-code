@@ -343,12 +343,14 @@ public class ConsoleLog implements MessageHandler {
 	 *                exceptions that go to the console
 	 */
 	public void setLogFileOn(final boolean state) throws JamException {
-		logFileOn = state;
-		if (logWriter == null) {
-			logFileOn = false;
-			throw new JamException(
-					getClass().getSimpleName()
-							+ ": Cannot turn on logging to file, log file does not exist.");
+		synchronized (this) {
+			logFileOn = state;
+			if (logWriter == null) {
+				logFileOn = false;
+				throw new JamException(
+						getClass().getSimpleName()
+								+ ": Cannot turn on logging to file, log file does not exist.");
+			}
 		}
 	}
 

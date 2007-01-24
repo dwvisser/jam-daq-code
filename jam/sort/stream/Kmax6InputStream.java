@@ -70,9 +70,7 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 * @return whether end-of-file
 	 */
 	public boolean isEndRun(final short dataWord) {
-		synchronized (this) {
-			return false;
-		}
+		return false;
 	}
 
 	/**
@@ -98,10 +96,10 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 		return rval;
 	}
 
-	//allocated and re-used rather than having add memory
-	//pressure by many calls to readEvent
-	private transient EventInputStatus eventInputStatus=EventInputStatus.NONE;
-	
+	// allocated and re-used rather than having add memory
+	// pressure by many calls to readEvent
+	private transient EventInputStatus eventInputStatus = EventInputStatus.NONE;
+
 	/**
 	 * Reads an event from the input stream Expects the stream position to be
 	 * the beginning of an event. It is up to the user to ensure this.
@@ -113,8 +111,8 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 * @return status resulting after read attempt
 	 */
 	public EventInputStatus readEvent(final int[] input) throws EventException {
-		eventInputStatus = EventInputStatus.NONE;
 		synchronized (this) {
+			eventInputStatus = EventInputStatus.NONE;
 			try {
 				if (newBlock) {// if a new block read in block header
 					readAndCheckBlockHeader();

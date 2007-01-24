@@ -50,7 +50,8 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 
 	private transient Gate currentGate;
 
-	private transient Nameable currentHistogram = UnNamed.getSingletonInstance();
+	private transient Nameable currentHistogram = UnNamed
+			.getSingletonInstance();
 
 	private transient final List<Bin> gatePoints = new ArrayList<Bin>();
 
@@ -190,29 +191,31 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 	 */
 	private void addPoint(final Bin pChannel) {
 		if (newGate) { // do nothing if no gate chosen
-			if (currentHistogram instanceof AbstractHist1D) {
-				synchronized (gatePoints) {
-					if (gatePoints.isEmpty()) {
+			synchronized (this) {
+				if (currentHistogram instanceof AbstractHist1D) {
+					synchronized (gatePoints) {
+						if (gatePoints.isEmpty()) {
+							gatePoints.add(pChannel);
+							textLower.setText(String.valueOf(pChannel.getX()));
+						} else if (gatePoints.size() == 1) {
+							gatePoints.add(pChannel);
+							setLowerUpperText();
+						} else if (gatePoints.size() == 2) {
+							gatePoints.remove(0);
+							gatePoints.add(pChannel);
+							setLowerUpperText();
+						} else {
+							LOGGER
+									.severe(getClass().getName()
+											+ ".addPoint(): setting 1 d gate should not be here.");
+						}
+					}
+				} else if (currentHistogram instanceof AbstractHist2D) {
+					synchronized (gatePoints) {
 						gatePoints.add(pChannel);
 						textLower.setText(String.valueOf(pChannel.getX()));
-					} else if (gatePoints.size() == 1) {
-						gatePoints.add(pChannel);
-						setLowerUpperText();
-					} else if (gatePoints.size() == 2) {
-						gatePoints.remove(0);
-						gatePoints.add(pChannel);
-						setLowerUpperText();
-					} else {
-						LOGGER
-								.severe(getClass().getName()
-										+ ".addPoint(): setting 1 d gate should not be here.");
+						textUpper.setText(String.valueOf(pChannel.getY()));
 					}
-				}
-			} else if (currentHistogram instanceof AbstractHist2D) {
-				synchronized (gatePoints) {
-					gatePoints.add(pChannel);
-					textLower.setText(String.valueOf(pChannel.getX()));
-					textUpper.setText(String.valueOf(pChannel.getY()));
 				}
 			}
 		} else {

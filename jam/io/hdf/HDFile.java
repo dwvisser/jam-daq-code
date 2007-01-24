@@ -179,7 +179,7 @@ public final class HDFile extends RandomAccessFile {
 			rval = numObjects / (stepsToTake - 1);
 			if (lazyLoadData) { // half the steps if lazy load (redo to take
 				// care of round off)
-				rval = (int) (numObjects / (stepsToTake - 1) / timeFraction);
+				rval = (int) (numObjects / (stepsToTake - 1.0) / timeFraction);
 			}
 			if (rval <= 0) {
 				rval = 1;
@@ -231,7 +231,11 @@ public final class HDFile extends RandomAccessFile {
 		final byte[] rval = new byte[length];
 		mark();
 		seek(offset);
-		read(rval);
+		final int numRead = read(rval);
+		if (numRead < length) {
+			throw new IllegalStateException("Tried to read "+length+
+					" bytes from file. Only got "+numRead+".");
+		}
 		reset();
 		return rval;
 	}

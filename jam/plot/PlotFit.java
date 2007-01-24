@@ -151,8 +151,8 @@ final class PlotFit {
 		}
 		final double avLow = countsLow / (bkgd2 - bkgd1 + 1);
 		final double avHigh = countsHigh / (bkgd4 - bkgd3 + 1);
-		final double midLow = (bkgd2 + bkgd1) / 2;
-		final double midHigh = (bkgd4 + bkgd3) / 2;
+		final double midLow = (bkgd2 + bkgd1) / 2.0;
+		final double midHigh = (bkgd4 + bkgd3) / 2.0;
 		final double gradient = (avHigh - avLow) / (midHigh - midLow);
 		final double intercept = avHigh - (gradient * midHigh);
 		/* sum counts between region - background at each channel */

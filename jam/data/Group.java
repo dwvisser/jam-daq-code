@@ -54,7 +54,7 @@ public final class Group implements Nameable {
 	 * @param group
 	 */
 	public static void clearGroup(final Group group) {
-		NAME_MAP.remove(group);
+		NAME_MAP.remove(group.getName());
 		LIST.remove(group);
 	}
 

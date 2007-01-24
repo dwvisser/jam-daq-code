@@ -27,13 +27,13 @@ public final class Monitor {
 	/**
 	 * List of all monitors.
 	 */
-	public static List<Monitor> monitorList = Collections
+	public static final List<Monitor> monitorList = Collections
 			.synchronizedList(new ArrayList<Monitor>());
 
 	/**
 	 * Lookup table for all monitors.
 	 */
-	public static Map<String, Monitor> monitorTable = Collections
+	public static final Map<String, Monitor> monitorTable = Collections
 			.synchronizedMap(new HashMap<String, Monitor>());
 
 	/**
@@ -342,16 +342,18 @@ public final class Monitor {
 	 * most recent value, too, for rate determination.
 	 */
 	public void update() {
-		if (source instanceof Scaler) {
-			valueNew = ((Scaler) source).getValue();
-			value = (valueNew - valueOld) / interval;
-			valueOld = valueNew;
-		} else if (source instanceof Gate) {
-			valueNew = ((Gate) source).getArea();
-			value = (valueNew - valueOld) / interval;
-			valueOld = valueNew;
-		} else if (source instanceof Sorter) {
-			value = ((Sorter) source).monitor(name);
+		synchronized (this) {
+			if (source instanceof Scaler) {
+				valueNew = ((Scaler) source).getValue();
+				value = (valueNew - valueOld) / interval;
+				valueOld = valueNew;
+			} else if (source instanceof Gate) {
+				valueNew = ((Gate) source).getArea();
+				value = (valueNew - valueOld) / interval;
+				valueOld = valueNew;
+			} else if (source instanceof Sorter) {
+				value = ((Sorter) source).monitor(name);
+			}
 		}
 	}
 }

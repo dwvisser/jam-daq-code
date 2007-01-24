@@ -264,6 +264,8 @@ public final class NetDaemon extends GoodThread {
 	 *            the action which ends the current run
 	 */
 	public void setEndRunAction(final Action action) {
-		endAction = action;
+		synchronized (this) {
+			endAction = action;
+		}
 	}
 }

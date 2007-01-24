@@ -189,7 +189,7 @@ public class SortDaemon extends GoodThread {
 		if (eventInputStatus == EventInputStatus.END_BUFFER) {
 			if (!atBuffer) {
 				atBuffer = true;
-				bufferCount++;
+				incrementBufferCount();
 			}
 			endSort = false;
 		} else if (eventInputStatus == EventInputStatus.END_RUN) {

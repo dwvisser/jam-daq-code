@@ -147,7 +147,7 @@ final class VirtualGroup extends AbstractData {
 			final String groupType) {
 		final List<VirtualGroup> output = new ArrayList<VirtualGroup>();
 		for (VirtualGroup group : list) {
-			if (group.getType() == groupType) {
+			if (group.getType().equals(groupType)) {
 				output.add(group);
 			}
 		}

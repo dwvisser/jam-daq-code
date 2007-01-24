@@ -41,8 +41,7 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	private transient int blockNumEvnt;
 
 	/**
-	 * Internal event counter, needs persistence beyond
-	 * the readEvent() methos.
+	 * Internal event counter, needs persistence beyond the readEvent() methos.
 	 */
 	private transient int countEvent = 0;// NOPMD
 
@@ -71,10 +70,8 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	 * 
 	 */
 	public boolean isEndRun(final short dataWord) {
-		synchronized (this) {
-			/* no end run marker */
-			return false;
-		}
+		/* no end run marker */
+		return false;
 	}
 
 	/**
@@ -110,11 +107,11 @@ public final class UconnInputStream extends AbstractEventInputStream {
 		}
 		return rval;
 	}
-	
+
 	/**
 	 * One allocation instead of many on readEvent() calls.
 	 */
-	private transient EventInputStatus eventInputStatus;//NOPMD
+	private transient EventInputStatus eventInputStatus;// NOPMD
 
 	/**
 	 * Reads an event from the input stream Expects the stream position to be
@@ -139,7 +136,11 @@ public final class UconnInputStream extends AbstractEventInputStream {
 				} else if (countEvent == blockNumEvnt) {
 					// are we done with this block
 					final long numSkip = blockFullSize - blockCurrSize;
-					dataInput.skip(numSkip);
+					final long skipped = dataInput.skip(numSkip);
+					if (skipped < numSkip) {
+						throw new EventException("Tried to skip "+numSkip+
+								"bytes. Was only able to skip "+skipped+".");
+					}
 					newBlock = true;
 					eventInputStatus = EventInputStatus.END_BUFFER;
 				} else {
@@ -147,8 +148,13 @@ public final class UconnInputStream extends AbstractEventInputStream {
 					readEventHeader();
 					unpackData(input);
 					// flush out rest of event
-					final long numSkip = eventSize - 2 * HEAD_SIZE - 2 * eventNumWord;
-					dataInput.skip(numSkip);
+					final long numSkip = eventSize - 2 * HEAD_SIZE - 2
+							* eventNumWord;
+					final long skipped = dataInput.skip(numSkip);
+					if (skipped < numSkip) {
+						throw new EventException("Tried to skip "+numSkip+
+								"bytes. Was only able to skip "+skipped+".");
+					}
 					// event state
 					input[64] = eventState;
 					countEvent++;
@@ -157,10 +163,10 @@ public final class UconnInputStream extends AbstractEventInputStream {
 				}
 			} catch (EOFException eof) {
 				eventInputStatus = EventInputStatus.END_FILE;
-				throw new EventException("Reading event.",eof);
+				throw new EventException("Reading event.", eof);
 			} catch (IOException io) {
 				eventInputStatus = EventInputStatus.END_FILE;
-				throw new EventException("Reading event.",io);
+				throw new EventException("Reading event.", io);
 			}
 			return eventInputStatus;
 		}
