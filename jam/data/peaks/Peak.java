@@ -124,4 +124,17 @@ final class Peak extends Object implements Comparable, Cloneable {
 		return rval;
 	}
 
+	public boolean equals(final Object object){
+		boolean rval = false;
+		if (object instanceof Peak) {
+			final Peak other = (Peak)object;
+			rval = getPosition() == other.getPosition();
+		}
+		return rval;
+	}
+	
+	public int hashCode(){
+		return Double.valueOf(getPosition()).hashCode();
+	}
+	
 }

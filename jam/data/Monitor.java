@@ -42,8 +42,6 @@ public final class Monitor {
 	public static void clearList() {
 		monitorTable.clear();
 		monitorList.clear();
-		/* run garbage collector */
-		System.gc();
 	}
 
 	/**

@@ -213,7 +213,7 @@ public final class VData extends AbstractData {
 		if (types[col] == VDataDescription.DFNT_INT32) {
 			final int location = row * ivsize + offsets[col];
 			final short value = bytes.getShort(location);
-			rval = new Short(value);
+			rval = Short.valueOf(value);
 		} else {
 			throw new IllegalStateException(VS_STRING + getTag() + "/"
 					+ getRef() + ".getShort(" + row + "," + col

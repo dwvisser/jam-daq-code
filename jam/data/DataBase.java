@@ -40,7 +40,6 @@ public class DataBase implements Validator {
 		Scaler.clearList();
 		Monitor.clearList();
 		DataParameter.clearList();
-		System.gc();
 	}
 	
 	public boolean isValid(final Object object){

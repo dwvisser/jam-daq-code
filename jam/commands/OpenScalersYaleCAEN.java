@@ -41,6 +41,9 @@ final class OpenScalersYaleCAEN extends AbstractCommand {
 		execute(null);
 	}
 
+	private transient File lastFile = new File(JamProperties//NOPMD
+			.getPropString(PropertyKeys.EVENT_INPATH));
+
 	/**
 	 * Get a *.evn file from a JFileChooser.
 	 * 
@@ -48,8 +51,6 @@ final class OpenScalersYaleCAEN extends AbstractCommand {
 	 *         cancelled
 	 */
 	private File getFile() {
-		File lastFile = new File(JamProperties
-				.getPropString(PropertyKeys.EVENT_INPATH));
 		File file = null;
 		int option;
 		final JFileChooser jfile = new JFileChooser(lastFile);

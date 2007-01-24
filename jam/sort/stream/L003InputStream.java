@@ -138,7 +138,7 @@ public final class L003InputStream extends AbstractEventInputStream {
 			// check special types parameter
 			if (paramWord == L002Parameters.EVENT_END_MARKER) {
 				// need another read as marker is 2 shorts
-				paramWord = readVaxShort();
+				readVaxShort();
 				numberEvents++;
 				rval = false;
 				status = EventInputStatus.EVENT;

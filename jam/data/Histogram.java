@@ -217,7 +217,6 @@ public abstract class Histogram implements DataElement {
 		for (List<Histogram> list : DIM_LIST) {
 			list.clear();
 		}
-		System.gc();
 	}
 
 	/**
@@ -313,7 +312,6 @@ public abstract class Histogram implements DataElement {
 				group.removeHistogram(histogram);
 			}
 		}
-		System.gc();
 	}
 
 	/**

@@ -102,9 +102,8 @@ public class DataParameter implements Nameable {
 	public static void clearList() {
 		TABLE.clear();
 		LIST.clear();
-		//run garbage collector, memory should be freed
-		System.gc();
 	}
+	
 	/**
 	* Returns the parameter with the specified name.
 	*

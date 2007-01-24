@@ -42,8 +42,6 @@ public final class Scaler implements DataElement {
 	public static void clearList() {
 		TABLE.clear();
 		LIST.clear();
-		/* run garbage collector to free memory */
-		System.gc();
 	}
 
 	/**

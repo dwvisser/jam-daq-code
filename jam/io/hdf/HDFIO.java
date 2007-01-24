@@ -1037,7 +1037,6 @@ public final class HDFIO implements DataIO {
 		final AbstractSwingWorker worker = new AbstractSwingWorker() {
 			public Object construct() {
 				asyncWriteFile(file, groups, histograms, writeData, wrtSettings);
-				System.gc();
 				return null;
 			}
 

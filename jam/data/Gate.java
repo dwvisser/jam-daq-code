@@ -56,8 +56,6 @@ public final class Gate implements DataElement {
 			list.clear();
 		}
 		TABLE.clear();
-		/* run garbage collector, memory should be freed */
-		System.gc();
 	}
 
 	/**

@@ -206,7 +206,6 @@ final class LevenbergMarquadt {
 	 */
 	public void iterate(final Iteration iteration) throws ArithmeticException {
 		int index;
-		Matrix oneda = new Matrix(nPar, 1);
 		boolean allDone = false;
 		final boolean firstCall = (iteration == Iteration.FIRST_ITERATION);
 		final boolean lastCall = (iteration == Iteration.LAST_ITERATION);
@@ -217,7 +216,7 @@ final class LevenbergMarquadt {
 		// calculation,and oChiSq
 		// Alter linearized fitting matrix, by augmenting diagonal elements
 		covar = new Matrix(alpha); // make a copy of alpha into covar
-		oneda = new Matrix(beta); // make a copy of beta into oneda
+		Matrix oneda = new Matrix(beta); // make a copy of beta into oneda
 		if (lastCall) {
 			lambda = 0.0;
 		}

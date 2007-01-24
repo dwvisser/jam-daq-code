@@ -253,16 +253,14 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 	 *            the communicated event
 	 */
 	public void update(final Observable observable, final Object object) {
-		final int numCounters = 3;
 		final int iEventCount = 1;
 		final int iBufferCt = 2;
 		final BroadcastEvent event = (BroadcastEvent) object;
 		final BroadcastEvent.Command command = event.getCommand();
-		int vmeCounters[] = new int[numCounters];
 		if (command == BroadcastEvent.Command.COUNTERS_UPDATE) {
 			if (STATUS.getSortMode().isOnline()) {
 				/* update remote fields */
-				vmeCounters = (int[]) event.getContent();
+				final int [] vmeCounters = (int[]) event.getContent();
 				pBuffSent.setText(String.valueOf(vmeCounters[iBufferCt]));
 				pEvntSent.setText(String.valueOf(vmeCounters[iEventCount]));
 				updateSample();

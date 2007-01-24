@@ -75,9 +75,9 @@ final class Painter {
 
 	/** is the plot 1d or 2d */
 	private transient final int plotDimensions;
-	
+
 	private transient Conversion conversion = new Conversion(1.0, 1.0, 1.0);
-	
+
 	/** the dimensions of the plot canvas */
 	private transient Dimension viewSize;
 
@@ -196,14 +196,8 @@ final class Painter {
 			plotLimits = limits;
 			if (plotLimits != null) {
 				/* retrieve imformation from plotLimits object */
-				int minX, maxX;
-				if (plotDimensions == 1) {
-					minX = plotLimits.getMinimumX();
-					maxX = plotLimits.getMaximumX();
-				} else {// (plotDimensions == 2) {
-					minX = plotLimits.getMinimumX();
-					maxX = plotLimits.getMaximumX();
-				}
+				final int minX = plotLimits.getMinimumX();
+				final int maxX = plotLimits.getMaximumX();
 				final int minY = getMinimumY();
 				final int maxY = getMaximumY();
 				final double maxYLog = takeLog(maxY);
@@ -222,12 +216,15 @@ final class Painter {
 				/* add 1 as border part of plot */
 				view.setHeight(view.getBottom() - border.top + 1);
 				/* add 1 as border part of plot */
-				final double conversionX = (double) view.getWidth() / ((double) rangeXch);
+				final double conversionX = (double) view.getWidth()
+						/ ((double) rangeXch);
 				/* number of pixels per channel */
-				final double conversionY = (double) view.getHeight() / ((double) rangeY);
+				final double conversionY = (double) view.getHeight()
+						/ ((double) rangeY);
 				/* number of pixels per channel */
 				final double conversionYLog = view.getHeight() / rangeYLog;
-				conversion = new Conversion(conversionX, conversionY, conversionYLog);
+				conversion = new Conversion(conversionX, conversionY,
+						conversionYLog);
 			}
 		}
 	}
@@ -276,8 +273,7 @@ final class Painter {
 		if (side == TOP) {
 			setGraphicsFont(font.deriveFont(Painter.TITLE_SCREEN_SIZE));
 			graphics2d.drawString(title, xPos, yPos);
-			setGraphicsFont(font
-					.deriveFont(GraphicsLayout.SCREEN_FONT_SIZE));
+			setGraphicsFont(font.deriveFont(GraphicsLayout.SCREEN_FONT_SIZE));
 		}
 	}
 
@@ -332,8 +328,8 @@ final class Painter {
 	 * @since Version 0.5
 	 */
 	void drawBorder() {
-		graphics2d.drawRect(border.left, border.top, view.getWidth() - 1,
-				view.getHeight() - 1);
+		graphics2d.drawRect(border.left, border.top, view.getWidth() - 1, view
+				.getHeight() - 1);
 	}
 
 	/**
@@ -780,8 +776,8 @@ final class Painter {
 		final int textHeight = (metrics.getAscent());
 		/* lowest threshold for color to be drawn */
 		String label = Integer.toString(minCount);
-		graphics2d.drawString(label, view.getRight() + graphLayout.colorScale.offset
-				+ graphLayout.colorScale.size
+		graphics2d.drawString(label, view.getRight()
+				+ graphLayout.colorScale.offset + graphLayout.colorScale.size
 				+ graphLayout.colorScale.labelOffset, view.getBottom()
 				+ textHeight / 2);
 		for (int k = 0; k < numberColors; k++) {
@@ -796,7 +792,8 @@ final class Painter {
 		/* draw colors on side */
 		for (int k = 0; k < numberColors; k++) {
 			graphics2d.setColor(colors.getColorByIndex(k));
-			graphics2d.fillRect(view.getRight() + graphLayout.colorScale.offset, // horizontal
+			graphics2d.fillRect(
+					view.getRight() + graphLayout.colorScale.offset, // horizontal
 					view.getBottom() - graphLayout.colorScale.size - k
 							* graphLayout.colorScale.size, // vertical
 					graphLayout.colorScale.size, graphLayout.colorScale.size); // size
@@ -820,8 +817,8 @@ final class Painter {
 		final int numberColors = colorThresholds.length;
 		/* lowest threshold for color to be drawn */
 		String label = Integer.toString(lowerLimit);
-		graphics2d.drawString(label, view.getRight() + graphLayout.colorScale.offset
-				+ graphLayout.colorScale.size
+		graphics2d.drawString(label, view.getRight()
+				+ graphLayout.colorScale.offset + graphLayout.colorScale.size
 				+ graphLayout.colorScale.labelOffset, view.getBottom()
 				+ textHeight / 2);
 		for (int k = 0; k < numberColors; k++) {
@@ -937,7 +934,8 @@ final class Painter {
 			final boolean noFillMode) {
 		clipPlot();
 		final int xValue = toViewHorzLin(lowerLimit);
-		final int xValue2 = Math.min(toViewHorzLin(upperLimit + 1), view.getRight());
+		final int xValue2 = Math.min(toViewHorzLin(upperLimit + 1), view
+				.getRight());
 		final int width = xValue2 - xValue;
 		final int height = view.getBottom() - border.top;
 		if (noFillMode) {
@@ -1012,7 +1010,7 @@ final class Painter {
 	 */
 	Rectangle getRectangleOutline1d(final int xValue1, final int xValue2) {
 		final int height = view.getBottom() - border.top;// Full plot
-															// vertically
+		// vertically
 		final int tempX;
 		final int width;
 
@@ -1192,8 +1190,8 @@ final class Painter {
 		if (xValue1 >= border.left && xValue1 <= view.getRight()) {
 			graphics2d.drawLine(xValue1, yValue1, xValue2, yValue2);
 			final String label = "" + channel;
-			graphics2d.drawString(label, xValue2, yValue2
-					- Painter.MARK_OFFSET);
+			graphics2d
+					.drawString(label, xValue2, yValue2 - Painter.MARK_OFFSET);
 		}
 	}
 
@@ -1231,8 +1229,7 @@ final class Painter {
 		final String label = "" + bin.getX() + "," + bin.getY();
 		graphics2d.draw(rectangle);
 		graphics2d.drawString(label, (int) rectangle.getMaxX()
-				+ Painter.MARK_OFFSET, rectangle.y
-				- Painter.MARK_OFFSET);
+				+ Painter.MARK_OFFSET, rectangle.y - Painter.MARK_OFFSET);
 	}
 
 	/*
@@ -1379,8 +1376,8 @@ final class Painter {
 	 * Clip so only active region of plot is drawn on.
 	 */
 	void clipPlot() {
-		graphics2d.clipRect(border.left, border.top, view.getWidth() + 1,
-				view.getHeight() + 1);
+		graphics2d.clipRect(border.left, border.top, view.getWidth() + 1, view
+				.getHeight() + 1);
 	}
 
 	/*
