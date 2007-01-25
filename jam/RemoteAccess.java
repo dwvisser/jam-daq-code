@@ -48,7 +48,7 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 *             if there's a problem
 	 */
 	public String getExperimentName() throws RemoteException {
-		return RunInfo.experimentName;
+		return RunInfo.getInstance().experimentName;
 	}
 
 	/**

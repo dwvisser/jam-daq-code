@@ -61,12 +61,12 @@ public final class JamFileFields {
 		/**
 		 * Column names for calibration with points
 		 */
-		public static final String[] COLUMNS_POINTS = { "Channel", "Energy" };
+		static final String[] COLUMNS_POINTS = { "Channel", "Energy" };//NOPMD
 
 		/**
 		 * Column names for calibration with coefficients
 		 */
-		public static final String[] COLUMNS_COEFF = { "Coefficients" };
+		static final String[] COLUMNS_COEFF = { "Coefficients" };//NOPMD
 	}
 
 	/**
@@ -87,12 +87,12 @@ public final class JamFileFields {
 	/**
 	 * Names for lower and upper limits of 1d gates.
 	 */
-	public static final String[] GATE_1D = { "Lower Limit", "Upper Limit" };
+	static final String[] GATE_1D = { "Lower Limit", "Upper Limit" };//NOPMD
 
 	/**
 	 * Names for x- and y- coordinates lists for 2d gates.
 	 */
-	public static final String[] GATE_2D = { "X Coordinate", "Y Coordinate" };
+	static final String[] GATE_2D = { "X Coordinate", "Y Coordinate" };//NOPMD
 
 	/**
 	 * The section name for the scaler values.
@@ -105,7 +105,7 @@ public final class JamFileFields {
 	public static final String SCALER_TYPE = "Scaler Value";
 
 	/** Column names for scaler table. */
-	public static final String[] SCALER_COLS = { "Number", "Name", "Value" };
+	static final String[] SCALER_COLS = { "Number", "Name", "Value" };//NOPMD
 
 	/** The section names for the parameter values. */
 	public static final String PARAMETERS = "Parameters";
@@ -114,7 +114,7 @@ public final class JamFileFields {
 	public static final String PAR_TYPE = "Parameter Value";
 
 	/** The column names for the parameter table. */
-	public static final String[] PARAM_COLS = { "Name", "Value" };
+	static final String[] PARAM_COLS = { "Name", "Value" };//NOPMD
 
 	/** The label for the error bar numerical data groups. */
 	public static final String ERROR_LABEL = "Errors";

@@ -130,7 +130,7 @@ public class RunControl extends JDialog implements Controller {
 	private RunControl(Frame frame) {
 		super(frame, "Run", false);
 		vmeComm = VMECommunication.getSingletonInstance();
-		RunInfo.runNumber = 100;
+		RunInfo.getInstance().runNumber = 100;
 		setResizable(false);
 		setLocation(20, 50);
 		setSize(400, 250);
@@ -164,7 +164,7 @@ public class RunControl extends JDialog implements Controller {
 		pCenter.add(pRunNumber);
 		tRunNumber = new JTextField("");
 		tRunNumber.setColumns(3);
-		tRunNumber.setText(Integer.toString(RunInfo.runNumber));
+		tRunNumber.setText(Integer.toString(RunInfo.getInstance().runNumber));
 		pRunNumber.add(tRunNumber);
 		final JPanel pRunTitle = new JPanel(new FlowLayout(FlowLayout.LEFT, 0,
 				0));
@@ -258,16 +258,17 @@ public class RunControl extends JDialog implements Controller {
 	 */
 	void beginRun() throws JamException, SortException {
 		try {// get run number and title
-			RunInfo.runNumber = Integer.parseInt(tRunNumber.getText().trim());
-			RunInfo.runTitle = textRunTitle.getText().trim();
-			RunInfo.runStartTime = new Date();
+			RunInfo.getInstance().runNumber = Integer.parseInt(tRunNumber
+					.getText().trim());
+			RunInfo.getInstance().runTitle = textRunTitle.getText().trim();
+			RunInfo.getInstance().runStartTime = new Date();
 		} catch (NumberFormatException nfe) {
 			throw new JamException("Run number not an integer.", nfe);
 		}
 		if (device == Device.DISK) {// saving to disk
 			final String EVENT_EXT = ".evn";
-			final String dataFileName = RunInfo.experimentName
-					+ RunInfo.runNumber + EVENT_EXT;
+			final String dataFileName = RunInfo.getInstance().experimentName
+					+ RunInfo.getInstance().runNumber + EVENT_EXT;
 			final File dataFile = new File(dataPath, dataFileName);
 			if (dataFile.exists()) {// Do not allow file overwrite
 				throw new JamException("Event file already exits, File: "
@@ -292,9 +293,9 @@ public class RunControl extends JDialog implements Controller {
 		end.setEnabled(true);
 		begin.setEnabled(false);
 		setLockControls(true);
-		STATUS.setRunState(RunState.runOnline(RunInfo.runNumber));
+		STATUS.setRunState(RunState.runOnline(RunInfo.getInstance().runNumber));
 		if (device == Device.DISK) {
-			LOGGER.info("Began run " + RunInfo.runNumber
+			LOGGER.info("Began run " + RunInfo.getInstance().runNumber
 					+ ", events being written to file: "
 					+ diskDaemon.getEventOutputFile().getPath());
 		} else {
@@ -317,12 +318,12 @@ public class RunControl extends JDialog implements Controller {
 	 * histogram, gates and scalers if requested
 	 */
 	void endRun() {
-		RunInfo.runEndTime = new Date();
+		RunInfo.getInstance().runEndTime = new Date();
 		vmeComm.end(); // stop Acq. flush buffer
 		vmeComm.readScalers(); // read scalers
 
 		STATUS.setRunState(RunState.ACQ_OFF);
-		LOGGER.info("Ending run " + RunInfo.runNumber
+		LOGGER.info("Ending run " + RunInfo.getInstance().runNumber
 				+ ", waiting for sorting to finish.");
 		int numSeconds = 0;
 		do {// wait for sort to catch up
@@ -349,8 +350,8 @@ public class RunControl extends JDialog implements Controller {
 		netDaemon.setState(State.SUSPEND);
 		sortDaemon.userEnd();
 		// histogram file name constructed using run name and number
-		final String histFileName = RunInfo.experimentName + RunInfo.runNumber
-				+ ".hdf";
+		final String histFileName = RunInfo.getInstance().experimentName
+				+ RunInfo.getInstance().runNumber + ".hdf";
 		// only write a histogram file
 		final File histFile = new File(histPath, histFileName);
 		LOGGER.info("Sorting finished writing out histogram file: "
@@ -358,8 +359,8 @@ public class RunControl extends JDialog implements Controller {
 		final Frame jamMain = STATUS.getFrame();
 		final DataIO dataio = new jam.io.hdf.HDFIO(jamMain);
 		dataio.writeFile(histFile, jam.data.Group.getSortGroup());
-		RunInfo.runNumber++;// increment run number
-		tRunNumber.setText(Integer.toString(RunInfo.runNumber));
+		RunInfo.getInstance().runNumber++;// increment run number
+		tRunNumber.setText(Integer.toString(RunInfo.getInstance().runNumber));
 		setRunOn(false);
 		end.setEnabled(false); // toggle button states
 		begin.setEnabled(true);// set begin button state for next run
@@ -413,7 +414,7 @@ public class RunControl extends JDialog implements Controller {
 	public void setupOn(final String name, final File datapath,
 			final File histpath, final SortDaemon sortD, final NetDaemon netD,
 			final DiskDaemon diskD) {
-		RunInfo.experimentName = name;
+		RunInfo.getInstance().experimentName = name;
 		dataPath = datapath;
 		histPath = histpath;
 		sortDaemon = sortD;
@@ -440,11 +441,12 @@ public class RunControl extends JDialog implements Controller {
 		vmeComm.startAcquisition();
 		// if we are in a run, display run number
 		if (isRunOn()) {// runOn is true if the current state is a run
-			STATUS.setRunState(RunState.runOnline(RunInfo.runNumber));
+			STATUS.setRunState(RunState
+					.runOnline(RunInfo.getInstance().runNumber));
 			// see stopAcq() for reason for this next line.
 			end.setEnabled(true);
 			LOGGER.info("Started Acquisition, continuing Run #"
-					+ RunInfo.runNumber);
+					+ RunInfo.getInstance().runNumber);
 		} else {// just viewing events, not running to disk
 			STATUS.setRunState(RunState.ACQ_ON);
 			begin.setEnabled(false);// don't want to try to begin run

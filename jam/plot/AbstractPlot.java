@@ -427,7 +427,7 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 		graphics.setColor(PlotColorMap.getInstance().getForeground());
 		if (options.isPrinting()) { // output to printer
 			graph.drawDate(getDate()); // date
-			graph.drawRun(RunInfo.runNumber); // run number
+			graph.drawRun(RunInfo.getInstance().runNumber); // run number
 		}
 		graph.drawBorder();
 	}

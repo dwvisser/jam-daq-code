@@ -9,59 +9,70 @@ import java.util.Date;
  * 
  * @author Ken Swartz
  */
-public class RunInfo {// NOPMD
+public class RunInfo {
+	
+	private RunInfo(){
+		super();
+	}
+	
+	private static final RunInfo INSTANCE = new RunInfo();
+	
+	public static RunInfo getInstance(){
+		return INSTANCE;
+	}
+	
 	/**
 	 * Experiment name.
 	 */
-	public static String experimentName;
+	public String experimentName;
 
 	/**
 	 * Online (true) or offline (false)
 	 */
-	public static boolean online;
+	public boolean online;
 
 	/**
 	 * Time when run ended.
 	 */
-	public static Date runEndTime;
+	public Date runEndTime;
 
 	/**
 	 * Time when run ended, as a string.
 	 */
-	public static String runEndTimeSt;
+	public String runEndTimeSt;
 
 	/**
 	 * Number of possible parameters per event.
 	 */
-	public static int runEventSize;
+	public int runEventSize;
 
 	/**
 	 * Run number.
 	 */
-	public static int runNumber;
+	public int runNumber;
 
 	/**
 	 * Block size for event stream.
 	 */
-	public static int runRecordLength;
+	public int runRecordLength;
 
 	/**
 	 * Run Title.
 	 */
-	public static Date runStartTime;
+	public Date runStartTime;
 
 	/**
 	 * Time when run started, as a string.
 	 */
-	public static String runStartTimeSt;
+	public String runStartTimeSt;
 
 	/**
 	 * Run State
 	 */
-	public static boolean runState;
+	public boolean runState;
 
 	/**
 	 * Run Title.
 	 */
-	public static String runTitle;
+	public String runTitle;
 }

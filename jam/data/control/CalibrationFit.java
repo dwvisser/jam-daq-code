@@ -47,7 +47,6 @@ public class CalibrationFit extends AbstractControl {
 
 	private final static String BLANK_LABEL = "    --     ";
 
-	
 	private transient AbstractCalibrationFunction calibFunc = AbstractCalibrationFunction
 			.getNoCalibration();
 
@@ -78,9 +77,9 @@ public class CalibrationFit extends AbstractControl {
 	private transient int numberTerms;
 
 	private transient boolean isUpdate;
-	
+
 	private transient final NumberFormat numFormatCoeff;
-	
+
 	/**
 	 * Constructs a calibration fitting dialog.
 	 */
@@ -168,7 +167,7 @@ public class CalibrationFit extends AbstractControl {
 		numFormatCoeff.setGroupingUsed(false);
 		numFormatCoeff.setMinimumFractionDigits(2);
 		numFormatCoeff.setMaximumFractionDigits(10);
-		
+
 	}
 
 	// Create panel with the points to fit
@@ -216,7 +215,7 @@ public class CalibrationFit extends AbstractControl {
 			generateCoeffPanel(i);
 			pCoeff.add(pcoeff[i]);
 		}
-		for (int i = 0; i < NUM_POINTS-MAX_TERMS-1; i++) {		
+		for (int i = 0; i < NUM_POINTS - MAX_TERMS - 1; i++) {
 			pCoeff.add(Box.createVerticalGlue());
 		}
 		return pCoeff;
@@ -247,7 +246,7 @@ public class CalibrationFit extends AbstractControl {
 			final Class calClass = AbstractCalibrationFunction
 					.getMapFunctions().get(funcName);
 			final boolean change = calClass.isInstance(calibFunc);
-			final AbstractHist1D currentHistogram = getCurrentHistogram();			
+			final AbstractHist1D currentHistogram = getCurrentHistogram();
 			if (calibFunc == null || !change) {
 				calibFunc = (AbstractCalibrationFunction) calClass
 						.newInstance();
@@ -308,15 +307,14 @@ public class CalibrationFit extends AbstractControl {
 		if (currentHistogram == null) {
 			LOGGER.severe("Need a 1 Dimension histogram");
 		} else {
-			if (calibFunc.isCalibrated()) {
+			if (calibFunc != null && calibFunc.isCalibrated()) {
 				doFitCalibration();
-				final boolean isCalPts = calibFunc == null ? true : calibFunc
-						.isFitPoints();				
+				final boolean isCalPts = calibFunc.isFitPoints();
 				updateFields(calibFunc, isCalPts);
 			} else {
 				currentHistogram.setCalibration(calibFunc);
 				LOGGER.info("Uncalibrated histogram "
-					+ currentHistogram.getFullName());
+						+ currentHistogram.getFullName());
 			}
 		}
 	}
@@ -439,8 +437,8 @@ public class CalibrationFit extends AbstractControl {
 			final boolean isCalPts) {
 		final boolean calNotNull = hcf.isCalibrated();
 		final String title = hcf.getTitle();
-		lcalibEq.setText(title);		
-		
+		lcalibEq.setText(title);
+
 		/* Points fields */
 		if (calNotNull) {
 			final double[] ptsChannel = hcf.getPtsChannel();
@@ -504,7 +502,9 @@ public class CalibrationFit extends AbstractControl {
 	 * @param labels
 	 * @param coeff
 	 */
-	private void setCalibratedWithPoints(final double[] ptsChannel, final double[] ptsEnergy, final String[] labels, final double[] coeff) {
+	private void setCalibratedWithPoints(final double[] ptsChannel,
+			final double[] ptsEnergy, final String[] labels,
+			final double[] coeff) {
 		for (int i = 0; i < NUM_POINTS; i++) {
 			if (i < ptsChannel.length) {
 				tChannel[i].setText(String.valueOf(ptsChannel[i]));
@@ -547,7 +547,7 @@ public class CalibrationFit extends AbstractControl {
 		final AbstractCalibrationFunction rval = currentHist == null ? AbstractCalibrationFunction
 				.getNoCalibration()
 				: currentHist.getCalibration();
-				
+
 		return rval;
 	}
 

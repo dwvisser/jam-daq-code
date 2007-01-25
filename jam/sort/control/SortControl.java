@@ -277,9 +277,10 @@ public final class SortControl extends javax.swing.JDialog implements
 	public void beginSort() {
 		loadNames();
 		lockFields(true);
-		RunInfo.runNumber = 999;
-		RunInfo.runTitle = "Pre-sorted data";
-		RunInfo.runStartTime = new java.util.Date();
+		final RunInfo runInfo = RunInfo.getInstance();
+		runInfo.runNumber = 999;
+		runInfo.runTitle = "Pre-sorted data";
+		runInfo.runStartTime = new java.util.Date();
 		if (writeEvents) {
 			sortDaemon.setWriteEnabled(true);
 			boolean openSuccess = true;
@@ -409,8 +410,9 @@ public final class SortControl extends javax.swing.JDialog implements
 			if (inputDaemon.openEventInputListFile()) {
 				LOGGER.info("Sorting next file: "
 						+ inputDaemon.getEventInputFileName());
-				LOGGER.info("  Run number: " + RunInfo.runNumber + " title: "
-						+ RunInfo.runTitle);
+				final RunInfo runInfo = RunInfo.getInstance();
+				LOGGER.info("  Run number: " + runInfo.runNumber + " title: "
+						+ runInfo.runTitle);
 			} else {
 				LOGGER.severe("Could not open file: "
 						+ inputDaemon.getEventInputFileName());

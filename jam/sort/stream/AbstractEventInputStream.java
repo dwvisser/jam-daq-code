@@ -226,11 +226,12 @@ public abstract class AbstractEventInputStream {
 	 * Loads the run information, usually after it is read from a header.
 	 */
 	public void loadRunInfo() {
-		RunInfo.runNumber = headerRunNumber;
-		RunInfo.runTitle = headerTitle;
-		RunInfo.runStartTimeSt = headerDate;
-		RunInfo.runEventSize = headerEventSize;
-		RunInfo.runRecordLength = headerLength;
+		final RunInfo runInfo = RunInfo.getInstance();
+		runInfo.runNumber = headerRunNumber;
+		runInfo.runTitle = headerTitle;
+		runInfo.runStartTimeSt = headerDate;
+		runInfo.runEventSize = headerEventSize;
+		runInfo.runRecordLength = headerLength;
 	}
 
 	/**

@@ -46,17 +46,18 @@ public abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream
     public void writeHeader() throws EventException {
 		final StringUtilities stringUtilities=StringUtilities.getInstance();
 		String dateString;
+		final RunInfo runInfo = RunInfo.getInstance();
 		synchronized (formatter) {
-			dateString = formatter.format(RunInfo.runStartTime);	    //date
+			dateString = formatter.format(runInfo.runStartTime);	    //date
 		}
-        final String title=RunInfo.runTitle;					    //title
-        final int number=RunInfo.runNumber;					    //header number
+        final String title=runInfo.runTitle;					    //title
+        final int number=runInfo.runNumber;					    //header number
         final byte [] reserved1=new byte [8];					    //reserved 1
         final int numSecHead=0;						    //number of secondary headers
         final int recLen=0;							    //record length
         final int blckImgRec=0;						    //block line image rec
-        final int paramsPerEvent=RunInfo.runEventSize;				    //parameters per event
-        final int dataRecLen=RunInfo.runRecordLength;				    //data record length
+        final int paramsPerEvent=runInfo.runEventSize;				    //parameters per event
+        final int dataRecLen=runInfo.runRecordLength;				    //data record length
         final byte [] reserved2=new byte [92];				    //reserved 2
         try {
             dataOutput.writeBytes(HEADER_START);				    //header
