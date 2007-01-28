@@ -143,7 +143,8 @@ public final class JamProperties {
 		String rval = "undefined";// default return value
 		final String property = PROPERTIES.getProperty(key);
 		if (property == null) {
-			LOGGER.warning(JamProperties.class.getName() + ".getPropString(): property for " + key
+			LOGGER.warning(JamProperties.class.getName()
+					+ ".getPropString(): property for " + key
 					+ " is not defined.");
 		} else {
 			rval = property.trim();
@@ -170,7 +171,8 @@ public final class JamProperties {
 	 *            the new value
 	 */
 	static public void setProperty(final String key, final boolean val) {
-		PROPERTIES.setProperty(key, val ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+		PROPERTIES.setProperty(key, val ? Boolean.TRUE.toString()
+				: Boolean.FALSE.toString());
 	}
 
 	/** message for loading config */
@@ -183,7 +185,8 @@ public final class JamProperties {
 
 	private transient String loadError;
 
-	private transient final String userCurrentDir = System.getProperty("user.dir");
+	private transient final String userCurrentDir = System
+			.getProperty("user.dir");
 
 	/** message for loading user config */
 	private transient String userLoadMessage;
@@ -209,7 +212,7 @@ public final class JamProperties {
 		configLoadWarning = NO_WARNINGS;
 		loadError = NO_ERRORS;
 		String fileName = "";
-		FileInputStream fis;
+		FileInputStream fis = null;
 		boolean fileRead = false;
 		try {
 
@@ -255,6 +258,15 @@ public final class JamProperties {
 		} catch (IOException ioe) {
 			loadError = "Could not read configuration file, " + fileName + ".";
 			showErrorMessage(ioe, loadError);
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException ioe) {
+					loadError = "Problem closing file.";
+					showErrorMessage(ioe, loadError);
+				}
+			}
 		}
 	}
 

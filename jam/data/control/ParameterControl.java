@@ -233,7 +233,6 @@ public final class ParameterControl extends AbstractControl {
 		final JFrame frame = null;
 		String name = null;
 		final StringBuilder listNotLoaded = new StringBuilder();
-
 		final JFileChooser fileDialog = new JFileChooser(lastFile);
 		fileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileDialog.setFileFilter(new ExtensionFileFilter(
@@ -244,31 +243,20 @@ public final class ParameterControl extends AbstractControl {
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fileDialog.getSelectedFile() != null) {
 			final File inputFile = fileDialog.getSelectedFile();
+			FileInputStream fis = null;
 			try {
 				// Load properties from file
 				final Properties saveProperties = new Properties();
-				final FileInputStream fos = new FileInputStream(inputFile);
-				saveProperties.load(fos);
-				// copy from properties to parameters
-				for (DataParameter parameter : DataParameter.getParameterList()) {
-					name = parameter.getName().trim();
-					if (saveProperties.containsKey(name)) {
-						final String valueString = (String) saveProperties.get(name);
-						final double valueDouble = Double.parseDouble(valueString);
-						parameter.setValue(valueDouble);
-					} else {
-						if (listNotLoaded.length()>0) {
-							listNotLoaded.append(", ");
-						}
-						listNotLoaded.append(name);
-					}
-				}
+				fis = new FileInputStream(inputFile);
+				saveProperties.load(fis);
+				name = copyPropertiesToParameters(name, listNotLoaded, saveProperties);
 				read();
 				LOGGER.info("Load Parameters from file " + inputFile.getName());
 				if (listNotLoaded.length()>0) {
 					LOGGER.warning("Did not load parameter(s) " + listNotLoaded
 							+ ".");
 				}
+				lastFile = inputFile;
 			} catch (IOException ioe) {
 				LOGGER.severe("Loading Parameters. Cannot write to file "
 						+ inputFile.getName());
@@ -276,9 +264,42 @@ public final class ParameterControl extends AbstractControl {
 				LOGGER
 						.severe("Loading Parameters. Cannot convert value for Parameter: "
 								+ name);
+			} finally {
+				try {
+					if (fis != null) {
+						fis.close();
+					}
+				} catch (IOException ioe){
+					LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
+				}
 			}
 
 		}
+	}
+
+	/**
+	 * @param name
+	 * @param listNotLoaded
+	 * @param saveProperties
+	 * @return
+	 */
+	private String copyPropertiesToParameters(final String name, final StringBuilder listNotLoaded, final Properties saveProperties) {
+		// copy from properties to parameters
+		String rval = name;
+		for (DataParameter parameter : DataParameter.getParameterList()) {
+			rval = parameter.getName().trim();
+			if (saveProperties.containsKey(rval)) {
+				final String valueString = (String) saveProperties.get(rval);
+				final double valueDouble = Double.parseDouble(valueString);
+				parameter.setValue(valueDouble);
+			} else {
+				if (listNotLoaded.length()>0) {
+					listNotLoaded.append(", ");
+				}
+				listNotLoaded.append(rval);
+			}
+		}
+		return rval;
 	}
 
 	/**
@@ -313,7 +334,6 @@ public final class ParameterControl extends AbstractControl {
 		// save current values
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fileDialog.getSelectedFile() != null) {
-
 			final File selectFile = fileDialog.getSelectedFile();
 			final FileUtilities fileUtility = FileUtilities.getInstance();
 			final File outputFile = fileUtility.changeExtension(selectFile,
@@ -325,17 +345,27 @@ public final class ParameterControl extends AbstractControl {
 							.getValue());
 					saveProperties.put(parameter.getName().trim(), valueString);
 				}
+				FileOutputStream fos = null;
 				try {
-					final FileOutputStream fos = new FileOutputStream(outputFile);
+					fos = new FileOutputStream(outputFile);
 					saveProperties.store(fos, "Jam Sort Parameters");
 					LOGGER.info("Saved Parameters to file "
 							+ outputFile.getName());
+					lastFile = outputFile;
 				} catch (FileNotFoundException fnfe) {
 					LOGGER.severe("Saving Parameters. Cannot create file "
 							+ outputFile.getName());
 				} catch (IOException ioe) {
 					LOGGER.severe("Saving Parameters. Cannot write to file "
 							+ outputFile.getName());
+				} finally {
+					try {
+						if (fos != null) {
+							fos.close();
+						}
+					} catch (IOException ioe){
+						LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
+					}
 				}
 			}
 		}

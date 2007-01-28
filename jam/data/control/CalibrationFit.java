@@ -297,8 +297,7 @@ public class CalibrationFit extends AbstractControl {
 
 	public void doSetup() {
 		calibFunc = getCurrentCalibrationFunction();
-		final boolean isCalPts = calibFunc == null ? true : calibFunc
-				.isFitPoints();
+		final boolean isCalPts = calibFunc.isFitPoints();
 		updateFields(calibFunc, isCalPts);
 	}
 

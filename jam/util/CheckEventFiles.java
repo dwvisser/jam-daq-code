@@ -158,7 +158,12 @@ public class CheckEventFiles {
 			LOGGER.info("Scaler summary in: " + csvFile.getPath());
 			csvStream = new FileWriter(csvFile);
 			// skip header from input stream
-			fromStream.skipBytes(256);
+			final int headerSize = 256;
+			final int skipped = fromStream.skipBytes(headerSize);
+			if (skipped != headerSize) {
+				throw new IOException("Expected to skip "+headerSize+
+						" bytes, only skipped "+skipped);
+			}
 			int blockNum = 0;
 			final List<Integer> lastVal = new ArrayList<Integer>(16);
 			final List<Integer> val = new ArrayList<Integer>(16);
@@ -182,7 +187,9 @@ public class CheckEventFiles {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		} finally {
 			try {
-				fromStream.close();
+				if (fromStream != null) {
+					fromStream.close();
+				}
 				csvStream.flush();
 				csvStream.close();
 			} catch (IOException e) {

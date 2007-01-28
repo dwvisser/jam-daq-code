@@ -7,6 +7,8 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
@@ -30,7 +32,8 @@ public class RTSI {
 
 	private static final String CLASS_EXT = ".class";
 
-	private static final ClassLoader DEF_LOADER = ClassLoader.getSystemClassLoader();
+	private static final ClassLoader DEF_LOADER = ClassLoader
+			.getSystemClassLoader();
 
 	private static final RTSI instance = new RTSI();
 
@@ -195,7 +198,12 @@ public class RTSI {
 						JOptionPane.ERROR_MESSAGE);
 			}
 			if (url != null) {
-				loader = new URLClassLoader(new URL[] { url });
+				final URL passUrl = url;
+				loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+					public ClassLoader run() {
+						return new URLClassLoader(new URL[] { passUrl });
+					}
+				});
 			}
 		}
 		if (classpath != null) {
@@ -418,7 +426,7 @@ public class RTSI {
 		final SortedSet<String> rval = new TreeSet<String>();
 		if (file.isDirectory()) {
 			final File[] list = file.listFiles();
-			if (list!=null) {	//In case we don't have permission
+			if (list != null) { // In case we don't have permission
 				for (int i = 0; i < list.length; i++) {
 					rval.addAll(getClassesRecursively(tosubclass, classpath,
 							list[i], loader));
@@ -432,10 +440,10 @@ public class RTSI {
 					if (canUseClassAs(tosubclass, clazz)) {
 						rval.add(temp);
 					}
-				} catch (ClassNotFoundException cnfex) {//NOPMD
-					//fall through and return what we have
-				} catch (LinkageError le) {//NOPMD
-					//fall through and return what we have
+				} catch (ClassNotFoundException cnfex) {// NOPMD
+					// fall through and return what we have
+				} catch (LinkageError le) {// NOPMD
+					// fall through and return what we have
 				}
 			}
 		}
@@ -464,7 +472,12 @@ public class RTSI {
 					JOptionPane.ERROR_MESSAGE);
 		}
 		if (url != null) {
-			final ClassLoader loader = new URLClassLoader(new URL[] { url });
+			final URL passUrl = url;
+			final ClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+				public ClassLoader run() {
+					return new URLClassLoader(new URL[] { passUrl });
+				}
+			});
 			try {
 				rval = loader.loadClass(className);
 			} catch (ClassNotFoundException e) {

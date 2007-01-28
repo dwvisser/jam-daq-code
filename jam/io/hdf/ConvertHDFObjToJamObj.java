@@ -150,13 +150,13 @@ final class ConvertHDFObjToJamObj {
 		}
 		if (gate != null) {
 			if (gate.getDimensionality() == 1) { // 1-d gate
-				gate.setLimits(data.getInteger(0, 0), data
-						.getInteger(0, 1));
+				gate.setLimits(data.getInteger(0, 0), data.getInteger(0, 1));
 			} else { // 2-d gate
 				shape.reset();
 				for (int i = 0; i < numRows; i++) {
-					shape.addPoint(data.getInteger(i, 0), data
-							.getInteger(i, 1));
+					shape
+							.addPoint(data.getInteger(i, 0), data.getInteger(i,
+									1));
 				}
 				gate.setLimits(shape);
 			}
@@ -289,7 +289,7 @@ final class ConvertHDFObjToJamObj {
 				.getObjects(), NumericalDataGroup.class);
 		final int len = ndgList.size();
 		if (len > 0 && len < 3) {
-			NumericalDataGroup ndg = null;
+			final NumericalDataGroup ndg;
 			/* check ndgErr==null to determine if error bars exist */
 			NumericalDataGroup ndgErr = null;
 			if (len == 1) {
@@ -304,9 +304,11 @@ final class ConvertHDFObjToJamObj {
 					ndg = element0;
 					ndgErr = ndgList.get(1);
 				}
+			} else {
+				throw new HDFException ("Encountered numerical data group with # of lists != 1 or 2: "+len);
 			}
-			rval = extractHistData(group, mode, histAttributes, ndg, ndgErr,
-					name, title);
+			rval = extractHistData(group, mode, histAttributes, ndg,
+						ndgErr, name, title);
 		} else {
 			// Can reload without this histogram
 			if (mode == FileOpenMode.RELOAD) {

@@ -54,13 +54,11 @@ class SplashWindow extends JWindow {
 		if (urlNukeIcon == null) {
 			JOptionPane.showMessageDialog(frame,
 					"Can't load resource: jam/nukeicon.png");
-			System.exit(0);
 		}
 		urlOSIGif = classLoader.getResource("jam/OSI.png");
 		if (urlOSIGif == null) {
 			JOptionPane.showMessageDialog(frame,
 					"Can't load resource: jam/OSI.gif");
-			System.exit(0);
 		}
 		drawWindow();
 		addMouseListener(new MouseAdapter() {

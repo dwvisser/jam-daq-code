@@ -396,7 +396,7 @@ final class Plot1d extends AbstractPlot {
 	 * paints a fit to a given graphics
 	 */
 	protected void paintFit(final Graphics graphics) {
-		if (fitChannels != null & fitChannels.length > 0) {
+		if (fitChannels != null && fitChannels.length > 0) {
 			if (fitBackground != null) {
 				graphics.setColor(colorMap.getFitBackground());
 				graph.drawLine(fitChannels, fitBackground);
@@ -405,15 +405,22 @@ final class Plot1d extends AbstractPlot {
 				graphics.setColor(colorMap.getFitResidual());
 				graph.drawLine(fitChannels, fitResiduals);
 			}
-			if (fitSignals != null) {
-				graphics.setColor(colorMap.getFitSignal());
-				for (int sig = 0; sig < fitSignals.length; sig++) {
-					graph.drawLine(fitChannels, fitSignals[sig]);
-				}
-			}
+			paintFitSignals(graphics);
 			if (fitTotal != null && fitTotal.length > 0) {
 				graphics.setColor(colorMap.getFitTotal());
 				graph.drawLine(fitChannels, fitTotal);
+			}
+		}
+	}
+
+	/**
+	 * @param graphics
+	 */
+	private void paintFitSignals(final Graphics graphics) {
+		if (fitSignals != null) {
+			graphics.setColor(colorMap.getFitSignal());
+			for (int sig = 0; sig < fitSignals.length; sig++) {
+				graph.drawLine(fitChannels, fitSignals[sig]);
 			}
 		}
 	}
