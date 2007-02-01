@@ -215,7 +215,6 @@ public final class JamProperties {
 		FileInputStream fis = null;
 		boolean fileRead = false;
 		try {
-
 			// if jam.home is property given we must use it.
 			if (jamHomeDefined) {
 				final File file = new File(System.getProperty(JAM_HOME),
@@ -326,25 +325,17 @@ public final class JamProperties {
 	private void loadUser() {
 		userLoadWarning = NO_WARNINGS;
 		loadError = NO_ERRORS;
-		String fileName = "";
-		FileInputStream fis;
-		boolean fileRead = false;
+		FileInputStream fis = null;
+		File userFile = new File(userHomeDir, FILE_USER);
 		try {
 			// try userHomeDir
-			File userFile = new File(userHomeDir, FILE_USER);
-			fileName = userFile.getPath();
 			if (userFile.exists()) {
 				fis = new FileInputStream(userFile);
 				PROPERTIES.load(fis);
 				userLoadMessage = "Read user configuration file: "
 						+ userFile.getPath();
-				fileRead = true;
-
-			}
-			// try userCurrentDir
-			if (!fileRead) {
+			} else { // try userCurrentDir
 				userFile = new File(userCurrentDir, FILE_USER);
-				fileName = userFile.getPath();
 				if (userFile.exists()) {
 					fis = new FileInputStream(userFile);
 					PROPERTIES.load(fis);
@@ -353,7 +344,6 @@ public final class JamProperties {
 							+ userHomeDir;
 					userLoadMessage = "Read user configuration from file "
 							+ userFile.getPath();
-					fileRead = true;
 					// use default properties
 				} else {
 					userLoadWarning = "Cannot find user configuration file "
@@ -364,25 +354,30 @@ public final class JamProperties {
 				}
 			}
 			// try variable jam.home directory
-			if (!fileRead && jamHomeDefined) {
+			if (!userFile.exists() && jamHomeDefined) {
 				userFile = new File(System.getProperty(JAM_HOME), FILE_USER);
-				fileName = userFile.getPath();
 				if (userFile.exists()) {
 					fis = new FileInputStream(userFile);
 					PROPERTIES.load(fis);
 					userLoadMessage = "Read user configuration file: "
 							+ userFile.getPath();
-					fileRead = true;
 				}
 			}
 		} catch (FileNotFoundException fnfe) {
-			loadError = "Jam user configuration file, " + fileName
+			loadError = "Jam user configuration file, " + userFile.getPath()
 					+ ",  not found.";
 			showErrorMessage(fnfe, loadError);
 		} catch (IOException ioe) {
-			loadError = "Could not read user configuration file, " + fileName
-					+ ".";
+			loadError = "Could not read user configuration file, "
+					+ userFile.getPath() + ".";
 			showErrorMessage(ioe, loadError);
+		} finally {
+			try {
+				fis.close();
+			} catch (IOException ioe) {
+				loadError = "Could not close " + userFile.getPath();
+				showErrorMessage(ioe, loadError);
+			}
 		}
 	}
 
