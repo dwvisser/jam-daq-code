@@ -77,6 +77,12 @@ public class Help extends JDialog {
 			length = reader.read(textarray);
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			}
 		}
 		final String text = new String(textarray, 0, length);
 		center.add(new JScrollPane(new JTextArea(text)));

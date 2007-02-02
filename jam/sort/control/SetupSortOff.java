@@ -47,9 +47,9 @@ public final class SetupSortOff extends AbstractSetup {
 	 * @return the only instance of this class
 	 */
 	public static SetupSortOff getInstance() {
-//		if (instance == null) {
-//			instance = new SetupSortOff();
-//		}
+		// if (instance == null) {
+		// instance = new SetupSortOff();
+		// }
 		return instance;
 	}
 
@@ -62,11 +62,10 @@ public final class SetupSortOff extends AbstractSetup {
 
 	private transient SortDaemon sortDaemon;
 
-
 	private SetupSortOff() {
 		super("Setup Offline");
-		
-		//Build GUI
+
+		// Build GUI
 		sortControl = SortControl.getInstance();
 		final java.awt.Container contents = dialog.getContentPane();
 		dialog.setResizable(false);
@@ -149,13 +148,13 @@ public final class SetupSortOff extends AbstractSetup {
 				loadEventInput();
 				loadEventOutput();
 				final SortRoutine sortRoutine = sortChooser.getSortRoutine();
-				LOGGER.info("Loaded sort class '"
-						+ sortRoutine.getClass().getName()
-						+ "', event instream class '"
-						+ inStream.getClass().getName()
-						+ "', and event outstream class '"
-						+ outStream.getClass().getName() + "'");
 				if (sortRoutine != null) {
+					LOGGER.info("Loaded sort class '"
+							+ sortRoutine.getClass().getName()
+							+ "', event instream class '"
+							+ inStream.getClass().getName()
+							+ "', and event outstream class '"
+							+ outStream.getClass().getName() + "'");
 					setupSort(); // create data areas and daemons
 					LOGGER.info("Daemons and dialogs initialized.");
 				}
@@ -242,7 +241,8 @@ public final class SetupSortOff extends AbstractSetup {
 		}
 		sortChooser.forgetSortRoutine();
 		jam.data.DataBase.getInstance().clearAllLists();
-		Broadcaster.getSingletonInstance().broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
+		Broadcaster.getSingletonInstance().broadcast(
+				BroadcastEvent.Command.HISTOGRAM_NEW);
 		lockMode(false);
 	}
 

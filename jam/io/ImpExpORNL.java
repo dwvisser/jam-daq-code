@@ -42,7 +42,7 @@ import javax.swing.filechooser.FileFilter;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @version 0.5
  */
-public class ImpExpORNL extends AbstractImpExp {//NOPMD
+public class ImpExpORNL extends AbstractImpExp {// NOPMD
 
 	/**
 	 * sequence of ASCII encoded characters to begin <code>drr</code> file.
@@ -159,15 +159,15 @@ public class ImpExpORNL extends AbstractImpExp {//NOPMD
 		}
 		disDrr.read(numHistByte); // number of histograms
 		byteOrder = ByteOrder.nativeOrder(); // assume file was created
-												// locally
+		// locally
 		final StringBuffer msg = new StringBuffer(40);
 		msg.append("Native byte order: ");
-		msg.append(byteOrder).append(", ");//NOPMD
+		msg.append(byteOrder).append(", ");// NOPMD
 		getCorrectByteOrder(numHistByte);
 		msg.append("file byte order: ").append(byteOrder);
 		LOGGER.info(msg.toString());
 		totalHist = NUM_UTIL.bytesToInt(numHistByte, 0, byteOrder); // number of
-																	// histograms
+		// histograms
 		numHalfWords = readInt(disDrr); // total number of 16 bit words
 		readIgnoredSection(disDrr);
 		disDrr.read(bChilText); // ASCII text from CHIL file
@@ -185,7 +185,8 @@ public class ImpExpORNL extends AbstractImpExp {//NOPMD
 	 * @param disDrr
 	 * @throws IOException
 	 */
-	private void readDrrInfo(final byte[] parLabelb, final byte[] titleb, final DataInputStream disDrr) throws IOException {
+	private void readDrrInfo(final byte[] parLabelb, final byte[] titleb,
+			final DataInputStream disDrr) throws IOException {
 		/* Histogram info in Drr file */
 		dim = new int[totalHist]; // Histogram dimensionality
 		chSize = new int[totalHist]; // half words per channel
@@ -262,7 +263,8 @@ public class ImpExpORNL extends AbstractImpExp {//NOPMD
 	 * @param disDrr
 	 * @throws IOException
 	 */
-	private void readIgnoredSection(final DataInputStream disDrr) throws IOException {
+	private void readIgnoredSection(final DataInputStream disDrr)
+			throws IOException {
 		readInt(disDrr); // space nothing defined
 		readInt(disDrr); // year
 		readInt(disDrr); // month
@@ -317,32 +319,36 @@ public class ImpExpORNL extends AbstractImpExp {//NOPMD
 	 * @param sizeX
 	 * @throws IOException
 	 */
-	private void read1dHistogram(final RandomAccessFile fileHis, final int index, final String name, final int number, final int wordCh, final int sizeX) throws IOException {
+	private void read1dHistogram(final RandomAccessFile fileHis,
+			final int index, final String name, final int number,
+			final int wordCh, final int sizeX) throws IOException {
 		int[] counts = new int[sizeX];
 		fileHis.seek((long) offSet[index] * 2);
 		final int bytesToRead = sizeX * 4;
 		final byte[] inBuffer = new byte[bytesToRead];
-		fileHis.read(inBuffer); // read in byte array
+		final int numRead = fileHis.read(inBuffer); // read in byte array
+		if (numRead < bytesToRead) {
+			throw new IllegalStateException("Expected "+bytesToRead+
+					" bytes, but only got "+numRead);
+		}
 		if (wordCh == 2) { // four byte data
 			int offset = 0;
 			for (int i = 0; i < sizeX; i++) {
-				counts[i] = NUM_UTIL
-						.bytesToInt(inBuffer, offset, byteOrder);
+				counts[i] = NUM_UTIL.bytesToInt(inBuffer, offset, byteOrder);
 				offset += 4;
 			}
 		} else if (wordCh == 1) { // two byte data
 			int offset = 0;
 			for (int i = 0; i < sizeX; i++) {
-				counts[i] = NUM_UTIL.bytesToShort(inBuffer, offset,
-						byteOrder);
+				counts[i] = NUM_UTIL.bytesToShort(inBuffer, offset, byteOrder);
 				offset += 2;
 			}
 		} else { // unable to handle data type
 			throw new IOException("File uses " + wordCh
 					+ " words/channel, which can't be read.");
 		}
-		final Histogram hist = Histogram.createHistogram(importGroup,
-				counts, name);
+		final Histogram hist = Histogram.createHistogram(importGroup, counts,
+				name);
 		hist.setNumber(number);
 	}
 
@@ -356,12 +362,19 @@ public class ImpExpORNL extends AbstractImpExp {//NOPMD
 	 * @param sizeY
 	 * @throws IOException
 	 */
-	private void read2dHistogram(final RandomAccessFile fileHis, final int index, final String name, final int number, final int wordCh, final int sizeX, final int sizeY) throws IOException {
+	private void read2dHistogram(final RandomAccessFile fileHis,
+			final int index, final String name, final int number,
+			final int wordCh, final int sizeX, final int sizeY)
+			throws IOException {
 		int[][] counts2d = new int[sizeX][sizeY];
 		fileHis.seek((long) offSet[index] * 2);
 		final int bytesToRead = sizeX * sizeY * 4;
 		final byte[] inBuffer = new byte[bytesToRead];
-		fileHis.read(inBuffer); // read in byte array
+		final int numRead = fileHis.read(inBuffer); // read in byte array
+		if (numRead < bytesToRead) {
+			throw new IllegalStateException("Expected "+bytesToRead+
+					" bytes, but only got "+numRead);
+		}
 		if (wordCh == 2) { // four byte data
 			int offset = 0;
 			for (int j = 0; j < sizeY; j++) {
@@ -375,8 +388,8 @@ public class ImpExpORNL extends AbstractImpExp {//NOPMD
 			int offset = 0;
 			for (int j = 0; j < sizeY; j++) {
 				for (int i = 0; i < sizeX; i++) {
-					counts2d[i][j] = NUM_UTIL.bytesToShort(inBuffer,
-							offset, byteOrder);
+					counts2d[i][j] = NUM_UTIL.bytesToShort(inBuffer, offset,
+							byteOrder);
 					offset += 2;
 				}
 			}
@@ -384,8 +397,8 @@ public class ImpExpORNL extends AbstractImpExp {//NOPMD
 			throw new IOException("File uses " + wordCh
 					+ " words/channel, which I don't know how to read.");
 		}
-		final Histogram hist = Histogram.createHistogram(importGroup,
-				counts2d, name);
+		final Histogram hist = Histogram.createHistogram(importGroup, counts2d,
+				name);
 		hist.setNumber(number);
 	}
 
@@ -434,7 +447,7 @@ public class ImpExpORNL extends AbstractImpExp {//NOPMD
 		final List allHists = Histogram.getHistogramList();
 		/* number of histograms */
 		totalHist = Histogram.getHistogramList().size(); // number of
-															// histograms
+		// histograms
 		/*
 		 * total number of 1/2 words need in file size of file needed? in 16 bit
 		 * words
@@ -473,7 +486,7 @@ public class ImpExpORNL extends AbstractImpExp {//NOPMD
 			final Histogram hist = ((Histogram) allHists.get(i));
 			final short sizeX = (short) (hist.getSizeX());
 			final short sizeY = (short) (hist.getSizeY()); // will be zero for
-															// 1-d
+			// 1-d
 			// use data output stream name only 15 char long title 50 char long
 			dosDrr.writeShort((short) (hist.getDimensionality()));
 			dosDrr.writeShort(2); // half-words per channel
@@ -536,18 +549,18 @@ public class ImpExpORNL extends AbstractImpExp {//NOPMD
 			final Histogram.Type type = hist.getType();
 			/* write as determined by type */
 			if (type == Histogram.Type.ONE_DIM_INT) {
-				writeHist1dInt(dosHis, (HistInt1D)hist);
+				writeHist1dInt(dosHis, (HistInt1D) hist);
 			} else if (type == Histogram.Type.ONE_D_DOUBLE) {
-				writeHist1dDouble(dosHis, (HistDouble1D)hist);
+				writeHist1dDouble(dosHis, (HistDouble1D) hist);
 			} else if (type == Histogram.Type.TWO_DIM_INT) {
-				writeHist2dInt(dosHis, (HistInt2D)hist);
+				writeHist2dInt(dosHis, (HistInt2D) hist);
 			} else if (type == Histogram.Type.TWO_D_DOUBLE) {
-				writeHist2dDouble(dosHis, (HistDouble2D)hist);
+				writeHist2dDouble(dosHis, (HistDouble2D) hist);
 			} else {
 				LOGGER.severe("Unrecognized histogram type [ImpExpORNL]");
 			}
 		}
-		LOGGER.info("File Size: "+dosHis.size()/1024 + " kB");
+		LOGGER.info("File Size: " + dosHis.size() / 1024 + " kB");
 		dosHis.flush();
 		dosHis.close();
 	}
@@ -660,8 +673,8 @@ public class ImpExpORNL extends AbstractImpExp {//NOPMD
 				rval = true;
 			}
 		} catch (IOException ioe) {
-			LOGGER.log(Level.SEVERE, "Problem handling file \"" + inFile.getPath()
-					+ "\": " + ioe.getMessage(), ioe);
+			LOGGER.log(Level.SEVERE, "Problem handling file \""
+					+ inFile.getPath() + "\": " + ioe.getMessage(), ioe);
 		} catch (ImpExpException iee) {
 			LOGGER.log(Level.SEVERE, "Problem while importing or exporting: "
 					+ iee.getMessage(), iee);
