@@ -145,19 +145,26 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	private void readDrr(final InputStream buffin) throws IOException,
 			ImpExpException {
 		final byte[] bsignature = new byte[SIGNATURE.length()];
-		final byte bChilText[] = new byte[80]; // chill file text;
 		final byte[] parLabelb = new byte[12]; // paramater label
 		final byte[] titleb = new byte[40]; // title
 		final byte[] numHistByte = new byte[4];
 		final DataInputStream disDrr = new DataInputStream(buffin);
 		// read in header
-		disDrr.read(bsignature); // HHRIF signature
+		int numRead = disDrr.read(bsignature); // HHRIF signature
+		if (numRead != bsignature.length) {
+			throw new ImpExpException(
+					"Unable to read in signature. Wrong # of characters: "
+							+ numRead);
+		}
 		final String signature = String.valueOf(bsignature);
 		if (!(signature.equals(SIGNATURE))) {
 			throw new ImpExpException("Incorrect header, expected '"
 					+ SIGNATURE + "', but got '" + signature + "'.");
 		}
-		disDrr.read(numHistByte); // number of histograms
+		numRead = disDrr.read(numHistByte); // number of histograms
+		if (numRead < 0) {
+			throw new ImpExpException("Unexpectedly reached end of file.");
+		}
 		byteOrder = ByteOrder.nativeOrder(); // assume file was created
 		// locally
 		final StringBuffer msg = new StringBuffer(40);
@@ -170,7 +177,11 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		// histograms
 		numHalfWords = readInt(disDrr); // total number of 16 bit words
 		readIgnoredSection(disDrr);
-		disDrr.read(bChilText); // ASCII text from CHIL file
+		final byte bChilText[] = new byte[80]; // chill file text;
+		numRead = disDrr.read(bChilText); // ASCII text from CHIL file
+		if (numRead < bChilText.length) {
+			throw new ImpExpException("Couldn't read 80 characters expected in CHIL section.");
+		}
 		readDrrInfo(parLabelb, titleb, disDrr);
 		/* read in id list */
 		for (int i = 0; i < totalHist; i++) {
@@ -246,15 +257,24 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			maxCh3[i] = readShort(disDrr); // max channel 3
 			maxCh4[i] = readShort(disDrr); // max channle 4
 			offSet[i] = readInt(disDrr); // offset in 16 bit words
-			disDrr.read(parLabelb); // x param label
+			int numRead = disDrr.read(parLabelb); // x param label
+			if (numRead < parLabelb.length) {
+				throw new IOException("Wasn't able to read expected number of bytes for parameter label.");
+			}
 			parLabelX[i] = String.valueOf(parLabelb);
-			disDrr.read(parLabelb); // y param label
+			numRead = disDrr.read(parLabelb); // y param label
+			if (numRead < parLabelb.length) {
+				throw new IOException("Wasn't able to read expected number of bytes for parameter label.");
+			}
 			parLabelY[i] = String.valueOf(parLabelb);
 			cal1[i] = disDrr.readFloat(); // calibaration const
 			cal2[i] = disDrr.readFloat(); // calibaration const
 			cal3[i] = disDrr.readFloat(); // calibaration const
 			cal4[i] = disDrr.readFloat(); // calibaration const
-			disDrr.read(titleb); // sub-Title
+			numRead = disDrr.read(titleb); // sub-Title
+			if (numRead < titleb.length) {
+				throw new IOException("Wasn't able to read expected number of bytes for title.");
+			}
 			titleDrr[i] = String.valueOf(titleb);
 		}
 	}
@@ -328,8 +348,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		final byte[] inBuffer = new byte[bytesToRead];
 		final int numRead = fileHis.read(inBuffer); // read in byte array
 		if (numRead < bytesToRead) {
-			throw new IllegalStateException("Expected "+bytesToRead+
-					" bytes, but only got "+numRead);
+			throw new IllegalStateException("Expected " + bytesToRead
+					+ " bytes, but only got " + numRead);
 		}
 		if (wordCh == 2) { // four byte data
 			int offset = 0;
@@ -372,8 +392,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		final byte[] inBuffer = new byte[bytesToRead];
 		final int numRead = fileHis.read(inBuffer); // read in byte array
 		if (numRead < bytesToRead) {
-			throw new IllegalStateException("Expected "+bytesToRead+
-					" bytes, but only got "+numRead);
+			throw new IllegalStateException("Expected " + bytesToRead
+					+ " bytes, but only got " + numRead);
 		}
 		if (wordCh == 2) { // four byte data
 			int offset = 0;

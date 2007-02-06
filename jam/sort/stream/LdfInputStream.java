@@ -202,7 +202,10 @@ public class LdfInputStream extends AbstractEventInputStream {
 	 */
 	private short readVaxShort() throws IOException {
 		final byte[] rval = new byte[2];
-		dataInput.read(rval);
+		final int numRead = dataInput.read(rval);
+		if (numRead < rval.length) {
+			throw new IOException("Wasn't able to read 2 bytes for short integer.");
+		}
 		return NumberUtilities.getInstance().bytesToShort(rval,0,ByteOrder.LITTLE_ENDIAN);
 	}
 }

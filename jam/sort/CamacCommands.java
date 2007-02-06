@@ -42,7 +42,7 @@ public class CamacCommands {
 	 * Container for CNAF data structure.
 	 * @author Dale Visser
 	 */
-	public class CNAF {
+	public static class CNAF {
 
 		private final transient byte paramID, crate, number, address, function;
 

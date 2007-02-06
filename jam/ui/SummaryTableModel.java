@@ -27,7 +27,7 @@ final class SummaryTableModel implements TableModel {
 	/**
 	 * Class with data for a row
 	 */
-	class RowDataElement {
+	static class RowDataElement {
 
 		private transient final DataElement dataElement;
 

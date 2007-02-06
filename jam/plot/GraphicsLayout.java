@@ -20,7 +20,7 @@ final class GraphicsLayout {
 		WO_LABELS
 	};
 
-	class Border {
+	static class Border {
 		final transient int top;// NOPMD
 
 		final transient int left;// NOPMD
@@ -42,7 +42,7 @@ final class GraphicsLayout {
 	final transient Border border;// NOPMD
 
 	// tickmark stuff
-	class Tick {
+	static class Tick {
 		final transient int minor;// NOPMD
 
 		final transient int major;// NOPMD
@@ -57,7 +57,7 @@ final class GraphicsLayout {
 	final Tick tick = new Tick(5, 10);// NOPMD
 
 	// title stuff
-	class TitleOffsets {
+	static class TitleOffsets {
 
 		final transient int top;// NOPMD
 
@@ -77,7 +77,7 @@ final class GraphicsLayout {
 	final transient TitleOffsets titleOffsets;// NOPMD
 
 	// tickmarks
-	class LabelOffsets {
+	static class LabelOffsets {
 		final transient int bottom;// NOPMD
 
 		final transient int left;// NOPMD
@@ -92,7 +92,7 @@ final class GraphicsLayout {
 	final LabelOffsets labelOffsets = new LabelOffsets(3, 3);// NOPMD
 
 	// axis labels
-	class AxisLabelOffsets {
+	static class AxisLabelOffsets {
 		final transient int bottom;// NOPMD
 
 		final transient int left;// NOPMD
@@ -108,7 +108,7 @@ final class GraphicsLayout {
 
 	final static transient float SCREEN_FONT_SIZE = 12;// NOPMD
 
-	class ColorScale {
+	static class ColorScale {
 		// stuff for two d color scale
 
 		/**

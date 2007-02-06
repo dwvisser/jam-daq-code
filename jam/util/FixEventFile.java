@@ -47,9 +47,9 @@ import java.util.logging.Logger;
  */
 public class FixEventFile {
 
-	private static final String packageName = FixEventFile.class
-	.getPackage().getName();
-	
+	private static final String packageName = FixEventFile.class.getPackage()
+			.getName();
+
 	static {
 		new LoggerConfig(packageName);
 	}
@@ -198,11 +198,19 @@ public class FixEventFile {
 			final int bufferSize = 8192;
 			final byte[] dataBlock = new byte[bufferSize];
 			// copy header from input stream to mod file
-			fromStream.read(header);
+			int numRead = fromStream.read(header);
+			if (numRead < header.length) {
+				LOGGER.severe("Expected " + header.length + " bytes, only got"
+						+ numRead + ".");
+			}
 			modStream.write(header);
 			// copy first data block to end of append file, close append
 			// file
-			fromStream.read(dataBlock);
+			numRead = fromStream.read(dataBlock);
+			if (numRead < dataBlock.length) {
+				LOGGER.severe("Expected " + dataBlock.length + " bytes, only got"
+						+ numRead + ".");
+			}
 			appendStream.write(dataBlock);
 			appendStream.close();
 			// copy rest of data blocks to mod file
