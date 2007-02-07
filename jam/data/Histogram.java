@@ -494,6 +494,7 @@ public abstract class Histogram implements DataElement {
 	protected Histogram(Group group, String nameIn, Type type, int sizeX,
 			int sizeY, String title) {
 		super();
+		assert(group != null);
 		this.type = type;
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
