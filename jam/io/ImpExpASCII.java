@@ -16,6 +16,7 @@ import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.nio.CharBuffer;
 import java.util.Scanner;
 
 import javax.swing.filechooser.FileFilter;
@@ -251,9 +252,9 @@ public class ImpExpASCII extends AbstractImpExp {//NOPMD
 		 * Read in header lines, header are lines that start with a non-number
 		 * token.
 		 */
-		if (scanner.hasNext("[a-zA-Z]\\w*")) {
+		line1isTitle = scanner.hasNext("[a-zA-Z]\\w*");
+		if (line1isTitle) {
 			rval = scanner.next();
-			line1isTitle = true;
 		} else {
 			rval = getFileName(getLastFile());
 			rval = rval.substring(0, rval.indexOf('.'));
@@ -263,7 +264,6 @@ public class ImpExpASCII extends AbstractImpExp {//NOPMD
 	}
 
 	private int getNumberOfRows() throws IOException {
-		int rval = 0;
 		final LineNumberReader lnr = new LineNumberReader(new FileReader(
 				getLastFile()));
 		/*
@@ -272,10 +272,15 @@ public class ImpExpASCII extends AbstractImpExp {//NOPMD
 		 */
 		if (line1isTitle) {
 			lnr.readLine();
+		} else {
+			lnr.setLineNumber(1);
 		}
-		while (lnr.readLine() != null) {
-			rval++;
-		}
+		final CharBuffer buffer = CharBuffer.allocate(8192);
+		int numRead = 0;
+		do {
+			numRead = lnr.read(buffer);
+		} while (numRead >= 0);
+		final int rval = lnr.getLineNumber();
 		lnr.close();
 		return rval;
 	}

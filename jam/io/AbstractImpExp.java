@@ -184,7 +184,6 @@ public abstract class AbstractImpExp {
 				final String groupName = fileUtil
 						.removeExtensionFileName(inFile.getName());
 				importGroup = Group.createGroup(groupName, Group.Type.FILE);
-
 				setLastFile(inFile);
 				final FileInputStream inStream = new FileInputStream(inFile);
 				final BufferedInputStream inBuffStream = new BufferedInputStream(
