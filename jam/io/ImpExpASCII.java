@@ -275,10 +275,11 @@ public class ImpExpASCII extends AbstractImpExp {//NOPMD
 		} else {
 			lnr.setLineNumber(1);
 		}
-		final CharBuffer buffer = CharBuffer.allocate(8192);
+		final CharBuffer buffer = CharBuffer.allocate(8*1024);
 		int numRead = 0;
 		do {
 			numRead = lnr.read(buffer);
+			buffer.clear();
 		} while (numRead >= 0);
 		final int rval = lnr.getLineNumber();
 		lnr.close();

@@ -3,6 +3,8 @@ package jam;
 import jam.data.GateTest;
 import jam.data.HistogramTest;
 import jam.data.peaks.PeakTest;
+import jam.io.ImpExpASCIITest;
+import jam.sort.GainCalibrationTest;
 import jam.sort.NetDaemonTest;
 import jam.sort.RingBufferTest;
 import junit.framework.Test;
@@ -25,6 +27,8 @@ public class AllTests {//NOPMD
 		suite.addTestSuite(GateTest.class);
 		suite.addTestSuite(HistogramTest.class);
 		suite.addTestSuite(PeakTest.class);
+		suite.addTestSuite(ImpExpASCIITest.class);
+		suite.addTestSuite(GainCalibrationTest.class);
 		suite.addTestSuite(RingBufferTest.class);
 		suite.addTestSuite(NetDaemonTest.class);
 		//$JUnit-END$

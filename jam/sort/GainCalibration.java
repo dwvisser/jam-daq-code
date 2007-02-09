@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -135,14 +136,18 @@ public final class GainCalibration {
 	}
 
 	private int getNumberOfRows(final InputStream input) throws IOException {
-		int rval = 0;
 		final LineNumberReader lnr = new LineNumberReader(
 				new InputStreamReader(input));
+		lnr.setLineNumber(1);//start counting at 1
 		// read in header lines, header are lines that start with a non-number
 		// token
-		while (lnr.readLine() != null) {
-			rval++;
-		}
+		final CharBuffer buffer = CharBuffer.allocate(input.available());
+		int numRead = 0;
+		do {
+			numRead = lnr.read(buffer);
+			buffer.clear();
+		} while (numRead >= 0);
+		final int rval = lnr.getLineNumber();
 		lnr.close();
 		return rval;
 	}
