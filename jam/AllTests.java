@@ -2,6 +2,7 @@ package jam;
 
 import jam.data.GateTest;
 import jam.data.HistogramTest;
+import jam.data.func.CubicFunctionTest;
 import jam.data.peaks.PeakTest;
 import jam.io.ImpExpASCIITest;
 import jam.sort.GainCalibrationTest;
@@ -30,7 +31,9 @@ public class AllTests {//NOPMD
 		suite.addTestSuite(ImpExpASCIITest.class);
 		suite.addTestSuite(GainCalibrationTest.class);
 		suite.addTestSuite(RingBufferTest.class);
-		suite.addTestSuite(NetDaemonTest.class);
+		//following line adds UI awkwardness to test suite
+		//suite.addTestSuite(NetDaemonTest.class);
+		suite.addTestSuite(CubicFunctionTest.class);
 		//$JUnit-END$
 		return suite;
 	}

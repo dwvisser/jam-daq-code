@@ -465,18 +465,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 */
 	protected double[] polynomialFit(final double[] xVal, final double[] yVal,
 			final int order) throws DataException {
-		double[] xNorm = new double[xVal.length];
-		double matrixA[][] = null;
-		double vectorB[] = null;
-		double gaussMatrixB[][];
-		double gaussCoeffs[][];
-		double polyCoeffs[];
-		int numTerms;
-		double sum;
-		double xMean;
-
-		numTerms = order + 1;
-
+		final int numTerms = order + 1;
 		// Check data
 		if (xVal.length < numTerms) {
 			throw new DataException(
@@ -487,37 +476,31 @@ public abstract class AbstractCalibrationFunction implements Function {
 					"Need same number of x and y points for polynomial fit");
 		}
 		// Find mean x to shift fit around mean
-		sum = 0.0;
+		double sum = 0.0;
 		for (int k = 0; k < xVal.length; k++) {
 			sum += xVal[k];
 		}
-		xMean = sum / xVal.length;
-
+		final double xMean = sum / xVal.length;
 		// Shift x data around mean
+		double[] xNorm = new double[xVal.length];
 		for (int k = 0; k < xVal.length; k++) {
 			xNorm[k] = xVal[k] - xMean;
 		}
-
-		matrixA = new double[numTerms][numTerms];
-		vectorB = new double[numTerms];
-
+		final double [][] matrixA = new double[numTerms][numTerms];
+		final double [] vectorB = new double[numTerms];
 		buildPolyMatrix(xVal, yVal, numTerms, matrixA, vectorB);
-
 		// Copy vector b into a column matrix
-		gaussMatrixB = new double[vectorB.length][1];
+		double [][] gaussMatrixB = new double[vectorB.length][1];
 		for (int i = 0; i < vectorB.length; i++) {// NOPMD
 			gaussMatrixB[i][0] = vectorB[i];
 		}
-
 		// Do gaussian elimination
-		gaussCoeffs = gaussj(matrixA, gaussMatrixB);
-
+		gaussj(matrixA, gaussMatrixB);
 		// Copy vector b into a column matrix
-		polyCoeffs = new double[vectorB.length];
+		double [] polyCoeffs = new double[vectorB.length];
 		for (int i = 0; i < polyCoeffs.length; i++) {
-			polyCoeffs[i] = gaussCoeffs[i][0];
+			polyCoeffs[i] = gaussMatrixB[i][0];
 		}
-
 		return polyCoeffs;
 	}
 
@@ -560,8 +543,8 @@ public abstract class AbstractCalibrationFunction implements Function {
 
 	}
 
-	//TODO can this call jam.fit.GaussJordanElimination instead?
-	
+	// TODO can this call jam.fit.GaussJordanElimination instead?
+
 	/**
 	 * gauss jordon reduction from numerical recipes
 	 * 
@@ -571,89 +554,107 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 *            beta matrix
 	 * @return fit coeffients
 	 */
-	protected double[][] gaussj(double[][] alpha, double[][] beta)
+	protected void gaussj(final double[][] alpha, final double[][] beta)
 			throws DataException {
-		int icol, irow;
-		int[] indxc, indxr, ipiv;
-		double big, dum, pivinv, temp;
-
 		final int alphaLength = alpha.length;
-		final int betaColumns = beta[1].length;
-		icol = 0;
-		irow = 0;
-		indxc = new int[alphaLength];
-		indxr = new int[alphaLength];
-		ipiv = new int[alphaLength];
+		int column = 0;
+		int row = 0;
+		int[] columnIndices = new int[alphaLength];
+		int[] rowIndices = new int[alphaLength];
+		final int[] pivotIndices = new int[alphaLength];
 
-		for (int j = 0; j < alphaLength; j++) {
-			ipiv[j] = 0;
-		}
 		// loop over cols
 		for (int i = 0; i < alphaLength; i++) {
 			// search for pivot
-			big = 0.0;
+			double big = 0.0;
 			for (int j = 0; j < alphaLength; j++) {
-				if (ipiv[j] != 1) {
+				if (pivotIndices[j] != 1) {
 					for (int k = 0; k < alphaLength; k++) {
-						if (ipiv[k] == 0 && Math.abs(alpha[j][k]) >= big) {
+						if (pivotIndices[k] == 0
+								&& Math.abs(alpha[j][k]) >= big) {
 							big = Math.abs(alpha[j][k]);
-							irow = j;
-							icol = k;
+							row = j;
+							column = k;
 						}
 					}
 				}
 			}
-			++(ipiv[icol]);
-			if (irow != icol) {
-				for (int l = 0; l < alphaLength; l++) {
-					temp = alpha[irow][l];
-					alpha[irow][l] = alpha[icol][l];
-					alpha[icol][l] = temp;
-				}
-				for (int l = 0; l < betaColumns; l++) {
-					temp = beta[irow][l];
-					beta[irow][l] = beta[icol][l];
-					beta[icol][l] = temp;
-				}
+			++(pivotIndices[column]);
+			if (row != column) {
+				swapRows(alpha, row, column);
+				swapRows(beta, row, column);
 			}
-			indxr[i] = irow;
-			indxc[i] = icol;
-
-			if (alpha[icol][icol] == 0.0) {
+			rowIndices[i] = row;
+			columnIndices[i] = column;
+			if (alpha[column][column] == 0.0) {
 				throw new DataException("gaussj: Singular Matrix");
 			}
-			pivinv = 1.0 / alpha[icol][icol];
-			alpha[icol][icol] = 1.0;
-			for (int l = 0; l < alphaLength; l++) {
-				alpha[icol][l] *= pivinv;
-			}
-			for (int l = 0; l < betaColumns; l++) {
-				beta[icol][l] *= pivinv;
-			}
-			for (int ll = 0; ll < alphaLength; ll++) {
-				if (ll != icol) {
-					dum = alpha[ll][icol];
-					alpha[ll][icol] = 0.0;
-					for (int l = 0; l < alphaLength; l++) {
-						alpha[ll][l] -= alpha[icol][l] * dum;
-					}
-					for (int l = 0; l < betaColumns; l++) {
-						beta[ll][l] -= beta[icol][l] * dum;
-					}
-				}
-			}
+			normalizeToPivotAndSubtract(alpha, beta, column);
 		}
+		pivot(alpha, columnIndices, rowIndices);
+	}
 
+	/**
+	 * @param alpha
+	 * @param alphaLength
+	 * @param columnIndices
+	 * @param rowIndices
+	 */
+	private void pivot(double[][] alpha, final int[] columnIndices,
+			final int[] rowIndices) {
+		final int alphaLength = alpha.length;
 		for (int l = alphaLength - 1; l >= 0; l--) {
-			if (indxr[l] != indxc[l]) {
+			if (rowIndices[l] != columnIndices[l]) {
 				for (int k = 0; k < alphaLength; k++) {
-					temp = alpha[k][indxr[l]];
-					alpha[k][indxr[l]] = alpha[k][indxc[l]];
-					alpha[k][indxc[l]] = temp;
+					final double temp = alpha[k][rowIndices[l]];
+					alpha[k][rowIndices[l]] = alpha[k][columnIndices[l]];
+					alpha[k][columnIndices[l]] = temp;
 				}
 			}
 		}
+	}
 
-		return beta;
+	/**
+	 * @param alpha
+	 * @param beta
+	 * @param alphaLength
+	 * @param column
+	 */
+	private void normalizeToPivotAndSubtract(double[][] alpha,
+			final double[][] beta, final int column) {
+		final double pivinv = 1.0 / alpha[column][column];
+		alpha[column][column] = 1.0;
+		multiplyArray(alpha[column], pivinv);
+		multiplyArray(beta[column], pivinv);
+		final int alphaLength = alpha.length;
+		for (int j = 0; j < alphaLength; j++) {
+			if (j != column) {
+				final double dum = alpha[j][column];
+				alpha[j][column] = 0.0;
+				subtractRows(alpha, j, column, dum);
+				subtractRows(beta, j, column, dum);
+			}
+		}
+	}
+
+	private void multiplyArray(double[] array, final double factor) {
+		for (int i = array.length-1; i >= 0; i--) {
+			array[i] *= factor;
+		}
+	}
+
+	private void subtractRows(double[][] array, final int row1, final int row2,
+			final double factor) {
+		for (int i = array[row1].length-1; i >= 0; i--) {
+			array[row1][i] -= factor * array[row2][i];
+		}
+	}
+
+	private void swapRows(double[][] array, final int row1, final int row2) {
+		for (int i = array[row1].length-1; i >= 0; i--) {
+			final double temp = array[row1][i];
+			array[row1][i] = array[row2][i];
+			array[row2][i] = temp;
+		}
 	}
 }
