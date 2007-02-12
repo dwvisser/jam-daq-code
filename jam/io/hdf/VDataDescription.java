@@ -127,7 +127,7 @@ public final class VDataDescription extends AbstractData {
 		System.arraycopy(names, 0, fldnm, 0, nfields);
 		datatypes = new short[nfields];
 		System.arraycopy(types, 0, datatypes, 0, nfields);
-		datatypes = new short[nfields];
+		order = new short[nfields];
 		System.arraycopy(orders, 0, order, 0, nfields);
 		nvert = size;
 		this.name = name;
