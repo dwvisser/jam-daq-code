@@ -1,8 +1,16 @@
 package jam.data;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * JUnit tests for <code>jam.data.Histogram</data>.
@@ -10,7 +18,7 @@ import junit.framework.TestCase;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @see Histogram
  */
-public class HistogramTest extends TestCase {
+public final class HistogramTest {//NOPMD
 
     private transient Gate gate1, gate2;
 
@@ -20,21 +28,12 @@ public class HistogramTest extends TestCase {
     private transient HistDouble2D hist2f;
 
     /**
-     * Constructor for HistogramTest.
-     * 
-     * @param arg0
-     */
-    public HistogramTest(String arg0) {
-        super(arg0);
-    }
-
-    /**
      * Initialize local variables for the tests.
      * 
      * @see TestCase#setUp()
      */
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         final Group group = Group.createGroup("TestHistogramGroup",
                 Group.Type.FILE);
         hist1 = (HistInt1D)Histogram.createHistogram(group, new int[100], "h1");
@@ -55,10 +54,16 @@ public class HistogramTest extends TestCase {
         gate2 = new Gate("g2", hist2);
     }
     
+    @After
+    public void tearDown() {
+    	DataBase.getInstance().clearAllLists();
+    }
+    
     /**
      * test that add counts gives good results
      *
      */
+    @Test
     public void testAddCounts(){
     	final double area1before = hist1.getArea();
     	final double area2before = hist2.getArea();
@@ -75,19 +80,15 @@ public class HistogramTest extends TestCase {
     }
 
     /**
-     * Test for <code>hasGate(Gate)</code>.
+     * Test for <code>getGates</code>.
      * 
-     * @see Histogram#hasGate(Gate)
+     * @see Histogram#getGates
      */
-    public void testHasGate() {
-        assertTrue(hist1.getFullName() + " doesn't have gate "
-                + gate1.getName(), hist1.hasGate(gate1));
-        assertTrue(hist2.getFullName() + " doesn't have gate "
-                + gate2.getName(), hist2.hasGate(gate2));
-        assertFalse(hist1.getFullName() + " has gate " + gate2.getName(), hist1
-                .hasGate(gate2));
-        assertFalse(hist2.getFullName() + " has gate " + gate1.getName(), hist2
-                .hasGate(gate1));
+    @Test
+    public void testGetGates() {
+        final List<Gate> h1List = hist1.getGates();
+        final int size = h1List.size();
+        assertEquals("List size should be 1, actually is " + size, size, 1);
     }
 
     /**
@@ -95,6 +96,7 @@ public class HistogramTest extends TestCase {
      * 
      * @see Histogram#getHistogram(String)
      */
+    @Test
     public void testGetHistogram() {
         assertNotNull("h1 nonexistent here", hist1);
         assertNotNull("Couldn't find histogram named \""
@@ -108,14 +110,20 @@ public class HistogramTest extends TestCase {
     }
 
     /**
-     * Test for <code>getGates</code>.
+     * Test for <code>hasGate(Gate)</code>.
      * 
-     * @see Histogram#getGates
+     * @see Histogram#hasGate(Gate)
      */
-    public void testGetGates() {
-        final List h1List = hist1.getGates();
-        final int size = h1List.size();
-        assertEquals("List size should be 1, actually is " + size, size, 1);
+    @Test
+    public void testHasGate() {
+        assertTrue(hist1.getFullName() + " doesn't have gate "
+                + gate1.getName(), hist1.hasGate(gate1));
+        assertTrue(hist2.getFullName() + " doesn't have gate "
+                + gate2.getName(), hist2.hasGate(gate2));
+        assertFalse(hist1.getFullName() + " has gate " + gate2.getName(), hist1
+                .hasGate(gate2));
+        assertFalse(hist2.getFullName() + " has gate " + gate1.getName(), hist2
+                .hasGate(gate1));
     }
 
 }

@@ -1,45 +1,28 @@
 package jam.data.peaks;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * JUnit tests for <code>jam.data.peak.PeakTest</code>.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  */
-public class PeakTest extends TestCase {
-
-    private transient Peak peak1, p2a, p2b, peak3;
-
-    /**
-     * Constructor for PeakTest.
-     * 
-     * @param arg0
-     */
-    public PeakTest(String arg0) {
-        super(arg0);
-    }
-
-    /**
-     * Initialize local variables for the tests.
-     * 
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        peak1 = Peak.createPeak(100, 10, 2);
-        p2a = Peak.createPeak(150, 10, 2);
-        p2b = Peak.createPeak(150, 10, 2);
-        peak3 = Peak.createPeak(200, 10, 2);
-    }
+public final class PeakTest {//NOPMD
 
     /**
      * Test for <code>compareTo(Object)</code>.
      * 
      * @see Peak#compareTo(Object)
      */
+    @Test
     public void testCompareTo() {
-        assertEquals("peak1 should have been < p2a", -1, peak1.compareTo(p2a));
+        final Peak peak1 = Peak.createPeak(100, 10, 2);
+        final Peak p2a = Peak.createPeak(150, 10, 2);
+        final Peak p2b = Peak.createPeak(150, 10, 2);
+        final Peak peak3 = Peak.createPeak(200, 10, 2);
+         assertEquals("peak1 should have been < p2a", -1, peak1.compareTo(p2a));
         assertEquals("peak1 should have been < p2b", -1, peak1.compareTo(p2b));
         assertEquals("peak1 should have been < peak3", -1, peak1
                 .compareTo(peak3));

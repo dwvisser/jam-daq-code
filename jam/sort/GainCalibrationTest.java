@@ -1,21 +1,22 @@
 package jam.sort;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-public class GainCalibrationTest extends TestCase {//NOPMD
+import org.junit.Before;
+import org.junit.Test;
+
+public final class GainCalibrationTest {//NOPMD
 
 	private transient GainCalibration gain;
 	
-	protected void setUp() throws Exception {
-		super.setUp();
+	@Before
+	public void setUp() {
 		gain=new GainCalibration(this);
 	}
 
-	protected void tearDown() throws Exception {//NOPMD
-		super.tearDown();
-	}
-
-	public final void testGainFile() {
+	@Test
+	public void testGainFile() {
 		try {
 			gain.gainFile("jam/sort/GainCalibrationTest.txt", true);
 		} catch (Exception e) {
@@ -25,5 +26,4 @@ public class GainCalibrationTest extends TestCase {//NOPMD
 		assertEquals("Gain adjusted value should be 3.0", 3.0, gain.adjustExact(1, 1));
 		assertEquals("Gain adjusted value should be 0.9", 0.9 , gain.adjustExact(2, 1));
 	}
-
 }

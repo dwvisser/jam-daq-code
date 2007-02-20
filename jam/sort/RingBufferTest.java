@@ -1,12 +1,14 @@
 package jam.sort;
 
-import jam.global.LoggerConfig;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * JUnit tests for <code>jam.sort.RingBuffer</data>.
@@ -14,30 +16,17 @@ import junit.framework.TestCase;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @see RingBuffer
  */
-public class RingBufferTest extends TestCase {
+public final class RingBufferTest {//NOPMD
 
-	private static final String packageName = RingBufferTest.class.getPackage()
-			.getName();
+	private transient RingBuffer ring, emptyRing;
 
-	static {
-		new LoggerConfig(packageName);
-	}
+	private transient byte[] buffer;
 
-	private static final Logger LOGGER = Logger.getLogger(packageName);
-
-	private transient final RingBuffer ring = new RingBuffer();
-
-	private transient final RingBuffer emptyRing = new RingBuffer(true);
-
-	private transient final byte[] buffer = new byte[RingBuffer.BUFFER_SIZE];
-
-	/**
-	 * Constructor for HistogramTest.
-	 * 
-	 * @param arg0
-	 */
-	public RingBufferTest(String arg0) {
-		super(arg0);
+	@Before
+	public void setUp() {
+		ring = new RingBuffer();
+		emptyRing = new RingBuffer(true);
+		buffer = new byte[RingBuffer.BUFFER_SIZE];
 	}
 
 	/**
@@ -45,6 +34,7 @@ public class RingBufferTest extends TestCase {
 	 * 
 	 * @see RingBuffer#putBuffer(byte [])
 	 */
+	@Test
 	public void testPut() {
 		final byte[] out = new byte[RingBuffer.BUFFER_SIZE];
 		for (int i = 0; i < RingBuffer.NUMBER_BUFFERS / 2; i++) {
@@ -52,7 +42,7 @@ public class RingBufferTest extends TestCase {
 			try {
 				ring.putBuffer(buffer);
 			} catch (RingFullException re) {
-				LOGGER.log(Level.SEVERE, re.getMessage(), re);
+				fail(re.getMessage());
 			}
 			ring.getBuffer(out);
 		}
@@ -67,7 +57,7 @@ public class RingBufferTest extends TestCase {
 			try {
 				ring.putBuffer(buffer);
 			} catch (RingFullException re) {
-				LOGGER.log(Level.SEVERE, re.getMessage(), re);
+				fail(re.getMessage());
 			}
 		}
 		assertFalse("Buffer empty when it should not have been.", ring
@@ -85,10 +75,7 @@ public class RingBufferTest extends TestCase {
 				.isEmpty());
 	}
 
-	/**
-	 * JUnit test.
-	 * 
-	 */
+	@Test
 	public void testGetAvailableBuffers() {
 		assertEquals("Before filling buffers, expected all buffers available.",
 				RingBuffer.NUMBER_BUFFERS, ring.getAvailableBuffers());
@@ -96,7 +83,7 @@ public class RingBufferTest extends TestCase {
 			try {
 				ring.putBuffer(buffer);
 			} catch (RingFullException re) {
-				LOGGER.log(Level.SEVERE, re.getMessage(), re);
+				fail(re.getMessage());
 			}
 		}
 		assertEquals("After filling buffer, expected zero available buffers.",
@@ -109,6 +96,7 @@ public class RingBufferTest extends TestCase {
 	 * Test the properties of 'null' rings.
 	 * 
 	 */
+	@Test
 	public void testIsNull() {
 		assertTrue("emptyRing explicitly 'null'", emptyRing.isNull());
 		assertFalse("Allocated ring not null.", ring.isNull());

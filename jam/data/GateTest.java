@@ -1,8 +1,12 @@
 package jam.data;
 
+import static org.junit.Assert.assertTrue;
+
 import java.awt.Polygon;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * JUnit tests for <code>jam.data.Gate</code>.
@@ -10,44 +14,19 @@ import junit.framework.TestCase;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @see Gate
  */
-public class GateTest extends TestCase {
+public class GateTest {//NOPMD
 
     private transient Gate gate1, gate2; //1d and 2d, respectively
-
-    /**
-     * Constructor for GateTest.
-     * 
-     * @param arg0
-     */
-    public GateTest(String arg0) {
-        super(arg0);
-    }
-
-    /**
-     * Initialize local variables for the tests.
-     * 
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        final Group group = Group.createGroup("TestGateGroup", Group.Type.FILE);
-        final Histogram hist1 = Histogram.createHistogram(group, new int[100], "h1");
-        final Histogram hist2 = Histogram.createHistogram(group, new int[100][100], "h2");
-        gate1 = new Gate("g1", hist1);
-        gate1.setLimits(10, 50);
-        gate2 = new Gate("g2", hist2);
-        final int[] xpoints = { 10, 50, 50, 10 };
-        final int[] ypoints = { 10, 10, 50, 50 };
-        final Polygon box = new Polygon(xpoints, ypoints, 4);
-        gate2.setLimits(box);
-    }
+    private transient Group group;
+    private transient Histogram hist1, hist2;
 
     /**
      * Test for boolean inGate(int).
      * 
      * @see Gate#inGate(int)
      */
-    public void testInGateI() {
+    @Test
+    public void inGateI() {
         final boolean assertion1 = gate1.inGate(20);
         final boolean assertion2 = !gate1.inGate(5);
         final boolean assertion3 = !gate1.inGate(60);
@@ -61,7 +40,8 @@ public class GateTest extends TestCase {
      * 
      * @see Gate#inGate(int,int)
      */
-    public void testInGateII() {
+    @Test
+    public void inGateII() {
         final boolean assertion1 = gate2.inGate(20, 20);
         final boolean assertion2 = !gate2.inGate(5, 20);
         final boolean assertion3 = !gate2.inGate(60, 20);
@@ -78,4 +58,32 @@ public class GateTest extends TestCase {
         assertTrue("20,60 in gate.", assertion7);
     }
 
+    /**
+     * Initialize local variables for the tests.
+     * 
+     * @see TestCase#setUp()
+     */
+    @Before
+    public void setUp() {
+        group = Group.createGroup("TestGateGroup", Group.Type.FILE);
+        hist1 = Histogram.createHistogram(group, new int[100], "h1");
+        hist2 = Histogram.createHistogram(group, new int[100][100], "h2");
+        gate1 = new Gate("g1", hist1);
+        gate1.setLimits(10, 50);
+        gate2 = new Gate("g2", hist2);
+        final int[] xpoints = { 10, 50, 50, 10 };
+        final int[] ypoints = { 10, 10, 50, 50 };
+        final Polygon box = new Polygon(xpoints, ypoints, 4);
+        gate2.setLimits(box);
+    }
+
+    @After
+    public void tearDown(){
+    	DataBase.getInstance().clearAllLists();
+    	group=null;//NOPMD
+    	hist1=null;//NOPMD
+    	hist2=null;//NOPMD
+    	gate1=null;//NOPMD
+    	gate2=null;//NOPMD
+    }   
 }

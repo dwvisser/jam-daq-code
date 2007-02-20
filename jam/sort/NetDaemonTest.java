@@ -1,7 +1,14 @@
 package jam.sort;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import jam.sort.control.RunControl;
-import junit.framework.TestCase;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * JUnit test case for testing NetDaemon behavior.
@@ -9,34 +16,34 @@ import junit.framework.TestCase;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  * @version 2004-10-27
  */
-public class NetDaemonTest extends TestCase {
-
-	/**
-	 * Default constructor.
-	 */
-	public NetDaemonTest() {
-		super(NetDaemon.class.getName() + " tests");
-	}
+public final class NetDaemonTest{//NOPMD
 
 	private transient NetDaemon netDaemon;
 
-	/*
-	 * @see TestCase#setUp()
-	 */
-	protected void setUp() throws Exception {
-		super.setUp();
+	@Before 
+	public void setUp() {//NOPMD
 		final RunControl runControl = RunControl.getSingletonInstance();
-		netDaemon = new NetDaemon(null, null, "localhost", 8080);
-		runControl.setupOn("Test", null, null, null, netDaemon, null);
+		try{
+			netDaemon = new NetDaemon(null, null, "localhost", 8080);
+			runControl.setupOn("Test", null, null, null, netDaemon, null);
+		} catch (SortException se) {//NOPMD
+			fail(se.getMessage());
+		}
 	}
 
-	/**
-	 * JUnit test.
-	 * 
-	 */
+	@Test
+	@Ignore
 	public void testSetEmptyBefore() {
+		assertNotNull("Wasn't able to initialize netDaemon.", netDaemon);
 		netDaemon.setEmptyBefore(true);
 		assertTrue("isAssertTrue() should have returned true.", netDaemon
 				.isEmptyBefore());
+	}
+	
+	@After
+	public void tearDown(){
+		if (netDaemon != null) {
+			netDaemon.closeNet();
+		}
 	}
 }

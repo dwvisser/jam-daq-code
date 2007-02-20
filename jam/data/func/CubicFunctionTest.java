@@ -1,8 +1,12 @@
 package jam.data.func;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-public class CubicFunctionTest extends TestCase {//NOPMD
+import org.junit.Before;
+import org.junit.Test;
+
+public final class CubicFunctionTest {//NOPMD
 
 	private transient CubicFunction function;
 
@@ -10,8 +14,8 @@ public class CubicFunctionTest extends TestCase {//NOPMD
 
 	private transient double[] energies;
 
-	protected void setUp() throws Exception {
-		super.setUp();
+	@Before
+	public void setUp() {
 		function = new CubicFunction();
 		channels = new double[5];
 		for (int i = 0; i <= 4; i++) {
@@ -25,14 +29,8 @@ public class CubicFunctionTest extends TestCase {//NOPMD
 		energies[4] = 49.6;
 	}
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
-		function = null;//NOPMD
-		channels = null;//NOPMD
-		energies = null;//NOPMD
-	}
-
-	public final void testFit() {
+	@Test
+	public void testFit() {
 		function.setPoints(channels, energies);
 		try {
 			function.fit();

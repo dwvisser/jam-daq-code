@@ -32,6 +32,7 @@ public class DataBase implements Validator {
 	 * @see Scaler#clearList()
 	 * @see Monitor#clearList()
 	 * @see DataParameter#clearList()
+	 * @see Group#clearList()
 	 */
 	public void clearAllLists() {
 		Group.clearList();
