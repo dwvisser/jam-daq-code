@@ -16,7 +16,7 @@ import java.util.TimeZone;
  * @author dvk
  *
  */
-public abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream {
+abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream {
     
 	/**
 	 * Default constructor.
