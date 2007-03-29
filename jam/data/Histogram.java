@@ -191,9 +191,7 @@ public abstract class Histogram implements DataElement {
 	/**
 	 * default axis labels
 	 */
-	private static final String X_LABEL_1D = "Channels";
-
-	private static final String X_LABEL_2D = "Channels";
+	private static final String X_LABEL = "Channels";
 
 	private static final String Y_LABEL_1D = "Counts";
 
@@ -512,7 +510,7 @@ public abstract class Histogram implements DataElement {
 		/* allow memory for gates and define sizes */
 		final boolean oneD = type.getDimensionality() == 1;
 		if (labelX == null) {
-			labelX = oneD ? X_LABEL_1D : X_LABEL_2D;
+			labelX = X_LABEL;
 		}
 		if (labelY == null) {
 			labelY = oneD ? Y_LABEL_1D : Y_LABEL_2D;
