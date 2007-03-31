@@ -2,8 +2,6 @@ package jam.plot;
 
 import jam.global.GaussianConstants;
 
-import java.util.Arrays;
-
 /**
  * Class to perform simple fits such as area and centroid
  */
@@ -11,12 +9,12 @@ final class PlotFit {
 
 	private static final PlotFit INSTANCE = new PlotFit();
 
-	private PlotFit() {
-		super();
-	}
-
 	static PlotFit getInstance() {
 		return INSTANCE;
+	}
+
+	private PlotFit() {
+		super();
 	}
 
 	/*
@@ -119,70 +117,5 @@ final class PlotFit {
 			fwhm = GaussianConstants.SIG_TO_FWHM * sigma;
 		}
 		return fwhm;
-	}
-
-	void getNetArea(final double[] netArea, double[] netAreaError,
-			double[] channelBkgd, double[] fwhm, double[] centroid,
-			double[] centroidErr, final Bin[] clicks, final double grossArea,
-			final int numChannels, final double[] counts) {
-		double netBkgd = 0;
-		double[] channel = new double[numChannels];
-		double countsHigh = 0;
-		double countsLow = 0;
-		double area = 0;
-		double variance = 0;
-		double distance = 0;
-		final int[] bgdX1 = { clicks[0].getX(), clicks[1].getX(),
-				clicks[2].getX(), clicks[3].getX() };
-		Arrays.sort(bgdX1);
-		final int bkgd1 = bgdX1[0];
-		final int bkgd2 = bgdX1[1];
-		final int bkgd3 = bgdX1[2];
-		final int bkgd4 = bgdX1[3];
-		final int x5temp = clicks[4].getX();
-		final int x6temp = clicks[5].getX();
-		final int rx1 = Math.min(x5temp, x6temp);
-		final int rx2 = Math.max(x5temp, x6temp);
-		for (int n = bkgd1; n <= bkgd2; n++) {
-			countsLow += counts[n];
-		}
-		for (int n = bkgd3; n <= bkgd4; n++) {
-			countsHigh += counts[n];
-		}
-		final double avLow = countsLow / (bkgd2 - bkgd1 + 1);
-		final double avHigh = countsHigh / (bkgd4 - bkgd3 + 1);
-		final double midLow = (bkgd2 + bkgd1) / 2.0;
-		final double midHigh = (bkgd4 + bkgd3) / 2.0;
-		final double gradient = (avHigh - avLow) / (midHigh - midLow);
-		final double intercept = avHigh - (gradient * midHigh);
-		/* sum counts between region - background at each channel */
-		for (int p = rx1; p <= rx2; p++) {
-			area += counts[p];
-			channel[p] = p + 0.5;
-			channelBkgd[p] = gradient * p + intercept;
-			netArea[0] += counts[p] - channelBkgd[p];
-			netBkgd += channelBkgd[p];
-		}
-		for (int n = bkgd1; n <= bkgd4 + 1; n++) {
-			channelBkgd[n] = gradient * n + intercept;
-		}
-		netAreaError[0] = Math.pow(grossArea + netBkgd, 0.5);
-		/* calculate weight */
-		if (area > 0) { // must have more than zero counts
-			for (int i = rx1; i <= rx2; i++) {
-				centroid[0] += (i * counts[i] / area);
-			}
-		} else {
-			centroid[0] = 0;
-		}
-		/* Calculation of Variance */
-		for (int i = rx1; i <= rx2; i++) {
-			distance = Math.pow((i - centroid[0]), 2);
-			variance += counts[i] * distance / (area - 1.0);
-
-		}
-		/* Error in Centroid position */
-		centroidErr[0] = Math.sqrt(variance) / Math.sqrt(rx2 - rx1 + 1);
-		fwhm[0] = GaussianConstants.SIG_TO_FWHM * Math.sqrt(variance);
 	}
 }

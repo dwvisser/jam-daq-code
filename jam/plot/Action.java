@@ -6,6 +6,7 @@ import jam.data.AbstractHist1D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.GaussianConstants;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.UnNamed;
@@ -505,6 +506,71 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		}
 	}
 
+	private void getNetArea(final double[] netArea, double[] netAreaError,
+			double[] channelBkgd, double[] fwhm, double[] centroid,
+			double[] centroidErr, final double grossArea,
+			final int numChannels, final double[] counts) {
+		double netBkgd = 0;
+		double[] channel = new double[numChannels];
+		double countsHigh = 0;
+		double countsLow = 0;
+		double area = 0;
+		double variance = 0;
+		double distance = 0;
+		final int[] bgdX1 = { clicks.get(0).getX(), clicks.get(1).getX(),
+				clicks.get(2).getX(), clicks.get(3).getX() };
+		Arrays.sort(bgdX1);
+		final int bkgd1 = bgdX1[0];
+		final int bkgd2 = bgdX1[1];
+		final int bkgd3 = bgdX1[2];
+		final int bkgd4 = bgdX1[3];
+		final int x5temp = clicks.get(4).getX();
+		final int x6temp = clicks.get(5).getX();
+		final int rx1 = Math.min(x5temp, x6temp);
+		final int rx2 = Math.max(x5temp, x6temp);
+		for (int n = bkgd1; n <= bkgd2; n++) {
+			countsLow += counts[n];
+		}
+		for (int n = bkgd3; n <= bkgd4; n++) {
+			countsHigh += counts[n];
+		}
+		final double avLow = countsLow / (bkgd2 - bkgd1 + 1);
+		final double avHigh = countsHigh / (bkgd4 - bkgd3 + 1);
+		final double midLow = (bkgd2 + bkgd1) / 2.0;
+		final double midHigh = (bkgd4 + bkgd3) / 2.0;
+		final double gradient = (avHigh - avLow) / (midHigh - midLow);
+		final double intercept = avHigh - (gradient * midHigh);
+		/* sum counts between region - background at each channel */
+		for (int p = rx1; p <= rx2; p++) {
+			area += counts[p];
+			channel[p] = p + 0.5;
+			channelBkgd[p] = gradient * p + intercept;
+			netArea[0] += counts[p] - channelBkgd[p];
+			netBkgd += channelBkgd[p];
+		}
+		for (int n = bkgd1; n <= bkgd4 + 1; n++) {
+			channelBkgd[n] = gradient * n + intercept;
+		}
+		netAreaError[0] = Math.pow(grossArea + netBkgd, 0.5);
+		/* calculate weight */
+		if (area > 0) { // must have more than zero counts
+			for (int i = rx1; i <= rx2; i++) {
+				centroid[0] += (i * counts[i] / area);
+			}
+		} else {
+			centroid[0] = 0;
+		}
+		/* Calculation of Variance */
+		for (int i = rx1; i <= rx2; i++) {
+			distance = Math.pow((i - centroid[0]), 2);
+			variance += counts[i] * distance / (area - 1.0);
+
+		}
+		/* Error in Centroid position */
+		centroidErr[0] = Math.sqrt(variance) / Math.sqrt(rx2 - rx1 + 1);
+		fwhm[0] = GaussianConstants.SIG_TO_FWHM * Math.sqrt(variance);
+	}
+
 	/**
 	 * Goto input channel
 	 */
@@ -605,11 +671,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		}
 		final double[] counts = (double[]) currentPlot.getCounts();
 		final double grossArea = inquire.getArea(counts, bin4, cursorBin);
-		final Bin[] passClicks = new Bin[clicks.size()];
-		clicks.toArray(passClicks);
 		/* results of next call are passed back in the parameters */
-		inquire.getNetArea(netArea, netAreaError, channelBackground, fwhm,
-				centroid, centroidError, passClicks, grossArea, currentPlot
+		getNetArea(netArea, netAreaError, channelBackground, fwhm,
+				centroid, centroidError, grossArea, currentPlot
 						.getSizeX(), counts);
 		getCalibratedPeakStatistics(currentPlot, hist, fwhm, centroidError,
 				centroid);
