@@ -286,4 +286,8 @@ public final class JamMain extends JFrame implements Observer {
 			setRunState((RunState) beParam.getContent());
 		}
 	}
+	
+	public static void quit(){
+		System.exit(0);
+	}
 }

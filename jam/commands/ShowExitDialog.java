@@ -1,5 +1,7 @@
 package jam.commands;
 
+import jam.JamMain;
+
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
@@ -22,6 +24,7 @@ final class ShowExitDialog extends AbstractCommand {
 	/**
 	 * Execute the command
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		boolean confirm = true;
 		final JFrame frame = STATUS.getFrame();
@@ -33,18 +36,19 @@ final class ShowExitDialog extends AbstractCommand {
 					"Are you sure you want to exit?", "Exit Jam Confirmation",
 					JOptionPane.YES_NO_OPTION);
 			if (rval == JOptionPane.YES_OPTION) {
-				System.exit(0);
+				JamMain.quit();
 			} else {
 				frame.setVisible(true);
 			}
 		} else {
-			System.exit(0);
+			JamMain.quit();
 		}
 	}
 
 	/**
 	 * Execute the command
 	 */
+	@Override
 	protected void executeParse(final String[] cmdParams) {
 		if (cmdParams.length == 0) {
 			execute(null);

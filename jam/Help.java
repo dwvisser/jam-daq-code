@@ -41,9 +41,70 @@ public class Help extends JDialog {
 	private static final Logger LOGGER = Logger.getLogger(Help.class
 			.getPackage().getName());
 
+	private final static int POS_X = 20;
+
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
-	private final static int POS_X = 20;
+	/**
+	 * Launches the User Guide, with an Exit button in an auxiliary frame.
+	 * 
+	 * @param args
+	 *            ignored
+	 */
+	public static void main(final String[] args) {
+		final String helpsetName = "help/jam.hs";
+		setLookAndFeel();
+		try {
+			final URL hsURL = ClassLoader.getSystemClassLoader().getResource(
+					helpsetName);
+			final HelpSet helpset = new HelpSet(null, hsURL);
+			final ActionListener listener = new CSH.DisplayHelpFromSource(
+					helpset.createHelpBroker());
+			final JButton proxy = new JButton("Proxy");
+			proxy.addActionListener(listener);
+			final JFrame frame = new JFrame("Jam User Guide");
+			final JButton exit = new JButton("Exit");
+			frame.getContentPane().add(exit, BorderLayout.CENTER);
+			exit.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					JamMain.quit();
+				}
+			});
+			frame.pack();
+			frame.setVisible(true);
+			proxy.doClick();
+		} catch (Exception ee) {
+			JOptionPane.showMessageDialog(null, ee.getMessage(), ee.getClass()
+					.getName(), JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private static void setLookAndFeel() {
+		final String linux = "Linux";
+		final String kunststoff = "com.incors.plaf.kunststoff.KunststoffLookAndFeel";
+		boolean bKunststoff = linux.equals(System.getProperty("os.name"));// NOPMD
+		if (bKunststoff) {
+			try {
+				UIManager.setLookAndFeel(kunststoff);
+			} catch (ClassNotFoundException e) {
+				bKunststoff = false;
+			} catch (Exception e) { // all other exceptions
+				final String title = "Jam--error setting GUI appearance";
+				JOptionPane.showMessageDialog(null, e.getMessage(), title,
+						JOptionPane.WARNING_MESSAGE);
+			}
+		}
+		if (!bKunststoff) {
+			try {
+				UIManager.setLookAndFeel(UIManager
+						.getSystemLookAndFeelClassName());
+			} catch (Exception e) {
+				final String title = "Error setting GUI appearance";
+				JOptionPane.showMessageDialog(null, e.getMessage(), title,
+						JOptionPane.WARNING_MESSAGE);
+			}
+		}
+	}
 
 	/**
 	 * Constructor.
@@ -100,67 +161,6 @@ public class Help extends JDialog {
 		final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setSize(this.getWidth(), screen.height / 2);
 		this.setLocation(POS_X, screen.height / 4);
-	}
-
-	private static void setLookAndFeel() {
-		final String linux = "Linux";
-		final String kunststoff = "com.incors.plaf.kunststoff.KunststoffLookAndFeel";
-		boolean bKunststoff = linux.equals(System.getProperty("os.name"));//NOPMD
-		if (bKunststoff) {
-			try {
-				UIManager.setLookAndFeel(kunststoff);
-			} catch (ClassNotFoundException e) {
-				bKunststoff = false;
-			} catch (Exception e) { // all other exceptions
-				final String title = "Jam--error setting GUI appearance";
-				JOptionPane.showMessageDialog(null, e.getMessage(), title,
-						JOptionPane.WARNING_MESSAGE);
-			}
-		}
-		if (!bKunststoff) {
-			try {
-				UIManager.setLookAndFeel(UIManager
-						.getSystemLookAndFeelClassName());
-			} catch (Exception e) {
-				final String title = "Error setting GUI appearance";
-				JOptionPane.showMessageDialog(null, e.getMessage(), title,
-						JOptionPane.WARNING_MESSAGE);
-			}
-		}
-	}
-
-	/**
-	 * Launches the User Guide, with an Exit button in an auxiliary frame.
-	 * 
-	 * @param args
-	 *            ignored
-	 */
-	public static void main(final String[] args) {
-		final String helpsetName = "help/jam.hs";
-		setLookAndFeel();
-		try {
-			final URL hsURL = ClassLoader.getSystemClassLoader().getResource(
-					helpsetName);
-			final HelpSet helpset = new HelpSet(null, hsURL);
-			final ActionListener listener = new CSH.DisplayHelpFromSource(
-					helpset.createHelpBroker());
-			final JButton proxy = new JButton("Proxy");
-			proxy.addActionListener(listener);
-			final JFrame frame = new JFrame("Jam User Guide");
-			final JButton exit = new JButton("Exit");
-			frame.getContentPane().add(exit, BorderLayout.CENTER);
-			exit.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					System.exit(0);
-				}
-			});
-			frame.pack();
-			frame.setVisible(true);
-			proxy.doClick();
-		} catch (Exception ee) {
-			JOptionPane.showMessageDialog(null, ee.getMessage(), ee.getClass()
-					.getName(), JOptionPane.ERROR_MESSAGE);
-		}
 	}
 
 }
