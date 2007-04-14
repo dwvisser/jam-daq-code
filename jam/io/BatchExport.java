@@ -1,12 +1,8 @@
 package jam.io;
 
-import jam.data.AbstractHist1D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 import jam.global.JamStatus;
-import jam.global.RTSI;
-import jam.ui.WindowCancelAction;
 import jam.util.CollectionsUtil;
 import jam.util.FileUtilities;
 
@@ -14,43 +10,30 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
@@ -76,7 +59,8 @@ public class BatchExport extends JDialog implements Observer {
 
 		SelectHistogramDialog() {
 			super();
-			final Frame frame = JamStatus.getSingletonInstance().getFrame();
+			final java.awt.Frame frame = JamStatus.getSingletonInstance()
+					.getFrame();
 			dialog = new JDialog(frame, "Selected Histograms", false);
 			dialog.setLocation(frame.getLocation().x + 50,
 					frame.getLocation().y + 50);
@@ -149,8 +133,8 @@ public class BatchExport extends JDialog implements Observer {
 		}
 	};
 
-	private transient final Map<AbstractButton, AbstractImpExp> exportMap = Collections
-			.synchronizedMap(new HashMap<AbstractButton, AbstractImpExp>());
+	private transient final Map<AbstractButton, AbstractImpExp> exportMap = java.util.Collections
+			.synchronizedMap(new java.util.HashMap<AbstractButton, AbstractImpExp>());
 
 	private transient File lastListFile = null;
 
@@ -168,8 +152,7 @@ public class BatchExport extends JDialog implements Observer {
 
 		super(JamStatus.getSingletonInstance().getFrame(),
 				"Batch Histogram Export");
-		final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
-		broadcaster.addObserver(this);
+		jam.global.Broadcaster.getSingletonInstance().addObserver(this);
 		buildGUI();
 		setupHistChooser();
 		selectHistDlg = new SelectHistogramDialog();
@@ -245,7 +228,7 @@ public class BatchExport extends JDialog implements Observer {
 		pBottom.add(pOptions);
 		final JPanel pBtnOpn = new JPanel(new GridLayout(1, 0, 10, 0));
 		pOptions.add(pBtnOpn);
-		final ButtonGroup options = new ButtonGroup();
+		final javax.swing.ButtonGroup options = new javax.swing.ButtonGroup();
 		final List<AbstractImpExp> exportClassList = createExportList();
 		for (AbstractImpExp impExp : exportClassList) {
 			final AbstractButton exportChoice = getButton(impExp);
@@ -256,7 +239,7 @@ public class BatchExport extends JDialog implements Observer {
 		/* Directory panel */
 		final JPanel pDirectory = new JPanel(new FlowLayout(FlowLayout.CENTER,
 				10, 0));
-		pDirectory.add(new JLabel("Directory"));
+		pDirectory.add(new javax.swing.JLabel("Directory"));
 		txtDirectory
 				.setToolTipText("Directory to write exported histogram files.");
 		pDirectory.add(txtDirectory);
@@ -279,11 +262,11 @@ public class BatchExport extends JDialog implements Observer {
 			}
 		});
 		pButton.add(bExport);
-		final JButton bCancel = new JButton(new WindowCancelAction(this));
+		final JButton bCancel = new JButton(new jam.ui.WindowCancelAction(this));
 		pButton.add(bCancel);
 		pBottom.add(pButton);
-		addWindowListener(new WindowAdapter() {
-			public void windowActivated(WindowEvent windowEvent) {
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowActivated(java.awt.event.WindowEvent windowEvent) {
 				setupHistChooser();
 			}
 		});
@@ -294,8 +277,8 @@ public class BatchExport extends JDialog implements Observer {
 	private List<AbstractImpExp> createExportList() {
 		final List<AbstractImpExp> rval = new ArrayList<AbstractImpExp>();
 		final String here = getClass().getName() + ".getClasses(): ";
-		final Set<Class<?>> set = RTSI.getSingletonInstance().find("jam.io",
-				AbstractImpExp.class, false);
+		final Set<Class<?>> set = jam.global.RTSI.getSingletonInstance().find(
+				"jam.io", AbstractImpExp.class, false);
 		set.remove(AbstractImpExp.class);
 		for (Class<?> temp : set) {
 			try {
@@ -361,7 +344,7 @@ public class BatchExport extends JDialog implements Observer {
 		File[] exportFiles = new File[model.getSize()];
 		// Create array of histograms and files
 		for (int i = 0; i < exportHistograms.length; i++) {
-			final AbstractHist1D hist1D = (AbstractHist1D) model
+			final jam.data.AbstractHist1D hist1D = (jam.data.AbstractHist1D) model
 					.getElementAt(i);
 			exportHistograms[i] = hist1D;
 			final String groupName = hist1D.getGroup().getName();
@@ -408,7 +391,8 @@ public class BatchExport extends JDialog implements Observer {
 	 * @param already
 	 * @return
 	 */
-	private boolean checkFileOverwrite(final boolean status, final boolean already) {
+	private boolean checkFileOverwrite(final boolean status,
+			final boolean already) {
 		boolean rval = status;
 		// Check for overwrite
 		if (status && already) {
@@ -425,7 +409,7 @@ public class BatchExport extends JDialog implements Observer {
 
 	private AbstractButton getButton(final AbstractImpExp impExp) {
 		final String desc = impExp.getFormatDescription();
-		final AbstractButton rval = new JRadioButton(desc);
+		final AbstractButton rval = new javax.swing.JRadioButton(desc);
 		rval.setToolTipText("Select to export in " + desc + " format.");
 		rval.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
@@ -515,8 +499,8 @@ public class BatchExport extends JDialog implements Observer {
 			// directory
 			final List<Histogram> list = new ArrayList<Histogram>();
 			try {
-				final BufferedReader reader = new BufferedReader(
-						new FileReader(lastListFile));
+				final java.io.BufferedReader reader = new java.io.BufferedReader(
+						new java.io.FileReader(lastListFile));
 				do {
 					listItem = Histogram.getHistogram(reader.readLine());
 					if (listItem != null) {
@@ -536,7 +520,7 @@ public class BatchExport extends JDialog implements Observer {
 	 * 
 	 */
 	private void removeAllHists() {
-		lstHists.setListData(new Vector());//NOPMD
+		lstHists.setListData(new java.util.Vector());// NOPMD
 	}
 
 	/**
@@ -549,7 +533,7 @@ public class BatchExport extends JDialog implements Observer {
 		for (int i = 0; i < model.getSize(); i++) {
 			list.add(model.getElementAt(i));
 		}
-		list.removeAll(Arrays.asList(removeList));
+		list.removeAll(java.util.Arrays.asList(removeList));
 		lstHists.setListData(list.toArray());
 	}
 
@@ -570,8 +554,8 @@ public class BatchExport extends JDialog implements Observer {
 
 			try {
 				final ListModel model = lstHists.getModel();
-				final FileWriter saveStream = new FileWriter(chooser
-						.getSelectedFile());
+				final java.io.FileWriter saveStream = new java.io.FileWriter(
+						chooser.getSelectedFile());
 				for (int i = 0; i < model.getSize(); i++) {
 					saveStream.write(model.getElementAt(i) + "\n");
 				}

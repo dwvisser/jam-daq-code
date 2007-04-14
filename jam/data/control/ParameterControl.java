@@ -2,10 +2,7 @@ package jam.data.control;
 
 import jam.data.DataParameter;
 import jam.io.ExtensionFileFilter;
-import jam.ui.WindowCancelAction;
-import jam.util.FileUtilities;
 
-import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -68,7 +65,7 @@ public final class ParameterControl extends AbstractControl {
 		setResizable(true);
 		setLocation(20, 50);
 		final Container cddisp = getContentPane();
-		cddisp.setLayout(new BorderLayout());
+		cddisp.setLayout(new java.awt.BorderLayout());
 		/* Central Panel */
 		pCenter = new JPanel(new GridLayout(0, 1, BORDER_HEIGHT, 5));
 		pCenter.setBorder(new EmptyBorder(BORDER_HEIGHT, 10, BORDER_HEIGHT, 10));
@@ -76,11 +73,11 @@ public final class ParameterControl extends AbstractControl {
 		final JScrollPane scrollPane = new JScrollPane(pCenter);
 		scrollPane
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		cddisp.add(scrollPane, BorderLayout.CENTER);
+		cddisp.add(scrollPane, java.awt.BorderLayout.CENTER);
 		/* Buttons for display dialog */
 		final JPanel pLower = new JPanel(new GridLayout(0, 1, 0, 0));
 		pLower.setBorder(new EmptyBorder(5, 0, 0, 0));
-		cddisp.add(pLower, BorderLayout.SOUTH);
+		cddisp.add(pLower, java.awt.BorderLayout.SOUTH);
 		final JPanel pButtonsTop = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pLower.add(pButtonsTop);
 		final JPanel pLoadSave = new JPanel(new GridLayout(1, 0, 5, 5));
@@ -128,7 +125,7 @@ public final class ParameterControl extends AbstractControl {
 			}
 		});
 		pOKApplyCancel.add(bapply);
-		final JButton bcancel = new JButton(new WindowCancelAction(this));
+		final JButton bcancel = new JButton(new jam.ui.WindowCancelAction(this));
 		pOKApplyCancel.add(bcancel);
 
 		addWindowListener(new WindowAdapter() {
@@ -335,9 +332,9 @@ public final class ParameterControl extends AbstractControl {
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fileDialog.getSelectedFile() != null) {
 			final File selectFile = fileDialog.getSelectedFile();
-			final FileUtilities fileUtility = FileUtilities.getInstance();
+			final jam.util.FileUtilities fileUtility = jam.util.FileUtilities.getInstance();
 			final File outputFile = fileUtility.changeExtension(selectFile,
-					FILE_EXTENSION, FileUtilities.APPEND_ONLY);
+					FILE_EXTENSION, jam.util.FileUtilities.APPEND_ONLY);
 			if (fileUtility.overWriteExistsConfirm(outputFile)) {
 				final Properties saveProperties = new Properties();
 				for (DataParameter parameter : DataParameter.getParameterList()) {

@@ -1,25 +1,15 @@
 package jam.io.control;
 
-import jam.data.DataBase;
-import jam.data.Group;
-import jam.data.Histogram;
-import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
-import jam.global.SortMode;
-import jam.io.FileOpenMode;
-import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFIO;
-import jam.io.hdf.HDFileFilter;
 import jam.io.hdf.HistogramAttributes;
 import jam.ui.MultipleFileChooser;
-import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Frame;
+//import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -87,19 +77,18 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 * @param console
 	 *            where to print messages
 	 */
-	public OpenMultipleFiles(Frame parent) {
-		final Frame frame = parent;
+	public OpenMultipleFiles(java.awt.Frame parent) {
 		broadcaster = Broadcaster.getSingletonInstance();
-		hdfio = new HDFIO(frame);
-		dialog = new JDialog(frame, "Open Multiple Files");
+		hdfio = new HDFIO(parent);
+		dialog = new JDialog(parent, "Open Multiple Files");
 		dialog.setLocation(parent.getLocation().x + 50,
 				parent.getLocation().y + 50);
-		final Container container = dialog.getContentPane();
+		final java.awt.Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
 		final JTabbedPane tabPane = new JTabbedPane();
 		container.add(tabPane, BorderLayout.CENTER);
-		multiChooser = new MultipleFileChooser(frame);
-		multiChooser.setFileFilter(new HDFileFilter(true));
+		multiChooser = new MultipleFileChooser(parent);
+		multiChooser.setFileFilter(new jam.io.hdf.HDFileFilter(true));
 		tabPane.addTab("Files", null, multiChooser, "Select Files to open");
 		final JPanel histPanel = createHistSelectPanel();
 		tabPane.addTab("Histograms", null, histPanel,
@@ -136,8 +125,8 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 				multiChooser.saveList();
 			}
 		});
-		final PanelOKApplyCancelButtons okApply = new PanelOKApplyCancelButtons(
-				new PanelOKApplyCancelButtons.AbstractListener(dialog) {
+		final jam.ui.PanelOKApplyCancelButtons okApply = new jam.ui.PanelOKApplyCancelButtons(
+				new jam.ui.PanelOKApplyCancelButtons.AbstractListener(dialog) {
 					public void apply() {
 						defaultSelection();
 						loadFiles();
@@ -249,7 +238,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 				hListModel.addElement(histAtt.getFullName());
 			}
 			loadState = true;
-		} catch (HDFException hdfe) {
+		} catch (jam.io.hdf.HDFException hdfe) {
 			LOGGER.severe(hdfe.getMessage());
 			loadState = false;
 		}
@@ -270,19 +259,19 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 			return;
 		}
 		final File[] files = multiChooser.getFileList().toArray(new File[0]);
-		DataBase.getInstance().clearAllLists();
+		jam.data.DataBase.getInstance().clearAllLists();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
 
 		hdfio.setListener(this);
 		/* Sum counts */
 		if (chkBoxAdd.isSelected()) {
 			hdfio
-					.readFile(FileOpenMode.ADD_OPEN_ONE, files, null,
+					.readFile(jam.io.FileOpenMode.ADD_OPEN_ONE, files, null,
 							selectAttrib);
-			STATUS.setSortMode(SortMode.FILE, "Multiple Sum");
+			STATUS.setSortMode(jam.global.SortMode.FILE, "Multiple Sum");
 		} else {
-			hdfio.readFile(FileOpenMode.OPEN_MORE, files, null, selectAttrib);
-			STATUS.setSortMode(SortMode.FILE, "Multiple");
+			hdfio.readFile(jam.io.FileOpenMode.OPEN_MORE, files, null, selectAttrib);
+			STATUS.setSortMode(jam.global.SortMode.FILE, "Multiple");
 		}
 	}
 
@@ -316,16 +305,16 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 
 	private void notifyApp() {
 		/* Update app status. */
-		AbstractControl.setupAll();
+		jam.data.control.AbstractControl.setupAll();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		/* Set the current histogram to the first opened histogram. */
-		final List<Group> groupList = Group.getGroupList();
+		final List<jam.data.Group> groupList = jam.data.Group.getGroupList();
 		if (groupList.size() > 0) {
-			final Group firstGroup = groupList.get(0);
+			final jam.data.Group firstGroup = groupList.get(0);
 			STATUS.setCurrentGroup(firstGroup);
-			final List<Histogram> list = firstGroup.getHistogramList();
+			final List<jam.data.Histogram> list = firstGroup.getHistogramList();
 			if (list.size() > 0) {
-				final Histogram firstHist = list.get(0);
+				final jam.data.Histogram firstHist = list.get(0);
 				STATUS.setCurrentHistogram(firstHist);
 				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 						firstHist);

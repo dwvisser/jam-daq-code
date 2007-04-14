@@ -1,14 +1,9 @@
 package jam.data.control;
 
-import static jam.data.Histogram.Type.ONE_DIM_INT;
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
-import jam.data.HistDouble1D;
-import jam.data.HistInt1D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.ui.PanelOKApplyCancelButtons;
-import jam.util.NumberUtilities;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -161,8 +156,8 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		pto.add(ttextto);
 		pEntries.add(pto);
 		/* button panel */
-		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
-				new PanelOKApplyCancelButtons.AbstractListener(this) {
+		final jam.ui.PanelOKApplyCancelButtons pButtons = new jam.ui.PanelOKApplyCancelButtons(
+				new jam.ui.PanelOKApplyCancelButtons.AbstractListener(this) {
 					public void apply() {
 						try {
 							doGainShift();
@@ -232,11 +227,12 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		} else {
 			getCoefficients();
 		}
-		final NumberUtilities numbers = NumberUtilities.getInstance();
+		final jam.util.NumberUtilities numbers = jam.util.NumberUtilities.getInstance();
 		/* Get input histogram. */
-		final double[] countsIn = (hfrom.getType() == ONE_DIM_INT) ? numbers
-				.intToDoubleArray(((HistInt1D) hfrom).getCounts())
-				: ((HistDouble1D) hfrom).getCounts();
+		final Histogram.Type oneDi = Histogram.Type.ONE_DIM_INT;
+		final double[] countsIn = (hfrom.getType() == oneDi) ? numbers
+				.intToDoubleArray(((jam.data.HistInt1D) hfrom).getCounts())
+				: ((jam.data.HistDouble1D) hfrom).getCounts();
 		final double[] errIn = hfrom.getErrors();
 		/* Get or create output histogram. */
 		final String name = (String) cto.getSelectedItem();
@@ -254,13 +250,13 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 
 		}
 		hto.setZero();
-		final int countLen = hto.getType() == ONE_DIM_INT ? ((HistInt1D) hto)
+		final int countLen = hto.getType() == oneDi ? ((jam.data.HistInt1D) hto)
 				.getCounts().length
-				: ((HistDouble1D) hto).getCounts().length;
+				: ((jam.data.HistDouble1D) hto).getCounts().length;
 		final double[] out = gainShift(countsIn, intercept1, slope1, intercept2, slope2, countLen);
 		final double[] errOut = errorGainShift(errIn, intercept1, slope1, intercept2, slope2, hto
 				.getErrors().length);
-		if (hto.getType() == ONE_DIM_INT) {
+		if (hto.getType() == oneDi) {
 			hto.setCounts(numbers.doubleToIntArray(out));
 		} else {
 			hto.setCounts(out);

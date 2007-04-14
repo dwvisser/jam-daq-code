@@ -8,15 +8,10 @@ import jam.global.Nameable;
 import jam.global.UnNamed;
 import jam.plot.Bin;
 import jam.ui.Canceller;
-import jam.ui.WindowCancelAction;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Label;
-import java.awt.Panel;
 import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,6 +28,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
@@ -67,14 +63,14 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 	public GateSet() {// NOPMD
 		super("Gate setting <none>", false);
 		setResizable(false);
-		final Container contents = getContentPane();
+		final java.awt.Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
 		setLocation(20, 50);
 		/* panel with chooser */
 		final JPanel pChooser = new JPanel();
 		pChooser.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
 		cgate = new JComboBox(new GateComboBoxModel());
-		final Dimension dimset = cgate.getPreferredSize();
+		final java.awt.Dimension dimset = cgate.getPreferredSize();
 		dimset.width = 200;
 		cgate.setPreferredSize(dimset);
 		cgate.setRenderer(new GateListCellRenderer());
@@ -91,12 +87,12 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 		final JPanel pFields = new JPanel();
 		pFields.setLayout(new GridLayout(2, 1));
 		final JPanel panel1 = new JPanel(new FlowLayout());
-		lLower = new JLabel("lower", Label.RIGHT);
+		lLower = new JLabel("lower", SwingConstants.RIGHT);
 		panel1.add(lLower);
 		textLower = new JTextField("", 4);
 		panel1.add(textLower);
 		final JPanel panel2 = new JPanel(new FlowLayout());
-		lUpper = new JLabel("upper", Label.RIGHT);
+		lUpper = new JLabel("upper", SwingConstants.RIGHT);
 		panel2.add(lUpper);
 		textUpper = new JTextField("", 4);
 		panel2.add(textUpper);
@@ -133,7 +129,7 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 		pedit.add(unset);
 		// panel with OK, Cancel buttons
 		final JPanel pokcancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		final Panel pButtons = new Panel();
+		final JPanel pButtons = new JPanel();
 		pButtons.setLayout(new GridLayout(1, 0, 5, 5));
 		pokcancel.add(pButtons);
 		save = new JButton("Save");
@@ -144,7 +140,7 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 		});
 		save.setEnabled(false);
 		pButtons.add(save);
-		cancel = new JButton(new WindowCancelAction(canceller));
+		cancel = new JButton(new jam.ui.WindowCancelAction(canceller));
 		cancel.setEnabled(false);
 		pButtons.add(cancel);
 		contents.add(pChooser, BorderLayout.NORTH);
