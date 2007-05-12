@@ -431,7 +431,11 @@ public final class VMECommunication extends GoodThread implements
 		final ByteBuffer byteBuff = ByteBuffer.wrap(byteMessage);
 		byteBuff.putInt(PacketTypes.CNAF.intValue());
 		// put command string into packet
-		byteBuff.put(STR_UTIL.getASCIIarray(listName));
+		byte[] asciiListName = STR_UTIL.getASCIIarray(listName);
+		byteBuff.put(asciiListName);
+		for (int i = COMMAND_SIZE; i > asciiListName.length; i--) {
+			byteBuff.put(Constants.STRING_NULL);
+		}
 		// put length of cnaf list in packet
 		byteBuff.putInt(cnafList.size());
 		// put list of cnaf commands into packet
@@ -442,8 +446,7 @@ public final class VMECommunication extends GoodThread implements
 			byteBuff.put(cnaf.getNumber());
 			byteBuff.put(cnaf.getAddress());
 			byteBuff.put(cnaf.getFunction());
-			final int data = cnaf.getData();
-			byteBuff.putInt(data);
+			byteBuff.putInt(cnaf.getData());
 		}
 		// add a null character
 		byteBuff.put(Constants.STRING_NULL);
