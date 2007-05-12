@@ -192,7 +192,7 @@ public class RTSI {
 		URL url = null;
 		if (classpath != null) {
 			try {
-				url = classpath.toURL();
+				url = classpath.toURI().toURL();
 			} catch (MalformedURLException e) {
 				JOptionPane.showMessageDialog(null, e.getMessage(), rtsiName,
 						JOptionPane.ERROR_MESSAGE);
@@ -465,7 +465,7 @@ public class RTSI {
 		URL url = null;
 		try {
 			if (path != null) {
-				url = path.toURL();
+				url = path.toURI().toURL();
 			}
 		} catch (MalformedURLException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(), rtsiName,
