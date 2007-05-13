@@ -1,18 +1,16 @@
-package jam;
+package test;
 
-import jam.data.GateTest;
-import jam.data.HistogramTest;
-import jam.data.func.CubicFunctionTest;
-import jam.data.peaks.PeakTest;
-import jam.io.ImpExpASCIITest;
-import jam.sort.GainCalibrationTest;
-import jam.sort.RingBufferTest;
-import jam.sort.NetDaemonTest;
-//import junit.framework.JUnit4TestAdapter;
-//import junit.framework.Test;
-//import junit.framework.TestSuite;
 import org.junit.runners.Suite;
 import org.junit.runner.RunWith;
+
+import test.data.GateTest;
+import test.data.HistogramTest;
+import test.data.func.CubicFunctionTest;
+import test.data.peaks.PeakTest;
+import test.io.ImpExpASCIITest;
+import test.sort.GainCalibrationTest;
+import test.sort.NetDaemonTest;
+import test.sort.RingBufferTest;
 
 /**
  * JUnit test suit for all of jam.

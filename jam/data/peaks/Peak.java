@@ -7,7 +7,7 @@ package jam.data.peaks;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 2001-02-14
  */
-final class Peak extends Object implements Comparable, Cloneable {
+public final class Peak extends Object implements Comparable, Cloneable {
 
 	private double position, area, width;
 
@@ -27,7 +27,7 @@ final class Peak extends Object implements Comparable, Cloneable {
 		this(position, 0.0, area, 0.0, width, 0.0);
 	}
 
-	static Peak createPeak(final double position, final double area,
+	public static Peak createPeak(final double position, final double area,
 			final double width) {
 		return new Peak(position, area, width);
 	}

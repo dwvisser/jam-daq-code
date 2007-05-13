@@ -8,7 +8,7 @@ package jam.sort;
  * @see RingBuffer
  * @since JDK1.1
  */
-class RingFullException extends Exception {
+public class RingFullException extends Exception {
 
     /**
      * @see Exception#Exception(java.lang.String)

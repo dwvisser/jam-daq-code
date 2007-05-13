@@ -1,8 +1,9 @@
 /*
  * Created on Feb 10, 2005
  */
-package jam.util;
+package test.util;
 
+import jam.util.StringUtilities;
 import junit.framework.TestCase;
 
 /**

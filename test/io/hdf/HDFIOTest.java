@@ -1,6 +1,7 @@
-package jam.io.hdf;
+package test.io.hdf;
 
 import jam.io.FileOpenMode;
+import jam.io.hdf.HDFIO;
 
 import java.io.File;
 import java.net.URI;

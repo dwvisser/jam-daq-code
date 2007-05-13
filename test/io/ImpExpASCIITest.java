@@ -1,10 +1,12 @@
-package jam.io;
+package test.io;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import jam.data.Group;
 import jam.data.Histogram;
+import jam.io.ImpExpASCII;
+import jam.io.ImpExpException;
 import jam.util.FileUtilities;
 
 import java.io.File;

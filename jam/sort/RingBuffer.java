@@ -23,7 +23,7 @@ public final class RingBuffer {
 	/**
 	 * Number of buffers in ring, must be a power of 2.
 	 */
-	static final int NUMBER_BUFFERS = 1 << 6; //NOPMD
+	public static final int NUMBER_BUFFERS = 1 << 6; //NOPMD
 
 	private static final int CLOSE_TO_CAPACITY = NUMBER_BUFFERS >> 5;
 

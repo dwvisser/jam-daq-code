@@ -1,7 +1,8 @@
-package jam.sort;
+package test.sort;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import jam.sort.GainCalibration;
 
 import org.junit.Before;
 import org.junit.Test;

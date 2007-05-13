@@ -133,7 +133,7 @@ public final class NetDaemon extends GoodThread {
 		}
 	}
 
-	boolean isEmptyBefore() {
+	public boolean isEmptyBefore() {
 		synchronized (this) {
 			return emptyBefore;
 		}

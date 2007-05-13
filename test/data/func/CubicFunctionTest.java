@@ -1,7 +1,8 @@
-package jam.data.func;
+package test.data.func;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import jam.data.func.CubicFunction;
 
 import org.junit.Before;
 import org.junit.Test;

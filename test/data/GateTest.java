@@ -1,6 +1,12 @@
-package jam.data;
+package test.data;
 
 import static org.junit.Assert.assertTrue;
+
+import jam.data.DataBase;
+import jam.data.Gate;
+import jam.data.Group;
+import jam.data.Histogram;
+import jam.data.Group.Type;
 
 import java.awt.Polygon;
 

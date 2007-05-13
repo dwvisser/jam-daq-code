@@ -29,7 +29,7 @@ public final class GainCalibration {
 
 	private transient boolean suppress = false;//NOPMD
 
-	GainCalibration(Object maker) {
+	public GainCalibration(Object maker) {
 		super();
 		loader = maker.getClass().getClassLoader();
 	}

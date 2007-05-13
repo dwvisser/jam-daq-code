@@ -1,8 +1,10 @@
-package jam.sort;
+package test.sort;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import jam.sort.NetDaemon;
+import jam.sort.SortException;
 import jam.sort.control.RunControl;
 
 import org.junit.After;

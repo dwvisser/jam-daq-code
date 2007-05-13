@@ -1,6 +1,7 @@
-package jam.data.peaks;
+package test.data.peaks;
 
 import static org.junit.Assert.assertEquals;
+import jam.data.peaks.Peak;
 
 import org.junit.Test;
 

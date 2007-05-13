@@ -1,9 +1,12 @@
-package jam.sort;
+package test.sort;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import jam.sort.RingBuffer;
+import jam.sort.RingFullException;
 
 import java.util.Arrays;
 
