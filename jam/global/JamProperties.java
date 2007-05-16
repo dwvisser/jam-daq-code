@@ -373,7 +373,8 @@ public final class JamProperties {
 			showErrorMessage(ioe, loadError);
 		} finally {
 			try {
-				fis.close();
+				if (fis!=null)
+					fis.close();
 			} catch (IOException ioe) {
 				loadError = "Could not close " + userFile.getPath();
 				showErrorMessage(ioe, loadError);
