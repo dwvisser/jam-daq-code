@@ -26,7 +26,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,6 +56,9 @@ import javax.swing.border.LineBorder;
 public abstract class AbstractFit implements PlotMouseListener {
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
+
+	private static final ValueAndUncertaintyFormatter FORMAT = ValueAndUncertaintyFormatter
+			.getSingletonInstance();
 
 	/**
 	 * Checkboxes for finding initial estimates.
@@ -153,9 +155,6 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 */
 	protected transient FitConsole textInfo;
 
-	/**
-	 * 
-	 */
 	protected transient int upperLimit;
 
 	/**
@@ -462,27 +461,6 @@ public abstract class AbstractFit implements PlotMouseListener {
 		return bGo;
 	}
 
-	/*
-	 * non-javadoc: Given a double between zero and 1, and number of significant
-	 * figures desired, return number of decimal fraction digits to display.
-	 */
-	private int decimalPlaces(final double value, final int sigfig) {
-		int out;
-		int pos; // position of firstSigFig
-
-		if (value <= 0.0 || value >= 1.0) {
-			throw new IllegalArgumentException(
-					"Must call decimalPlaces() with value in (0,1).");
-		}
-		if (sigfig < 1) {
-			throw new IllegalArgumentException(
-					"Can't have zero significant figures.");
-		}
-		pos = (int) Math.abs(Math.floor(log10(value)));
-		out = pos + sigfig - 1;
-		return out;
-	}
-
 	/**
 	 * Performs calulations neccessary to find a best fit to the data.
 	 * 
@@ -537,71 +515,13 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 */
 	public abstract void estimate() throws FitException;
 
-	/*
-	 * non-javadoc: Given a double, returns the value of the first significant
-	 * decimal digit.
-	 */
-	private int firstSigFig(final double value) {
-		if (value <= 0.0) {
-			throw new IllegalArgumentException(
-					"Can't call firstSigFig with non-positive number.");
-		}
-		return (int) Math.floor(value
-				/ Math.pow(10.0, Math.floor(log10(value))));
-	}
-
-	private String[] format(final double value, final double err) {
-		String[] out;
-		NumberFormat fval, ferr;
-		int temp;
-
-		out = new String[2];
-		fval = NumberFormat.getInstance();
-		fval.setGroupingUsed(false);
-		ferr = NumberFormat.getInstance();
-		ferr.setGroupingUsed(false);
-		if (err < 0.0) {
-			throw new IllegalArgumentException(
-					"format() can't use negative error.");
-		}
-		if (err > 0.0) {
-			temp = fractionDigits(err);
-			ferr.setMinimumFractionDigits(temp);
-			ferr.setMaximumFractionDigits(temp);
-			fval.setMinimumFractionDigits(temp);
-			fval.setMaximumFractionDigits(temp);
-			temp = integerDigits(err);
-			ferr.setMinimumIntegerDigits(temp);
-			fval.setMinimumIntegerDigits(1);
-		} else {
-			ferr.setMinimumFractionDigits(1);
-			ferr.setMaximumFractionDigits(1);
-			ferr.setMinimumIntegerDigits(1);
-			ferr.setMaximumIntegerDigits(1);
-			fval.setMinimumFractionDigits(1);
-			fval.setMinimumIntegerDigits(1);
-		}
-		out[0] = fval.format(value);
-		out[1] = ferr.format(err);
-		return out;
-	}
-
-	private String format(final double value, final int fraction) {
-		NumberFormat fval;
-		fval = NumberFormat.getInstance();
-		fval.setGroupingUsed(false);
-		fval.setMinimumFractionDigits(fraction);
-		fval.setMinimumFractionDigits(fraction);
-		return fval.format(value);
-	}
-
 	private String formatError(final Parameter param) {
 		if (!param.hasErrorBar()) {
 			throw new IllegalArgumentException(
 					"No error term for this parameter.  Can't formatError().");
 		}
 		return "\u00b1 "
-				+ format(param.getDoubleValue(), param.getDoubleError())[1];
+				+ FORMAT.format(param.getDoubleValue(), param.getDoubleError())[1];
 	}
 
 	/*
@@ -613,12 +533,13 @@ public abstract class AbstractFit implements PlotMouseListener {
 			final double value = param.getDoubleValue();
 			if (param.hasErrorBar()) {
 				final double error = param.getDoubleError();
-				temp = format(value, error)[0];
+				temp = FORMAT.format(value, error)[0];
 			} else {
-				int integer = (int) log10(Math.abs(value));
+				int integer = (int) NumberUtilities.getInstance().log10(
+						Math.abs(value));
 				integer = Math.max(integer, 1);
 				final int fraction = Math.max(4 - integer, 0);
-				temp = format(value, fraction);
+				temp = FORMAT.format(value, fraction);
 			}
 		} else if (param.isInteger()) {
 			temp = (Integer.valueOf(param.getIntValue())).toString().trim();
@@ -628,28 +549,6 @@ public abstract class AbstractFit implements PlotMouseListener {
 		return temp;
 	}
 
-	/*
-	 * non-javadoc: Given an error, determines the appropriat number of fraction
-	 * digits to show.
-	 */
-	private int fractionDigits(final double err) {
-		int out;
-
-		if (err == 0.0) {
-			throw new IllegalArgumentException("fractionDigits called with 0.0");
-		}
-		if (err >= 2.0) {
-			out = 0;
-		} else if (err >= 1.0) {
-			out = 1;
-		} else if (firstSigFig(err) == 1) {
-			out = decimalPlaces(err, 2);
-		} else { // firstSigFig > 1
-			out = decimalPlaces(err, 1);
-		}
-		return out;
-	}
-
 	/**
 	 * Gets counts from currently displayed <code>Histogram</code>
 	 */
@@ -657,10 +556,10 @@ public abstract class AbstractFit implements PlotMouseListener {
 		final AbstractHist1D hist1d = (AbstractHist1D) STATUS
 				.getCurrentHistogram();
 		if (hist1d.getType() == Histogram.Type.ONE_DIM_INT) {
-			final int[] temp = ((HistInt1D)hist1d).getCounts();
+			final int[] temp = ((HistInt1D) hist1d).getCounts();
 			counts = NumberUtilities.getInstance().intToDoubleArray(temp);
 		} else {
-			counts = ((HistDouble1D)hist1d).getCounts();
+			counts = ((HistDouble1D) hist1d).getCounts();
 		}
 		errors = hist1d.getErrors();
 	}
@@ -735,28 +634,6 @@ public abstract class AbstractFit implements PlotMouseListener {
 			status.setText(temp.toString());
 		}
 		parameterIter = parameters.iterator();
-	}
-
-	/*
-	 * non-javadoc: Given an error term determine the appropriate number of
-	 * integer digits to display.
-	 */
-	private int integerDigits(final double err) {
-		int out;
-
-		if (err == 0.0) {
-			throw new IllegalArgumentException("integerDigits called with 0.0");
-		}
-		if (err >= 1.0) {
-			out = (int) Math.ceil(log10(err));
-		} else {
-			out = 1;
-		}
-		return out;
-	}
-
-	private double log10(final double value) {
-		return Math.log(value) / Math.log(10.0);
 	}
 
 	public void plotMousePressed(final Bin bin, final Point pPixel) {
@@ -880,10 +757,10 @@ public abstract class AbstractFit implements PlotMouseListener {
 		final Histogram histogram = (Histogram) STATUS.getCurrentHistogram();
 		if (histogram != null && histogram.getDimensionality() == 1) {
 			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
-				final int[] temp = ((HistInt1D)histogram).getCounts();
+				final int[] temp = ((HistInt1D) histogram).getCounts();
 				counts = NumberUtilities.getInstance().intToDoubleArray(temp);
 			} else if (histogram.getType() == Histogram.Type.ONE_D_DOUBLE) {
-				counts = ((HistDouble1D)histogram).getCounts();
+				counts = ((HistDouble1D) histogram).getCounts();
 			}
 			textHistName.setText(histogram.getFullName());
 		} else { // 2d

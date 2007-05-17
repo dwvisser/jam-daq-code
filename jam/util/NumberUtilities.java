@@ -26,6 +26,10 @@ public final class NumberUtilities {
 		return instance;
 	}
 
+	public double log10(final double value) {
+		return Math.log(value) / Math.log(10.0);
+	}
+
 	/**
 	 * Pull an int out of a byte array.
 	 * 
