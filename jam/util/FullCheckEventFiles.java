@@ -59,7 +59,7 @@ public class FullCheckEventFiles {
 
 	private FullCheckEventFiles(File dir) {
 		super();
-		File[] eventFiles = getEventFiles(dir);
+		final File[] eventFiles = getEventFiles(dir);
 		if (eventFiles.length > 0) {
 			LOGGER.info("Found event files, starting to examine...");
 			checkAllBuffers(Arrays.asList(eventFiles));

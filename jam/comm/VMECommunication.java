@@ -431,7 +431,7 @@ public final class VMECommunication extends GoodThread implements
 		final ByteBuffer byteBuff = ByteBuffer.wrap(byteMessage);
 		byteBuff.putInt(PacketTypes.CNAF.intValue());
 		// put command string into packet
-		byte[] asciiListName = STR_UTIL.getASCIIarray(listName);
+		final byte[] asciiListName = STR_UTIL.getASCIIarray(listName);
 		byteBuff.put(asciiListName);
 		for (int i = COMMAND_SIZE; i > asciiListName.length; i--) {
 			byteBuff.put(Constants.STRING_NULL);
