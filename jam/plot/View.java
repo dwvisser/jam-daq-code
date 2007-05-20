@@ -171,9 +171,13 @@ public final class View {
 	 *            the Histogram
 	 */
 	void setHistogram(final int num, final Nameable histIn) {
-		histogramNames[num] = histIn instanceof Histogram ? ((Histogram) histIn)
-				.getFullName()
-				: histIn.getName();
+		if (histIn == null) {
+			histogramNames[num] = "";
+		} else {
+			histogramNames[num] = histIn instanceof Histogram ? ((Histogram) histIn)
+					.getFullName()
+					: histIn.getName();
+		}
 	}
 
 	/**
