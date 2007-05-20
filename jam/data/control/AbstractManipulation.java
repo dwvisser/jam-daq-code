@@ -126,8 +126,8 @@ abstract class AbstractManipulation extends AbstractControl {
 	 * @return mean width of a character in pixels
 	 */
 	int getMeanCharWidth(final FontMetrics fontMetrics) {
-		final double numWidths = 256;
-		double sum = 0;
+		final double numWidths = 256.0;
+		double sum = 0.0;
 		final int[] widths = fontMetrics.getWidths();
 		for (int i = 0; i < numWidths; i++) {
 			sum += widths[i];
