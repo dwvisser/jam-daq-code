@@ -344,8 +344,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 		bnetarea.setEnabled(enable1D);
 		isSyncEvent = true;
 		/* Convert double to int string */
-		final String strBinWidth = Integer.valueOf(
-				new Double(binWidth).intValue()).toString();
+		final String strBinWidth = Integer.valueOf((int) binWidth).toString();
 		comboBinRatio.setSelectedIndex(0);
 		for (int i = 0; i < REBIN_RATIOS.length; i++) {
 			if (strBinWidth.equals(REBIN_RATIOS[i])) {
