@@ -63,8 +63,8 @@ import java.util.logging.Logger;
  */
 public final class JamProperties {
 	/**
-	 * Set <code>true</code> to default to the classpath used to launch Jam
-	 * instead of a given sort classpath.
+	 * Set <code>SORT_CLASSPATH</code> to this to use the classpath used to
+	 * launch Jam instead of a given sort classpath.
 	 */
 	public final static String DEFAULT_SORTPATH = "default";
 
@@ -181,12 +181,16 @@ public final class JamProperties {
 	/** warning when loading config */
 	private transient String configLoadWarning;
 
+	private transient FileInputStream inputStream;
+
 	private transient boolean jamHomeDefined;
 
 	private transient String loadError;
 
 	private transient final String userCurrentDir = System
 			.getProperty("user.dir");
+
+	private transient File userFile;
 
 	/** message for loading user config */
 	private transient String userLoadMessage;
@@ -207,7 +211,6 @@ public final class JamProperties {
 	 * by -D parameter in command line
 	 * 
 	 */
-
 	private void loadConfig() {
 		configLoadWarning = NO_WARNINGS;
 		loadError = NO_ERRORS;
@@ -270,52 +273,15 @@ public final class JamProperties {
 	}
 
 	/**
-	 * Load default configuration properties.
-	 */
-	private void loadDefaultConfig() {
-		PROPERTIES.setProperty(JAM_HOME, (new File(userCurrentDir)).getPath());
-		PROPERTIES.setProperty(HOST_IP, "localhost");
-		PROPERTIES.setProperty(HOST_PORT_SEND, "5003");
-		PROPERTIES.setProperty(HOST_PORT_SEND, "5002");
-		PROPERTIES.setProperty(HOST_PORT_RECV, "5005");
-		PROPERTIES.setProperty(TARGET_IP, "frontend");
-		PROPERTIES.setProperty(TARGET_PORT, "5002");
-		PROPERTIES.setProperty(HOST_DATA_IP, "localhost");
-		PROPERTIES.setProperty(HOST_DATA_P_RECV, "10205");
-	}
-
-	/**
-	 * Load default user properties.
-	 */
-	private void loadDefaultUser() {
-		PROPERTIES.setProperty(EXP_NAME, "default_");
-		PROPERTIES.setProperty(SORT_ROUTINE, "jam.sort.Example");
-		PROPERTIES.setProperty(SORT_CLASSPATH, DEFAULT_SORTPATH);
-		PROPERTIES.setProperty(HIST_PATH, (new File(userHomeDir, "spectra"))
-				.getPath());
-		PROPERTIES.setProperty(EVENT_INPATH, (new File(userHomeDir, "events"))
-				.getPath());
-		PROPERTIES.setProperty(EVENT_OUTPATH, (new File(userHomeDir, "events"))
-				.getPath());
-		PROPERTIES.setProperty(EVENT_OUTFILE, "sortout.evn");
-		PROPERTIES.setProperty(LOG_PATH, (new File(userHomeDir)).getPath());
-		PROPERTIES.setProperty(EVENT_INSTREAM,
-				"jam.sort.stream.YaleCAEN_InputStream");
-		PROPERTIES.setProperty(EVENT_OUTSTREAM,
-				"jam.sort.stream.YaleOutputStream");
-	}
-
-	/**
 	 * Load the local specific properties from files, using defaults if
 	 * necessary.
 	 */
 	private void loadProperties() {
 		jamHomeDefined = (System.getProperty(JAM_HOME) != null);
-		loadDefaultConfig();
-		loadDefaultUser();
+		setDefaultConfig();
+		setDefaultUser();
 		loadConfig();
 		loadUser();
-
 	}
 
 	/**
@@ -325,40 +291,23 @@ public final class JamProperties {
 	private void loadUser() {
 		userLoadWarning = NO_WARNINGS;
 		loadError = NO_ERRORS;
-		FileInputStream fis = null;
-		File userFile = new File(userHomeDir, FILE_USER);
+		userFile = new File(userHomeDir, FILE_USER);
 		try {
 			// try userHomeDir
 			if (userFile.exists()) {
-				fis = new FileInputStream(userFile);
-				PROPERTIES.load(fis);
+				inputStream = new FileInputStream(userFile);
+				PROPERTIES.load(inputStream);
 				userLoadMessage = "Read user configuration file: "
 						+ userFile.getPath();
 			} else { // try userCurrentDir
-				userFile = new File(userCurrentDir, FILE_USER);
-				if (userFile.exists()) {
-					fis = new FileInputStream(userFile);
-					PROPERTIES.load(fis);
-					userLoadWarning = "Cannot find user configuration file "
-							+ FILE_USER + " in user home directory "
-							+ userHomeDir;
-					userLoadMessage = "Read user configuration from file "
-							+ userFile.getPath();
-					// use default properties
-				} else {
-					userLoadWarning = "Cannot find user configuration file "
-							+ FILE_USER + ", in user home directory "
-							+ userHomeDir + " or in current directory "
-							+ userCurrentDir;
-					userLoadMessage = "Using default user properties";
-				}
+				loadUserPropertiesFromCurrentDirectory();
 			}
 			// try variable jam.home directory
 			if (!userFile.exists() && jamHomeDefined) {
 				userFile = new File(System.getProperty(JAM_HOME), FILE_USER);
 				if (userFile.exists()) {
-					fis = new FileInputStream(userFile);
-					PROPERTIES.load(fis);
+					inputStream = new FileInputStream(userFile);
+					PROPERTIES.load(inputStream);
 					userLoadMessage = "Read user configuration file: "
 							+ userFile.getPath();
 				}
@@ -373,12 +322,36 @@ public final class JamProperties {
 			showErrorMessage(ioe, loadError);
 		} finally {
 			try {
-				if (fis!=null)
-					fis.close();
+				if (inputStream != null) {
+					inputStream.close();
+				}
 			} catch (IOException ioe) {
 				loadError = "Could not close " + userFile.getPath();
 				showErrorMessage(ioe, loadError);
 			}
+		}
+	}
+
+	/**
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	private void loadUserPropertiesFromCurrentDirectory()
+			throws FileNotFoundException, IOException {
+		userFile = new File(userCurrentDir, FILE_USER);
+		if (userFile.exists()) {
+			inputStream = new FileInputStream(userFile);
+			PROPERTIES.load(inputStream);
+			userLoadWarning = "Cannot find user configuration file "
+					+ FILE_USER + " in user home directory " + userHomeDir;
+			userLoadMessage = "Read user configuration from file "
+					+ userFile.getPath();
+			// use default properties
+		} else {
+			userLoadWarning = "Cannot find user configuration file "
+					+ FILE_USER + ", in user home directory " + userHomeDir
+					+ " or in current directory " + userCurrentDir;
+			userLoadMessage = "Using default user properties";
 		}
 	}
 
@@ -401,6 +374,42 @@ public final class JamProperties {
 			LOGGER.warning(userLoadWarning);
 		}
 		LOGGER.info(userLoadMessage);
+	}
+
+	/**
+	 * Load default configuration properties.
+	 */
+	private void setDefaultConfig() {
+		PROPERTIES.setProperty(JAM_HOME, (new File(userCurrentDir)).getPath());
+		PROPERTIES.setProperty(HOST_IP, "localhost");
+		PROPERTIES.setProperty(HOST_PORT_SEND, "5003");
+		PROPERTIES.setProperty(HOST_PORT_SEND, "5002");
+		PROPERTIES.setProperty(HOST_PORT_RECV, "5005");
+		PROPERTIES.setProperty(TARGET_IP, "frontend");
+		PROPERTIES.setProperty(TARGET_PORT, "5002");
+		PROPERTIES.setProperty(HOST_DATA_IP, "localhost");
+		PROPERTIES.setProperty(HOST_DATA_P_RECV, "10205");
+	}
+
+	/**
+	 * Load default user properties.
+	 */
+	private void setDefaultUser() {
+		PROPERTIES.setProperty(EXP_NAME, "default_");
+		PROPERTIES.setProperty(SORT_ROUTINE, "jam.sort.Example");
+		PROPERTIES.setProperty(SORT_CLASSPATH, DEFAULT_SORTPATH);
+		PROPERTIES.setProperty(HIST_PATH, (new File(userHomeDir, "spectra"))
+				.getPath());
+		PROPERTIES.setProperty(EVENT_INPATH, (new File(userHomeDir, "events"))
+				.getPath());
+		PROPERTIES.setProperty(EVENT_OUTPATH, (new File(userHomeDir, "events"))
+				.getPath());
+		PROPERTIES.setProperty(EVENT_OUTFILE, "sortout.evn");
+		PROPERTIES.setProperty(LOG_PATH, (new File(userHomeDir)).getPath());
+		PROPERTIES.setProperty(EVENT_INSTREAM,
+				"jam.sort.stream.YaleCAEN_InputStream");
+		PROPERTIES.setProperty(EVENT_OUTSTREAM,
+				"jam.sort.stream.YaleOutputStream");
 	}
 
 	private void showErrorMessage(final Exception exception, final String extra) {
