@@ -1,6 +1,5 @@
 #FindBugs User Preferences
-#Tue Jan 23 15:24:30 PST 2007
-default_directory=C\:\\Program Files\\eclipse3.2
+#Fri May 18 06:33:14 PDT 2007
 detectorBCPMethodReturnCheck=BCPMethodReturnCheck|false
 detectorBadAppletConstructor=BadAppletConstructor|false
 detectorBadResultSetAccess=BadResultSetAccess|true
@@ -104,6 +103,7 @@ detectorResolveAllReferences=ResolveAllReferences|false
 detectorRuntimeExceptionCapture=RuntimeExceptionCapture|true
 detectorSerializableIdiom=SerializableIdiom|false
 detectorStartInConstructor=StartInConstructor|true
+detectorStaticCalendarDetector=StaticCalendarDetector|false
 detectorStringConcatenation=StringConcatenation|true
 detectorSuperfluousInstanceOf=SuperfluousInstanceOf|true
 detectorSuspiciousThreadInterrupted=SuspiciousThreadInterrupted|true
@@ -125,5 +125,5 @@ detectorWaitInLoop=WaitInLoop|true
 detectorWrongMapIterator=WrongMapIterator|true
 detectorXMLFactoryBypass=XMLFactoryBypass|true
 detector_threshold=2
-filter_settings=Medium|PERFORMANCE,CORRECTNESS,I18N,MT_CORRECTNESS,BAD_PRACTICE,MALICIOUS_CODE,STYLE|false
+filter_settings=Medium|MALICIOUS_CODE,STYLE,BAD_PRACTICE,CORRECTNESS,I18N,PERFORMANCE,MT_CORRECTNESS|false
 filter_settings_neg=|
