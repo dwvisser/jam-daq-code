@@ -1,14 +1,14 @@
 package test.data;
 
 import static org.junit.Assert.assertTrue;
-
 import jam.data.DataBase;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
-import jam.data.Group.Type;
 
 import java.awt.Polygon;
+
+import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -86,10 +86,5 @@ public class GateTest {//NOPMD
     @After
     public void tearDown(){
     	DataBase.getInstance().clearAllLists();
-    	group=null;//NOPMD
-    	hist1=null;//NOPMD
-    	hist2=null;//NOPMD
-    	gate1=null;//NOPMD
-    	gate2=null;//NOPMD
     }   
 }
