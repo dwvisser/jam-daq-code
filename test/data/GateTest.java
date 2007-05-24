@@ -8,8 +8,6 @@ import jam.data.Histogram;
 
 import java.awt.Polygon;
 
-import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,8 +21,6 @@ import org.junit.Test;
 public class GateTest {//NOPMD
 
     private transient Gate gate1, gate2; //1d and 2d, respectively
-    private transient Group group;
-    private transient Histogram hist1, hist2;
 
     /**
      * Test for boolean inGate(int).
@@ -71,11 +67,11 @@ public class GateTest {//NOPMD
      */
     @Before
     public void setUp() {
-        group = Group.createGroup("TestGateGroup", Group.Type.FILE);
-        hist1 = Histogram.createHistogram(group, new int[100], "h1");
-        hist2 = Histogram.createHistogram(group, new int[100][100], "h2");
+        final Group group = Group.createGroup("TestGateGroup", Group.Type.FILE);
+        final Histogram hist1 = Histogram.createHistogram(group, new int[100], "h1");
         gate1 = new Gate("g1", hist1);
         gate1.setLimits(10, 50);
+        final Histogram hist2 = Histogram.createHistogram(group, new int[100][100], "h2");
         gate2 = new Gate("g2", hist2);
         final int[] xpoints = { 10, 50, 50, 10 };
         final int[] ypoints = { 10, 10, 50, 50 };
