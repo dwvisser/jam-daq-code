@@ -45,23 +45,23 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 
 	private transient double chan1i, chan2i, chan1f, chan2f;
 
-	private transient double intercept1, slope1, intercept2, slope2;
-
 	private transient final JComboBox cto;
 
 	private transient AbstractHist1D hfrom;
 
 	private transient AbstractHist1D hto;
 
+	private transient double intercept1, slope1, intercept2, slope2;
+
 	private final transient JLabel label1, label2, label3, label4;
 
 	private transient final JLabel lname;
 
+	private transient int mlo, mhi;
+
 	private transient final JTextField text1, text2, text3, text4, ttextto;
 
 	private transient double x2lo, x2hi;
-
-	private transient int mlo, mhi;
 
 	/**
 	 * Constructs a gain shift dialog.
@@ -222,6 +222,59 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 
 	}
 
+	/**
+	 * @param countsIn
+	 * @param countsOut
+	 * @param index
+	 */
+	private void calculateCountsInsideRange(final double[] countsIn,
+			double[] countsOut, final int index) {
+		for (int i = mlo + 1; i <= mhi - 1; i++) {
+			countsOut[i] = countsOut[i] + countsIn[index] / (x2hi - x2lo);
+		}
+		countsOut[mlo] = countsOut[mlo] + countsIn[index] * (mlo + 0.5 - x2lo)
+				/ (x2hi - x2lo);
+		countsOut[mhi] = countsOut[mhi] + countsIn[index] * (x2hi - mhi + 0.5)
+				/ (x2hi - x2lo);
+	}
+
+	/**
+	 * @param interceptIn
+	 * @param slopeIn
+	 * @param interceptOut
+	 * @param slopeOut
+	 * @param npts2
+	 * @param index
+	 */
+	private void calculateIntermediateValues(final double interceptIn,
+			final double slopeIn, final double interceptOut,
+			final double slopeOut, final int npts2, final int index) {
+		final double e1lo = interceptIn + slopeIn * (index - 0.5); // energy at
+																	// lower
+																	// edge
+		// of
+		// spec#1
+		// channel
+		final double e1hi = interceptIn + slopeIn * (index + 0.5); // energy at
+																	// upper
+																	// edge
+		// of
+		// spec#1
+		// channel
+		x2lo = (e1lo - interceptOut) / slopeOut; // fractional chan#2
+		// corresponding to
+		// e1lo
+		x2hi = (e1hi - interceptOut) / slopeOut; // fractional chan#2
+		// corresponding to
+		// e1hi
+		mlo = (int) (x2lo + 0.5);
+		mhi = (int) (x2hi + 0.5);
+		mlo = Math.max(mlo, 0);
+		mhi = Math.max(mhi, 0);
+		mlo = Math.min(mlo, npts2 - 1);
+		mhi = Math.min(mhi, npts2 - 1);
+	}
+
 	/*
 	 * non-javadoc: Does the work of manipulating histograms
 	 */
@@ -335,14 +388,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 							* (x2hi - mhi + 0.5) / (x2hi - x2lo);
 				} else if (mhi > mlo + 1) { // sp#1 chan covers several sp#2
 					// chans
-					for (int i = mlo + 1; i <= mhi - 1; i++) {
-						countsOut[i] = countsOut[i] + countsIn[n]
-								/ (x2hi - x2lo);
-					}
-					countsOut[mlo] = countsOut[mlo] + countsIn[n]
-							* (mlo + 0.5 - x2lo) / (x2hi - x2lo);
-					countsOut[mhi] = countsOut[mhi] + countsIn[n]
-							* (x2hi - mhi + 0.5) / (x2hi - x2lo);
+					calculateCountsInsideRange(countsIn, countsOut, n);
 				} else {
 					throw new DataException("Something is wrong: n = " + n
 							+ ", mlo = " + mlo + ", mhi = " + mhi);
@@ -350,39 +396,6 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			}
 		}
 		return countsOut;
-	}
-
-	/**
-	 * @param interceptIn
-	 * @param slopeIn
-	 * @param interceptOut
-	 * @param slopeOut
-	 * @param npts2
-	 * @param index
-	 */
-	private void calculateIntermediateValues(final double interceptIn,
-			final double slopeIn, final double interceptOut,
-			final double slopeOut, final int npts2, final int index) {
-		final double e1lo = interceptIn + slopeIn * (index - 0.5); // energy at lower edge
-		// of
-		// spec#1
-		// channel
-		final double e1hi = interceptIn + slopeIn * (index + 0.5); // energy at upper edge
-		// of
-		// spec#1
-		// channel
-		x2lo = (e1lo - interceptOut) / slopeOut; // fractional chan#2
-		// corresponding to
-		// e1lo
-		x2hi = (e1hi - interceptOut) / slopeOut; // fractional chan#2
-		// corresponding to
-		// e1hi
-		mlo = (int) (x2lo + 0.5);
-		mhi = (int) (x2hi + 0.5);
-		mlo = Math.max(mlo, 0);
-		mhi = Math.max(mhi, 0);
-		mlo = Math.min(mlo, npts2 - 1);
-		mhi = Math.min(mhi, npts2 - 1);
 	}
 
 	/*
@@ -431,7 +444,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		double[] countsOut;
 		// create and zero new array
 		countsOut = new double[npts2];// language specifies elements
-										// initialized to
+		// initialized to
 		// zero
 		// loop for each channel of original array
 		for (int n = 0; n < countsIn.length; n++) {
@@ -439,28 +452,18 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 					slopeOut, npts2, n);
 			// treat the 3 cases below
 			if ((mlo >= 0) && (mhi < npts2)) {
-
 				// sp#1 chan fits within one sp#2 chan
 				if (mhi == mlo) {
 					countsOut[mlo] = countsOut[mlo] + countsIn[n];
-
 					// sp#1 chan falls into two sp#2 chans
 				} else if (mhi == (mlo + 1)) {
 					countsOut[mlo] = countsOut[mlo] + countsIn[n]
 							* (mlo + 0.5 - x2lo) / (x2hi - x2lo);
 					countsOut[mhi] = countsOut[mhi] + countsIn[n]
 							* (x2hi - mhi + 0.5) / (x2hi - x2lo);
-
 					// sp#1 chan covers several sp#2 chans
 				} else if (mhi > mlo + 1) {
-					for (int i = mlo + 1; i <= mhi - 1; i++) {
-						countsOut[i] = countsOut[i] + countsIn[n]
-								/ (x2hi - x2lo);
-					}
-					countsOut[mlo] = countsOut[mlo] + countsIn[n]
-							* (mlo + 0.5 - x2lo) / (x2hi - x2lo);
-					countsOut[mhi] = countsOut[mhi] + countsIn[n]
-							* (x2hi - mhi + 0.5) / (x2hi - x2lo);
+					calculateCountsInsideRange(countsIn, countsOut, n);
 				} else {
 					throw new DataException("Something is wrong: n = " + n
 							+ ", mlo = " + mlo + ", mhi = " + mhi);
