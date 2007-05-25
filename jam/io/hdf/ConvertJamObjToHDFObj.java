@@ -371,39 +371,6 @@ final class ConvertJamObjToHDFObj {
 	}
 
 	/*
-	 * non-javadoc: Converts a scaler to a Virtual group @param list the list to
-	 * convert @exception HDFException thrown if unrecoverable error occurs
-	 */
-	VDataDescription convertGroupScalers(final List<Scaler> scalers) {
-		final int size = scalers.size();
-		final short[] types = { VDataDescription.DFNT_INT32,
-				VDataDescription.DFNT_CHAR8, VDataDescription.DFNT_INT32 };
-		final short[] orders = new short[3];
-		orders[0] = 1; // number
-		orders[1] = (short) maxNameLength(scalers); // name
-		orders[2] = 1; // value
-		final String name = SCALER_SECT;
-		final String scalerType = SCALER_TYPE;
-		final String[] names = SCALER_COLS;
-
-		final VDataDescription desc = new VDataDescription(name, scalerType,
-				size, names, types, orders);
-
-		final VData data = new VData(desc);
-
-		for (int i = 0; i < size; i++) {
-			final Scaler scaler = scalers.get(i);
-			data.addInteger(0, i, scaler.getNumber());
-			data.addChars(1, i, STRING_UTIL.makeLength(scaler.getName(),
-					orders[1]));
-			data.addInteger(2, i, scaler.getValue());
-		}
-
-		return desc;
-
-	}
-
-	/*
 	 * non-javadoc: Converts a parameters to a Virtual group @param list the
 	 * list to convert @exception HDFException thrown if unrecoverable error
 	 * occurs
