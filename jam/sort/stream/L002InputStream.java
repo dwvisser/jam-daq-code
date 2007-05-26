@@ -20,8 +20,6 @@ import java.io.EOFException;
  */
 public class L002InputStream extends AbstractL002HeaderReader {
 
-	private transient EventInputStatus status;
-
 	private transient int parameter;
 
 	/**
@@ -50,8 +48,8 @@ public class L002InputStream extends AbstractL002HeaderReader {
 	public L002InputStream(boolean console, int eventSize) {
 		super(console, eventSize);
 	}
-	
-	public String getFormatDescription(){
+
+	public String getFormatDescription() {
 		return "Original implementation of ORNL L002 format at Yale.";
 	}
 
@@ -98,15 +96,8 @@ public class L002InputStream extends AbstractL002HeaderReader {
 	private boolean isParameter(final short paramWord) {
 		boolean rval;
 		/* check if it's a special type of parameter */
-		if (paramWord == EVENT_END_MARKER) {
+		if (isEndParameter(paramWord)) {// assigns status
 			rval = false;
-			status = EventInputStatus.EVENT;
-		} else if (paramWord == BUFFER_END_MARKER) {
-			rval = false;
-			status = EventInputStatus.END_BUFFER;
-		} else if (paramWord == RUN_END_MARKER) {
-			rval = false;
-			status = EventInputStatus.END_RUN;
 			/* get parameter value if not special type */
 		} else if (passesParamMask(paramWord)) {
 			final int paramNumber = paramWord & EVENT_MASK;

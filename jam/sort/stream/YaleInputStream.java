@@ -18,8 +18,6 @@ import java.io.EOFException;
  */
 public class YaleInputStream extends AbstractL002HeaderReader {
 
-	private transient EventInputStatus status;
-
 	private transient int parameter;
 
 	// make sure to issue a setConsole() after using this constructor
@@ -45,10 +43,10 @@ public class YaleInputStream extends AbstractL002HeaderReader {
 		super(console, eventSize);
 	}
 
-	public String getFormatDescription(){
+	public String getFormatDescription() {
 		return "Later implementation of ORNL L002 format at Yale.";
 	}
-	
+
 	/**
 	 * Reads an event from the input stream Expects the stream position to be
 	 * the beginning of an event. It is up to the user to ensure this.
@@ -94,15 +92,8 @@ public class YaleInputStream extends AbstractL002HeaderReader {
 	 */
 	private boolean isParameter(final short paramWord) {
 		boolean rval;
-		if (paramWord == EVENT_END_MARKER) {
+		if (isEndParameter(paramWord)) {// assigns status
 			rval = false;
-			status = EventInputStatus.EVENT;
-		} else if (paramWord == BUFFER_END_MARKER) {
-			rval = false;
-			status = EventInputStatus.END_BUFFER;
-		} else if (paramWord == RUN_END_MARKER) {
-			rval = false;
-			status = EventInputStatus.END_RUN;
 		} else if ((paramWord & EVENT_PARAMETER) == 0) {
 			parameter = paramWord;
 			rval = false;

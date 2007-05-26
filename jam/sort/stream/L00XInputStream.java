@@ -13,8 +13,6 @@ import java.io.EOFException;
  */
 public class L00XInputStream extends AbstractL002HeaderReader {
 
-	private transient EventInputStatus status;
-
 	private transient int parameter;
 
 	// make sure to issue a setConsole() after using this constructor
