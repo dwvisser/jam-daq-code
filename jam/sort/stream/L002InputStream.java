@@ -1,7 +1,5 @@
 package jam.sort.stream;
 
-import static jam.sort.stream.L002Parameters.BUFFER_END_MARKER;
-import static jam.sort.stream.L002Parameters.EVENT_END_MARKER;
 import static jam.sort.stream.L002Parameters.EVENT_MASK;
 import static jam.sort.stream.L002Parameters.EVENT_PARAMETER;
 import static jam.sort.stream.L002Parameters.RUN_END_MARKER;
@@ -19,8 +17,6 @@ import java.io.EOFException;
  * @since JDK1.1
  */
 public class L002InputStream extends AbstractL002HeaderReader {
-
-	private transient int parameter;
 
 	/**
 	 * Make sure to issue a setConsole() after using this constructor. It is
@@ -76,15 +72,9 @@ public class L002InputStream extends AbstractL002HeaderReader {
 					}
 				}
 			} catch (EOFException eofe) {
-				// we got to the end of a file or stream
-				status = EventInputStatus.END_FILE;
-				LOGGER
-						.warning(getClass().getName()
-								+ ".readEvent(): End of File reached...file may be corrupted, or run not ended properly.");
+				handleEndOfFileException();
 			} catch (Exception e) {
-				status = EventInputStatus.UNKNOWN_WORD;
-				throw new EventException(getClass().getName()
-						+ ".readEvent() parameter = " + parameter, e);
+				handleGeneralException(e);
 			}
 			return status;
 		}

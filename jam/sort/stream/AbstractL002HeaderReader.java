@@ -17,6 +17,8 @@ import java.io.IOException;
  */
 public abstract class AbstractL002HeaderReader extends AbstractEventInputStream {
 
+	protected transient int parameter;
+
 	protected transient EventInputStatus status;
 
 	/**
@@ -64,7 +66,7 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 		final byte[] reserved1 = new byte[8];// reserved set to 0
 		final byte[] reserved2 = new byte[92];// reserved set to 0
 		final byte[] secHead = new byte[256];// read buffer for secondary
-												// headers
+		// headers
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		try {
 			dataInput.readFully(headerStart); // key
@@ -73,7 +75,7 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 			final int number = dataInput.readInt();// header number
 			dataInput.readFully(reserved1);
 			final int numSecHead = dataInput.readInt();// number of secondary
-														// header records
+			// header records
 			dataInput.readInt();// header record length
 			dataInput.readInt();// Block line image records
 			dataInput.readInt();// IMAGE_RECORD_LENGTH
@@ -111,6 +113,28 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 			status = EventInputStatus.END_RUN;
 		}
 		return rval;
+	}
+
+	/**
+	 * @param exception
+	 * @throws EventException
+	 */
+	protected void handleGeneralException(final Exception exception)
+			throws EventException {
+		status = EventInputStatus.UNKNOWN_WORD;
+		throw new EventException(getClass().getName()
+				+ ".readEvent() parameter = " + parameter, exception);
+	}
+
+	/**
+	 * 
+	 */
+	protected void handleEndOfFileException() {
+		// we got to the end of a file or stream
+		status = EventInputStatus.END_FILE;
+		LOGGER
+				.warning(getClass().getName()
+						+ ".readEvent(): End of File reached...file may be corrupted, or run not ended properly.");
 	}
 
 }

@@ -13,8 +13,6 @@ import java.io.EOFException;
  */
 public class L00XInputStream extends AbstractL002HeaderReader {
 
-	private transient int parameter;
-
 	// make sure to issue a setConsole() after using this constructor
 	// It is here to satisfy the requirements of Class.newInstance()
 	/**
@@ -45,8 +43,8 @@ public class L00XInputStream extends AbstractL002HeaderReader {
 	public L00XInputStream(boolean console, int eventSize) {
 		super(console, eventSize);
 	}
-	
-	public String getFormatDescription(){
+
+	public String getFormatDescription() {
 		return "A later modification, used by UConn, I think.";
 	}
 
