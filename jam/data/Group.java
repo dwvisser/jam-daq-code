@@ -157,8 +157,8 @@ public final class Group implements Nameable {
 	public static boolean isValid(final Group group) {
 		boolean valid = false;
 		if (group != null) {
-			valid=NAME_MAP.containsKey(group.getGroupName());
-		} 
+			valid = LIST.contains(group);
+		}
 		return valid;
 	}
 
@@ -218,8 +218,8 @@ public final class Group implements Nameable {
 		} else if (noGroup) {
 			tempFullName = groupName;
 		}
-		final String uniqueName = stringUtil.makeUniqueName(tempFullName, NAME_MAP
-				.keySet());
+		final String uniqueName = stringUtil.makeUniqueName(tempFullName,
+				NAME_MAP.keySet());
 		this.type = type;
 		this.groupName = groupName;
 		this.fileName = fileName;
