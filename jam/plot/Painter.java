@@ -775,6 +775,25 @@ final class Painter {
 		final int numberColors = colorThresholds.length;
 		final int textHeight = (metrics.getAscent());
 		/* lowest threshold for color to be drawn */
+		drawScaleKey(minCount, colorThresholds, numberColors, textHeight);
+		/* draw colors on side */
+		for (int k = 0; k < numberColors; k++) {
+			graphics2d.setColor(colors.getColorByIndex(k));
+			graphics2d.fillRect(
+					view.getRight() + graphLayout.colorScale.offset, // horizontal
+					view.getBottom() - graphLayout.colorScale.size - k
+							* graphLayout.colorScale.size, // vertical
+					graphLayout.colorScale.size, graphLayout.colorScale.size); // size
+		}
+	}
+
+	/**
+	 * @param minCount
+	 * @param colorThresholds
+	 * @param numberColors
+	 * @param textHeight
+	 */
+	private void drawScaleKey(final int minCount, final int[] colorThresholds, final int numberColors, final int textHeight) {
 		String label = Integer.toString(minCount);
 		graphics2d.drawString(label, view.getRight()
 				+ graphLayout.colorScale.offset + graphLayout.colorScale.size
@@ -788,15 +807,6 @@ final class Painter {
 					+ graphLayout.colorScale.labelOffset, view.getBottom()
 					- graphLayout.colorScale.size - k
 					* graphLayout.colorScale.size + textHeight / 2);
-		}
-		/* draw colors on side */
-		for (int k = 0; k < numberColors; k++) {
-			graphics2d.setColor(colors.getColorByIndex(k));
-			graphics2d.fillRect(
-					view.getRight() + graphLayout.colorScale.offset, // horizontal
-					view.getBottom() - graphLayout.colorScale.size - k
-							* graphLayout.colorScale.size, // vertical
-					graphLayout.colorScale.size, graphLayout.colorScale.size); // size
 		}
 	}
 
@@ -815,21 +825,7 @@ final class Painter {
 		dcs.setRange(lowerLimit, upperLimit);
 		final int[] colorThresholds = dcs.getColorThresholds();
 		final int numberColors = colorThresholds.length;
-		/* lowest threshold for color to be drawn */
-		String label = Integer.toString(lowerLimit);
-		graphics2d.drawString(label, view.getRight()
-				+ graphLayout.colorScale.offset + graphLayout.colorScale.size
-				+ graphLayout.colorScale.labelOffset, view.getBottom()
-				+ textHeight / 2);
-		for (int k = 0; k < numberColors; k++) {
-			label = Integer.toString(colorThresholds[k]);
-			graphics2d.drawString(label, view.getRight()
-					+ graphLayout.colorScale.offset
-					+ graphLayout.colorScale.size
-					+ graphLayout.colorScale.labelOffset, view.getBottom()
-					- graphLayout.colorScale.size - k
-					* graphLayout.colorScale.size + textHeight / 2);
-		}
+		drawScaleKey(lowerLimit, colorThresholds, numberColors, textHeight);
 		/* draw colors on side */
 		final int scaleHeight = numberColors * graphLayout.colorScale.size;
 		final int xValue1 = view.getRight() + graphLayout.colorScale.offset;
