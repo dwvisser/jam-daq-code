@@ -370,8 +370,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			final double interceptIn, final double slopeIn,
 			final double interceptOut, final double slopeOut, final int npts2)
 			throws DataException {
-		double[] countsOut;
-		countsOut = new double[npts2];// lang spec says elements init to zero
+		double[] countsOut = new double[npts2];// lang spec says elements init to zero
 		for (int n = 0; n < countsIn.length; n++) {
 			calculateIntermediateValues(interceptIn, slopeIn, interceptOut,
 					slopeOut, npts2, n);
@@ -441,9 +440,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			final double interceptIn, final double slopeIn,
 			final double interceptOut, final double slopeOut, final int npts2)
 			throws DataException {
-		double[] countsOut;
-		// create and zero new array
-		countsOut = new double[npts2];// language specifies elements
+		double[] countsOut = new double[npts2];// language specifies elements
 		// initialized to
 		// zero
 		// loop for each channel of original array
