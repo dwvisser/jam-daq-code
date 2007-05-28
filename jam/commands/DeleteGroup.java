@@ -7,47 +7,50 @@ import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 
-//FIXME KBS not yet used.
 /**
  * Delete a group
  * 
  * @author Ken Swartz
- *
+ * 
  */
 public class DeleteGroup extends AbstractCommand {
 
-	DeleteGroup(){
+	DeleteGroup() {
 		super();
-		putValue(NAME,"Delete Group\u2026");
+		putValue(NAME, "Delete Group\u2026");
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(final Object[] cmdParams) throws CommandException {
-		final JFrame frame =STATUS.getFrame();
-		final Group group = (Group)STATUS.getCurrentGroup();
-		if (Group.isValid(group)){
+		final JFrame frame = STATUS.getFrame();
+		final Group group = (Group) STATUS.getCurrentGroup();
+		if (!Group.isValid(group)) {
 			LOGGER.severe("Need to select a group.");
 			return;
 		}
-		final Group.Type type=group.getType();
+		final Group.Type type = group.getType();
 		final String name = group.getName();
 		/* Cannot delete sort histograms */
 		if (type == Group.Type.SORT) {
-			LOGGER.severe("Cannot delete '"+name+"', it is sort group.");
+			LOGGER.severe("Cannot delete '" + name + "', it is sort group.");
 		} else {
-			if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(frame,
-					"Delete "+name+"?","Delete group",JOptionPane.YES_NO_OPTION)){
+			if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(frame,
+					"Delete " + name + "?", "Delete group",
+					JOptionPane.YES_NO_OPTION)) {
 				Group.clearGroup(group);
 				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			}
 		}
 
-
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
 	protected void executeParse(final String[] cmdTokens)
