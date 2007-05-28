@@ -304,7 +304,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 	public EventInputStatus readEvent(final int[] data) throws EventException {
 		synchronized (this) {
 			eventInputStatus = EventInputStatus.EVENT;
-			int parameter = 0;
+			int localParameter = 0;
 			try {
 				/*
 				 * internal_status may also be in a "flush" mode in which case
@@ -318,7 +318,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 					 */
 					final int header = dataInput.readInt();
 					if (isHeader(header)) {
-						parameter = handleHeader();
+						localParameter = handleHeader();
 					} else if (header == SCALER_BLOCK) {// read and ignore
 						readScalers(tempScalerValues);
 						Scaler.update(tempScalerValues);
@@ -341,7 +341,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 			} catch (EventException e) {
 				eventInputStatus = EventInputStatus.UNKNOWN_WORD;
 				throw new EventException(getClass().getName()
-						+ ".readEvent() parameter = " + parameter, e);
+						+ ".readEvent() parameter = " + localParameter, e);
 			}
 			return eventInputStatus;
 		}
@@ -358,25 +358,25 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 		boolean keepGoing = true;
 		int paramIndex = 0;
 		int endblock = 0;
-		int parameter = 0;
+		int localParameter = 0;
 		while (keepGoing) {
-			parameter = dataInput.readInt();
-			if (isParameter(parameter)) {
-				tempData[paramIndex] = parameter & 0xfff;
+			localParameter = dataInput.readInt();
+			if (isParameter(localParameter)) {
+				tempData[paramIndex] = localParameter & 0xfff;
 				paramIndex++;
-			} else if (isEndBlock(parameter)) {
-				endblock = parameter;
+			} else if (isEndBlock(localParameter)) {
+				endblock = localParameter;
 				keepGoing = false;
 			} else {
 				throw new EventException(
 						getClass().getName()
 								+ ".readEvent(): didn't get a Parameter or End-of-Block when expected, int datum = 0x"
 								+ Integer
-										.toHexString(parameter));
+										.toHexString(localParameter));
 			}
 		}
 		handleEndBlock(endblock, paramIndex);
-		return parameter;
+		return localParameter;
 	}
 
 	/**
