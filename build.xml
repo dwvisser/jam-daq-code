@@ -127,7 +127,7 @@
     description="Compile source into class jar, help jar and source zip" />
 
     <target name="windows" depends="x-platform"
-    description="Make Windows executables to go with that release">
+    description="Make Windows executables">
     	<copy todir="${winlib}">
     	 	<fileset dir="${build.dir}" includes="jam-${MAJOR}.${MINOR}.${RELEASE}-lib.jar, jam-${MAJOR}.${MINOR}.${RELEASE}-help.jar" />
     	 	<fileset dir="${copy.dir}" includes="jh.jar" />
@@ -138,9 +138,9 @@
     		<fileset dir="${copy.dir}/WINpackage" includes="*.*" />
     	</copy>
     	<jsmoothgen project="${windows}/build.jsmooth" 
-      		skeletonroot="C:\\Program Files\\JSmooth 0.9.7\\skeletons"/>
+      		skeletonroot="C:\\Program Files\\JSmooth 0.9.9-7\\skeletons"/>
     	<jsmoothgen project="${windows}/help.jsmooth" 
-      		skeletonroot="C:\\Program Files\\JSmooth 0.9.7\\skeletons"/>
+      		skeletonroot="C:\\Program Files\\JSmooth 0.9.9-7\\skeletons"/>
     </target>
     
     <target name="all" depends="windows" />
