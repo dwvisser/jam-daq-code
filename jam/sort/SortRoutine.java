@@ -361,7 +361,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @throws SortException
 	 *             when there is no event size yet
 	 */
-	public int getEventSize() throws SortException {
+	public int getEventSize(){
 		final int rval;
 		if (evtSizeMode.isSet()) {
 			if (evtSizeMode == EventSizeMode.CNAF) {
@@ -372,7 +372,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 				rval = eventSize;
 			}
 		} else {
-			throw new SortException("Event Size Unkown");
+			throw new IllegalStateException("Event Size Unkown");
 		}
 		return rval;
 	}
