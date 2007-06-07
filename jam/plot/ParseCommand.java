@@ -94,7 +94,7 @@ final class ParseCommand implements CommandListener {
 		/* Must have at least 1 parameter */
 		if (numParam > 0) {
 			final Bin cursor = Bin.create();
-			if (JamStatus.getSingletonInstance().getDisplay()
+			if (PlotDisplay.getDisplay()
 					.getPlotContainer().getDimensionality() == 1) {
 				/* we have a 1D plot: only x dimension */
 				for (double dVal : parameters) {

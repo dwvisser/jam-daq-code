@@ -3,7 +3,6 @@ package jam.global;
 import jam.data.DataBase;
 import jam.data.Group;
 import jam.data.Histogram;
-import jam.plot.PlotDisplay;
 import jam.ui.SummaryTable;
 
 import java.io.File;
@@ -23,47 +22,13 @@ import javax.swing.JFrame;
  */
 public final class JamStatus {
 
-	private transient AcquisitionStatus acqStatus;
-
-	private Nameable currentGroup;
-
-	private Nameable currentHistogram;
-
-	private Nameable currentGate;
-
-	private transient final Set<String> overlayNames = new HashSet<String>();
-
-	private JFrame frame;
-
-	private PlotDisplay display;
-
-	private transient SummaryTable summaryTable;
-
-	private boolean showGUI = true;
-
-	private SortMode sortMode = SortMode.NO_SORT;
-
-	private File openFile = null;
-
-	private transient String sortName = "";
-
-	private transient Validator validator;
+	private static final Broadcaster BROADCASTER = Broadcaster
+			.getSingletonInstance();
 
 	/**
 	 * The one instance of JamStatus.
 	 */
 	static private final JamStatus INSTANCE = new JamStatus();
-
-	private static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
-
-	/**
-	 * Never meant to be called by outside world.
-	 */
-	private JamStatus() {
-		super();
-		setValidator(DataBase.getInstance());
-	}
 
 	/**
 	 * Return the one instance of this class, creating it if necessary.
@@ -74,16 +39,195 @@ public final class JamStatus {
 		return INSTANCE;
 	}
 
+	private transient AcquisitionStatus acqStatus;
+
+	private Nameable currentGate;
+
+	private Nameable currentGroup;
+
+	private Nameable currentHistogram;
+
+	private JFrame frame;
+
+	private File openFile = null;
+
+	private transient final Set<String> overlayNames = new HashSet<String>();
+
+	private boolean showGUI = true;
+
+	private SortMode sortMode = SortMode.NO_SORT;
+
+	private transient String sortName = "";
+
+	private transient SummaryTable summaryTable;
+
+	private transient Validator validator;
+
 	/**
-	 * Set whether GUI components should be suppressed. Used in scripting mode
-	 * to quietly run behind the scenes.
-	 * 
-	 * @param state
-	 *            <code>false</code> if suppressin
+	 * Never meant to be called by outside world.
 	 */
-	public void setShowGUI(final boolean state) {
+	private JamStatus() {
+		super();
+		setValidator(DataBase.getInstance());
+	}
+
+	/**
+	 * Adds an overlay <code>Histogram</code> name.
+	 * 
+	 * @param name
+	 *            name of a histogram to add to overlay
+	 */
+	public void addOverlayHistogramName(final String name) {
 		synchronized (this) {
-			showGUI = state;
+			overlayNames.add(name);
+		}
+	}
+
+	/**
+	 * @return true is the mode can be changed
+	 */
+	public boolean canSetup() {
+		synchronized (sortMode) {
+			return ((sortMode == SortMode.NO_SORT) || (sortMode == SortMode.FILE));
+		}
+	}
+
+	/**
+	 * Clear all overlay histogram names from list.
+	 * 
+	 */
+	public void clearOverlays() {
+		synchronized (this) {
+			overlayNames.clear();
+		}
+	}
+
+	/**
+	 * Gets the current <code>Gate</code>.
+	 * 
+	 * @return name of current gate
+	 */
+	public Nameable getCurrentGate() {
+		synchronized (this) {
+			if (validator == null) {
+				throw new IllegalStateException(
+						"Can't get current histogram without a defined validator.");
+			}
+			if (!validator.isValid(currentGate)) {
+				currentGate = UnNamed.getSingletonInstance();
+			}
+			return currentGate;
+		}
+	}
+
+	/**
+	 * Gets the current histogram.
+	 * 
+	 * @return the current histogram
+	 */
+	public Nameable getCurrentGroup() {
+		synchronized (this) {
+			return currentGroup;
+		}
+	}
+
+	/**
+	 * Gets the current histogram.
+	 * 
+	 * @return the current histogram, or the singleton instance of the class
+	 *         <code>UnNamed</code>
+	 */
+	public Nameable getCurrentHistogram() {
+		synchronized (this) {
+			if (validator == null) {
+				throw new IllegalStateException(
+						"Can't get current histogram without a defined validator.");
+			}
+			if (!validator.isValid(currentHistogram)) {
+				currentHistogram = UnNamed.getSingletonInstance();
+			}
+			return currentHistogram;
+		}
+	}
+
+	/**
+	 * Get the application frame.
+	 * 
+	 * @return the frame of the current Jam application
+	 */
+	public JFrame getFrame() {
+		synchronized (this) {
+			return frame;
+		}
+	}
+
+	/**
+	 * @return the most recent file corresponding to the currently loaded data
+	 */
+	public File getOpenFile() {
+		synchronized (sortMode) {
+			return openFile;
+		}
+	}
+
+	/**
+	 * Gets the overlay histograms.
+	 * 
+	 * @return the histograms being overlaid
+	 */
+	public List<String> getOverlayHistograms() {
+		synchronized (this) {
+			return Collections.unmodifiableList(new ArrayList<String>(
+					overlayNames));
+		}
+	}
+
+	/**
+	 * @return the current sort mode
+	 */
+	public SortMode getSortMode() {
+		synchronized (sortMode) {
+			return sortMode;
+		}
+	}
+
+	/**
+	 * Returns name of the sort or file.
+	 * 
+	 * @return name of the sort or file
+	 */
+	public String getSortName() {
+		return sortName;
+	}
+
+	/**
+	 * Gets the display.
+	 * 
+	 * @return the display
+	 */
+	public SummaryTable getTable() {
+		synchronized (this) {
+			return summaryTable;
+		}
+	}
+
+	/**
+	 * Returns whether data is currently being taken.
+	 * 
+	 * @return whether data is currently being taken
+	 */
+	public boolean isAcqOn() {
+		return acqStatus.isAcqOn();
+	}
+
+	/**
+	 * Returns whether online acquisition is set up.
+	 * 
+	 * @return whether online acquisition is set up
+	 */
+	public boolean isOnline() {
+		synchronized (sortMode) {
+			return sortMode.isOnline();
 		}
 	}
 
@@ -95,6 +239,69 @@ public final class JamStatus {
 	public boolean isShowGUI() {
 		synchronized (this) {
 			return showGUI;
+		}
+	}
+
+	/**
+	 * Do what it takes to open up the tree to the first histogram in the sort
+	 * routine.
+	 */
+	public void selectFirstSortHistogram() {
+		// Select first histogram
+		final Group sortGroup = Group.getSortGroup();
+		setCurrentGroup(sortGroup);
+		final List<Histogram> histList = sortGroup.getHistogramList();
+		if (!histList.isEmpty()) {
+			final Histogram firstHist = histList.get(0);
+			setCurrentHistogram(firstHist);
+		}
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
+	}
+
+	/**
+	 * Set the acquisition status.
+	 * 
+	 * @param status
+	 *            the current status of the Jam application
+	 */
+	public void setAcqisitionStatus(final AcquisitionStatus status) {
+		acqStatus = status;
+	}
+
+	/**
+	 * Sets the current <code>Gate</code>.
+	 * 
+	 * @param gate
+	 *            of current gate
+	 */
+	public void setCurrentGate(final Nameable gate) {
+		synchronized (this) {
+			currentGate = gate;
+		}
+	}
+
+	/**
+	 * Sets the current <code>Group</code>.
+	 * 
+	 * @param group
+	 *            the current group
+	 */
+	public void setCurrentGroup(final Nameable group) {
+		synchronized (this) {
+			currentGroup = group;
+		}
+	}
+
+	/**
+	 * Sets the current <code>Histogram</code>.
+	 * 
+	 * @param hist
+	 *            the current histogram
+	 */
+	public void setCurrentHistogram(final Nameable hist) {
+		synchronized (this) {
+			currentHistogram = hist;
 		}
 	}
 
@@ -111,69 +318,41 @@ public final class JamStatus {
 	}
 
 	/**
-	 * Set the object which validates data objects.
-	 * @param valid validates whether data objects are active
+	 * Sets <code>FILE</code> sort mode, and stores the given file as the last
+	 * file accessed.
+	 * 
+	 * @param file
+	 *            the file just loaded or saved
 	 */
-	public void setValidator(final Validator valid) {
-		synchronized (this) {
-			validator = valid;
+	public void setOpenFile(final File file) {
+		synchronized (sortMode) {
+			openFile = file;
+			final String name = (file == null) ? "" : file.getPath();
+			setSortMode(SortMode.FILE, name);
 		}
 	}
 
 	/**
-	 * Sets the display.
+	 * Set the current run state.
 	 * 
-	 * @param plotDisplay
-	 *            the display
+	 * @param runState
+	 *            new run state
 	 */
-	public void setDisplay(final PlotDisplay plotDisplay) {
-		synchronized (this) {
-			display = plotDisplay;
-		}
+	public void setRunState(final RunState runState) {
+		BROADCASTER.broadcast(BroadcastEvent.Command.RUN_STATE_CHANGED,
+				runState);
 	}
 
 	/**
-	 * Gets the display.
+	 * Set whether GUI components should be suppressed. Used in scripting mode
+	 * to quietly run behind the scenes.
 	 * 
-	 * @return the display
+	 * @param state
+	 *            <code>false</code> if suppressin
 	 */
-	public PlotDisplay getDisplay() {
+	public void setShowGUI(final boolean state) {
 		synchronized (this) {
-			return display;
-		}
-	}
-
-	/**
-	 * Sets the table.
-	 * 
-	 * @param table
-	 *            the table
-	 */
-	public void setTable(final SummaryTable table) {
-		synchronized (this) {
-			summaryTable = table;
-		}
-	}
-
-	/**
-	 * Gets the display.
-	 * 
-	 * @return the display
-	 */
-	public SummaryTable getTable() {
-		synchronized (this) {
-			return summaryTable;
-		}
-	}
-
-	/**
-	 * Get the application frame.
-	 * 
-	 * @return the frame of the current Jam application
-	 */
-	public JFrame getFrame() {
-		synchronized (this) {
-			return frame;
+			showGUI = state;
 		}
 	}
 
@@ -211,229 +390,27 @@ public final class JamStatus {
 	}
 
 	/**
-	 * Sets <code>FILE</code> sort mode, and stores the given file as the last
-	 * file accessed.
+	 * Sets the table.
 	 * 
-	 * @param file
-	 *            the file just loaded or saved
+	 * @param table
+	 *            the table
 	 */
-	public void setOpenFile(final File file) {
-		synchronized (sortMode) {
-			openFile = file;
-			final String name = (file == null) ? "" : file.getPath();
-			setSortMode(SortMode.FILE, name);
-		}
-	}
-
-	/**
-	 * @return the current sort mode
-	 */
-	public SortMode getSortMode() {
-		synchronized (sortMode) {
-			return sortMode;
-		}
-	}
-
-	/**
-	 * Set the current run state.
-	 * 
-	 * @param runState
-	 *            new run state
-	 */
-	public void setRunState(final RunState runState) {
-		BROADCASTER.broadcast(BroadcastEvent.Command.RUN_STATE_CHANGED,
-				runState);
-	}
-
-	/**
-	 * @return true is the mode can be changed
-	 */
-	public boolean canSetup() {
-		synchronized (sortMode) {
-			return ((sortMode == SortMode.NO_SORT) || (sortMode == SortMode.FILE));
-		}
-	}
-
-	/**
-	 * Returns name of the sort or file.
-	 * 
-	 * @return name of the sort or file
-	 */
-	public String getSortName() {
-		return sortName;
-	}
-
-	/**
-	 * @return the most recent file corresponding to the currently loaded data
-	 */
-	public File getOpenFile() {
-		synchronized (sortMode) {
-			return openFile;
-		}
-	}
-
-	/**
-	 * Set the acquisition status.
-	 * 
-	 * @param status
-	 *            the current status of the Jam application
-	 */
-	public void setAcqisitionStatus(final AcquisitionStatus status) {
-		acqStatus = status;
-	}
-
-	/**
-	 * Returns whether online acquisition is set up.
-	 * 
-	 * @return whether online acquisition is set up
-	 */
-	public boolean isOnline() {
-		synchronized (sortMode) {
-			return sortMode.isOnline();
-		}
-	}
-
-	/**
-	 * Returns whether data is currently being taken.
-	 * 
-	 * @return whether data is currently being taken
-	 */
-	public boolean isAcqOn() {
-		return acqStatus.isAcqOn();
-	}
-
-	/**
-	 * Sets the current <code>Group</code>.
-	 * 
-	 * @param group
-	 *            the current group
-	 */
-	public void setCurrentGroup(final Nameable group) {
+	public void setTable(final SummaryTable table) {
 		synchronized (this) {
-			currentGroup = group;
+			summaryTable = table;
 		}
 	}
 
 	/**
-	 * Gets the current histogram.
+	 * Set the object which validates data objects.
 	 * 
-	 * @return the current histogram
+	 * @param valid
+	 *            validates whether data objects are active
 	 */
-	public Nameable getCurrentGroup() {
+	public void setValidator(final Validator valid) {
 		synchronized (this) {
-			return currentGroup;
+			validator = valid;
 		}
-	}
-
-	/**
-	 * Sets the current <code>Histogram</code>.
-	 * 
-	 * @param hist
-	 *            the current histogram
-	 */
-	public void setCurrentHistogram(final Nameable hist) {
-		synchronized (this) {
-			currentHistogram = hist;
-		}
-	}
-
-	/**
-	 * Gets the current histogram.
-	 * 
-	 * @return the current histogram, or the singleton instance of the class <code>UnNamed</code>
-	 */
-	public Nameable getCurrentHistogram() {
-		synchronized (this) {
-			if (validator == null) {
-				throw new IllegalStateException(
-						"Can't get current histogram without a defined validator.");
-			}
-			if (!validator.isValid(currentHistogram)) {
-				currentHistogram = UnNamed.getSingletonInstance();
-			}
-			return currentHistogram;
-		}
-	}
-
-	/**
-	 * Adds an overlay <code>Histogram</code> name.
-	 * 
-	 * @param name
-	 *            name of a histogram to add to overlay
-	 */
-	public void addOverlayHistogramName(final String name) {
-		synchronized (this) {
-			overlayNames.add(name);
-		}
-	}
-
-	/**
-	 * Gets the overlay histograms.
-	 * 
-	 * @return the histograms being overlaid
-	 */
-	public List<String> getOverlayHistograms() {
-		synchronized (this) {
-			return Collections.unmodifiableList(new ArrayList<String>(
-					overlayNames));
-		}
-	}
-
-	/**
-	 * Clear all overlay histogram names from list.
-	 * 
-	 */
-	public void clearOverlays() {
-		synchronized (this) {
-			overlayNames.clear();
-		}
-	}
-
-	/**
-	 * Sets the current <code>Gate</code>.
-	 * 
-	 * @param gate
-	 *            of current gate
-	 */
-	public void setCurrentGate(final Nameable gate) {
-		synchronized (this) {
-			currentGate = gate;
-		}
-	}
-
-	/**
-	 * Gets the current <code>Gate</code>.
-	 * 
-	 * @return name of current gate
-	 */
-	public Nameable getCurrentGate() {
-		synchronized (this) {
-			if (validator == null) {
-				throw new IllegalStateException(
-						"Can't get current histogram without a defined validator.");
-			}
-			if (!validator.isValid(currentGate)) {
-				currentGate = UnNamed.getSingletonInstance();
-			}
-			return currentGate;
-		}
-	}
-
-	/**
-	 * Do what it takes to open up the tree to the first histogram in the sort
-	 * routine.
-	 */
-	public void selectFirstSortHistogram() {
-		// Select first histogram
-		final Group sortGroup = Group.getSortGroup();
-		setCurrentGroup(sortGroup);
-		final List<Histogram> histList = sortGroup.getHistogramList();
-		if (!histList.isEmpty()) {
-			final Histogram firstHist = histList.get(0);
-			setCurrentHistogram(firstHist);
-		}
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
 	}
 
 }

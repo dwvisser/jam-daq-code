@@ -2,6 +2,7 @@ package jam.commands;
 
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.plot.PlotDisplay;
 import jam.plot.View;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -87,7 +88,7 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 			}
 			Broadcaster.getSingletonInstance().broadcast(
 					BroadcastEvent.Command.VIEW_NEW);
-			STATUS.getDisplay().setView(View.SINGLE);
+			PlotDisplay.getDisplay().setView(View.SINGLE);
 			updateViewNames();
 		}
 

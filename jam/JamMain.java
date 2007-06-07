@@ -111,7 +111,7 @@ public final class JamMain extends JFrame implements Observer {
 		contents.add(jamToolBar, BorderLayout.NORTH);
 		/* histogram displayer */
 		final PlotDisplay plotDisplay = new PlotDisplay(console);
-		JamStatus.getSingletonInstance().setDisplay(plotDisplay);
+		PlotDisplay.setDisplay(plotDisplay);
 		summaryTable = new SummaryTable();
 		JamStatus.getSingletonInstance().setTable(summaryTable);
 		final Display display = new Display(plotDisplay, summaryTable);

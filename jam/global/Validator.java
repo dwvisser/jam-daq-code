@@ -9,5 +9,4 @@ public interface Validator {
 	 * @param object to validate
 	 */
 	boolean isValid(Object object);
-
 }

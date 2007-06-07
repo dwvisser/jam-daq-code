@@ -56,7 +56,7 @@ public class LoadFit {
 		broadcaster = Broadcaster.getSingletonInstance();
 		final JamStatus jamStatus = JamStatus.getSingletonInstance();
 		jamMain = jamStatus.getFrame();
-		display = jamStatus.getDisplay();
+		display = PlotDisplay.getDisplay();
 		final String dialogName = "Load Fit Routine";
 		dialog = new JDialog(jamMain, dialogName, false);
 		final Container contents = dialog.getContentPane();

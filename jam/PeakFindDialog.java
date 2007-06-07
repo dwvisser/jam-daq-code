@@ -1,6 +1,5 @@
 package jam;
 
-import jam.global.JamStatus;
 import jam.plot.PlotDisplay;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -35,8 +34,7 @@ public class PeakFindDialog extends JDialog {
 	 */
 	public PeakFindDialog() {
 		super();
-		final JamStatus status = JamStatus.getSingletonInstance();
-		display = status.getDisplay();
+		display = PlotDisplay.getDisplay();
 		createDialog();
 	}
 

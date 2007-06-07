@@ -7,6 +7,7 @@ import jam.global.CommandNames;
 import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.io.hdf.HDFPrefs;
+import jam.plot.PlotDisplay;
 import jam.plot.PlotPrefs;
 import jam.plot.View;
 import jam.plot.color.ColorPrefs;
@@ -291,7 +292,7 @@ final class MenuBar implements Observer {
 		final JMenuItem rval = new JMenuItem(name);
 		rval.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				status.getDisplay().setView(View.getView(name));
+				PlotDisplay.getDisplay().setView(View.getView(name));
 			}
 		});
 		return rval;

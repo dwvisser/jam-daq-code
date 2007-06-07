@@ -41,7 +41,7 @@ final class Print extends AbstractPrintingCommand implements Observer {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(final Object[] cmdParams) {
-		final PlotDisplay display=STATUS.getDisplay();
+		final PlotDisplay display=PlotDisplay.getDisplay();
 		if (firstTime){
 			LOGGER.warning("On some systems, it will be necessary to first "+
 			"use 'Page Setup\u2026' for your hardcopy to have correct size and margins.");

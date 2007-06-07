@@ -92,6 +92,33 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		/* Initial view only 1 plot */
 		setView(View.SINGLE);
 	}
+	
+	private static final Object DISPLAY_LOCK = new Object();
+
+	private static PlotDisplay display;
+
+	/**
+	 * Sets the display.
+	 * 
+	 * @param plotDisplay
+	 *            the display
+	 */
+	public static void setDisplay(final PlotDisplay plotDisplay) {
+		synchronized (DISPLAY_LOCK) {
+			display = plotDisplay;
+		}
+	}
+
+	/**
+	 * Gets the display.
+	 * 
+	 * @return the display
+	 */
+	public static PlotDisplay getDisplay() {
+		synchronized (DISPLAY_LOCK) {
+			return display;
+		}
+	}
 
 	/**
 	 * Adds a plot mouse listner, plot mouse is a mouse which is calibrated to

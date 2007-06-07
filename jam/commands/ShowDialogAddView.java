@@ -1,6 +1,7 @@
 package jam.commands;
 
 import jam.global.BroadcastEvent;
+import jam.plot.PlotDisplay;
 import jam.plot.View;
 import jam.ui.WindowCancelAction;
 
@@ -132,7 +133,7 @@ public class ShowDialogAddView extends AbstractShowDialog {
 			}
 			viewNew = new View(name, nRows, nCols);
 			BROADCASTER.broadcast(BroadcastEvent.Command.VIEW_NEW);
-			STATUS.getDisplay().setView(viewNew);
+			PlotDisplay.getDisplay().setView(viewNew);
 		}
 	}
 }
