@@ -3,6 +3,7 @@ package jam.commands;
 import jam.data.Histogram;
 import jam.global.CommandListenerException;
 import jam.io.ImpExpException;
+import jam.ui.SelectionTree;
 
 import java.io.File;
 
@@ -36,7 +37,7 @@ class AbstractExportFile extends AbstractImportExport {
      */
     protected final void execute(final Object[] cmdParams) throws CommandException {
         try {
-            final Histogram histogram = (Histogram)STATUS.getCurrentHistogram();
+            final Histogram histogram = (Histogram)SelectionTree.getCurrentHistogram();
             if (cmdParams == null) { //No file given
                 importExport.saveFile(histogram);
             } else { //File given

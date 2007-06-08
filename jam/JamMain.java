@@ -113,7 +113,7 @@ public final class JamMain extends JFrame implements Observer {
 		final PlotDisplay plotDisplay = new PlotDisplay(console);
 		PlotDisplay.setDisplay(plotDisplay);
 		summaryTable = new SummaryTable();
-		JamStatus.getSingletonInstance().setTable(summaryTable);
+		SummaryTable.setTable(summaryTable);
 		final Display display = new Display(plotDisplay, summaryTable);
 		final JSplitPane splitCenter = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, true, display, console);
@@ -144,7 +144,7 @@ public final class JamMain extends JFrame implements Observer {
 		AbstractControl.setupAll(); // setup jam.data.control dialog boxes
 		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
 		status.setCurrentGroup(initHists.getInitialGroup());
-		status.setCurrentHistogram(initHists.getInitialHist());
+		SelectionTree.setCurrentHistogram(initHists.getInitialHist());
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 				initHists.getInitialHist());
 		showMainWindow(showGUI);

@@ -5,6 +5,7 @@ import jam.data.Histogram;
 import jam.data.control.GateAdd;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
+import jam.ui.SelectionTree;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -33,7 +34,7 @@ final class ShowDialogAddGate extends AbstractShowDialog implements Observer {
 			setEnabled(false);
 		} else if ((command == BroadcastEvent.Command.HISTOGRAM_SELECT)
 				|| (command == BroadcastEvent.Command.GATE_SELECT)) {
-			final Nameable hist = STATUS.getCurrentHistogram();
+			final Nameable hist = SelectionTree.getCurrentHistogram();
 			setEnabled(!Gate.getGateList().isEmpty()
 					&& hist instanceof Histogram);
 		}

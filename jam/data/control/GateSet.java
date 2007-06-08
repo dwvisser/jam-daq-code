@@ -8,6 +8,7 @@ import jam.global.Nameable;
 import jam.global.UnNamed;
 import jam.plot.Bin;
 import jam.ui.Canceller;
+import jam.ui.SelectionTree;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -253,7 +254,7 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 	 */
 	private void checkHistogram() {
 		/* has histogram changed? */
-		final Nameable named = STATUS.getCurrentHistogram();
+		final Nameable named = SelectionTree.getCurrentHistogram();
 		if (!currentHistogram.equals(named)) {
 			doSetup(); // setup chooser list
 			canceller.cancel(); // cancel current gate if was setting
@@ -267,7 +268,7 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 	 */
 	public void doSetup() {
 		synchronized (this) {
-			currentHistogram = STATUS.getCurrentHistogram();
+			currentHistogram = SelectionTree.getCurrentHistogram();
 			setupType();
 			cgate.setSelectedIndex(0);
 		}

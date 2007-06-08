@@ -4,6 +4,7 @@ import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
+import jam.ui.SelectionTree;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -169,7 +170,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 							doGainShift();
 							BROADCASTER
 									.broadcast(BroadcastEvent.Command.REFRESH);
-							STATUS.setCurrentHistogram(hto);
+							SelectionTree.setCurrentHistogram(hto);
 							STATUS.setCurrentGroup(hto.getGroup());
 							BROADCASTER.broadcast(
 									BroadcastEvent.Command.HISTOGRAM_SELECT,

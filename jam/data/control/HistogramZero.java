@@ -2,7 +2,7 @@ package jam.data.control;
 
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.JamStatus;
+import jam.ui.SelectionTree;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -43,12 +43,11 @@ public class HistogramZero extends AbstractControl {
 		final JButton one = new JButton("Displayed");
 		one.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent actionEvent) {
-				final Histogram currentHistogram = (Histogram) JamStatus
-						.getSingletonInstance().getCurrentHistogram();
+				final Histogram currentHistogram = (Histogram) SelectionTree
+						.getCurrentHistogram();
 				currentHistogram.setZero();
 				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-				LOGGER.info("Zero Histogram: "
-						+ currentHistogram.getTitle());
+				LOGGER.info("Zero Histogram: " + currentHistogram.getTitle());
 				dispose();
 			}
 		});
@@ -81,16 +80,16 @@ public class HistogramZero extends AbstractControl {
 	 * Zero all the histograms.
 	 */
 	public void zeroAll() {
-		final String classname= getClass().getName();
+		final String classname = getClass().getName();
 		final String methname = "zeroAll";
-		LOGGER.entering(classname,methname);
+		LOGGER.entering(classname, methname);
 		LOGGER.info("Zero All");
 		final List<Histogram> allHistograms = Histogram.getHistogramList();
 		for (Histogram hist : allHistograms) {
 			hist.setZero();
 		}
 		BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-		LOGGER.exiting(classname,methname);
+		LOGGER.exiting(classname, methname);
 	}
 
 	public void doSetup() {

@@ -5,6 +5,7 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
+import jam.ui.SelectionTree;
 
 import java.awt.Event;
 import java.awt.event.KeyEvent;
@@ -69,7 +70,7 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 			if (currentGroup.getHistogramList().size() > 0) {
 				firstHist = currentGroup.getHistogramList().get(0);
 			}
-			STATUS.setCurrentHistogram(firstHist);
+			SelectionTree.setCurrentHistogram(firstHist);
 			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 					firstHist);
 		}

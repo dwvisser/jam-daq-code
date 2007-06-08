@@ -11,6 +11,7 @@ import jam.plot.Bin;
 import jam.plot.PlotDisplay;
 import jam.plot.PlotMouseListener;
 import jam.ui.Canceller;
+import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
 import jam.util.NumberUtilities;
 
@@ -553,7 +554,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 * Gets counts from currently displayed <code>Histogram</code>
 	 */
 	private void getCounts() {
-		final AbstractHist1D hist1d = (AbstractHist1D) STATUS
+		final AbstractHist1D hist1d = (AbstractHist1D) SelectionTree
 				.getCurrentHistogram();
 		if (hist1d.getType() == Histogram.Type.ONE_DIM_INT) {
 			final int[] temp = ((HistInt1D) hist1d).getCounts();
@@ -754,7 +755,8 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 * Update the name of the displayed histogram in the dialog box.
 	 */
 	private void updateHist() {
-		final Histogram histogram = (Histogram) STATUS.getCurrentHistogram();
+		final Histogram histogram = (Histogram) SelectionTree
+				.getCurrentHistogram();
 		if (histogram != null && histogram.getDimensionality() == 1) {
 			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
 				final int[] temp = ((HistInt1D) histogram).getCounts();

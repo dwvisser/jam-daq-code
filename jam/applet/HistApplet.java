@@ -128,7 +128,6 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 		/* output console at bottome */
 		this.add(BorderLayout.SOUTH, console);
 		/* display in middle */
-		JamStatus.getSingletonInstance().setValidator(DataBase.getInstance());
 		display = new PlotDisplay(console);
 		this.add(display);
 		addToolbarSelect(ptop);// tool bar for selecting

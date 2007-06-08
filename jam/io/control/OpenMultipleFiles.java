@@ -6,10 +6,10 @@ import jam.global.JamStatus;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HistogramAttributes;
 import jam.ui.MultipleFileChooser;
+import jam.ui.SelectionTree;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-//import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -315,7 +315,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 			final List<jam.data.Histogram> list = firstGroup.getHistogramList();
 			if (list.size() > 0) {
 				final jam.data.Histogram firstHist = list.get(0);
-				STATUS.setCurrentHistogram(firstHist);
+				SelectionTree.setCurrentHistogram(firstHist);
 				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 						firstHist);
 			}

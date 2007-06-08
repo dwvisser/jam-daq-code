@@ -4,8 +4,8 @@
 package jam.plot;
 
 import jam.data.Histogram;
-import jam.global.JamStatus;
 import jam.global.Nameable;
+import jam.ui.SelectionTree;
 
 import javax.swing.DefaultBoundedRangeModel;
 
@@ -32,7 +32,7 @@ abstract class AbstractScrollBarRangeModel extends DefaultBoundedRangeModel {
 
 	private final void setFields(final PlotContainer container) {
 		plot = container;
-		final Nameable hist = JamStatus.getSingletonInstance()
+		final Nameable hist = SelectionTree
 				.getCurrentHistogram();
 		if (hist instanceof Histogram) {
 			lim = Limits.getLimits((Histogram)hist);

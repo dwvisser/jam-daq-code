@@ -31,6 +31,7 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.UnNamed;
 import jam.ui.Console;
+import jam.ui.SelectionTree;
 
 import java.awt.Point;
 import java.lang.reflect.InvocationTargetException;
@@ -199,7 +200,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			clicks.add((Bin) bin.clone());
 		}
 	}
-	
+
 	/**
 	 * Calculate the area and centroid for a region. Maybe we should copy
 	 * inquire methods to this class?
@@ -211,8 +212,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		} else {
 			isCursorCommand = true;
 			init();
-			final String name = ((Histogram) STATUS.getCurrentHistogram())
-					.getFullName().trim();
+			final String name = ((Histogram) SelectionTree
+					.getCurrentHistogram()).getFullName().trim();
 			textOut.messageOut("Area for " + name + " from channel ",
 					MessageHandler.NEW);
 		}
@@ -298,7 +299,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final int ych;
 		String binText;
 		/* check that a histogram is defined */
-		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		synchronized (cursorBin) {
 			xch = cursorBin.getX();
@@ -342,7 +343,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				LOGGER.severe("There is no histogram numbered " + num + ".");
 			} else {
 				final JamStatus status = JamStatus.getSingletonInstance();
-				status.setCurrentHistogram(histogram);
+				SelectionTree.setCurrentHistogram(histogram);
 				status.setCurrentGroup(histogram.getGroup());
 				textOut.messageOut(Integer.toString(num) + " ",
 						MessageHandler.END);
@@ -399,7 +400,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				}
 			}
 			/* check that a histogram is defined */
-			if (STATUS.getCurrentHistogram() != UnNamed.getSingletonInstance()) {
+			if (SelectionTree.getCurrentHistogram() != UnNamed.getSingletonInstance()) {
 				doCurrentCommand(inParams, console);
 			}
 		}
@@ -601,7 +602,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final String intro = "Goto (click on spectrum or type the ";
 		final char leftParen = ')';
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
-		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
 		if (commandPresent) {
 			if (clicks.size() == 0) {
 				goNoClicks(currentPlot, hist);
@@ -609,7 +610,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		} else {
 			isCursorCommand = true;
 			init();
-			if (currentPlot.getDimensionality() == 1 && existsAndIsCalibrated(hist)) {
+			if (currentPlot.getDimensionality() == 1
+					&& existsAndIsCalibrated(hist)) {
 				final String mess = new StringBuffer(intro).append(cal).append(
 						space).append(energy).append(leftParen).append(space)
 						.toString();
@@ -672,7 +674,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * @param channelBackground
 	 * @param crt
 	 */
-	private void handleClick6(final PlotContainer currentPlot, final Histogram hist) {
+	private void handleClick6(final PlotContainer currentPlot,
+			final Histogram hist) {
 		final double[] netArea = new double[1];
 		final double[] netAreaError = new double[1];
 		final double[] fwhm = new double[2];
@@ -692,16 +695,15 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final double[] counts = (double[]) currentPlot.getCounts();
 		final double grossArea = inquire.getArea(counts, bin4, cursorBin);
 		/* results of next call are passed back in the parameters */
-		getNetArea(netArea, netAreaError, channelBackground, fwhm,
-				centroid, centroidError, grossArea, currentPlot
-						.getSizeX(), counts);
+		getNetArea(netArea, netAreaError, channelBackground, fwhm, centroid,
+				centroidError, grossArea, currentPlot.getSizeX(), counts);
 		getCalibratedPeakStatistics(currentPlot, hist, fwhm, centroidError,
 				centroid);
 		final char plusMinus = '\u00b1';
 		final String crt = "\n\t";
 		textOut.messageOut(crt + "Gross Area = " + grossArea + plusMinus
-				+ numFormat.format(Math.sqrt(grossArea)) + crt
-				+ "NetArea = " + numFormat.format(netArea[0]) + plusMinus
+				+ numFormat.format(Math.sqrt(grossArea)) + crt + "NetArea = "
+				+ numFormat.format(netArea[0]) + plusMinus
 				+ numFormat.format(netAreaError[0]) + crt + "Centroid = "
 				+ numFormat.format(centroid[0]) + plusMinus
 				+ numFormat.format(centroidError[0]) + crt + "FWHM = "
@@ -713,8 +715,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final int lowerLimit = bgdPts[0];
 		final int upperLimit = bgdPts[3] + 1;
 		final double[] bkgd = new double[upperLimit - lowerLimit + 1];
-		System.arraycopy(channelBackground, lowerLimit, bkgd, 0,
-				bkgd.length);
+		System.arraycopy(channelBackground, lowerLimit, bkgd, 0, bkgd.length);
 		plotDisplay.displayFit(null, bkgd, null, lowerLimit);
 		done();
 	}
@@ -856,9 +857,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Background subtracted intensity of 1-d plots
 	 */
 	@SuppressWarnings(UNUSED)
-	private void netarea() {//NOPMD
+	private void netarea() {// NOPMD
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
-		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
 		final int nclicks = clicks.size();
 		if (!commandPresent) {// NOPMD
 			isCursorCommand = true;
@@ -1048,7 +1049,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			textOut.messageOut("Rebin ", MessageHandler.NEW);
 		}
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
-		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
 		if (!parameters.isEmpty()) {
 			final double binWidth = parameters.get(0);
 			if (binWidth >= 1.0 && binWidth < hist.getSizeX()) {

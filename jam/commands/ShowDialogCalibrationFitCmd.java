@@ -4,6 +4,7 @@ import jam.data.Histogram;
 import jam.data.control.CalibrationFit;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
+import jam.ui.SelectionTree;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -24,7 +25,7 @@ final class ShowDialogCalibrationFitCmd extends AbstractShowDialog implements
 
 	private void enable() {
 		boolean enable = false;
-		final Nameable named = STATUS.getCurrentHistogram();
+		final Nameable named = SelectionTree.getCurrentHistogram();
 		enable = named instanceof Histogram;
 		if (enable) {
 			final Histogram histogram = (Histogram) named;

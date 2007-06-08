@@ -14,6 +14,7 @@ import jam.global.Nameable;
 import jam.global.BroadcastEvent.Command;
 import jam.plot.PlotContainer.LayoutType;
 import jam.ui.Console;
+import jam.ui.SelectionTree;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -271,11 +272,11 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			setPlot(selectedPlot);
 			final Histogram hist = selectedPlot.getHistogram();
 			/* Tell the framework the current hist */
-			status.setCurrentHistogram(hist);
+			SelectionTree.setCurrentHistogram(hist);
 			if (hist != null) {
 				status.setCurrentGroup(hist.getGroup());
 			}
-			status.setCurrentGate(null);
+			SelectionTree.setCurrentGate(null);
 			status.clearOverlays();
 			Broadcaster.getSingletonInstance().broadcast(
 					Command.HISTOGRAM_SELECT, hist);
@@ -467,7 +468,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		if (command == Command.HISTOGRAM_NEW) {
 			histogramsCleared();
 		} else if (command == Command.HISTOGRAM_SELECT) {
-			final Nameable named = status.getCurrentHistogram();
+			final Nameable named = SelectionTree.getCurrentHistogram();
 			if (named instanceof Histogram) {
 				final Histogram hist = (Histogram) named;
 				displayHistogram(hist);

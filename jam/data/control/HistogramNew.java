@@ -5,6 +5,7 @@ import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.JamStatus;
+import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
 
 import java.awt.BorderLayout;
@@ -38,7 +39,6 @@ import javax.swing.border.EmptyBorder;
 public class HistogramNew extends AbstractControl {
 
 	private static final int CHOOSER_SIZE = 200;
-
 
 	private transient final DefaultComboBoxModel comboGroupModel;
 
@@ -210,7 +210,7 @@ public class HistogramNew extends AbstractControl {
 				name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		final JamStatus status = JamStatus.getSingletonInstance();
-		status.setCurrentHistogram(hist);
+		SelectionTree.setCurrentHistogram(hist);
 		status.setCurrentGroup(histGroup);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		final StringBuffer msg = new StringBuffer("New histogram created, ");

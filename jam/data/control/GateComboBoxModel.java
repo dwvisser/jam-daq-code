@@ -4,6 +4,7 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.JamStatus;
 import jam.global.Nameable;
+import jam.ui.SelectionTree;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,7 +92,8 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 			if (index == 0) {
 				rval = CHOOSE_A_GATE;
 			} else {
-				final Histogram his = (Histogram) status.getCurrentHistogram();
+				final Histogram his = (Histogram) SelectionTree
+						.getCurrentHistogram();
 				final int which = index - 1;
 				if (Mode.DISPLAYED_HIST.equals(mode)) {
 					rval = his.getGates().get(which);
@@ -146,9 +148,9 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 
 	private int numGates() {
 		int numG = 0;
-		final Nameable named = status.getCurrentHistogram();
+		final Nameable named = SelectionTree.getCurrentHistogram();
 		if (named instanceof Histogram) {
-			final Histogram hist = (Histogram)named;
+			final Histogram hist = (Histogram) named;
 			if (Mode.DISPLAYED_HIST.equals(mode)) {
 				numG = hist.getGates().size();
 			} else { // ALL

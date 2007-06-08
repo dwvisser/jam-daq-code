@@ -8,6 +8,7 @@ import jam.data.HistInt2D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.ui.PanelOKApplyCancelButtons;
+import jam.ui.SelectionTree;
 import jam.util.NumberUtilities;
 
 import java.awt.BorderLayout;
@@ -36,7 +37,8 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author Dale Visser, Ken Swartz
  */
-public final class Projections extends AbstractManipulation implements java.util.Observer {
+public final class Projections extends AbstractManipulation implements
+		java.util.Observer {
 
 	private static final int CHOOSER_SIZE = 200;
 
@@ -150,7 +152,7 @@ public final class Projections extends AbstractManipulation implements java.util
 				try {
 					project();
 					BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-					STATUS.setCurrentHistogram(hto);
+					SelectionTree.setCurrentHistogram(hto);
 					STATUS.setCurrentGroup(hto.getGroup());
 					BROADCASTER.broadcast(
 							BroadcastEvent.Command.HISTOGRAM_SELECT, hto);
@@ -178,13 +180,13 @@ public final class Projections extends AbstractManipulation implements java.util
 		cfrom.setSelectedIndex(0);
 		pack();
 	}
-	
+
 	private class ChannelListener implements ItemListener {
-		
-		ChannelListener(){
+
+		ChannelListener() {
 			super();
 		}
-		
+
 		public void itemStateChanged(final ItemEvent itemEvent) {
 			if (cchan.getSelectedItem() != null) {
 				setUseLimits(cchan.getSelectedItem().equals(BETWEEN));
@@ -346,7 +348,8 @@ public final class Projections extends AbstractManipulation implements java.util
 	 * @param hfrom
 	 * @param name
 	 */
-	private void getDestinationHistogram(final Histogram hfrom, final String name) {
+	private void getDestinationHistogram(final Histogram hfrom,
+			final String name) {
 		if (isNewHistogram(name)) {
 			final int size = cdown.isSelected() ? hfrom.getSizeX() : hfrom
 					.getSizeY();

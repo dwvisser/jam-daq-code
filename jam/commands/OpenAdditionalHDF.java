@@ -1,12 +1,13 @@
 package jam.commands;
 
-import jam.data.control.AbstractControl;
 import jam.data.Group;
 import jam.data.Histogram;
+import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
+import jam.ui.SelectionTree;
 
 import java.awt.Frame;
 import java.io.File;
@@ -109,7 +110,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 			if (firstGroup.getHistogramList().size() > 0) {
 				firstHist = firstGroup.getHistogramList().get(0);
 			}
-			STATUS.setCurrentHistogram(firstHist);
+			SelectionTree.setCurrentHistogram(firstHist);
 			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 					firstHist);
 		}

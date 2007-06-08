@@ -3,6 +3,7 @@ package jam.data.control;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
+import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
 
 import java.awt.BorderLayout;
@@ -79,7 +80,7 @@ public class GateNew extends AbstractControl {
 	 *             if there's a problem
 	 */
 	private void makeGate() {
-		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
 		new Gate(textNew.getText(), hist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
 		LOGGER.info("New gate " + textNew.getText() + " created for histogram "

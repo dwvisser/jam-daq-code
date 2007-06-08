@@ -4,6 +4,7 @@ import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
+import jam.ui.SelectionTree;
 
 import java.awt.event.KeyEvent;
 import java.util.Observable;
@@ -34,7 +35,7 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 	 */
 	protected void execute(final Object[] cmdParams) {
 		final JFrame frame = STATUS.getFrame();
-		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
 		final String name = hist.getFullName().trim();
 		final Group.Type type = hist.getGroup().getType();
 		/* Cannot delete sort histograms */
@@ -64,7 +65,7 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 			setEnabled(false);
 		} else if ((command == BroadcastEvent.Command.HISTOGRAM_SELECT)
 				|| (command == BroadcastEvent.Command.GATE_SELECT)) {
-			final Nameable hist = STATUS.getCurrentHistogram();
+			final Nameable hist = SelectionTree.getCurrentHistogram();
 			setEnabled(hist instanceof Histogram);
 		}
 	}

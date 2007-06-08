@@ -483,7 +483,7 @@ public final class SetupSortOn extends AbstractSetup {
 				consoleLog.messageOutln("VME map sent.");
 			}
 		}
-		STATUS.selectFirstSortHistogram();
+		selectFirstSortHistogram();
 		if (dispose) {
 			dialog.dispose();
 		}

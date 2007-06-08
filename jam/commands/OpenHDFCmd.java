@@ -9,6 +9,7 @@ import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
+import jam.ui.SelectionTree;
 
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
@@ -120,7 +121,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 			/* Set the current histogram to the first opened histogram. */
 			if (firstGroup.getHistogramList().size() > 0) {
 				firstHist = firstGroup.getHistogramList().get(0);
-				STATUS.setCurrentHistogram(firstHist);
+				SelectionTree.setCurrentHistogram(firstHist);
 			}
 		}
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
@@ -146,6 +147,6 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 	public void completedIO(final String message, final String errorMessage) {
 		hdfio.removeListener();
 		notifyApp(openFile);
-		openFile = null;//NOPMD
+		openFile = null;// NOPMD
 	}
 }

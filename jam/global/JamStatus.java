@@ -1,10 +1,5 @@
 package jam.global;
 
-import jam.data.DataBase;
-import jam.data.Group;
-import jam.data.Histogram;
-import jam.ui.SummaryTable;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,11 +36,7 @@ public final class JamStatus {
 
 	private transient AcquisitionStatus acqStatus;
 
-	private Nameable currentGate;
-
 	private Nameable currentGroup;
-
-	private Nameable currentHistogram;
 
 	private JFrame frame;
 
@@ -59,16 +50,11 @@ public final class JamStatus {
 
 	private transient String sortName = "";
 
-	private transient SummaryTable summaryTable;
-
-	private transient Validator validator;
-
 	/**
 	 * Never meant to be called by outside world.
 	 */
 	private JamStatus() {
 		super();
-		setValidator(DataBase.getInstance());
 	}
 
 	/**
@@ -103,24 +89,6 @@ public final class JamStatus {
 	}
 
 	/**
-	 * Gets the current <code>Gate</code>.
-	 * 
-	 * @return name of current gate
-	 */
-	public Nameable getCurrentGate() {
-		synchronized (this) {
-			if (validator == null) {
-				throw new IllegalStateException(
-						"Can't get current histogram without a defined validator.");
-			}
-			if (!validator.isValid(currentGate)) {
-				currentGate = UnNamed.getSingletonInstance();
-			}
-			return currentGate;
-		}
-	}
-
-	/**
 	 * Gets the current histogram.
 	 * 
 	 * @return the current histogram
@@ -128,25 +96,6 @@ public final class JamStatus {
 	public Nameable getCurrentGroup() {
 		synchronized (this) {
 			return currentGroup;
-		}
-	}
-
-	/**
-	 * Gets the current histogram.
-	 * 
-	 * @return the current histogram, or the singleton instance of the class
-	 *         <code>UnNamed</code>
-	 */
-	public Nameable getCurrentHistogram() {
-		synchronized (this) {
-			if (validator == null) {
-				throw new IllegalStateException(
-						"Can't get current histogram without a defined validator.");
-			}
-			if (!validator.isValid(currentHistogram)) {
-				currentHistogram = UnNamed.getSingletonInstance();
-			}
-			return currentHistogram;
 		}
 	}
 
@@ -201,17 +150,6 @@ public final class JamStatus {
 	}
 
 	/**
-	 * Gets the display.
-	 * 
-	 * @return the display
-	 */
-	public SummaryTable getTable() {
-		synchronized (this) {
-			return summaryTable;
-		}
-	}
-
-	/**
 	 * Returns whether data is currently being taken.
 	 * 
 	 * @return whether data is currently being taken
@@ -243,23 +181,6 @@ public final class JamStatus {
 	}
 
 	/**
-	 * Do what it takes to open up the tree to the first histogram in the sort
-	 * routine.
-	 */
-	public void selectFirstSortHistogram() {
-		// Select first histogram
-		final Group sortGroup = Group.getSortGroup();
-		setCurrentGroup(sortGroup);
-		final List<Histogram> histList = sortGroup.getHistogramList();
-		if (!histList.isEmpty()) {
-			final Histogram firstHist = histList.get(0);
-			setCurrentHistogram(firstHist);
-		}
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
-	}
-
-	/**
 	 * Set the acquisition status.
 	 * 
 	 * @param status
@@ -267,18 +188,6 @@ public final class JamStatus {
 	 */
 	public void setAcqisitionStatus(final AcquisitionStatus status) {
 		acqStatus = status;
-	}
-
-	/**
-	 * Sets the current <code>Gate</code>.
-	 * 
-	 * @param gate
-	 *            of current gate
-	 */
-	public void setCurrentGate(final Nameable gate) {
-		synchronized (this) {
-			currentGate = gate;
-		}
 	}
 
 	/**
@@ -290,18 +199,6 @@ public final class JamStatus {
 	public void setCurrentGroup(final Nameable group) {
 		synchronized (this) {
 			currentGroup = group;
-		}
-	}
-
-	/**
-	 * Sets the current <code>Histogram</code>.
-	 * 
-	 * @param hist
-	 *            the current histogram
-	 */
-	public void setCurrentHistogram(final Nameable hist) {
-		synchronized (this) {
-			currentHistogram = hist;
 		}
 	}
 
@@ -388,29 +285,4 @@ public final class JamStatus {
 		}
 		BROADCASTER.broadcast(BroadcastEvent.Command.SORT_MODE_CHANGED);
 	}
-
-	/**
-	 * Sets the table.
-	 * 
-	 * @param table
-	 *            the table
-	 */
-	public void setTable(final SummaryTable table) {
-		synchronized (this) {
-			summaryTable = table;
-		}
-	}
-
-	/**
-	 * Set the object which validates data objects.
-	 * 
-	 * @param valid
-	 *            validates whether data objects are active
-	 */
-	public void setValidator(final Validator valid) {
-		synchronized (this) {
-			validator = valid;
-		}
-	}
-
 }

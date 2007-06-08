@@ -23,6 +23,33 @@ import javax.swing.JTable;
 public class SummaryTable extends JPanel implements Observer {
 
 	/**
+	 * Gets the display.
+	 * 
+	 * @return the display
+	 */
+	public static SummaryTable getTable() {
+		synchronized (LOCK) {
+			return summaryTable;
+		}
+	}
+	
+	/**
+	 * Sets the table.
+	 * 
+	 * @param table
+	 *            the table
+	 */
+	public static void setTable(final SummaryTable table) {
+		synchronized (LOCK) {
+			summaryTable = table;
+		}
+	}
+
+
+	private static SummaryTable summaryTable;
+	private static final Object LOCK = new Object();
+	
+	/**
 	 * whether one group or all groups is selected
 	 */
 	public static enum Selection {

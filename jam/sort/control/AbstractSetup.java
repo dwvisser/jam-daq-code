@@ -4,7 +4,11 @@
 package jam.sort.control;
 
 import jam.JamException;
+import jam.data.Group;
+import jam.data.Histogram;
 import jam.data.control.AbstractControl;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.PropertyKeys;
@@ -13,6 +17,7 @@ import jam.sort.SortException;
 import jam.sort.SortRoutine;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
+import jam.ui.SelectionTree;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +25,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -72,6 +78,9 @@ abstract class AbstractSetup {
 		}
 	}
 
+	private static final Broadcaster BROADCASTER = Broadcaster
+			.getSingletonInstance();
+
 	/**
 	 * All text message output goes to this object.
 	 */
@@ -91,24 +100,25 @@ abstract class AbstractSetup {
 	protected final transient AbstractButton bapply;
 
 	/**
-	 * OK button
-	 */
-	protected final transient AbstractButton bok;
-
-	/**
 	 * Press to browse for a classpath.
 	 */
 	protected transient final AbstractButton bbrowsef = new JButton("Browse...");
 
 	/**
-	 * path to base of sort routines' classpath
+	 * OK button
 	 */
-	protected transient File specifiedClassPath;
+	protected final transient AbstractButton bok;
 
 	/**
 	 * Toggle button for the default class path.
 	 */
 	protected transient final JToggleButton btnDefaultPath;
+
+	/**
+	 * When toggled, means that a user-supplied path should be used for
+	 * populating the sort chooser.
+	 */
+	protected transient final JToggleButton btnSpecifyPath;
 
 	/**
 	 * The dialog.
@@ -137,10 +147,9 @@ abstract class AbstractSetup {
 	protected transient final SortChooser sortChooser;
 
 	/**
-	 * When toggled, means that a user-supplied path should be used for
-	 * populating the sort chooser.
+	 * path to base of sort routines' classpath
 	 */
-	protected transient final JToggleButton btnSpecifyPath;
+	protected transient File specifiedClassPath;
 
 	/**
 	 * Text field showing the sort class path.
@@ -235,40 +244,6 @@ abstract class AbstractSetup {
 		sortChooser.selectSortClass(defSortRoutine);
 	}
 
-	protected final void selectPath(final boolean useDefault) {
-		if (useDefault) {
-			bbrowsef.setEnabled(false);
-			textSortPath.setEnabled(false);
-			textSortPath.setEditable(false);
-			textSortPath.setText("default");
-			sortChooser.loadChooserDefault();
-		} else {
-			bbrowsef.setEnabled(true);
-			textSortPath.setEnabled(true);
-			textSortPath.setEditable(true);
-			textSortPath.setText(specifiedClassPath.getPath());
-			sortChooser.loadChooserClassPath(specifiedClassPath);
-		}
-
-	}
-
-	/**
-	 * Should be called when OK or Apply is actuated.
-	 * 
-	 * @param dispose
-	 *            whether to dispose of the dialog
-	 */
-	protected abstract void doApply(boolean dispose);
-
-	/**
-	 * Returns the dialog for setting up offline sorting.
-	 * 
-	 * @return the dialog for setting up offline sorting
-	 */
-	public final JDialog getDialog() {
-		return dialog;
-	}
-
 	/**
 	 * Browses for the sort file.
 	 * 
@@ -287,6 +262,34 @@ abstract class AbstractSetup {
 			}
 		}
 		return rval;
+	}
+
+	/**
+	 * Should be called when OK or Apply is actuated.
+	 * 
+	 * @param dispose
+	 *            whether to dispose of the dialog
+	 */
+	protected abstract void doApply(boolean dispose);
+
+	/**
+	 * Get list of classes implemented a interface
+	 */
+	private Set<Class<?>> getClasses(final String inPackage, final Class inClass) {
+		final RTSI rtsi = RTSI.getSingletonInstance();
+		final Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(rtsi
+				.find(inPackage, inClass, false));
+		lhs.remove(inClass);
+		return lhs;
+	}
+
+	/**
+	 * Returns the dialog for setting up offline sorting.
+	 * 
+	 * @return the dialog for setting up offline sorting
+	 */
+	public final JDialog getDialog() {
+		return dialog;
 	}
 
 	/**
@@ -314,13 +317,14 @@ abstract class AbstractSetup {
 							" attempts to allocate too much memory. Reduce its requirments or start Jam with more available heap space. The current maximum amount of memory available to the JVM is ");
 			final double megabytes = Runtime.getRuntime().maxMemory()
 					/ (1024.0 * 1024.0);
-			message.append(megabytes).append(" MB.");//NOPMD
+			message.append(megabytes).append(" MB.");// NOPMD
 			throw new JamException(message.toString(), thrown);
 		} catch (Throwable thrown) {// NOPMD
 			message
 					.append("Couldn't load ")
 					.append(sortName)
-					.append("; You probably need to re-compile it against the current version of Jam.");
+					.append(
+							"; You probably need to re-compile it against the current version of Jam.");
 			throw new JamException(message.toString(), thrown);
 		}
 		/* setup scaler, parameter, monitors, gate, dialog boxes */
@@ -328,14 +332,28 @@ abstract class AbstractSetup {
 	}
 
 	/**
-	 * Get list of classes implemented a interface
+	 * Locks up the setup so the fields cannot be edited.
+	 * 
+	 * @param lock
+	 *            is true if the fields are to be locked
 	 */
-	private Set<Class<?>> getClasses(final String inPackage, final Class inClass) {
-		final RTSI rtsi = RTSI.getSingletonInstance();
-		final Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(rtsi
-				.find(inPackage, inClass, false));
-		lhs.remove(inClass);
-		return lhs;
+	protected abstract void lockMode(boolean lock);
+
+	/**
+	 * Do what it takes to open up the tree to the first histogram in the sort
+	 * routine.
+	 */
+	public void selectFirstSortHistogram() {
+		// Select first histogram
+		final Group sortGroup = Group.getSortGroup();
+		STATUS.setCurrentGroup(sortGroup);
+		final List<Histogram> histList = sortGroup.getHistogramList();
+		if (!histList.isEmpty()) {
+			final Histogram firstHist = histList.get(0);
+			SelectionTree.setCurrentHistogram(firstHist);
+		}
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
 	}
 
 	/**
@@ -360,13 +378,22 @@ abstract class AbstractSetup {
 		}
 	}
 
-	/**
-	 * Locks up the setup so the fields cannot be edited.
-	 * 
-	 * @param lock
-	 *            is true if the fields are to be locked
-	 */
-	protected abstract void lockMode(boolean lock);
+	protected final void selectPath(final boolean useDefault) {
+		if (useDefault) {
+			bbrowsef.setEnabled(false);
+			textSortPath.setEnabled(false);
+			textSortPath.setEditable(false);
+			textSortPath.setText("default");
+			sortChooser.loadChooserDefault();
+		} else {
+			bbrowsef.setEnabled(true);
+			textSortPath.setEnabled(true);
+			textSortPath.setEditable(true);
+			textSortPath.setText(specifiedClassPath.getPath());
+			sortChooser.loadChooserClassPath(specifiedClassPath);
+		}
+
+	}
 
 	/**
 	 * Sets up the sort.

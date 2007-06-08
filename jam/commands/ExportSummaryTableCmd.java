@@ -71,7 +71,7 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 	}
 
 	private void saveTable(final File file) {
-		final SummaryTable summaryTable = STATUS.getTable();
+		final SummaryTable summaryTable = SummaryTable.getTable();
 		try {
 			LOGGER.info("Starting to write out table to " + file);
 			// Create writer stream

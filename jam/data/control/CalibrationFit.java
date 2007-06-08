@@ -7,6 +7,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Nameable;
 import jam.ui.CalibrationListCellRenderer;
 import jam.ui.PanelOKApplyCancelButtons;
+import jam.ui.SelectionTree;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -533,7 +534,7 @@ public class CalibrationFit extends AbstractControl {
 	}
 
 	private AbstractHist1D getCurrentHistogram() {
-		final Nameable hist = STATUS.getCurrentHistogram();
+		final Nameable hist = SelectionTree.getCurrentHistogram();
 		AbstractHist1D rval = null;
 		if (hist instanceof AbstractHist1D) {
 			rval = (AbstractHist1D) hist;

@@ -1,8 +1,10 @@
 package jam.data.control;
 
+import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
+import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
 
 import java.awt.BorderLayout;
@@ -103,7 +105,8 @@ public final class GateAdd extends AbstractControl {
 		if (currentGateAdd == null) {
 			LOGGER.severe("Need to choose a gate to add ");
 		} else {
-			final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
+			final Histogram hist = (Histogram) SelectionTree
+					.getCurrentHistogram();
 			hist.addGate(currentGateAdd);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
 			LOGGER.info("Added gate '" + currentGateAdd.getName().trim()

@@ -158,7 +158,7 @@ public final class SetupSortOff extends AbstractSetup {
 					setupSort(); // create data areas and daemons
 					LOGGER.info("Daemons and dialogs initialized.");
 				}
-				STATUS.selectFirstSortHistogram();
+				selectFirstSortHistogram();
 				if (dispose) {
 					dialog.dispose();
 				}

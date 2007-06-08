@@ -6,6 +6,7 @@ import jam.global.BroadcastEvent;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
+import jam.ui.SelectionTree;
 
 import java.awt.Frame;
 import java.io.File;
@@ -93,7 +94,7 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
                 }
             }
         }
-        STATUS.setCurrentHistogram(firstHist);
+        SelectionTree.setCurrentHistogram(firstHist);
         BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
                 firstHist);
 

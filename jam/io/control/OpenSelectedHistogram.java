@@ -12,6 +12,7 @@ import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 import jam.io.hdf.HistogramAttributes;
 import jam.ui.PanelOKApplyCancelButtons;
+import jam.ui.SelectionTree;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -234,7 +235,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 			if (firstGroup.getHistogramList().size() > 0) {
 				final Histogram firstHist = firstGroup.getHistogramList()
 						.get(0);
-				STATUS.setCurrentHistogram(firstHist);
+				SelectionTree.setCurrentHistogram(firstHist);
 				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 						firstHist);
 			}

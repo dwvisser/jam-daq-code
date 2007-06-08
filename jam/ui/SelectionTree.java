@@ -1,6 +1,7 @@
 package jam.ui;
 
 import jam.data.AbstractHist1D;
+import jam.data.DataBase;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
@@ -9,6 +10,8 @@ import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.Nameable;
 import jam.global.SortMode;
+import jam.global.UnNamed;
+import jam.global.Validator;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -40,10 +43,71 @@ public final class SelectionTree extends JPanel implements Observer {
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
 
+	private static Nameable currentGate;
+
+	private static Nameable currentHistogram;
+
+	private static final Object LOCK = new Object();
+
 	private static final Logger LOGGER = Logger.getLogger(SelectionTree.class
 			.getPackage().getName());
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
+
+	private static final Validator validator = DataBase.getInstance();
+
+	/**
+	 * Gets the current <code>Gate</code>.
+	 * 
+	 * @return name of current gate
+	 */
+	public static Nameable getCurrentGate() {
+		synchronized (LOCK) {
+			if (!validator.isValid(currentGate)) {
+				currentGate = UnNamed.getSingletonInstance();
+			}
+			return currentGate;
+		}
+	}
+
+	/**
+	 * Gets the current histogram.
+	 * 
+	 * @return the current histogram, or the singleton instance of the class
+	 *         <code>UnNamed</code>
+	 */
+	public static Nameable getCurrentHistogram() {
+		synchronized (LOCK) {
+			if (!validator.isValid(currentHistogram)) {
+				currentHistogram = UnNamed.getSingletonInstance();
+			}
+			return currentHistogram;
+		}
+	}
+
+	/**
+	 * Sets the current <code>Gate</code>.
+	 * 
+	 * @param gate
+	 *            of current gate
+	 */
+	public static void setCurrentGate(final Nameable gate) {
+		synchronized (LOCK) {
+			currentGate = gate;
+		}
+	}
+
+	/**
+	 * Sets the current <code>Histogram</code>.
+	 * 
+	 * @param hist
+	 *            the current histogram
+	 */
+	public static void setCurrentHistogram(final Nameable hist) {
+		synchronized (LOCK) {
+			currentHistogram = hist;
+		}
+	}
 
 	private transient final TreeSelectionListener listener = new TreeSelectionListener() {
 		public void valueChanged(final TreeSelectionEvent event) {
@@ -223,8 +287,8 @@ public final class SelectionTree extends JPanel implements Observer {
 	 * Refresh the selected node.
 	 */
 	private void refreshSelection() {
-		final Nameable hist = STATUS.getCurrentHistogram();
-		final Nameable gate = STATUS.getCurrentGate();
+		final Nameable hist = getCurrentHistogram();
+		final Nameable gate = getCurrentGate();
 		final List<AbstractHist1D> overlayHists = Histogram.getHistogramList(
 				STATUS.getOverlayHistograms(), AbstractHist1D.class);
 		final TreePath histTreePath = pathForDataObject(hist);
@@ -272,8 +336,8 @@ public final class SelectionTree extends JPanel implements Observer {
 					/* Histogram selected */
 					final Histogram hist = (Histogram) firstNodeObject;
 					STATUS.setCurrentGroup(hist.getGroup());
-					STATUS.setCurrentHistogram(hist);
-					STATUS.setCurrentGate(null);
+					setCurrentHistogram(hist);
+					setCurrentGate(null);
 					/* Do we have overlays ? */
 					if (paths.length > 1) {
 						if (hist.getDimensionality() == 1) {
@@ -292,8 +356,8 @@ public final class SelectionTree extends JPanel implements Observer {
 					final Histogram hist = getAssociatedHist(prime);
 					tree.addSelectionPath(pathForDataObject(hist));
 					STATUS.setCurrentGroup(hist.getGroup());
-					STATUS.setCurrentHistogram(hist);
-					STATUS.setCurrentGate(gate);
+					setCurrentHistogram(hist);
+					setCurrentGate(gate);
 					STATUS.clearOverlays();
 					BROADCASTER.broadcast(
 							BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
@@ -315,7 +379,7 @@ public final class SelectionTree extends JPanel implements Observer {
 	 */
 	private void selectGate(final Gate gate) {
 		try {
-			STATUS.setCurrentGate(gate);
+			setCurrentGate(gate);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
 			final double area = gate.getArea();
 			final StringBuilder message = new StringBuilder();

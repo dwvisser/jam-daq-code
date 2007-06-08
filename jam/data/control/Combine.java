@@ -7,6 +7,7 @@ import jam.data.HistInt1D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.ui.PanelOKApplyCancelButtons;
+import jam.ui.SelectionTree;
 import jam.util.NumberUtilities;
 
 import java.awt.BorderLayout;
@@ -190,7 +191,7 @@ public class Combine extends AbstractManipulation implements Observer {
 							combine();
 							BROADCASTER
 									.broadcast(BroadcastEvent.Command.REFRESH);
-							STATUS.setCurrentHistogram(hto);
+							SelectionTree.setCurrentHistogram(hto);
 							STATUS.setCurrentGroup(hto.getGroup());
 							BROADCASTER.broadcast(
 									BroadcastEvent.Command.HISTOGRAM_SELECT,
