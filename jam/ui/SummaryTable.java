@@ -23,33 +23,6 @@ import javax.swing.JTable;
 public class SummaryTable extends JPanel implements Observer {
 
 	/**
-	 * Gets the display.
-	 * 
-	 * @return the display
-	 */
-	public static SummaryTable getTable() {
-		synchronized (LOCK) {
-			return summaryTable;
-		}
-	}
-	
-	/**
-	 * Sets the table.
-	 * 
-	 * @param table
-	 *            the table
-	 */
-	public static void setTable(final SummaryTable table) {
-		synchronized (LOCK) {
-			summaryTable = table;
-		}
-	}
-
-
-	private static SummaryTable summaryTable;
-	private static final Object LOCK = new Object();
-	
-	/**
 	 * whether one group or all groups is selected
 	 */
 	public static enum Selection {
@@ -62,6 +35,39 @@ public class SummaryTable extends JPanel implements Observer {
 		 * One group is selected?
 		 */
 		SINGLE_GROUP
+	}
+
+	/**
+	 * The current table the system looks up.
+	 */
+	private static SummaryTable currentTable;
+
+	/**
+	 * Private mutex for the current table.
+	 */
+	private static final Object LOCK = new Object();
+
+	/**
+	 * Gets the display.
+	 * 
+	 * @return the display
+	 */
+	public static SummaryTable getTable() {
+		synchronized (LOCK) {
+			return currentTable;
+		}
+	}
+
+	/**
+	 * Sets the table.
+	 * 
+	 * @param table
+	 *            the table
+	 */
+	public static void setTable(final SummaryTable table) {
+		synchronized (LOCK) {
+			currentTable = table;
+		}
 	}
 
 	private transient final SummaryTableModel summaryTableModel = new SummaryTableModel();
@@ -81,6 +87,25 @@ public class SummaryTable extends JPanel implements Observer {
 		summaryTableModel.setOptions(true, true, true);
 		this.add(toolbar, BorderLayout.NORTH);
 		Broadcaster.getSingletonInstance().addObserver(this);
+	}
+
+	/**
+	 * Implementation of Observable interface.
+	 * 
+	 * @param observable
+	 *            not sure
+	 * @param object
+	 *            not sure
+	 */
+	public void update(final Observable observable, final Object object) {
+		final BroadcastEvent event = (BroadcastEvent) object;
+		if (event.getCommand() == BroadcastEvent.Command.ROOT_SELECT) {
+			summaryTableModel.setSelectionType(Selection.ALL_GROUPS);
+		} else if (event.getCommand() == BroadcastEvent.Command.GROUP_SELECT) {
+			summaryTableModel.setSelectionType(Selection.SINGLE_GROUP);
+			summaryTableModel.setGroup((Group) JamStatus.getSingletonInstance()
+					.getCurrentGroup());
+		}
 	}
 
 	/**
@@ -112,25 +137,6 @@ public class SummaryTable extends JPanel implements Observer {
 			writer.println();
 		}
 		writer.flush();
-	}
-
-	/**
-	 * Implementation of Observable interface.
-	 * 
-	 * @param observable
-	 *            not sure
-	 * @param object
-	 *            not sure
-	 */
-	public void update(final Observable observable, final Object object) {
-		final BroadcastEvent event = (BroadcastEvent) object;
-		if (event.getCommand() == BroadcastEvent.Command.ROOT_SELECT) {
-			summaryTableModel.setSelectionType(Selection.ALL_GROUPS);
-		} else if (event.getCommand() == BroadcastEvent.Command.GROUP_SELECT) {
-			summaryTableModel.setSelectionType(Selection.SINGLE_GROUP);
-			summaryTableModel.setGroup((Group) JamStatus.getSingletonInstance()
-					.getCurrentGroup());
-		}
 	}
 
 }
