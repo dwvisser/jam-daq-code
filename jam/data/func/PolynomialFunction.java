@@ -2,8 +2,6 @@ package jam.data.func;
 
 import java.text.NumberFormat;
 
-import jam.data.DataException;
-
 /**
  * A polynomial histogram calibration function of up to 4th order.
  */
@@ -52,7 +50,7 @@ public class PolynomialFunction extends AbstractCalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
-	public void fit() throws DataException {
+	public void fit() {
 		// does nothing so far
 	}
 
@@ -86,7 +84,7 @@ public class PolynomialFunction extends AbstractCalibrationFunction {
 			for (int i = 0; i < 3; i++) {
 				System.out.println("" + coeff[i]);// NOPMD
 			}
-		} catch (DataException de) {
+		} catch (CalibrationFitException de) {
 			System.out.println(de);// NOPMD
 		}
 

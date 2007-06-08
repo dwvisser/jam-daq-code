@@ -18,5 +18,9 @@ public class FitException extends Exception {
     public FitException(String msg, Throwable thrown) {
         super(msg,thrown);
     }
+    
+    public FitException(String msg) {
+    	super(msg);
+    }
 
 }

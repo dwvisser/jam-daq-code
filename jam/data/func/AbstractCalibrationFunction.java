@@ -1,7 +1,5 @@
 package jam.data.func;
 
-import jam.data.DataException;
-
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -397,10 +395,10 @@ public abstract class AbstractCalibrationFunction implements Function {
 	/**
 	 * Do a calibration fit.
 	 * 
-	 * @throws DataException
+	 * @throws CalibrationFitException
 	 *             if the fit fails
 	 */
-	public abstract void fit() throws DataException;
+	public abstract void fit() throws CalibrationFitException;
 
 	// TODO the rest of the methods should be moved to jam.fit
 
@@ -417,7 +415,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @return array where first element is constant, second is slope
 	 */
 	protected double[] linearRegression(final double[] xVal, final double[] yVal)
-			throws DataException {
+			throws CalibrationFitException {
 		double[] rval = new double[2];
 		double sum = 0.0;
 		double sumx = 0.0;
@@ -441,8 +439,8 @@ public abstract class AbstractCalibrationFunction implements Function {
 		if (delta == 0.0) {
 			rval[0] = 0.0;
 			rval[1] = 0.0;
-			throw new DataException(
-					"Linear regression failed [CalibrationFunction]");
+			throw new CalibrationFitException(
+					"Linear regression failed.");
 		}
 		aEst = (sumxx * sumy - sumx * sumxy) / delta;
 		bEst = (sumxy * sum - sumx * sumy) / delta;
@@ -464,15 +462,15 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @return with polynomial coefficents
 	 */
 	protected double[] polynomialFit(final double[] xVal, final double[] yVal,
-			final int order) throws DataException {
+			final int order) throws CalibrationFitException {
 		final int numTerms = order + 1;
 		// Check data
 		if (xVal.length < numTerms) {
-			throw new DataException(
+			throw new IllegalArgumentException (
 					"Need more positions than order for polynomial fit");
 		}
 		if (xVal.length != yVal.length) {
-			throw new DataException(
+			throw new IllegalArgumentException(
 					"Need same number of x and y points for polynomial fit");
 		}
 		// Find mean x to shift fit around mean
@@ -555,7 +553,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @return fit coeffients
 	 */
 	protected void gaussj(final double[][] alpha, final double[][] beta)
-			throws DataException {
+			throws CalibrationFitException {
 		final int alphaLength = alpha.length;
 		int column = 0;
 		int row = 0;
@@ -587,7 +585,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 			rowIndices[i] = row;
 			columnIndices[i] = column;
 			if (alpha[column][column] == 0.0) {
-				throw new DataException("gaussj: Singular Matrix");
+				throw new CalibrationFitException("gaussj: Singular Matrix");
 			}
 			normalizeToPivotAndSubtract(alpha, beta, column);
 		}

@@ -1,8 +1,8 @@
 package jam.data.control;
 
 import jam.data.AbstractHist1D;
-import jam.data.DataException;
 import jam.data.func.AbstractCalibrationFunction;
+import jam.data.func.CalibrationFitException;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
 import jam.ui.CalibrationListCellRenderer;
@@ -387,7 +387,7 @@ public class CalibrationFit extends AbstractControl {
 					.getNoCalibration()); // Make sure hisogram no longer
 			// has calibration
 			LOGGER.severe("Invalid input, not a number");
-		} catch (DataException de) {
+		} catch (CalibrationFitException de) {
 			currentHist.setCalibration(AbstractCalibrationFunction
 					.getNoCalibration()); // Make sure hisogram no longer
 			// has calibration

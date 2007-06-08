@@ -2,8 +2,6 @@ package jam.data.func;
 
 import java.text.NumberFormat;
 
-import jam.data.DataException;
-
 /**
  * A Cubic histogram calibration function, that is, E = a0 + a1 * channel+
  * a2*channel^2+a3*channel^3
@@ -40,7 +38,7 @@ public class CubicFunction extends AbstractCalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
-	public void fit() throws DataException {
+	public void fit() throws CalibrationFitException {
 		final double[] coeffCubic = polynomialFit(ptsEnergy, ptsChannel, 2);
 		System.arraycopy(coeffCubic, 0, coeff, 0, coeffCubic.length);
 	}

@@ -2,8 +2,6 @@ package jam.data.func;
 
 import java.text.NumberFormat;
 
-import jam.data.DataException;
-
 /**
  * Default non-calibration.
  * @author Dale Visser
@@ -40,7 +38,7 @@ public final class NoFunction extends AbstractCalibrationFunction {
 	}
 
 	@Override
-	public void fit() throws DataException {
+	public void fit() {
 		// do nothing
 	}
 

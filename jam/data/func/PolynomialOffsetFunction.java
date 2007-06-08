@@ -2,8 +2,6 @@ package jam.data.func;
 
 import java.text.NumberFormat;
 
-import jam.data.DataException;
-
 /**
  * A polynomial histogram calibration function of up to 4th order, where energy
  * is a polynomial in the channel minus some offset.
@@ -63,7 +61,7 @@ public class PolynomialOffsetFunction extends AbstractCalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
-	public void fit() throws DataException {
+	public void fit() {
 		//does nothing so far
 	}
 

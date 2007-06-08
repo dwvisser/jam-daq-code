@@ -11,13 +11,13 @@ import static jam.io.hdf.JamFileFields.SCALER_SECT;
 import static jam.io.hdf.JamFileFields.Calibration.TYPE_COEFF;
 import static jam.io.hdf.JamFileFields.Calibration.TYPE_POINTS;
 import jam.data.AbstractHist1D;
-import jam.data.DataException;
 import jam.data.DataParameter;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
 import jam.data.func.AbstractCalibrationFunction;
+import jam.data.func.CalibrationFitException;
 import jam.io.FileOpenMode;
 import jam.util.StringUtilities;
 
@@ -110,7 +110,7 @@ final class ConvertHDFObjToJamObj {
 				calFunc.setPoints(ptsChannel, ptsEnergy);
 				try {
 					calFunc.fit();
-				} catch (DataException de) {
+				} catch (CalibrationFitException de) {
 					throw new HDFException(
 							"Cannot create fit for calibration function "
 									+ funcName, de);

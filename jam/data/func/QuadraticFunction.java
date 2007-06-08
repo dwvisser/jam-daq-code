@@ -2,8 +2,6 @@ package jam.data.func;
 
 import java.text.NumberFormat;
 
-import jam.data.DataException;
-
 /**
  * A quadratic histogram calibration function, that is, E = a0 + a1 *
  * channel+a2*channel^2
@@ -39,7 +37,7 @@ public class QuadraticFunction extends AbstractCalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
-	public void fit() throws DataException {
+	public void fit() throws CalibrationFitException {
 		final double[] coeffQuad = polynomialFit(ptsEnergy, ptsChannel, 2);
 		System.arraycopy(coeffQuad, 0, coeff, 0, coeffQuad.length);
 	}

@@ -2,8 +2,6 @@ package jam.data.func;
 
 import java.text.NumberFormat;
 
-import jam.data.DataException;
-
 /**
  * A linear histogram calibration function, that is, E = a0 + a1 * channel.
  */
@@ -47,7 +45,7 @@ public class LinearFunction extends AbstractCalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
-	public void fit() throws DataException {
+	public void fit() throws CalibrationFitException {
 		final double[] coeffLinRegress = linearRegression(ptsChannel, ptsEnergy);
 		System.arraycopy(coeffLinRegress, 0, coeff, 0, coeffLinRegress.length);
 	}
