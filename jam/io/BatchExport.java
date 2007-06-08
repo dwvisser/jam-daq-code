@@ -277,7 +277,7 @@ public class BatchExport extends JDialog implements Observer {
 	private List<AbstractImpExp> createExportList() {
 		final List<AbstractImpExp> rval = new ArrayList<AbstractImpExp>();
 		final String here = getClass().getName() + ".getClasses(): ";
-		final Set<Class<?>> set = jam.global.RTSI.getSingletonInstance().find(
+		final Set<Class<?>> set = jam.global.RuntimeSubclassIdentifier.getSingletonInstance().find(
 				"jam.io", AbstractImpExp.class, false);
 		set.remove(AbstractImpExp.class);
 		for (Class<?> temp : set) {

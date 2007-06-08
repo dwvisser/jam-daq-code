@@ -12,7 +12,7 @@ import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.PropertyKeys;
-import jam.global.RTSI;
+import jam.global.RuntimeSubclassIdentifier;
 import jam.sort.SortException;
 import jam.sort.SortRoutine;
 import jam.sort.stream.AbstractEventInputStream;
@@ -276,8 +276,8 @@ abstract class AbstractSetup {
 	 * Get list of classes implemented a interface
 	 */
 	private Set<Class<?>> getClasses(final String inPackage, final Class inClass) {
-		final RTSI rtsi = RTSI.getSingletonInstance();
-		final Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(rtsi
+		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier.getSingletonInstance();
+		final Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(runtimeSubclassIdentifier
 				.find(inPackage, inClass, false));
 		lhs.remove(inClass);
 		return lhs;

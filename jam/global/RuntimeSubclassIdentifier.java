@@ -28,16 +28,16 @@ import javax.swing.JOptionPane;
  * @author <a href="mailto:daniel@satlive.org">Daniel Le Berre</a>
  * @version 1.0
  */
-public class RTSI {
+public class RuntimeSubclassIdentifier {
 
 	private static final String CLASS_EXT = ".class";
 
 	private static final ClassLoader DEF_LOADER = ClassLoader
 			.getSystemClassLoader();
 
-	private static final RTSI instance = new RTSI();
+	private static final RuntimeSubclassIdentifier instance = new RuntimeSubclassIdentifier();
 
-	private static final Logger LOGGER = Logger.getLogger(RTSI.class
+	private static final Logger LOGGER = Logger.getLogger(RuntimeSubclassIdentifier.class
 			.getPackage().getName());
 
 	private static final String PERIOD = ".";
@@ -101,7 +101,7 @@ public class RTSI {
 	 * 
 	 * @return the unique singleton instance of this class
 	 */
-	static public RTSI getSingletonInstance() {
+	static public RuntimeSubclassIdentifier getSingletonInstance() {
 		return instance;
 	}
 
@@ -142,7 +142,7 @@ public class RTSI {
 
 	private transient final String rtsiName;
 
-	private RTSI() {
+	private RuntimeSubclassIdentifier() {
 		super();
 		rtsiName = getClass().getName();
 	}
@@ -323,7 +323,7 @@ public class RTSI {
 			name = SLASH + name;
 		}
 		name = name.replace('.', '/');
-		final URL url = RTSI.class.getResource(name);
+		final URL url = RuntimeSubclassIdentifier.class.getResource(name);
 		if (url != null) {
 			/*
 			 * Null only if the jar file is not well constructed, i.e. if the

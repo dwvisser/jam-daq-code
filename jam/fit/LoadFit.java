@@ -4,7 +4,7 @@ import jam.JamException;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
-import jam.global.RTSI;
+import jam.global.RuntimeSubclassIdentifier;
 import jam.plot.PlotDisplay;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -98,9 +98,9 @@ public class LoadFit {
 	private Object[] getFitClasses() {
 		final String package1 = "jam.fit";
 		final String package2 = "fit";
-		final RTSI rtsi = RTSI.getSingletonInstance();
-		final Set<Class<?>> set = rtsi.find(package1, AbstractFit.class, false);
-		set.addAll(rtsi.find(package2, AbstractFit.class, false));
+		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier.getSingletonInstance();
+		final Set<Class<?>> set = runtimeSubclassIdentifier.find(package1, AbstractFit.class, false);
+		set.addAll(runtimeSubclassIdentifier.find(package2, AbstractFit.class, false));
 		return set.toArray();
 	}
 

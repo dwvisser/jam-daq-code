@@ -2,7 +2,7 @@ package jam.sort.control;
 
 import jam.JamException;
 import jam.data.Group;
-import jam.global.RTSI;
+import jam.global.RuntimeSubclassIdentifier;
 import jam.global.Sorter;
 import jam.sort.SortRoutine;
 
@@ -68,7 +68,7 @@ final class SortChooser extends JComboBox {
 		try {
 			if (userSpecifiedPath) {
 				synchronized (this) {
-					sortRoutine = (SortRoutine) RTSI.getSingletonInstance()
+					sortRoutine = (SortRoutine) RuntimeSubclassIdentifier.getSingletonInstance()
 							.loadClass(classPath, sortClass.getName())
 							.newInstance();
 				}
@@ -154,8 +154,8 @@ final class SortChooser extends JComboBox {
 	 * @return set of available sort routines
 	 */
 	private Set<Class<?>> findSortClasses(final File path) {
-		final RTSI rtsi = RTSI.getSingletonInstance();
-		return rtsi.find(path, Sorter.class);
+		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier.getSingletonInstance();
+		return runtimeSubclassIdentifier.find(path, Sorter.class);
 	}
 	/**
 	 * Get the sort classes using the default class path.
@@ -164,9 +164,9 @@ final class SortChooser extends JComboBox {
 	 */
 	private Set<Class<?>> findSortClassesDefault() {
 		final Set<Class<?>> set = new LinkedHashSet<Class<?>>();
-		final RTSI rtsi = RTSI.getSingletonInstance();
-		set.addAll(rtsi.find("help", Sorter.class, true));
-		set.addAll(rtsi.find("sort", Sorter.class, true));
+		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier.getSingletonInstance();
+		set.addAll(runtimeSubclassIdentifier.find("help", Sorter.class, true));
+		set.addAll(runtimeSubclassIdentifier.find("sort", Sorter.class, true));
 		return set;
 	}
 
