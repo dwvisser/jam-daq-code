@@ -6,7 +6,7 @@ package jam.sort.stream;
  * @version 0.5
  * @since JDK 1.1
  */
-public final class EventException extends Exception{
+public final class EventException extends Exception {
 
     EventException(String msg){
         super(msg);

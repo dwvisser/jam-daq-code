@@ -1,4 +1,7 @@
 package jam.sort.stream;
+import jam.data.DataException;
+import jam.sort.EventWriter;
+
 import java.io.DataOutputStream;
 import java.io.OutputStream;
 
@@ -9,7 +12,7 @@ import java.io.OutputStream;
  * @version 0.5
  * @since JDK 1.1
  */
-public abstract class AbstractEventOutputStream {
+public abstract class AbstractEventOutputStream implements EventWriter {
 
 	/**
 	 * The number of parameters per event.
@@ -86,24 +89,6 @@ public abstract class AbstractEventOutputStream {
 	public void setOutputStream(final OutputStream outputStream) {
 		dataOutput = new DataOutputStream(outputStream);
 	}
-
-	/* Abstract methods of class */
-
-	/**
-	 * Writes the given array as an event to the output stream.
-	 * 
-	 * @param	input	event data
-	 * @exception EventException thrown if there's an unrecoverable error writing the event
-	 */
-	abstract public void writeEvent(short[] input) throws EventException;
-
-	/**
-	 * Writes the given array as an event to the output stream.
-	 * 
-	 * @param	input	event data
-	 * @exception EventException thrown if there's an unrecoverable error writing the event
-	 */
-	abstract public void writeEvent(int[] input) throws EventException;
 
 	/**
 	 * Writes a header to the output stream.

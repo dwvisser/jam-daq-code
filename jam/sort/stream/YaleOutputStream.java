@@ -38,17 +38,13 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 	 * @exception EventException
 	 *                thrown for unrecoverable errors
 	 */
-	public void writeEvent(final int[] input) throws EventException {
-		try {
-			for (short i = 0; i < eventSize; i++) {
-				if (input[i] != 0) {
-					writeParameter(i, (short) input[i]);
-				}
+	public void writeEvent(final int[] input) throws IOException {
+		for (short i = 0; i < eventSize; i++) {
+			if (input[i] != 0) {
+				writeParameter(i, (short) input[i]);
 			}
-			dataOutput.writeShort(EVENT_END_MARKER);
-		} catch (IOException ie) {
-			throw new EventException("Can't write event.", ie);
 		}
+		dataOutput.writeShort(EVENT_END_MARKER);
 	}
 
 	/**
@@ -58,17 +54,13 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 	 * @exception EventException
 	 *                thrown for unrecoverable errors
 	 */
-	public void writeEvent(final short[] input) throws EventException {
-		try {
-			for (short i = 0; i < eventSize; i++) {
-				if (input[i] != 0) {
-					writeParameter(i, input[i]);
-				}
+	public void writeEvent(final short[] input) throws IOException {
+		for (short i = 0; i < eventSize; i++) {
+			if (input[i] != 0) {
+				writeParameter(i, input[i]);
 			}
-			dataOutput.writeShort(EVENT_END_MARKER);
-		} catch (IOException ie) {
-			throw new EventException("Can't write event: " + ie.toString());
 		}
+		dataOutput.writeShort(EVENT_END_MARKER);
 	}
 
 	/*
@@ -77,17 +69,12 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 	 * the event stream
 	 */
 	private void writeParameter(final short param, final short value)
-			throws EventException {
-		try {
-			if (isValidParameterNumber(param)) {
-				dataOutput.writeShort(parameterMarker(param));
-				dataOutput.writeShort(value);
-			} else {
-				throw new EventException("Parameter number out of range: "
-						+ param);
-			}
-		} catch (IOException ioe) {
-			throw new EventException("Problem writing parameter.", ioe);
+			throws IOException {
+		if (isValidParameterNumber(param)) {
+			dataOutput.writeShort(parameterMarker(param));
+			dataOutput.writeShort(value);
+		} else {
+			throw new IllegalArgumentException("Parameter number out of range: " + param);
 		}
 	}
 

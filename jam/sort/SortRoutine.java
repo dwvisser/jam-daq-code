@@ -9,8 +9,8 @@ import jam.data.Scaler;
 import jam.global.Beginner;
 import jam.global.Ender;
 import jam.global.Sorter;
-import jam.sort.stream.EventException;
-import jam.sort.stream.AbstractEventOutputStream;
+
+import java.io.IOException;
 
 /**
  * <p>
@@ -286,7 +286,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	/**
 	 * Output stream to send pre-processed events to.
 	 */
-	private transient AbstractEventOutputStream eventOutput = null;
+	private transient EventWriter eventOutput = null;
 
 	/**
 	 * Size of an event to be used for offline sorting. The event size is the
@@ -437,7 +437,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @param out
 	 *            stream to which presorted event output will go
 	 */
-	public final void setEventOutputStream(final AbstractEventOutputStream out) {
+	public final void setEventOutputStream(final EventWriter out) {
 		synchronized (this) {
 			eventOutput = out;
 		}
@@ -523,7 +523,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 		if (getWriteEnabled()) {
 			try {
 				eventOutput.writeEvent(event);
-			} catch (EventException e) {
+			} catch (IOException e) {
 				throw new SortException(e);
 			}
 		}

@@ -8,12 +8,12 @@ import jam.global.JamProperties;
 import jam.global.PropertyKeys;
 import jam.global.SortMode;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
 import jam.sort.DiskDaemon;
 import jam.sort.EventSizeMode;
 import jam.sort.NetDaemon;
 import jam.sort.RingBuffer;
 import jam.sort.SortDaemon;
+import jam.sort.SortRoutine;
 import jam.ui.ConsoleLog;
 
 import java.awt.BorderLayout;
