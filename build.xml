@@ -80,6 +80,33 @@
     	<delete dir="${APIbase.dir}" />
     </target>
     
+	<target name="buildonlyglobal" depends="prepare">
+		<copy todir="${copy.dir}">
+			<fileset dir="${base.dir}"
+			includes="jam/global/*.java,jam/global/*.html"/>
+			<filterset>
+    			<filter token="MAJOR" value="${MAJOR}" />
+    			<filter token="MINOR" value="${MINOR}" />
+    			<filter token="RELEASE" value="${RELEASE}" />
+            	<filter token="PRODUCT_GUID" value="${PRODUCT_GUID}" />
+            	<filter token="PACKAGE_GUID" value="${PACKAGE_GUID}" />
+            	<filter token="SOURCE_GUID" value="${SOURCE_GUID}" />
+                <filter token="LIB_GUID" value="${LIB_GUID}" />
+                <filter token="BIN_GUID" value="${BIN_GUID}" />
+            </filterset>
+		</copy>
+	   	<javac source="1.5" target="1.5" srcdir="${copy.dir}" destdir="${copy.dir}">
+	    	<compilerarg value="-Xlint:unchecked" />
+	    	<classpath>
+	    		<pathelement location="${copy.dir}" />
+	    	</classpath>
+	    </javac>
+        <jar jarfile="${build.dir}/jam.global-${MAJOR}.${MINOR}.${RELEASE}.jar"
+            basedir="${copy.dir}"
+            includes="jam/global/*.html,jam/global/*.class"
+        />    
+	</target>
+	
     <target name="copy" depends="prepare">
     	<copy todir="${copy.dir}">
     		<fileset dir="${base.dir}" 
@@ -91,8 +118,8 @@
             	<filter token="PRODUCT_GUID" value="${PRODUCT_GUID}" />
             	<filter token="PACKAGE_GUID" value="${PACKAGE_GUID}" />
             	<filter token="SOURCE_GUID" value="${SOURCE_GUID}" />
-                	<filter token="LIB_GUID" value="${LIB_GUID}" />
-                	<filter token="BIN_GUID" value="${BIN_GUID}" />
+                <filter token="LIB_GUID" value="${LIB_GUID}" />
+                <filter token="BIN_GUID" value="${BIN_GUID}" />
             </filterset>
 		</copy>
 		<copy todir="${copy.dir}">
