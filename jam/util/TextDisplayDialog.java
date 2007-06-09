@@ -25,7 +25,7 @@ import javax.swing.JTextArea;
  */
 public class TextDisplayDialog extends JDialog {
 
-	TextDisplayDialog(Frame frame, String title, boolean modal, String text){
+	public TextDisplayDialog(Frame frame, String title, boolean modal, String text){
 		super(frame,title,modal);
 		final Container contents=getContentPane();
 		contents.setLayout(new BorderLayout());

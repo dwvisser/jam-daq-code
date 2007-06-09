@@ -21,7 +21,7 @@
  * Illinois/NCSA Open Source License along with this program; if 
  * not, see http://www.opensource.org/
  **************************************************************/
-package jam.util;
+package jam.commands;
 
 import static jam.io.hdf.JamFileFields.SCALER_SECT;
 import static javax.swing.SwingConstants.RIGHT;
@@ -34,6 +34,7 @@ import jam.io.hdf.HDFile;
 import jam.io.hdf.VData;
 import jam.io.hdf.VDataDescription;
 import jam.ui.PanelOKApplyCancelButtons;
+import jam.util.TextDisplayDialog;
 
 import java.awt.BorderLayout;
 import java.awt.Container;

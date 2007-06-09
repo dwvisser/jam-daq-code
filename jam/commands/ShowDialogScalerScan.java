@@ -1,5 +1,4 @@
 package jam.commands;
-import jam.util.ScalerScan;
 
 /**
  *  Show the scaler scan dialog
