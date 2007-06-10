@@ -1,6 +1,5 @@
 package jam.sort;
 
-import jam.sort.control.Controller;
 import jam.sort.stream.EventException;
 import jam.util.NumberUtilities;
 

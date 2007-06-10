@@ -260,7 +260,6 @@ public final class SetupSortOff extends AbstractSetup {
 		inStream.setBufferSize(sortRoutine.getBufferSize());
 		/* give sortroutine output stream */
 		outStream.setEventSize(sortRoutine.getEventSize());
-		outStream.setBufferSize(sortRoutine.getBufferSize());
 		sortRoutine.setEventOutputStream(outStream);
 		/* always setup diskDaemon */
 		final DiskDaemon diskDaemon = new DiskDaemon(sortControl);

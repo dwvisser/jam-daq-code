@@ -1,7 +1,6 @@
 package jam.sort;
 
 import jam.global.GoodThread;
-import jam.sort.control.Controller;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 import jam.sort.stream.EventException;
@@ -46,13 +45,7 @@ public abstract class AbstractStorageDaemon extends GoodThread {
 	protected transient int byteCount = 0;
 
 	/**
-	 * Message handler for text output.
-	 */
-	//protected transient MessageHandler msgHandler;
-
-	/**
-	 * @see jam.sort.control.SortControl
-	 * @see jam.sort.control.RunControl
+	 * Controls the progress of sorting.
 	 */
 	protected transient Controller controller;
 

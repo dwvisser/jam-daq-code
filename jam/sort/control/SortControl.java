@@ -10,6 +10,7 @@ import jam.global.RunInfo;
 import jam.global.RunState;
 import jam.io.ExtensionFileFilter;
 import jam.sort.AbstractStorageDaemon;
+import jam.sort.OfflineController;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
 import jam.ui.Icons;
@@ -42,7 +43,7 @@ import javax.swing.filechooser.FileFilter;
  * @version 1.0
  */
 public final class SortControl extends javax.swing.JDialog implements
-		Controller {
+		OfflineController {
 
 	private static SortControl instance = null;
 
@@ -394,12 +395,6 @@ public final class SortControl extends javax.swing.JDialog implements
 		cout.setEnabled(notLock);
 	}
 
-	/**
-	 * Called by <code>SortDaemon</code> when it needs to start the next
-	 * stream.
-	 * 
-	 * @return <code>true</code> if there was a next file and it's open now
-	 */
 	public boolean openNextFile() {
 		boolean sortNext = false;
 		if (!inputDaemon.closeEventInputListFile()) {

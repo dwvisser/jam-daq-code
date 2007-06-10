@@ -7,8 +7,6 @@ import jam.global.Ender;
 import jam.global.GoodThread;
 import jam.global.JamStatus;
 import jam.global.Sorter;
-import jam.sort.control.Controller;
-import jam.sort.control.SortControl;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.EventException;
 import jam.sort.stream.AbstractEventInputStream.EventInputStatus;
@@ -44,6 +42,12 @@ public class SortDaemon extends GoodThread {
 	private transient boolean endSort;
 
 	private int eventCount;
+
+	/**
+	 * allocate only once to avoid GC having to collect abandoned
+	 * references in sortOnline() loop
+	 */
+	EventInputStatus eventInputStatus;//NOPMD
 
 	private transient AbstractEventInputStream eventInputStream;
 
@@ -88,26 +92,6 @@ public class SortDaemon extends GoodThread {
 	}
 
 	/**
-	 * Called to resume sort
-	 */
-	private void resumeOfflineSorting() {
-		synchronized (offlineSortLock) {
-			osc = false;
-		}
-	}
-
-	/**
-	 * Called to check if sort was canceled.
-	 * 
-	 * @return
-	 */
-	private boolean offlineSortingCanceled() {
-		synchronized (offlineSortLock) {
-			return osc;
-		}
-	}
-
-	/**
 	 * Returns whether we are caught up in the ring buffer.
 	 * 
 	 * @return <code>true</code> if there are no unsorted buffers in the ring
@@ -115,6 +99,22 @@ public class SortDaemon extends GoodThread {
 	 */
 	public boolean caughtUp() {
 		return ringBuffer.isEmpty();
+	}
+
+	/**
+	 * @param eventData
+	 * @throws Exception
+	 */
+	private void checkIntervalAndSortEvent(final int[] eventData) throws Exception {//NOPMD
+		/* Sort only the sortInterval'th events. */
+		if (getCallSort()
+				&& getEventCount() % getSortInterval() == 0) {
+			sorter.sort(eventData);
+			incrementSortedCount();
+		}
+		incrementEventCount();
+		/* Zero event array and get ready for next event. */
+		Arrays.fill(eventData, 0);
 	}
 
 	private void decreaseSortInterval() {
@@ -259,6 +259,38 @@ public class SortDaemon extends GoodThread {
 	}
 
 	/**
+	 * Called to check if sort was canceled.
+	 * 
+	 * @return
+	 */
+	private boolean offlineSortingCanceled() {
+		synchronized (offlineSortLock) {
+			return osc;
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void periodicallyUpdateCounters() {
+		// Number of events to occur before updating counters.
+		final int COUNT_UPDATE = 1000;
+		if (getEventCount() % COUNT_UPDATE == 0) {
+			updateCounters();
+			yield();
+		}
+	}
+
+	/**
+	 * Called to resume sort
+	 */
+	private void resumeOfflineSorting() {
+		synchronized (offlineSortLock) {
+			osc = false;
+		}
+	}
+
+	/**
 	 * Reads events from the event stream.
 	 */
 	public void run() {
@@ -390,59 +422,6 @@ public class SortDaemon extends GoodThread {
 	}
 
 	/**
-	 * Performs the offline sorting until an end-of-run state is reached in the
-	 * event stream.
-	 * 
-	 * @exception Exception
-	 *                thrown if an unrecoverable error occurs during sorting
-	 */
-	public void sortOffline() throws Exception {//NOPMD
-		final SortControl sortControl = (SortControl) controller;
-		final int[] eventData = new int[eventSize];
-		eventInputStatus = EventInputStatus.IGNORE;
-		/*
-		 * Next statement causes checkState() to immediately suspend this
-		 * thread.
-		 */
-		setState(GoodThread.State.SUSPEND);
-		while (checkState()) {// checkstate loop
-			endSort = false;
-			/* suspends this thread when we're done sorting all files */
-			setState(GoodThread.State.SUSPEND);
-			resumeOfflineSorting();// after we come out of suspend
-			/* Loop for each new sort file. */
-			while (!offlineSortingCanceled() && sortControl.openNextFile()) {
-				while (!offlineSortingCanceled() && !endSort) {// buffer loop
-					sortEventsInFile(eventData);
-					/* we get to this point if status was not EVENT */
-					handleStatusOffline();
-					yield();
-				}// end buffer loop
-			}// end isSortNext loop
-			sortControl.atSortEnd();
-		}// end checkstate loop
-	}
-
-	/**
-	 * @param eventData
-	 * @return
-	 * @throws EventException
-	 * @throws Exception
-	 */
-	private void sortEventsInFile(final int[] eventData)//NOPMD
-			throws EventException, Exception {//NOPMD
-		/* Zero the event container. */
-		Arrays.fill(eventData, 0);
-		/* Loop to read & sort one event at a time. */
-		eventInputStatus = eventInputStream.readEvent(eventData);
-		while (!offlineSortingCanceled()
-				&& (eventInputStatus == EventInputStatus.EVENT
-						|| eventInputStatus == EventInputStatus.SCALER_VALUE || eventInputStatus == EventInputStatus.IGNORE)) {
-			sortEvent(eventData);
-		}// end read&sort event-at-a-time loop
-	}
-
-	/**
 	 * @param eventData
 	 * @param status
 	 * @return
@@ -471,24 +450,60 @@ public class SortDaemon extends GoodThread {
 			eventInputStatus = eventInputStream.readEvent(eventData);
 		}
 	}
-
-	/**
-	 * 
-	 */
-	private void periodicallyUpdateCounters() {
-		// Number of events to occur before updating counters.
-		final int COUNT_UPDATE = 1000;
-		if (getEventCount() % COUNT_UPDATE == 0) {
-			updateCounters();
-			yield();
-		}
-	}
 	
 	/**
-	 * allocate only once to avoid GC having to collect abandoned
-	 * references in sortOnline() loop
+	 * @param eventData
+	 * @return
+	 * @throws EventException
+	 * @throws Exception
 	 */
-	EventInputStatus eventInputStatus;//NOPMD
+	private void sortEventsInFile(final int[] eventData)//NOPMD
+			throws EventException, Exception {//NOPMD
+		/* Zero the event container. */
+		Arrays.fill(eventData, 0);
+		/* Loop to read & sort one event at a time. */
+		eventInputStatus = eventInputStream.readEvent(eventData);
+		while (!offlineSortingCanceled()
+				&& (eventInputStatus == EventInputStatus.EVENT
+						|| eventInputStatus == EventInputStatus.SCALER_VALUE || eventInputStatus == EventInputStatus.IGNORE)) {
+			sortEvent(eventData);
+		}// end read&sort event-at-a-time loop
+	}
+
+	/**
+	 * Performs the offline sorting until an end-of-run state is reached in the
+	 * event stream.
+	 * 
+	 * @exception Exception
+	 *                thrown if an unrecoverable error occurs during sorting
+	 */
+	public void sortOffline() throws Exception {//NOPMD
+	    assert(controller instanceof OfflineController);
+	    final OfflineController offlineController = (OfflineController)controller;
+		final int[] eventData = new int[eventSize];
+		eventInputStatus = EventInputStatus.IGNORE;
+		/*
+		 * Next statement causes checkState() to immediately suspend this
+		 * thread.
+		 */
+		setState(GoodThread.State.SUSPEND);
+		while (checkState()) {// checkstate loop
+			endSort = false;
+			/* suspends this thread when we're done sorting all files */
+			setState(GoodThread.State.SUSPEND);
+			resumeOfflineSorting();// after we come out of suspend
+			/* Loop for each new sort file. */
+			while (!offlineSortingCanceled() && offlineController.openNextFile()) {
+				while (!offlineSortingCanceled() && !endSort) {// buffer loop
+					sortEventsInFile(eventData);
+					/* we get to this point if status was not EVENT */
+					handleStatusOffline();
+					yield();
+				}// end buffer loop
+			}// end isSortNext loop
+			offlineController.atSortEnd();
+		}// end checkstate loop
+	}
 
 	/**
 	 * Performs the online sorting until an end-of-run state is reached in the
@@ -529,22 +544,6 @@ public class SortDaemon extends GoodThread {
 			handleStatusOnline();
 			yield();
 		}// end infinite loop
-	}
-
-	/**
-	 * @param eventData
-	 * @throws Exception
-	 */
-	private void checkIntervalAndSortEvent(final int[] eventData) throws Exception {//NOPMD
-		/* Sort only the sortInterval'th events. */
-		if (getCallSort()
-				&& getEventCount() % getSortInterval() == 0) {
-			sorter.sort(eventData);
-			incrementSortedCount();
-		}
-		incrementEventCount();
-		/* Zero event array and get ready for next event. */
-		Arrays.fill(eventData, 0);
 	}
 
 	/**

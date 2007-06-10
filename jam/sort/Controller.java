@@ -1,4 +1,4 @@
-package jam.sort.control;
+package jam.sort;
 
 /**
  * Interface that a class for data taking must implement. Contains methods that
@@ -32,5 +32,5 @@ public interface Controller {
 	 * Method called back by <code>StorageDaemon</code> when it encouters a
 	 * end-run-marker and has closed the data event file it was writing data to.
 	 */
-	void atWriteEnd();
+	void atWriteEnd();	
 }

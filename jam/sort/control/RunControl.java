@@ -8,6 +8,7 @@ import jam.global.RunInfo;
 import jam.global.RunState;
 import jam.global.GoodThread.State;
 import jam.io.DataIO;
+import jam.sort.Controller;
 import jam.sort.DiskDaemon;
 import jam.sort.NetDaemon;
 import jam.sort.SortDaemon;
