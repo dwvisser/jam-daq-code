@@ -9,6 +9,7 @@ import jam.data.Scaler;
 import jam.global.Beginner;
 import jam.global.Ender;
 import jam.global.Sorter;
+import jam.sort.stream.EventWriter;
 
 import java.io.IOException;
 

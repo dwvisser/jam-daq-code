@@ -1,7 +1,4 @@
 package jam.sort.stream;
-import jam.data.DataException;
-import jam.sort.EventWriter;
-
 import java.io.DataOutputStream;
 import java.io.OutputStream;
 
