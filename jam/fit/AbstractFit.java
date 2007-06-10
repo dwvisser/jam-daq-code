@@ -5,7 +5,6 @@ import jam.data.AbstractHist1D;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
 import jam.data.Histogram;
-import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.plot.Bin;
 import jam.plot.PlotDisplay;
@@ -55,8 +54,6 @@ import javax.swing.border.LineBorder;
  * @see GaussianFit
  */
 public abstract class AbstractFit implements PlotMouseListener {
-
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	private static final ValueAndUncertaintyFormatter FORMAT = ValueAndUncertaintyFormatter
 			.getSingletonInstance();
@@ -401,45 +398,6 @@ public abstract class AbstractFit implements PlotMouseListener {
 	/**
 	 * @return
 	 */
-	private JButton createGetMouseButton() {
-		final JButton bMouseGet = new JButton("Get Mouse");
-		bMouseGet.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				initializeMouse();
-				setMouseActive(true);
-			}
-		});
-		return bMouseGet;
-	}
-
-	/**
-	 * @return
-	 */
-	private JPanel createStatusPanel() {
-		final JPanel statusPanel = new JPanel();
-		statusPanel.setLayout(new BorderLayout());
-		statusPanel.add(new JLabel("Status: ", RIGHT), BorderLayout.WEST);
-		status = new JLabel(
-				"OK                                                          ");
-		statusPanel.add(status, BorderLayout.CENTER);
-		return statusPanel;
-	}
-
-	/**
-	 * @return
-	 */
-	private JPanel createHistogramNamePanel() {
-		final JPanel pHistName = new JPanel(new BorderLayout());
-		pHistName.setBorder(LineBorder.createBlackLineBorder());
-		pHistName.add(new JLabel("Fit Histogram: ", RIGHT), BorderLayout.WEST);
-		textHistName = new JLabel("     ");
-		pHistName.add(textHistName, BorderLayout.CENTER);
-		return pHistName;
-	}
-
-	/**
-	 * @return
-	 */
 	private JButton createDoFitButton() {
 		final JButton bGo = new JButton("Do Fit");
 		bGo.addActionListener(new ActionListener() {
@@ -460,6 +418,45 @@ public abstract class AbstractFit implements PlotMouseListener {
 			}
 		});
 		return bGo;
+	}
+
+	/**
+	 * @return
+	 */
+	private JButton createGetMouseButton() {
+		final JButton bMouseGet = new JButton("Get Mouse");
+		bMouseGet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				initializeMouse();
+				setMouseActive(true);
+			}
+		});
+		return bMouseGet;
+	}
+
+	/**
+	 * @return
+	 */
+	private JPanel createHistogramNamePanel() {
+		final JPanel pHistName = new JPanel(new BorderLayout());
+		pHistName.setBorder(LineBorder.createBlackLineBorder());
+		pHistName.add(new JLabel("Fit Histogram: ", RIGHT), BorderLayout.WEST);
+		textHistName = new JLabel("     ");
+		pHistName.add(textHistName, BorderLayout.CENTER);
+		return pHistName;
+	}
+
+	/**
+	 * @return
+	 */
+	private JPanel createStatusPanel() {
+		final JPanel statusPanel = new JPanel();
+		statusPanel.setLayout(new BorderLayout());
+		statusPanel.add(new JLabel("Status: ", RIGHT), BorderLayout.WEST);
+		status = new JLabel(
+				"OK                                                          ");
+		statusPanel.add(status, BorderLayout.CENTER);
+		return statusPanel;
 	}
 
 	/**

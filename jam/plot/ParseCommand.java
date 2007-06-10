@@ -1,7 +1,6 @@
 package jam.plot;
 
 import jam.global.CommandListener;
-import jam.global.JamStatus;
 import jam.ui.Console;
 
 import java.util.ArrayList;

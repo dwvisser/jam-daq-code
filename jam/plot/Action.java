@@ -91,9 +91,6 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 
 	private static final String S_TO = " to ";
 
-	/** Jam status to get current histogram */
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
-
 	private static final String UNUSED = "unused";
 
 	static {

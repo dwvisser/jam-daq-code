@@ -2,7 +2,6 @@ package jam.data.control;
 
 import jam.data.Gate;
 import jam.data.Histogram;
-import jam.global.JamStatus;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
 
@@ -29,26 +28,24 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 	 */
 	static public enum Mode {
 		/**
-		 * The mode for which only gates belonging to the displayed histogram
-		 * are listed.
-		 */
-		DISPLAYED_HIST,
-
-		/**
 		 * The mode for which all gates of the same dimensionality of the
 		 * displayed histogram.
 		 */
-		ALL
+		ALL,
+
+		/**
+		 * The mode for which only gates belonging to the displayed histogram
+		 * are listed.
+		 */
+		DISPLAYED_HIST
 	};
-
-	private transient Object selection = null;
-
-	private transient final JamStatus status = JamStatus.getSingletonInstance();
 
 	private transient final List<Object> lastValue = Collections
 			.synchronizedList(new ArrayList<Object>());
 
 	private transient final Mode mode;
+
+	private transient Object selection = null;
 
 	/**
 	 * Create the default model that shows gates for the currently displayed
@@ -112,6 +109,13 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 	}
 
 	/**
+	 * @return the currently selected item
+	 */
+	public Object getSelectedItem() {
+		return selection;
+	}
+
+	/**
 	 * @return number of list elements in chooser.
 	 */
 	public int getSize() {
@@ -129,23 +133,6 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 		return rval;
 	}
 
-	/**
-	 * @param anItem
-	 *            the item to set the selection to
-	 */
-	public void setSelectedItem(final Object anItem) {
-		synchronized (this) {
-			selection = anItem;
-		}
-	}
-
-	/**
-	 * @return the currently selected item
-	 */
-	public Object getSelectedItem() {
-		return selection;
-	}
-
 	private int numGates() {
 		int numG = 0;
 		final Nameable named = SelectionTree.getCurrentHistogram();
@@ -158,5 +145,15 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 			}
 		}
 		return numG;
+	}
+
+	/**
+	 * @param anItem
+	 *            the item to set the selection to
+	 */
+	public void setSelectedItem(final Object anItem) {
+		synchronized (this) {
+			selection = anItem;
+		}
 	}
 }

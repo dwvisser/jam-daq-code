@@ -2,11 +2,9 @@ package jam.applet;//NOPMD
 
 import jam.InitialHistograms;
 import jam.JamException;
-import jam.data.DataBase;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
-import jam.global.JamStatus;
 import jam.global.LoggerConfig;
 import jam.plot.PlotDisplay;
 import jam.ui.Console;
@@ -48,39 +46,107 @@ import javax.swing.SwingConstants;
  */
 public class HistApplet extends JApplet implements ActionListener, ItemListener {// NOPMD
 
-	private transient PlotDisplay display;
-
 	private static final Console console = new Console(20);
-
-	private transient JTextField textHost;
-
-	/* select panel controls */
-	private transient JPanel pselect;
-
-	private transient FlowLayout flselect;
-
-	private transient JLabel lrunState; // run state label
-
-	private transient JLabel lhist; // label for histogram Chooser
-
-	private transient JComboBox histogramChooser; // reference needed by
-
-	// command
-
-	private transient JButton boverLay; // button for overlay
-
-	private transient JLabel lgate; // label for gate choicer
-
-	private transient JComboBox gateChooser; // reference needed by command
 
 	private static final String packageName = HistApplet.class.getPackage()
 			.getName();
+
+	private static final Logger LOGGER = Logger.getLogger(packageName);
 
 	static {
 		new LoggerConfig(packageName, console.getLog());
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(packageName);
+	private transient JButton boverLay; // button for overlay
+
+	private transient PlotDisplay display;
+
+	private transient FlowLayout flselect;
+
+	private transient JComboBox gateChooser; // reference needed by command
+
+	// command
+
+	private transient JComboBox histogramChooser; // reference needed by
+
+	private transient JLabel lgate; // label for gate choicer
+
+	private transient JLabel lhist; // label for histogram Chooser
+
+	private transient JLabel lrunState; // run state label
+
+	/* select panel controls */
+	private transient JPanel pselect;
+
+	private transient JTextField textHost;
+
+	/**
+	 * Receive action frow awt widgets
+	 */
+	public void actionPerformed(final ActionEvent actionEvent) {
+		String incommand;
+		String hostName;
+		incommand = actionEvent.getActionCommand();
+		if ((actionEvent.getSource() == textHost)) {
+			incommand = "link";
+		}
+		try {
+			if (incommand == "link") {
+				hostName = textHost.getText().trim();
+				LOGGER.info("Trying " + hostName);
+				link(hostName);
+				LOGGER.info("Remote link made to: " + hostName);
+			}
+		} catch (JamException je) {
+			LOGGER.log(Level.SEVERE, je.getMessage(), je);
+		} catch (SecurityException se) {
+			LOGGER.log(Level.SEVERE, se.getMessage(), se);
+		}
+	}
+
+	/**
+	 * Adds the tool bar the at the top of the plot.
+	 * 
+	 * @param pAdd
+	 *            panel to add toolbar to
+	 * @since Version 0.5
+	 */
+	public void addToolbarSelect(final JPanel pAdd) {
+
+		// panel with selection and print ect..
+		pselect = new JPanel();
+		flselect = new FlowLayout(FlowLayout.LEFT, 10, 5);
+		pselect.setLayout(flselect);
+		pselect.setBackground(Color.lightGray);
+		pselect.setForeground(Color.black);
+		pAdd.add(BorderLayout.NORTH, pselect);
+
+		// >>setup select panel
+		lrunState = new JLabel("      ", SwingConstants.CENTER);
+
+		lhist = new JLabel("Histogram", SwingConstants.RIGHT);
+
+		histogramChooser = new JComboBox();
+		histogramChooser.addItem("HISTOGRAMNAMES");
+		histogramChooser.addItemListener(this);
+
+		boverLay = new JButton("Overlay");
+		boverLay.setActionCommand("overlay");
+		boverLay.addActionListener(this);
+
+		lgate = new JLabel("Gate", SwingConstants.RIGHT);
+
+		gateChooser = new JComboBox();
+		gateChooser.addItem("GATENAMES");
+		gateChooser.addItemListener(this);
+
+		pselect.add(lrunState);
+		pselect.add(lhist);
+		pselect.add(histogramChooser);
+		pselect.add(boverLay);
+		pselect.add(lgate);
+		pselect.add(gateChooser);
+	}
 
 	/**
 	 * Initializes the applet. You never need to call this directly; it is
@@ -89,14 +155,14 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	public void init() {
 		int sizeX = 500;
 		int sizeY = 300;
-		String expname = "expname";
 		try {// setup applet size
 			sizeY = Integer.parseInt(this.getParameter("height"));
 			sizeX = Integer.parseInt(this.getParameter("width"));
-			expname = this.getParameter("expname");
 		} catch (NumberFormatException nfe) {
 			LOGGER.log(Level.SEVERE, "height and width not numbers", nfe);
-		}
+		} 
+		
+		final String expname = this.getParameter("expname");
 
 		// applet layout
 		this.setLayout(new BorderLayout(0, 0));
@@ -148,30 +214,6 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 			LOGGER.log(Level.SEVERE, "Error create histograms ", e);
 		}
 
-	}
-
-	/**
-	 * Receive action frow awt widgets
-	 */
-	public void actionPerformed(final ActionEvent actionEvent) {
-		String incommand;
-		String hostName;
-		incommand = actionEvent.getActionCommand();
-		if ((actionEvent.getSource() == textHost)) {
-			incommand = "link";
-		}
-		try {
-			if (incommand == "link") {
-				hostName = textHost.getText().trim();
-				LOGGER.info("Trying " + hostName);
-				link(hostName);
-				LOGGER.info("Remote link made to: " + hostName);
-			}
-		} catch (JamException je) {
-			LOGGER.log(Level.SEVERE, je.getMessage(), je);
-		} catch (SecurityException se) {
-			LOGGER.log(Level.SEVERE, se.getMessage(), se);
-		}
 	}
 
 	/**
@@ -267,6 +309,22 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	}
 
 	/**
+	 * Sets the chooser to the current list of gates
+	 * 
+	 * @param gates
+	 *            the list of gates
+	 */
+	public void setGateList(final List<Gate> gates) {
+		/* if we have gates load gates of current histogram into chooser */
+		if (gateChooser != null) {
+			gateChooser.removeAll();
+			/* set proper model */
+			gateChooser.setModel(new DefaultComboBoxModel(new Vector<Gate>(// NOPMD
+					gates)));
+		}
+	}
+
+	/**
 	 * Sets the chooser to the current list of histograms.
 	 * 
 	 * @param histogramList
@@ -295,66 +353,6 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 		pselect.add(gateChooser);
 		pselect.doLayout();
 
-	}
-
-	/**
-	 * Sets the chooser to the current list of gates
-	 * 
-	 * @param gates
-	 *            the list of gates
-	 */
-	public void setGateList(final List<Gate> gates) {
-		/* if we have gates load gates of current histogram into chooser */
-		if (gateChooser != null) {
-			gateChooser.removeAll();
-			/* set proper model */
-			gateChooser.setModel(new DefaultComboBoxModel(new Vector<Gate>(// NOPMD
-					gates)));
-		}
-	}
-
-	/**
-	 * Adds the tool bar the at the top of the plot.
-	 * 
-	 * @param pAdd
-	 *            panel to add toolbar to
-	 * @since Version 0.5
-	 */
-	public void addToolbarSelect(final JPanel pAdd) {
-
-		// panel with selection and print ect..
-		pselect = new JPanel();
-		flselect = new FlowLayout(FlowLayout.LEFT, 10, 5);
-		pselect.setLayout(flselect);
-		pselect.setBackground(Color.lightGray);
-		pselect.setForeground(Color.black);
-		pAdd.add(BorderLayout.NORTH, pselect);
-
-		// >>setup select panel
-		lrunState = new JLabel("      ", SwingConstants.CENTER);
-
-		lhist = new JLabel("Histogram", SwingConstants.RIGHT);
-
-		histogramChooser = new JComboBox();
-		histogramChooser.addItem("HISTOGRAMNAMES");
-		histogramChooser.addItemListener(this);
-
-		boverLay = new JButton("Overlay");
-		boverLay.setActionCommand("overlay");
-		boverLay.addActionListener(this);
-
-		lgate = new JLabel("Gate", SwingConstants.RIGHT);
-
-		gateChooser = new JComboBox();
-		gateChooser.addItem("GATENAMES");
-		gateChooser.addItemListener(this);
-
-		pselect.add(lrunState);
-		pselect.add(lhist);
-		pselect.add(histogramChooser);
-		pselect.add(boverLay);
-		pselect.add(lgate);
-		pselect.add(gateChooser);
 	}
 
 }

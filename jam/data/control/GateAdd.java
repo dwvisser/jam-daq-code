@@ -1,6 +1,5 @@
 package jam.data.control;
 
-import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -29,9 +28,9 @@ import javax.swing.JPanel;
  */
 public final class GateAdd extends AbstractControl {
 
-	private transient Gate currentGateAdd;
-
 	private transient final JComboBox cadd;
+
+	private transient Gate currentGateAdd;
 
 	/**
 	 * Create a new "add gate" dialog.
@@ -114,17 +113,17 @@ public final class GateAdd extends AbstractControl {
 		}
 	}
 
-	void selectGateAdd(final Gate gate) {
-		synchronized (this) {
-			currentGateAdd = gate;
-		}
-	}
-
 	/**
 	 * @see jam.data.control.AbstractControl#doSetup()
 	 */
 	public void doSetup() {
 		cadd.setSelectedIndex(0);
+	}
+
+	void selectGateAdd(final Gate gate) {
+		synchronized (this) {
+			currentGateAdd = gate;
+		}
 	}
 
 }
