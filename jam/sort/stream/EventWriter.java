@@ -1,4 +1,4 @@
-package jam.sort;
+package jam.sort.stream;
 
 import java.io.IOException;
 
