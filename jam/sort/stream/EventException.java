@@ -15,4 +15,8 @@ public final class EventException extends Exception {
     EventException(String msg, Throwable thrown){
         super(msg,thrown);
     }
+    
+    EventException(Throwable thrown){
+    	super(thrown);
+    }
 }

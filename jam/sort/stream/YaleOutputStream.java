@@ -92,7 +92,7 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 		try {
 			dataOutput.writeShort(RUN_END_MARKER);
 		} catch (IOException ioe) {
-			throw new EventException(ioe.toString());
+			throw new EventException(ioe);
 		}
 	}
 
