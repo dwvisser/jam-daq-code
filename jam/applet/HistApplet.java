@@ -2,6 +2,7 @@ package jam.applet;//NOPMD
 
 import jam.InitialHistograms;
 import jam.JamException;
+import jam.commands.CommandManager;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
@@ -46,15 +47,16 @@ import javax.swing.SwingConstants;
  */
 public class HistApplet extends JApplet implements ActionListener, ItemListener {// NOPMD
 
-	private static final Console console = new Console(20);
+	private static final Console console;
 
-	private static final String packageName = HistApplet.class.getPackage()
-			.getName();
-
-	private static final Logger LOGGER = Logger.getLogger(packageName);
+	private static final Logger LOGGER;
 
 	static {
+		final CommandManager manager = CommandManager.getInstance();
+		console = new Console(20, manager, manager);
+		final String packageName = HistApplet.class.getPackage().getName();
 		new LoggerConfig(packageName, console.getLog());
+		LOGGER = Logger.getLogger(packageName);
 	}
 
 	private transient JButton boverLay; // button for overlay
@@ -160,8 +162,8 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 			sizeX = Integer.parseInt(this.getParameter("width"));
 		} catch (NumberFormatException nfe) {
 			LOGGER.log(Level.SEVERE, "height and width not numbers", nfe);
-		} 
-		
+		}
+
 		final String expname = this.getParameter("expname");
 
 		// applet layout

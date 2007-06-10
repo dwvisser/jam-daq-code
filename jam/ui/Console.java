@@ -1,6 +1,6 @@
 package jam.ui;
 
-import jam.commands.CommandManager;
+import jam.commands.CommandFinder;
 import jam.global.CommandListener;
 
 import java.awt.BorderLayout;
@@ -46,7 +46,11 @@ public class Console extends JPanel {
 	 */
 	private final static int STACK_SIZE = 50;
 
-	private transient final LinkedList<String> cmdStack = new LinkedList<String>();//NOPMD
+	private transient final LinkedList<String> cmdStack = new LinkedList<String>();// NOPMD
+
+	private transient final CommandFinder commandFinder;
+
+	private transient final ConsoleLog consoleLog;
 
 	private transient int lastCmdIndex;
 
@@ -54,15 +58,13 @@ public class Console extends JPanel {
 			.synchronizedList(new ArrayList<CommandListener>());
 
 	private transient final JTextField textIn = new JTextField();
-	
-	private transient final ConsoleLog consoleLog;
 
 	/**
 	 * Create a JamConsole which has an text area for output a text field for
 	 * intput.
 	 */
-	public Console() {
-		this(NUM_LINES);
+	public Console(CommandFinder finder, CommandListener listener) {
+		this(NUM_LINES, finder, listener);
 	}
 
 	/**
@@ -72,8 +74,9 @@ public class Console extends JPanel {
 	 * @param linesLog
 	 *            number of lines to retain in onscreen display
 	 */
-	public Console(int linesLog) {
+	public Console(int linesLog, CommandFinder finder, CommandListener listener) {
 		super(new BorderLayout());
+		this.commandFinder = finder;
 		consoleLog = new ConsoleLog(linesLog);
 		this.add(consoleLog.getComponent(), BorderLayout.CENTER);
 		textIn
@@ -99,15 +102,7 @@ public class Console extends JPanel {
 
 			}
 		});
-		addCommandListener(CommandManager.getInstance());
-	}
-	
-	/**
-	 * 
-	 * @return the message handler that logs messages to the jam window
-	 */
-	public ConsoleLog getLog() {
-		return consoleLog;
+		addCommandListener(listener);
 	}
 
 	/**
@@ -131,6 +126,14 @@ public class Console extends JPanel {
 	 */
 	public final void addCommandListener(final CommandListener msgCommand) {
 		listenerList.add(msgCommand);
+	}
+
+	/**
+	 * 
+	 * @return the message handler that logs messages to the jam window
+	 */
+	public ConsoleLog getLog() {
+		return consoleLog;
 	}
 
 	private boolean isNumber(final String string) {
@@ -165,8 +168,8 @@ public class Console extends JPanel {
 			final StringBuilder buffer = new StringBuilder();
 			buffer.append('\"').append(cmd)
 					.append("\" is an invalid command. ");
-			final Collection<String> offer = CommandManager.getInstance()
-					.getSimilarCommnands(cmd, true);
+			final Collection<String> offer = commandFinder.getSimilarCommnands(
+					cmd, true);
 			if (!offer.isEmpty()) {
 				buffer.append("Maybe you meant ");
 				if (offer.size() > 1) {

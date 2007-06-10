@@ -27,7 +27,9 @@ import javax.swing.Action;
  * 
  * @author Ken Swartz
  */
-public class CommandManager implements CommandListener {
+public class CommandManager implements CommandListener, CommandFinder {
+
+	private static final Object classMonitor = new Object();
 
 	private static final Map<String, Class<? extends Commandable>> CMD_MAP = Collections
 			.synchronizedMap(new HashMap<String, Class<? extends Commandable>>());
@@ -36,6 +38,11 @@ public class CommandManager implements CommandListener {
 
 	private static final Map<String, Commandable> INSTANCES = Collections
 			.synchronizedMap(new HashMap<String, Commandable>());
+
+	private static final Logger LOGGER = Logger.getLogger(CommandManager.class
+			.getPackage().getName());
+
+	private static final Commandable NO_COMMAND = new NoCommand();
 
 	/* initializer block for map */
 	static {
@@ -137,8 +144,6 @@ public class CommandManager implements CommandListener {
 		CMD_MAP.put(CommandNames.SHOW_SETUP_REMOTE, ShowSetupRemote.class);
 	}
 
-	private static final Object classMonitor = new Object();
-
 	/**
 	 * Singleton accessor.
 	 * 
@@ -162,8 +167,6 @@ public class CommandManager implements CommandListener {
 	private CommandManager() {
 		super();
 	}
-
-	private static final Commandable NO_COMMAND = new NoCommand();
 
 	/**
 	 * See if we have the instance created, create it if necessary, and return
@@ -227,14 +230,8 @@ public class CommandManager implements CommandListener {
 		return new TreeSet<String>(CMD_MAP.keySet());
 	}
 
-	/**
-	 * Help the user by getting similar commands.
-	 * 
-	 * @param string
-	 *            what the user typed
-	 * @param onlyEnabled
-	 *            <code>true</code> means only return enabled commands
-	 * @return list of similar commands
+	/* (non-Javadoc)
+	 * @see jam.commands.CommandFinder#getSimilarCommnands(java.lang.String, boolean)
 	 */
 	public Collection<String> getSimilarCommnands(final String string,
 			final boolean onlyEnabled) {
@@ -258,9 +255,6 @@ public class CommandManager implements CommandListener {
 		}
 		return Collections.unmodifiableCollection(rval);
 	}
-
-	private static final Logger LOGGER = Logger.getLogger(CommandManager.class
-			.getPackage().getName());
 
 	/**
 	 * Perform command with string parameters

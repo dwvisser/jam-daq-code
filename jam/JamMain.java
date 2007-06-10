@@ -41,22 +41,18 @@ import javax.swing.SwingUtilities;
  */
 public final class JamMain extends JFrame implements Observer {
 
-	static {
-		//need this block first in order for console to have correct L&F
-		Utility.setLookAndFeel();
-	}
-
 	/**
 	 * Message output and text input.
 	 */
-	private static final Console console = new Console();
-	
+	private static final Console console;
+
 	private static final Logger LOGGER;
 
-	private static final String packageName = JamMain.class.getPackage()
-			.getName();
-
 	static {
+		Utility.setLookAndFeel();
+		final CommandManager manager = CommandManager.getInstance();
+		console = new Console(manager, manager);
+		final String packageName = JamMain.class.getPackage().getName();
 		new LoggerConfig(packageName, console.getLog());
 		LOGGER = Logger.getLogger(packageName);
 	}
@@ -69,6 +65,10 @@ public final class JamMain extends JFrame implements Observer {
 	 */
 	public static void main(final String args[]) {
 		new JamMain(true);
+	}
+
+	public static void quit() {
+		System.exit(0);
 	}
 
 	/**
@@ -285,9 +285,5 @@ public final class JamMain extends JFrame implements Observer {
 		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
 			setRunState((RunState) beParam.getContent());
 		}
-	}
-	
-	public static void quit(){
-		System.exit(0);
 	}
 }
