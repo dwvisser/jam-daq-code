@@ -1,6 +1,5 @@
 package jam.io.hdf;
 
-import jam.JamPrefs;
 import java.util.prefs.Preferences;
 
 /**
@@ -17,7 +16,7 @@ public final class HDFPrefs {
 	   /**
 	    * The preferences node for the <code>jam</code> package.
 	    */
-		public static final Preferences PREFS=Preferences.userNodeForPackage(JamPrefs.class);
+		public static final Preferences PREFS=Preferences.userNodeForPackage(HDFPrefs.class);
 		
 		/**
 		 * Name for the empty write preference.
