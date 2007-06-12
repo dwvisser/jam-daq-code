@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.JamPrefs;
+import jam.comm.CommunicationPreferences;
 import jam.global.SortMode;
 
 import java.util.Observable;
@@ -18,8 +18,8 @@ final class SetDebug extends AbstractSetBooleanPreference implements Observer {
 		super("Debug front end");
 		putValue(SHORT_DESCRIPTION,
 				"Preference for debugging messages from the front end process.");
-		prefsNode = JamPrefs.PREFS;
-		key = JamPrefs.DEBUG;
+		prefsNode = CommunicationPreferences.PREFS;
+		key = CommunicationPreferences.DEBUG;
 		defaultState = false;
 		enable();
 	}

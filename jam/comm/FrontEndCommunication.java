@@ -1,8 +1,9 @@
- package jam.comm;
- import jam.JamException;
+package jam.comm;
+
 import jam.sort.CamacCommands;
 import jam.sort.VME_Map;
 
+import java.io.IOException;
 import java.util.Observer;
 import java.util.prefs.PreferenceChangeListener;
  
@@ -27,7 +28,7 @@ public interface FrontEndCommunication extends Observer, PreferenceChangeListene
      * 
      * @throws JamException when something goes wrong
      */
-    void setupAcquisition()  throws JamException;
+    void setupAcquisition()  throws CommunicationsException;
     
     /**
      * Tell the Front End to start acquistion.
@@ -103,7 +104,7 @@ public interface FrontEndCommunication extends Observer, PreferenceChangeListene
      * @param commands object containing CAMAC CNAF commands
      * @throws JamException if there is a problem setting up
      */
-    void setupCamac(CamacCommands commands) throws JamException;
+    void setupCamac(CamacCommands commands) throws IOException;
 
     /**
      * Send the map of VME parameters to the front end.
@@ -111,7 +112,7 @@ public interface FrontEndCommunication extends Observer, PreferenceChangeListene
      * @param vmeMap which channels to use in the electronics
      * @throws JamException if there is a problem setting up
      */
-	void setupVMEmap(VME_Map vmeMap) throws JamException;
+	void setupVMEmap(VME_Map vmeMap);
 	
 	/**
 	 * Send the number of milliseconds between blocks of scaler
@@ -120,7 +121,7 @@ public interface FrontEndCommunication extends Observer, PreferenceChangeListene
 	 * @param milliseconds 
 	 * @throws JamException if there's a problem sending
 	 */
-	void sendScalerInterval(int milliseconds) throws JamException;
+	void sendScalerInterval(int milliseconds);
     
     /** 
      * Method that is a deamon for receiving packets from the 

@@ -1,5 +1,5 @@
 package jam.commands;
-import jam.JamPrefs;
+import jam.comm.CommunicationPreferences;
 import jam.global.SortMode;
 
 import java.util.Observable;
@@ -19,8 +19,8 @@ Observer {
 		putValue(NAME, "Verbose front end");
 		putValue(SHORT_DESCRIPTION,
 		"Preference for verbosity from the front end process.");
-		prefsNode=JamPrefs.PREFS;
-		key=JamPrefs.VERBOSE;
+		prefsNode=CommunicationPreferences.PREFS;
+		key=CommunicationPreferences.VERBOSE;
 		defaultState=false;
 		enable();
 	}

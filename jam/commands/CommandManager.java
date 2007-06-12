@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.JamPrefs;
+import jam.comm.CommunicationPreferences;
 import jam.global.Broadcaster;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
@@ -138,8 +138,8 @@ public class CommandManager implements CommandListener, CommandFinder {
 		CMD_MAP.put(PlotPrefs.ENABLE_SCROLLING, SetEnableScrolling.class);
 		CMD_MAP.put(PlotPrefs.DISPLAY_LABELS, SetAxisLabels.class);
 		CMD_MAP.put(HDFPrefs.SUPPRES_EMPTY, SetHDFSuppressSaveEmpty.class);
-		CMD_MAP.put(JamPrefs.VERBOSE, SetVerbose.class);
-		CMD_MAP.put(JamPrefs.DEBUG, SetDebug.class);
+		CMD_MAP.put(CommunicationPreferences.VERBOSE, SetVerbose.class);
+		CMD_MAP.put(CommunicationPreferences.DEBUG, SetDebug.class);
 		CMD_MAP.put(CommandNames.SHOW_PEAK_FIND, ShowDialogPeakFind.class);
 		CMD_MAP.put(CommandNames.SHOW_SETUP_REMOTE, ShowSetupRemote.class);
 	}

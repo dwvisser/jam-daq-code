@@ -1,5 +1,6 @@
 package jam;
 
+import jam.comm.CommunicationPreferences;
 import jam.commands.CommandManager;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -239,8 +240,8 @@ final class MenuBar implements Observer {
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(HDFPrefs.SUPPRES_EMPTY));
 		mPrefer.addSeparator();
-		mPrefer.add(getMenuItem(JamPrefs.VERBOSE));
-		mPrefer.add(getMenuItem(JamPrefs.DEBUG));
+		mPrefer.add(getMenuItem(CommunicationPreferences.VERBOSE));
+		mPrefer.add(getMenuItem(CommunicationPreferences.DEBUG));
 		return mPrefer;
 	}
 

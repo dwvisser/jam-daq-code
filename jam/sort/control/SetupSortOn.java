@@ -4,15 +4,16 @@ import static jam.global.GoodThread.State.STOP;
 import static java.util.logging.Level.SEVERE;
 import static javax.swing.SwingConstants.RIGHT;
 import jam.JamException;
+import jam.comm.CommunicationsException;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
 import jam.global.SortMode;
-import jam.sort.SortException;
 import jam.sort.DiskDaemon;
 import jam.sort.EventSizeMode;
 import jam.sort.NetDaemon;
 import jam.sort.RingBuffer;
 import jam.sort.SortDaemon;
+import jam.sort.SortException;
 import jam.sort.SortRoutine;
 import jam.ui.ConsoleLog;
 
@@ -188,8 +189,8 @@ public final class SetupSortOn extends AbstractSetup {
 		textExpName.setColumns(20);
 		pEntries.add(textExpName);
 		/* Radio buttons for path */
-		final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER, noSpace,
-				noSpace));
+		final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER,
+				noSpace, noSpace));
 		pEntries.add(pradio);
 		final ButtonGroup pathType = new ButtonGroup();
 		pathType.add(btnDefaultPath);
@@ -446,10 +447,10 @@ public final class SetupSortOn extends AbstractSetup {
 	 * @throws IOException
 	 * @throws SortException
 	 */
-	private void setup(final boolean dispose) throws JamException, IOException, SortException {
+	private void setup(final boolean dispose) throws CommunicationsException,
+			JamException, IOException, SortException {
 		if (clog.isSelected()) { // if needed start logging to file
-			final File logPathTry = new File(textPathLog.getText(),
-					exptName);
+			final File logPathTry = new File(textPathLog.getText(), exptName);
 			final String logFile = consoleLog.setLogFileName(logPathTry
 					.getCanonicalPath());
 			LOGGER.info("Logging to file: " + logFile);
@@ -489,7 +490,7 @@ public final class SetupSortOn extends AbstractSetup {
 		}
 	}
 
-	private void setupCamac() throws JamException {
+	private void setupCamac() throws IOException, CommunicationsException {
 		frontEnd.setupAcquisition();
 		frontEnd.setupCamac(sortChooser.getSortRoutine().getCamacCommands());
 	}
@@ -564,7 +565,7 @@ public final class SetupSortOn extends AbstractSetup {
 		netDaemon.start();
 	}
 
-	private void setupVMEmap() throws JamException {
+	private void setupVMEmap() throws CommunicationsException {
 		frontEnd.setupAcquisition();
 		final jam.sort.VME_Map map = sortChooser.getSortRoutine().getVMEmap();
 		frontEnd.setupVMEmap(map);
