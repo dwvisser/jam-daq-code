@@ -34,8 +34,6 @@ import javax.swing.JMenuItem;
  */
 final class MenuBar implements Observer {
 
-	final transient private JamStatus status = JamStatus.getSingletonInstance();
-
 	final transient private JMenuItem impHist = new JMenu("Import");
 
 	/** Fit menu needed as members so we can add a fit */
@@ -274,6 +272,7 @@ final class MenuBar implements Observer {
 	}
 
 	private void sortModeChanged() {
+		final JamStatus status = JamStatus.getSingletonInstance();
 		final SortMode mode = status.getSortMode();
 		final boolean file = mode == SortMode.FILE || mode == SortMode.NO_SORT;
 		impHist.setEnabled(file);
