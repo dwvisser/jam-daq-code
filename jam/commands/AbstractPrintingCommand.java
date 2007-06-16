@@ -35,7 +35,7 @@ abstract class AbstractPrintingCommand extends AbstractCommand {// NOPMD
 			.defaultPage();
 
 	static {// initial configuration of page format
-		final double inchesToPica = 72.0;
+		final int inchesToPica = 72;
 		final double top = MARGIN_TOP * inchesToPica;
 		final double bottom = mPageFormat.getHeight() - MARGIN_BOTTOM
 				* inchesToPica;
