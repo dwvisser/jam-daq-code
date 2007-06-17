@@ -362,9 +362,7 @@ public final class HDFIO implements DataIO {
 				continue GROUPLIST;
 			}
 
-			// Keep track of first loaded group
-			firstLoadedGroup = (firstLoadedGroup == null) ? currentGroup
-					: firstLoadedGroup;
+			setFirstLoadedGroupIfNull(currentGroup);
 			// Find histograms
 			final List<String> empty = Collections.emptyList();
 			histList = hdfToJam.findHistograms(currentVGroup, empty);
@@ -514,10 +512,7 @@ public final class HDFIO implements DataIO {
 			status.setCurrentGroup(sortGroup);
 			currentGroup = (Group) status.getCurrentGroup();
 		}
-		/* Keep track of first loaded group */
-		if (firstLoadedGroup == null) {
-			firstLoadedGroup = currentGroup;
-		}
+		setFirstLoadedGroupIfNull(currentGroup);
 		groupCount = 0;
 
 		histCount = hdfToJam.convertHistogramsOriginal(currentGroup, mode,
@@ -534,6 +529,16 @@ public final class HDFIO implements DataIO {
 			if (vddParam != null) {
 				paramCount = hdfToJam.convertParameters(vddParam, mode);
 			}
+		}
+	}
+
+	/**
+	 * @param currentGroup
+	 */
+	private void setFirstLoadedGroupIfNull(final Group currentGroup) {
+		/* Keep track of first loaded group */
+		if (firstLoadedGroup == null) {
+			firstLoadedGroup = currentGroup;
 		}
 	}
 
@@ -982,7 +987,7 @@ public final class HDFIO implements DataIO {
 				asyncMonitor.setup("Reading HDF file", "Reading Objects",
 						(MonitorSteps.READ_WRITE + MonitorSteps.OVERHEAD_READ)
 								* numberFiles);
-				firstLoadedGroup = null;
+				firstLoadedGroup = null; //NOPMD
 				try {
 					// Loop for all files
 					for (int i = 0; i < inFiles.length; i++) {
