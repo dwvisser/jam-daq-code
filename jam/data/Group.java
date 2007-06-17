@@ -65,7 +65,7 @@ public final class Group implements Nameable {
 		synchronized (Group.class) {
 			NAME_MAP.clear();
 			LIST.clear();
-			sortGroup = null;
+			sortGroup = null; //NOPMD
 		}
 	}
 
@@ -84,6 +84,10 @@ public final class Group implements Nameable {
 	public static Group createGroup(final String groupName,
 			final String fileName, final Type type) {
 		synchronized (Group.class) {
+			if (type == Type.SORT && sortGroup != null) {
+				throw new java.lang.IllegalStateException(
+						"May not create a sort group when one exists already.");
+			}
 			final Group group = new Group(groupName, type, fileName);
 			/* Only one sort group */
 			if (type == Type.SORT) {
@@ -209,13 +213,13 @@ public final class Group implements Nameable {
 		super();
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		String tempFullName = "GROUP";
-		final boolean noFile = fileName != null;
-		final boolean noGroup = groupName != null;
-		if (noFile && noGroup) {
+		final boolean filenameNotNull = fileName != null;
+		final boolean groupNameNotNull = groupName != null;
+		if (filenameNotNull && groupNameNotNull) {
 			tempFullName = stringUtil.makeFullName(fileName, groupName);
-		} else if (noFile) {
+		} else if (filenameNotNull) {
 			tempFullName = fileName;
-		} else if (noGroup) {
+		} else if (groupNameNotNull) {
 			tempFullName = groupName;
 		}
 		final String uniqueName = stringUtil.makeUniqueName(tempFullName,

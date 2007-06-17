@@ -186,7 +186,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			public void actionPerformed(final ActionEvent event) {
 				final Object selected = cfrom.getSelectedItem();
 				if (selected == null || selected instanceof String) {
-					hfrom = null;
+					hfrom = null; //NOPMD
 					pButtons.setButtonsEnabled(false, false, true);
 				} else {
 					hfrom = (AbstractHist1D) selected;

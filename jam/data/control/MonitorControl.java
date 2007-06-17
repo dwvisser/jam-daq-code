@@ -303,7 +303,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	 * Stop monitors interval updating loop
 	 */
 	private void loopThreadStopped() {
-		loopThread = null;
+		loopThread = null; //NOPMD
 		for (Monitor monitor : Monitor.getMonitorList()) {
 			monitor.reset();
 		}
