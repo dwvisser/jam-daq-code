@@ -240,9 +240,8 @@ public final class Script implements Observer {
 			LOGGER.log(Level.INFO, "Began sort. Waiting for finish...");
 			final Object lock = new Object();
 			synchronized (lock) {
-				final long millisec = 2500;
 				while (state != RunState.ACQ_OFF) {
-					lock.wait(millisec);
+					lock.wait(2500); // 2.5 seconds
 				}
 			}
 			LOGGER.log(Level.INFO, "Reached end of sort.");

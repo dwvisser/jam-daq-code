@@ -538,13 +538,12 @@ final class Painter {
 	 * @since Version 0.5
 	 */
 	private void axisLabelLeft(final String label) {
-		final double ninetyDeg = -Math.PI * 0.5;
 		final int offset = metrics.stringWidth(label);
 		final int yCoordinate = viewMiddle().y + offset / 2;
 		final int xCoordinate = border.left - graphLayout.axisLabelOffsets.left;
 		final AffineTransform original = graphics2d.getTransform();
 		graphics2d.translate(xCoordinate, yCoordinate);
-		graphics2d.rotate(ninetyDeg);
+		graphics2d.rotate(-Math.PI * 0.5); // negative 90 degrees
 		graphics2d.drawString(label, 0, 0);
 		graphics2d.setTransform(original);
 	}
@@ -793,7 +792,8 @@ final class Painter {
 	 * @param numberColors
 	 * @param textHeight
 	 */
-	private void drawScaleKey(final int minCount, final int[] colorThresholds, final int numberColors, final int textHeight) {
+	private void drawScaleKey(final int minCount, final int[] colorThresholds,
+			final int numberColors, final int textHeight) {
 		String label = Integer.toString(minCount);
 		graphics2d.drawString(label, view.getRight()
 				+ graphLayout.colorScale.offset + graphLayout.colorScale.size
