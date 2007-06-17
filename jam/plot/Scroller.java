@@ -41,6 +41,8 @@ class Scroller extends JPanel implements AdjustmentListener {
 	/** plot limits that have the bounded range models */
 	private transient Limits plotLimits;
 
+	private transient final Object LOCK = new Object();
+
 	/**
 	 * Create the scroller that belongs to the given plot.
 	 * 
@@ -71,7 +73,7 @@ class Scroller extends JPanel implements AdjustmentListener {
 			this.add(scrollVert, BorderLayout.WEST);
 			scrollVert.addAdjustmentListener(this);
 		} else {
-			scrollVert = null;//NOPMD
+			scrollVert = null;// NOPMD
 		}
 		// scrollbar to change scale
 		final int COUNT_SCROLL_MIN = 0;
@@ -101,7 +103,7 @@ class Scroller extends JPanel implements AdjustmentListener {
 	 *            new limits
 	 */
 	void setLimits(final Limits limits) {
-		synchronized (this) {
+		synchronized (LOCK) {
 			plotLimits = limits;
 			scrollHorz.setModel(plotLimits.getModelX());
 			if (isPlot2d) {
@@ -117,7 +119,7 @@ class Scroller extends JPanel implements AdjustmentListener {
 	 *            adjustment event message
 	 */
 	public void adjustmentValueChanged(final AdjustmentEvent event) {
-		synchronized (this) {
+		synchronized (LOCK) {
 			if (plot.hasHistogram()) {
 				final JScrollBar source = (JScrollBar) event.getSource();
 				final Adjustable adj = event.getAdjustable();
@@ -155,57 +157,45 @@ class Scroller extends JPanel implements AdjustmentListener {
 	 * alwayed call
 	 */
 	void update() {
-		if (plot.hasHistogram()) {
-			lastCountMax = plot.getLimits().getMaximumCounts();
+		synchronized (LOCK) {
+			if (plot.hasHistogram()) {
+				lastCountMax = plot.getLimits().getMaximumCounts();
+			}
+			// reset scrollbar to middle
+			scrollCount.setValue(COUNT_SCROLL_MID);
+			countChanging = false;
 		}
-		// reset scrollbar to middle
-		scrollCount.setValue(COUNT_SCROLL_MID);
-		countChanging = false;
 	}
 
 	/*
-	 * non-javadoc: Count scrollBar Change of scale using a quadratic function.
+	 * non-javadoc: Count scrollBar Change of scale using a linear function.
 	 * This scrollBar is not quiet smooth and could be improved vertical
 	 * scrollBar change scale use to be a quadratic function we will make it
 	 * linear.
 	 */
 	private void countChange(final int scrollValue) {
-		synchronized (this) {
-			int newMax;
-
+		synchronized (LOCK) {
 			// get current maximum Counts if we have not done a countChange
 			if (!countChanging) {
 				lastCountMax = plot.getLimits().getMaximumCounts();
 			}
-			final int oldMax = lastCountMax;
-			// reduce plot count maximum make plot appear bigger
-			// 1/2 point taking to account view size
-			final double CHANGE_LIN = 0.01; // change 1% for 1
-			final double CHANGE_QUAD = 0.000; // change x10 for 100 units
-			if (scrollValue < COUNT_SCROLL_MID) {
-				final double scrolldiff = (COUNT_SCROLL_MID - scrollValue);
-				// implicit cast to double
-				double scaleChange = (CHANGE_LIN * scrolldiff + CHANGE_QUAD
-						* (scrolldiff * scrolldiff));
-				newMax = (int) (oldMax / (1.0F + scaleChange));
-				scaleChange = 1.0 / (1.0 + scaleChange);
-				// make a change of at least 1
-				if (newMax == oldMax) {
-					newMax = oldMax - 1;
-				}
-				// increase plot count maximum which make plot appear smaller
-			} else {
-				final double scrolldiff = scrollValue - COUNT_SCROLL_MID;
-				double scaleChange = (CHANGE_LIN * scrolldiff + CHANGE_QUAD
-						* (scrolldiff * scrolldiff));
-				newMax = (int) (oldMax * (1.0F + scaleChange));
-				scaleChange = 1.0 + scaleChange;
-				// make a change of at least 1
-				if (newMax == oldMax) {
-					newMax = oldMax + 1;
-				}
+			
+			// whether we are under or over the midpoint determines the sign
+			// of the adjustment
+			final int sign = scrollValue < COUNT_SCROLL_MID ? -1 : 1;
+			final double scrolldiff = sign * (scrollValue - COUNT_SCROLL_MID);
+			
+			// change 1% for every 1
+			final double scaleChange = 1.0 + 0.01 * scrolldiff;
+			
+			// effectively multiplies if we are increasing, divides if we
+			// are decreasing
+			int newMax = lastCountMax * (int) Math.round(Math.pow(scaleChange, sign));
+			
+			// change by one at least
+			if (newMax == lastCountMax) {
+				newMax = lastCountMax + sign;
 			}
-			// plot.scaleMaximumCounts(scaleChange);
 			countChanging = true;
 			plot.setMaximumCountsConstrained(newMax);
 		}
