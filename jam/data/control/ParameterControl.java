@@ -185,7 +185,7 @@ public final class ParameterControl extends AbstractControl {
 				pCenter.add(pParam[count]);
 				labelParam[count] = createParameterLabel(currentParameter);
 				pParam[count].add(labelParam[count]);
-				textParam[count] = createParameterText(count);
+				textParam[count] = createParameterText();
 				pParam[count].add(textParam[count]);
 				count++;
 			}
@@ -199,12 +199,11 @@ public final class ParameterControl extends AbstractControl {
 	}
 
 	/**
-	 * @param count
 	 */
-	private JTextField createParameterText(final int count) {
+	private JTextField createParameterText() {
 		final JTextField rval = new JTextField("");
-		textParam[count].setColumns(10);
-		textParam[count].setEditable(true);
+		rval.setColumns(10);
+		rval.setEditable(true);
 		return rval;
 	}
 
