@@ -11,6 +11,7 @@ import jam.data.Histogram;
 import jam.global.ComponentPrintable;
 import jam.global.RunInfo;
 import jam.plot.color.PlotColorMap;
+import jam.plot.common.Scale;
 
 import java.awt.Component;
 import java.awt.Cursor;

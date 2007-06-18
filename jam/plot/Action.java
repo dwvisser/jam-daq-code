@@ -30,6 +30,7 @@ import jam.global.GaussianConstants;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.UnNamed;
+import jam.plot.common.Scale;
 import jam.ui.Console;
 import jam.ui.SelectionTree;
 

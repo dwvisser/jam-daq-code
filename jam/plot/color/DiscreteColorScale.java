@@ -1,7 +1,7 @@
 package jam.plot.color;
 
-import jam.plot.Constants;
-import jam.plot.Scale;
+import jam.plot.common.Constants;
+import jam.plot.common.Scale;
 
 import java.awt.Color;
 

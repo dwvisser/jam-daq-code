@@ -1,7 +1,7 @@
 package jam.plot.color;
 
 import static jam.plot.color.ColorPrefs.COLOR_PREFS;
-import jam.plot.Scale;
+import jam.plot.common.Scale;
 
 import java.awt.Color;
 import java.util.prefs.PreferenceChangeEvent;

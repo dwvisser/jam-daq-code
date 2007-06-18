@@ -1,4 +1,4 @@
-package jam.plot;
+package jam.plot.common;
 
 /**
  * Plot package public constants that don't neatly fit into a single class.
@@ -17,15 +17,15 @@ public final class Constants {
      */
     public static final int MAXIMUM_COUNTS = 1000000000;
     
-	static final int BOTTOM = 1;//NOPMD
+    public static final int BOTTOM = 1;
 
-	static final int TOP = 2;//NOPMD
+    public static final int TOP = 2;
 
-	static final int LEFT = 3;//NOPMD
+    public static final int LEFT = 3;
 
-	static final int RIGHT = 4;//NOPMD
+    public static final int RIGHT = 4;
 
 	/* fake zero for Log scale 1/2 a count */
-	static final double LOG_FAKE_ZERO = 0.5;//NOPMD
+    public static final double LOG_FAKE_ZERO = 0.5;
 
 }

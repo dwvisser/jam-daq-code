@@ -1,13 +1,14 @@
 package jam.plot;
 
-import static jam.plot.Constants.BOTTOM;
-import static jam.plot.Constants.LEFT;
-import static jam.plot.Constants.LOG_FAKE_ZERO;
-import static jam.plot.Constants.TOP;
+import static jam.plot.common.Constants.BOTTOM;
+import static jam.plot.common.Constants.LEFT;
+import static jam.plot.common.Constants.LOG_FAKE_ZERO;
+import static jam.plot.common.Constants.TOP;
 import jam.plot.color.ColorScale;
 import jam.plot.color.DiscreteColorScale;
 import jam.plot.color.GradientColorScale;
 import jam.plot.color.PlotColorMap;
+import jam.plot.common.Scale;
 
 import java.awt.Color;
 import java.awt.Dimension;

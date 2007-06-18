@@ -1,9 +1,9 @@
 package jam.plot;
 
-import static jam.plot.Constants.BOTTOM;
-import static jam.plot.Constants.LEFT;
-import static jam.plot.Constants.TOP;
 import static jam.plot.color.ColorPrefs.COLOR_PREFS;
+import static jam.plot.common.Constants.BOTTOM;
+import static jam.plot.common.Constants.LEFT;
+import static jam.plot.common.Constants.TOP;
 import jam.data.AbstractHist1D;
 import jam.data.HistDouble2D;
 import jam.data.HistInt2D;
@@ -11,6 +11,7 @@ import jam.data.Histogram;
 import jam.plot.color.ColorPrefs;
 import jam.plot.color.DiscreteColorScale;
 import jam.plot.color.PlotColorMap;
+import jam.plot.common.Scale;
 
 import java.awt.AlphaComposite;
 import java.awt.Graphics;

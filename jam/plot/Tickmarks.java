@@ -1,5 +1,8 @@
 package jam.plot;
 
+import jam.plot.common.Constants;
+import jam.plot.common.Scale;
+
 /**
  * Class to calculate tickmarks and scale. Need to clean up especially log part
  * error in log for 2d.

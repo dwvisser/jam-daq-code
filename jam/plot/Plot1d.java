@@ -1,8 +1,8 @@
 package jam.plot;
 
-import static jam.plot.Constants.BOTTOM;
-import static jam.plot.Constants.LEFT;
-import static jam.plot.Constants.TOP;
+import static jam.plot.common.Constants.BOTTOM;
+import static jam.plot.common.Constants.LEFT;
+import static jam.plot.common.Constants.TOP;
 import jam.data.AbstractHist1D;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;

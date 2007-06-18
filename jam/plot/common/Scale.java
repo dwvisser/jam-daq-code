@@ -1,4 +1,4 @@
-package jam.plot;
+package jam.plot.common;
 
 /**
  * Represents the type of counts plot scale.
