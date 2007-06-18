@@ -24,6 +24,14 @@ final class ShowDialogSetGate extends AbstractShowDialog implements Observer {
 		super();
 	}
 
+	private void decideEnable() {
+		final Nameable named = SelectionTree.getCurrentHistogram();
+		if (named instanceof Histogram) {
+			final Histogram hist = (Histogram) named;
+			setEnabled(!hist.getGates().isEmpty());
+		}
+	}
+
 	public void initCommand() {
 		putValue(NAME, "Set\u2026");
 		dialog = new GateSet();
@@ -41,16 +49,6 @@ final class ShowDialogSetGate extends AbstractShowDialog implements Observer {
 		} else if ((command == BroadcastEvent.Command.HISTOGRAM_SELECT)
 				|| (command == BroadcastEvent.Command.GATE_SELECT)) {
 			decideEnable();
-		}
-	}
-	
-	private void decideEnable() {
-		final Nameable named = SelectionTree.getCurrentHistogram();
-		if (named instanceof Histogram) {
-			final Histogram hist = (Histogram) named;
-			if (hist != null) {
-				setEnabled(!hist.getGates().isEmpty());
-			}
 		}
 	}
 }
