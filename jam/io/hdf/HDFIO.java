@@ -707,8 +707,9 @@ public final class HDFIO implements DataIO {
 	 * @param histVGroup
 	 * @param histDefined
 	 */
-	private void convertHistogram(final boolean writeData, final Histogram hist,
-			final VirtualGroup histVGroup, final boolean histDefined) {
+	private void convertHistogram(final boolean writeData,
+			final Histogram hist, final VirtualGroup histVGroup,
+			final boolean histDefined) {
 		if (writeData && histDefined) {
 			jamToHDF.convertHistogram(histVGroup, hist);
 			histCount++;
@@ -718,7 +719,7 @@ public final class HDFIO implements DataIO {
 	private void displayMessage() {
 		final Runnable runner = new Runnable() {
 			public void run() {
-				if (uiErrorMsg.length()==0) {
+				if (uiErrorMsg.length() == 0) {
 					LOGGER.info(uiMessage);
 				} else {
 					LOGGER.severe(uiErrorMsg);
@@ -813,9 +814,7 @@ public final class HDFIO implements DataIO {
 	 *            file to load
 	 */
 	public boolean readFile(final FileOpenMode mode, final File infile) {
-		File[] inFiles = new File[1];
-		inFiles[0] = infile;
-		return readFile(mode, inFiles, null, null);
+		return readFile(mode, Collections.singletonList(infile), null, null);
 	}
 
 	/**
@@ -831,11 +830,8 @@ public final class HDFIO implements DataIO {
 	 */
 	public boolean readFile(final FileOpenMode mode, final File infile,
 			final Group group) {
-		File[] inFiles = new File[1];
-		inFiles[0] = infile;
-		final List<Group> groupList = new ArrayList<Group>();
-		groupList.add(group);
-		return readFile(mode, inFiles, groupList, null);
+		return readFile(mode, Collections.singletonList(infile), Collections
+				.singletonList(group), null);
 	}
 
 	/**
@@ -851,9 +847,8 @@ public final class HDFIO implements DataIO {
 	 */
 	public boolean readFile(final FileOpenMode mode, final File infile,
 			final List<HistogramAttributes> histAttributeList) {
-		File[] inFiles = new File[1];
-		inFiles[0] = infile;
-		return readFile(mode, inFiles, null, histAttributeList);
+		return readFile(mode, Collections.singletonList(infile), null,
+				histAttributeList);
 	}
 
 	/**
@@ -869,12 +864,12 @@ public final class HDFIO implements DataIO {
 	 *            list of names of groups to read in
 	 * @return <code>true</code> if successful
 	 */
-	public boolean readFile(final FileOpenMode mode, final File[] inFiles,
+	public boolean readFile(final FileOpenMode mode, final List<File> inFiles,
 			final List<Group> groupList,
 			final List<HistogramAttributes> histAttributeList) {
 		boolean rval = true;
-		fileLoop: for (int i = 0; i < inFiles.length; i++) {
-			final File infile = inFiles[i];
+		fileLoop: for (int i = 0; i < inFiles.size(); i++) {
+			final File infile = inFiles.get(i);
 			if (!infile.isFile()) {
 				LOGGER.severe("Cannot find file " + infile + ".");
 				rval = false;
@@ -970,7 +965,7 @@ public final class HDFIO implements DataIO {
 	 * non-javadoc: Asyncronized read
 	 */
 	private void spawnAsyncReadFile(final FileOpenMode mode,
-			final File[] inFiles, final List<Group> groupList,
+			final List<File> inFiles, final List<Group> groupList,
 			final List<HistogramAttributes> histAttributeList) {
 		uiMessage = "";
 		uiErrorMsg = "";
@@ -983,15 +978,15 @@ public final class HDFIO implements DataIO {
 				Thread thisTread = Thread.currentThread();
 				thisTread.setPriority(thisTread.getPriority() - 1);
 				// End test
-				int numberFiles = inFiles.length;
+				int numberFiles = inFiles.size();
 				asyncMonitor.setup("Reading HDF file", "Reading Objects",
 						(MonitorSteps.READ_WRITE + MonitorSteps.OVERHEAD_READ)
 								* numberFiles);
-				firstLoadedGroup = null; //NOPMD
+				firstLoadedGroup = null; // NOPMD
 				try {
 					// Loop for all files
-					for (int i = 0; i < inFiles.length; i++) {
-						infile = inFiles[i];
+					for (int i = 0; i < inFiles.size(); i++) {
+						infile = inFiles.get(i);
 						if (mode == FileOpenMode.ADD_OPEN_ONE) {
 							if (i == 0) {
 								asyncReadFileGroup(infile, FileOpenMode.OPEN,
@@ -1012,15 +1007,15 @@ public final class HDFIO implements DataIO {
 					uiErrorMsg = "Unknown Error reading file "
 							+ infile.getName() + ", " + e;
 					LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				} finally {
 					asyncMonitor.close();
 				}
-				asyncMonitor.close();
 				return null;
 			}
 
 			/* Runs on the event-dispatching thread. */
 			public void finished() {
-				if (uiErrorMsg.length()>0) {
+				if (uiErrorMsg.length() > 0) {
 					LOGGER.severe(uiErrorMsg);
 				}
 				synchronized (asListener) {
@@ -1046,7 +1041,7 @@ public final class HDFIO implements DataIO {
 			}
 
 			public void finished() {
-				if (uiErrorMsg.length()==0) {
+				if (uiErrorMsg.length() == 0) {
 					LOGGER.info(uiMessage);
 				} else {
 					LOGGER.severe(uiErrorMsg);

@@ -258,7 +258,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 			LOGGER.severe("No histograms selected");
 			return;
 		}
-		final File[] files = multiChooser.getFileList().toArray(new File[0]);
+		final List<File> files = multiChooser.getFileList();
 		jam.data.DataBase.getInstance().clearAllLists();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
 
