@@ -155,10 +155,18 @@ final class Plot2d extends AbstractPlot {
 	 *            a corner of the rectangle in plot coordinates
 	 */
 	void markArea(final Bin bin1, final Bin bin2) {
-		synchronized (monitor) {
-			panel.setAreaMarked((bin1 != null) && (bin2 != null));
-		}
-		if (panel.isAreaMarked()) {
+		// While storing the boolean condition could make the code a
+		// few lines more compact, this form makes the code analysis
+		// engine happier about the null check and has the additional
+		// benefit of reducing operations in the sychronized block.
+		if (bin1 == null || bin2 == null) {
+			synchronized (monitor) {
+				panel.setAreaMarked(false);
+			}
+		} else {
+			synchronized (monitor) {
+				panel.setAreaMarked(true);
+			}
 			synchronized (areaMark) {
 				areaMark.setSize(0, 0);
 				areaMark.setLocation(bin1.getPoint());
@@ -363,9 +371,9 @@ final class Plot2d extends AbstractPlot {
 	// only used in one method, but don't want to keep creating
 	private transient final Rectangle clipBounds = new Rectangle();// NOPMD
 
-	private static final double [][] EMPTY = new double[0][0];
-	
-	private transient double[][] counts2d=EMPTY;
+	private static final double[][] EMPTY = new double[0][0];
+
+	private transient double[][] counts2d = EMPTY;
 
 	/**
 	 * Called to draw a 2d histogram, including title, border, tickmarks,
