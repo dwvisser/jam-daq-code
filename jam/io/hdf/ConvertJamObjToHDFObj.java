@@ -193,27 +193,27 @@ final class ConvertJamObjToHDFObj {
 	 */
 	NumericalDataGroup convertHistogram(final VirtualGroup histVGroup,
 			final Histogram hist) {
-		ScientificData sciData = null;
-		boolean hasErrors = false;
-		AbstractHist1D hist1d = null;
 		/* vGroup Annotation is Histogram title */
 		final NumericalDataGroup ndg = new NumericalDataGroup();
+		
 		/* make the NDG label the histogram number */
 		histVGroup.add(ndg);
+		
 		/* NDG to contain data */
 		new DataIDLabel(ndg, Integer.toString(hist.getNumber()));
+		
 		/* add to specific histogram vGroup (other info maybe later) */
 		final ScientificDataDimension sdd = getSDD(hist);
 		ndg.addDataObject(sdd); // use new SDD
 		final Histogram.Type type = hist.getType();
+		ScientificData sciData;
+		AbstractHist1D hist1d = null;		
 		if (type == Histogram.Type.ONE_DIM_INT) {
 			sciData = new ScientificData(((HistInt1D) hist).getCounts());
 			hist1d = (AbstractHist1D) hist;
-			hasErrors = hist1d.hasErrorsSet();
 		} else if (type == Histogram.Type.ONE_D_DOUBLE) {
 			sciData = new ScientificData(((HistDouble1D) hist).getCounts());
 			hist1d = (AbstractHist1D) hist;
-			hasErrors = hist1d.hasErrorsSet();
 		} else if (type == Histogram.Type.TWO_DIM_INT) {
 			sciData = new ScientificData(((HistInt2D) hist).getCounts());
 		} else if (type == Histogram.Type.TWO_D_DOUBLE) {
@@ -223,7 +223,7 @@ final class ConvertJamObjToHDFObj {
 					"HDFIO encountered a Histogram of unknown type.");
 		}
 		ndg.addDataObject(sciData);
-		if (hasErrors) {// Add errors
+		if (hist1d != null && hist1d.hasErrorsSet()) {// Add errors
 			ScientificDataDimension sddErr = null;
 			if (type == Histogram.Type.ONE_DIM_INT) {
 				sddErr = getSDD(hist, NumberType.DOUBLE);
@@ -233,6 +233,7 @@ final class ConvertJamObjToHDFObj {
 			final NumericalDataGroup ndgErr = new NumericalDataGroup();
 			histVGroup.add(ndgErr);
 			new DataIDLabel(ndgErr, ERROR_LABEL);
+			
 			/* explicitly floating point */
 			ndgErr.addDataObject(sddErr);
 			final ScientificData sdErr = new ScientificData(hist1d.getErrors());
