@@ -145,7 +145,6 @@ public class CheckEventFiles {
 	}
 
 	private void makeScalerSummary(final File infile, final File outPath) {
-		final int SCALER_HEADER = 0x01cccccc;
 		final File csvFile = new File(outPath, infile.getName().substring(0,
 				infile.getName().lastIndexOf(".evn"))
 				+ "_scalers.csv");
@@ -161,25 +160,10 @@ public class CheckEventFiles {
 			final int headerSize = 256;
 			final int skipped = fromStream.skipBytes(headerSize);
 			if (skipped != headerSize) {
-				throw new IOException("Expected to skip "+headerSize+
-						" bytes, only skipped "+skipped);
+				throw new IOException("Expected to skip " + headerSize
+						+ " bytes, only skipped " + skipped);
 			}
-			int blockNum = 0;
-			final List<Integer> lastVal = new ArrayList<Integer>(16);
-			final List<Integer> val = new ArrayList<Integer>(16);
-			while (true) {
-				final int readVal = fromStream.readInt();
-				if (readVal == SCALER_HEADER) {
-					blockNum++;
-					final int numScalers = fromStream.readInt();
-					if (blockNum == 1) {
-						initializeLists(lastVal, val, numScalers);
-					}
-					processScalerBlock(csvStream, fromStream, blockNum,
-							lastVal, val, numScalers);
-					csvStream.write("\n");
-				}
-			}
+			processAllScalerBlocks(csvStream, fromStream);
 		} catch (EOFException e) {
 			LOGGER
 					.warning("EOFException: End of event file reached. Closing file.");
@@ -190,10 +174,38 @@ public class CheckEventFiles {
 				if (fromStream != null) {
 					fromStream.close();
 				}
-				csvStream.flush();
-				csvStream.close();
+				if (csvStream != null) {
+					csvStream.close();
+				}
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			}
+		}
+	}
+
+	/**
+	 * @param SCALER_HEADER
+	 * @param csvStream
+	 * @param fromStream
+	 * @throws IOException
+	 */
+	private void processAllScalerBlocks(final FileWriter csvStream,
+			final DataInputStream fromStream) throws IOException {
+		final int SCALER_HEADER = 0x01cccccc;
+		int blockNum = 0;
+		final List<Integer> lastVal = new ArrayList<Integer>(16);
+		final List<Integer> val = new ArrayList<Integer>(16);
+		while (true) {
+			final int readVal = fromStream.readInt();
+			if (readVal == SCALER_HEADER) {
+				blockNum++;
+				final int numScalers = fromStream.readInt();
+				if (blockNum == 1) {
+					initializeLists(lastVal, val, numScalers);
+				}
+				processScalerBlock(csvStream, fromStream, blockNum, lastVal,
+						val, numScalers);
+				csvStream.write("\n");
 			}
 		}
 	}
