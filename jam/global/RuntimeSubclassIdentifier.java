@@ -384,7 +384,6 @@ public class RuntimeSubclassIdentifier {
 		JarURLConnection conn = null;
 		JarFile jfile = null;
 		final SortedSet<String> rval = new TreeSet<String>();
-		boolean success = false;
 		try {
 			/*
 			 * It does not work with the filesystem: we must be in the case of a
@@ -392,15 +391,11 @@ public class RuntimeSubclassIdentifier {
 			 */
 			conn = (JarURLConnection) url.openConnection();
 			jfile = conn.getJarFile();
-			success = true;
+			rval.addAll(findClassNamesFromJarConnection(jfile.entries(),
+					tosubclass, starts));
 		} catch (IOException ioex) {
 			JOptionPane.showMessageDialog(null, ioex.getMessage(), rtsiName,
 					JOptionPane.ERROR_MESSAGE);
-			success = false;
-		}
-		if (success) {
-			rval.addAll(findClassNamesFromJarConnection(jfile.entries(),
-					tosubclass, starts));
 		}
 		return rval;
 	}
