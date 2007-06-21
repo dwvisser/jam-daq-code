@@ -68,16 +68,13 @@ final class ParseCommand implements CommandListener {
 	 * non-javadoc: Convert the parameters to doubles.
 	 */
 	private List<Double> convertParameters(final String[] cmdParams) {
-		final int numberParams = cmdParams.length;
-		final List<Double> rval = new ArrayList<Double>(numberParams);
+		final List<Double> rval = new ArrayList<Double>(cmdParams.length);
 		/*
 		 * The parameters must be numbers or a NumberFormatException can be
 		 * thrown.
 		 */
-		int countParam = 0;
-		while (countParam < numberParams) {
-			rval.add(countParam, convertNumber(cmdParams[countParam]));
-			countParam++;
+		for (String chars : cmdParams) {
+			rval.add(convertNumber(chars));
 		}
 		return rval;
 	}
