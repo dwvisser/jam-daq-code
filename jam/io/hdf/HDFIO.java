@@ -971,7 +971,6 @@ public final class HDFIO implements DataIO {
 		uiErrorMsg = "";
 		final AbstractSwingWorker worker = new AbstractSwingWorker() {
 			public Object construct() {
-				File infile = null;
 				// FIXME KBS Test change thread priority to make monitor pop up
 				// sooner
 				Thread.yield();
@@ -986,7 +985,7 @@ public final class HDFIO implements DataIO {
 				try {
 					// Loop for all files
 					for (int i = 0; i < inFiles.size(); i++) {
-						infile = inFiles.get(i);
+						File infile = inFiles.get(i);
 						if (mode == FileOpenMode.ADD_OPEN_ONE) {
 							if (i == 0) {
 								asyncReadFileGroup(infile, FileOpenMode.OPEN,
@@ -1004,8 +1003,7 @@ public final class HDFIO implements DataIO {
 						displayMessage();
 					}
 				} catch (Exception e) {
-					uiErrorMsg = "Unknown Error reading file "
-							+ infile.getName() + ", " + e;
+					uiErrorMsg = "Unknown Error reading file: " + e;
 					LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				} finally {
 					asyncMonitor.close();
