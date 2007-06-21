@@ -705,9 +705,8 @@ final class ConvertHDFObjToJamObj {
 
 	private ScientificData produceErrorData(final NumericalDataGroup ndgErr,
 			final int histDim) {
-		final boolean exists = ndgErr != null;
 		ScientificData rval = null;
-		if (exists) {
+		if (ndgErr != null) {
 			rval = AbstractData.ofType(ndgErr.getObjects(),
 					ScientificData.class).get(0);
 			rval.setRank(histDim);
