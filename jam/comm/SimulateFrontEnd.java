@@ -204,30 +204,31 @@ public final class SimulateFrontEnd extends GoodThread {
 		try {
 			final DatagramPacket packetIn = new DatagramPacket(bufferArray,
 					bufferArray.length, addressHost, PORT_DATA_HOST);
-			while (true) {// loop forever
-				try {
-					while (waitRunState()) {
-						while (isRunState()) {
-							createDataPacket(buffer, false);
+			if (socketData != null) {
+				while (true) {// loop forever
+					try {
+						while (waitRunState()) {
+							while (isRunState()) {
+								createDataPacket(buffer, false);
+								packetIn.setData(bufferArray, 0,
+										bufferArray.length);
+								socketData.send(packetIn);
+								LOGGER.info("Data Buffer Sent");
+								sleep(1000); // sleep for a second
+							}
+							// Create end of run packet
+							createDataPacket(buffer, true);
 							packetIn
 									.setData(bufferArray, 0, bufferArray.length);
 							socketData.send(packetIn);
-							LOGGER.info("Data Buffer Sent");							
-							sleep(1000); // sleep for a second
-						}						
-						//Create end of run packet
-						createDataPacket(buffer, true);
-						packetIn.setData(bufferArray, 0, bufferArray.length);
-						socketData.send(packetIn);
-						LOGGER.info("End Run Buffer Sent");						
-						
+							LOGGER.info("End Run Buffer Sent");
+						}
+					} catch (InterruptedException ie) {
+						LOGGER.info("Thread Interruped");
 					}
 
-				} catch (InterruptedException ie) {
-					LOGGER.info("Thread Interruped");
-				}
-
-			}// end of send data loop
+				}// end of send data loop
+			}
 		} catch (IOException ioe) {
 			LOGGER.info("Unable to read datagram data Exception:" + ioe);
 		}
