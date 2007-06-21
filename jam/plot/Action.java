@@ -349,19 +349,18 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				BROADCASTER.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
 				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 						histogram);
-			}
-			if (hist.size() > 1) {
-				if (histogram.getDimensionality() == 1) {
-					final int newlen = hist.size() - 1;
-					final List<Double> pass = hist.subList(0, newlen);
-					overlay(pass);
+				if (hist.size() > 1) {
+					if (histogram.getDimensionality() == 1) {
+						final List<Double> pass = hist.subList(1, hist.size());
+						overlay(pass);
+					} else {
+						LOGGER
+								.warning(histogram.getFullName().trim()
+										+ " is not 1D, so you may not overlay other histograms.");
+					}
 				} else {
-					LOGGER
-							.warning(histogram.getFullName().trim()
-									+ " is not 1D, so you may not overlay other histograms.");
+					done();
 				}
-			} else {
-				done();
 			}
 		}
 	}
