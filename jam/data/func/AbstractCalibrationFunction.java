@@ -68,11 +68,6 @@ public abstract class AbstractCalibrationFunction implements Function {
 	protected transient String name;
 
 	/**
-	 * This functions class
-	 */
-	protected transient Class funcClass;
-
-	/**
 	 * Title of calibration function.
 	 */
 	protected transient String title;
@@ -185,17 +180,13 @@ public abstract class AbstractCalibrationFunction implements Function {
 
 	/**
 	 * Creates a new <code>CalibrationFunction</code> object.
-	 * 
-	 * @param inClass
-	 *            function to use
 	 * @param name
 	 *            name of function
 	 * @param numberTerms
 	 *            number of terms in function
 	 */
-	AbstractCalibrationFunction(Class inClass, String name, int numberTerms) {
+	AbstractCalibrationFunction(String name, int numberTerms) {
 		super();
-		this.funcClass = inClass;
 		this.name = name;
 		if (numberTerms < MAX_TERMS) {
 			coeff = new double[numberTerms];

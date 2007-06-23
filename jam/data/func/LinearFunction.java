@@ -13,7 +13,7 @@ public class LinearFunction extends AbstractCalibrationFunction {
 	 * Creates a new <code>LinearFunction</code> object of the specified type.
 	 */
 	public LinearFunction() {
-		super(LinearFunction.class, "Linear", NUMBER_TERMS);
+		super("Linear", NUMBER_TERMS);
 		title = "E = a0 + a1\u2219ch";
 		labels[0] = "a0";
 		labels[1] = "a1";

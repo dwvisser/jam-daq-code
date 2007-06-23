@@ -14,7 +14,7 @@ public class CubicFunction extends AbstractCalibrationFunction {
 	 * Creates a new <code>LinearFunction</code> object of the specified type.
 	 */
 	public CubicFunction() {
-		super(CubicFunction.class, "Cubic", NUMBER_TERMS);
+		super("Cubic", NUMBER_TERMS);
 		title = "E = a0 + a1\u2219ch+a2\u2219ch^2+a3\u2219ch^3";
 		labels[0] = "a0";
 		labels[1] = "a1";

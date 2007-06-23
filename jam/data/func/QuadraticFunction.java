@@ -15,7 +15,7 @@ public class QuadraticFunction extends AbstractCalibrationFunction {
 	 * type.
 	 */
 	public QuadraticFunction() {
-		super(QuadraticFunction.class, "Quadratic", NUMBER_TERMS);
+		super("Quadratic", NUMBER_TERMS);
 		title = "E = a0 + a1\u2219ch a2\u2219ch^2";
 		labels[0] = "a0";
 		labels[1] = "a1";
