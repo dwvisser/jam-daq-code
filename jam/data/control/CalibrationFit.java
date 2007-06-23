@@ -244,13 +244,12 @@ public class CalibrationFit extends AbstractControl {
 	private void selectFunction(final String funcName) {
 		try {
 			calibFunc = getCurrentCalibrationFunction();
-			final Class calClass = AbstractCalibrationFunction
+			final Class<? extends AbstractCalibrationFunction> calClass = AbstractCalibrationFunction
 					.getMapFunctions().get(funcName);
 			final boolean change = calClass.isInstance(calibFunc);
 			final AbstractHist1D currentHistogram = getCurrentHistogram();
 			if (calibFunc == null || !change) {
-				calibFunc = (AbstractCalibrationFunction) calClass
-						.newInstance();
+				calibFunc = calClass.newInstance();
 				calibFunc.setSizeHistogram(currentHistogram.getSizeX());
 			}
 			updateFields(calibFunc, rbFitPoints.isSelected());

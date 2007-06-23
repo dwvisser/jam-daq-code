@@ -10,6 +10,8 @@ import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 import jam.sort.control.SetupSortOff;
 import jam.sort.control.SortControl;
+import jam.sort.stream.AbstractEventInputStream;
+import jam.sort.stream.AbstractEventOutputStream;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -116,7 +118,8 @@ public final class Script implements Observer {
 	 * @see jam.sort.stream.AbstractEventOutputStream
 	 */
 	public void setupOffline(final File classPath, final String sortName,
-			final Class inStream, final Class outStream) {
+			final Class<? extends AbstractEventInputStream> inStream, 
+			final Class<? extends AbstractEventOutputStream> outStream) {
 		sso.setupSort(classPath, sortName, inStream, outStream);
 		LOGGER.log(Level.INFO, "Setup online sorting:");
 		LOGGER.log(Level.INFO, "\t" + classPath + ": " + sortName);

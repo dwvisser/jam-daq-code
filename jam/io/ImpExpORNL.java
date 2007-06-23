@@ -464,7 +464,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		final StringUtilities util = StringUtilities.getInstance();
 		int diskOffSet = 0;
 		final DataOutputStream dosDrr = new DataOutputStream(buffout);
-		final List allHists = Histogram.getHistogramList();
+		final List<Histogram> allHists = Histogram.getHistogramList();
 		/* number of histograms */
 		totalHist = Histogram.getHistogramList().size(); // number of
 		// histograms
@@ -474,7 +474,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		 */
 		numHalfWords = 0;
 		for (int i = 0; i < allHists.size(); i++) {
-			final Histogram hist = ((Histogram) allHists.get(i));
+			final Histogram hist = allHists.get(i);
 			final int sizeX = hist.getSizeX();
 			final int sizeY = hist.getSizeY(); // will be zero for 1-d
 			final int histDim = hist.getDimensionality();
@@ -502,8 +502,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		dosDrr.writeInt(calendar.get(Calendar.SECOND)); // time
 		dosDrr.writeBytes(util.makeLength("File Created by Jam", 80));
 		/* text from chill file */
-		for (int i = 0; i < allHists.size(); i++) {
-			final Histogram hist = ((Histogram) allHists.get(i));
+		for (Histogram hist : allHists) {
 			final short sizeX = (short) (hist.getSizeX());
 			final short sizeY = (short) (hist.getSizeY()); // will be zero for
 			// 1-d
@@ -553,8 +552,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			}
 		}
 		/* write out id numbers */
-		for (int i = 0; i < allHists.size(); i++) {
-			dosDrr.writeInt(((Histogram) allHists.get(i)).getNumber());
+		for (Histogram hist : allHists) {
+			dosDrr.writeInt(hist.getNumber());
 		}
 		dosDrr.flush();
 		dosDrr.close();

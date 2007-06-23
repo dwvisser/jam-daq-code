@@ -275,7 +275,7 @@ abstract class AbstractSetup {
 	/**
 	 * Get list of classes implemented a interface
 	 */
-	private Set<Class<?>> getClasses(final String inPackage, final Class inClass) {
+	private Set<Class<?>> getClasses(final String inPackage, final Class<?> inClass) {
 		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier.getSingletonInstance();
 		final Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(runtimeSubclassIdentifier
 				.find(inPackage, inClass, false));
@@ -369,7 +369,7 @@ abstract class AbstractSetup {
 	 */
 	protected final void selectName(final JComboBox jcb,
 			final Collection<Class<?>> collection, final String defInStream) {
-		for (Class clazz : collection) {
+		for (Class<?> clazz : collection) {
 			final String name = clazz.getName();
 			if (name.equals(defInStream)) {
 				jcb.setSelectedItem(clazz);

@@ -277,7 +277,7 @@ public class BatchExport extends JDialog implements Observer {
 	private List<AbstractImpExp> createExportList() {
 		final List<AbstractImpExp> rval = new ArrayList<AbstractImpExp>();
 		final String here = getClass().getName() + ".getClasses(): ";
-		final Set<Class<?>> set = jam.global.RuntimeSubclassIdentifier.getSingletonInstance().find(
+		final Set<Class<? extends AbstractImpExp>> set = jam.global.RuntimeSubclassIdentifier.getSingletonInstance().find(
 				"jam.io", AbstractImpExp.class, false);
 		set.remove(AbstractImpExp.class);
 		for (Class<?> temp : set) {
@@ -514,13 +514,15 @@ public class BatchExport extends JDialog implements Observer {
 			lstHists.setListData(list.toArray());
 		}
 	}
-
+	
+	private static final Object[] EMPTY = new Object[0];
+	
 	/**
 	 * remove all items from sort list
 	 * 
 	 */
 	private void removeAllHists() {
-		lstHists.setListData(new java.util.Vector());// NOPMD
+		lstHists.setListData(EMPTY);// NOPMD
 	}
 
 	/**

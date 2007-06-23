@@ -492,7 +492,7 @@ public final class HDFIO implements DataIO {
 	 * @throws HDFException
 	 */
 	private void convertHDFToJamOriginal(final FileOpenMode mode,
-			final String fileName, final List groups,
+			final String fileName, final List<Group> groups,
 			final List<HistogramAttributes> histAttrs) throws HDFException {
 		hdfToJam.setInFile(inHDF);
 		Group currentGroup = null;
@@ -504,7 +504,7 @@ public final class HDFIO implements DataIO {
 			currentGroup = Group.createGroup(Group.DEFAULT_NAME, fileName,
 					Group.Type.FILE);
 		} else if (mode == FileOpenMode.ADD) {
-			currentGroup = (Group) groups.get(0);
+			currentGroup = groups.get(0);
 			// so use current group
 		} else if (mode == FileOpenMode.RELOAD) {
 			final JamStatus status = JamStatus.getSingletonInstance();

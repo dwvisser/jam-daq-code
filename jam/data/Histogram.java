@@ -99,18 +99,18 @@ public abstract class Histogram implements DataElement {
 		static Type getArrayType(final Object array) {
 			final Type rval;
 			final String error = "You may pass int or double arrays of up to two dimensions as histogram counts.";
-			final Class type = array.getClass();
+			final Class<?> type = array.getClass();
 			if (!type.isArray()) {
 				throw new IllegalArgumentException(error);
 			}
-			final Class componentA = type.getComponentType();
+			final Class<?> componentA = type.getComponentType();
 			if (componentA.equals(int.class)) {
 				rval = Type.ONE_DIM_INT;
 			} else if (componentA.equals(double.class)) {
 				rval = Type.ONE_D_DOUBLE;
 			} else {
 				/* Two-D, componentA assumed to be array. */
-				final Class componentB = componentA.getComponentType();
+				final Class<?> componentB = componentA.getComponentType();
 				if (componentB.equals(int.class)) {
 					rval = Type.TWO_DIM_INT;
 				} else if (componentB.equals(double.class)) {

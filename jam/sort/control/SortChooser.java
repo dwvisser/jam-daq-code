@@ -3,7 +3,6 @@ package jam.sort.control;
 import jam.JamException;
 import jam.data.Group;
 import jam.global.RuntimeSubclassIdentifier;
-import jam.global.Sorter;
 import jam.sort.SortRoutine;
 
 import java.awt.event.ActionEvent;
@@ -21,30 +20,30 @@ final class SortChooser extends JComboBox {
 
 	private transient File classPath;
 
-	private transient Class sortClass;
-	
+	private transient Class<? extends SortRoutine> sortClass;
+
 	private transient SortRoutine sortRoutine;
 
-	private transient final List<Class<?>> listClasses = new ArrayList<Class<?>>();	
-	
+	private transient final List<Class<? extends SortRoutine>> listClasses = new ArrayList<Class<? extends SortRoutine>>();
+
 	SortChooser() {
 		super();
 		setToolTipText("Select sort routine class");
 		addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				sortClass = (Class) getSelectedItem();
+				sortClass = (Class<? extends SortRoutine>) getSelectedItem();
 			}
 		});
 	}
-	
+
 	SortRoutine getSortRoutine() {
 		return sortRoutine;
 	}
-	
+
 	void forgetSortRoutine() {
-		sortRoutine = null;//NOPMD
+		sortRoutine = null;// NOPMD
 	}
-	
+
 	/**
 	 * Resolves the String objects into class names and loads the sorting class
 	 * and event streams.
@@ -54,9 +53,10 @@ final class SortChooser extends JComboBox {
 	 * @throws JamException
 	 *             if there's a problem
 	 */
-	protected void loadSorter(final boolean userSpecifiedPath) throws JamException {
+	protected void loadSorter(final boolean userSpecifiedPath)
+			throws JamException {
 		if (sortClass == null) {
-			sortClass = (Class) getSelectedItem();
+			sortClass = (Class<? extends SortRoutine>) getSelectedItem();
 		}
 		if (sortClass == null) {
 			throw new JamException("No sort routine has been selected.");
@@ -68,14 +68,14 @@ final class SortChooser extends JComboBox {
 		try {
 			if (userSpecifiedPath) {
 				synchronized (this) {
-					sortRoutine = (SortRoutine) RuntimeSubclassIdentifier.getSingletonInstance()
-							.loadClass(classPath, sortClass.getName())
-							.newInstance();
+					sortRoutine = (SortRoutine) RuntimeSubclassIdentifier
+							.getSingletonInstance().loadClass(classPath,
+									sortClass.getName()).newInstance();
 				}
 			} else {// use default loader
 				/* we call loadClass() in order to guarantee latest version */
 				synchronized (this) {
-					sortRoutine = (SortRoutine) sortClass.newInstance();
+					sortRoutine = sortClass.newInstance();
 				}
 			}
 		} catch (InstantiationException ie) {
@@ -86,7 +86,7 @@ final class SortChooser extends JComboBox {
 					+ sortClass.getName(), iae);
 		}
 	}
-	
+
 	/**
 	 * Sets whether to use the default classpath or a user-specified one.
 	 * 
@@ -103,9 +103,9 @@ final class SortChooser extends JComboBox {
 				listClasses.addAll(findSortClasses(classPath));
 			}
 		}
-		
+
 		setModel(new DefaultComboBoxModel(listClasses.toArray()));
-		
+
 		if (getModel().getSize() > 0) {
 			setSelectedIndex(0);
 		}
@@ -115,6 +115,7 @@ final class SortChooser extends JComboBox {
 	protected void loadChooserDefault() {
 		loadChooser(true);
 	}
+
 	/**
 	 * Sets the class path for loading sort routines.
 	 * 
@@ -125,20 +126,24 @@ final class SortChooser extends JComboBox {
 		classPath = inPath;
 		loadChooser(false);
 	}
+
 	/**
 	 * Get a list of the classes
+	 * 
 	 * @return List of classes
 	 */
-	protected List<Class<?>> getClassList() {	
+	protected List<Class<? extends SortRoutine>> getClassList() {
 		return listClasses;
 	}
-	
+
 	/**
-	 *  Select a sort class
-	 * @param className name of class to select 
-	 */ 
+	 * Select a sort class
+	 * 
+	 * @param className
+	 *            name of class to select
+	 */
 	public void selectSortClass(final String className) {
-		for (Class clazz : getClassList()) {
+		for (Class<? extends SortRoutine> clazz : getClassList()) {
 			final String name = clazz.getName();
 			if (name.equals(className)) {
 				setSelectedItem(clazz);
@@ -146,6 +151,7 @@ final class SortChooser extends JComboBox {
 			}
 		}
 	}
+
 	/**
 	 * Get the sort classes using the given file as the class path.
 	 * 
@@ -153,20 +159,23 @@ final class SortChooser extends JComboBox {
 	 *            class path
 	 * @return set of available sort routines
 	 */
-	private Set<Class<?>> findSortClasses(final File path) {
-		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier.getSingletonInstance();
-		return runtimeSubclassIdentifier.find(path, Sorter.class);
+	private Set<Class<? extends SortRoutine>> findSortClasses(final File path) {
+		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier
+				.getSingletonInstance();
+		return runtimeSubclassIdentifier.find(path, SortRoutine.class);
 	}
+
 	/**
 	 * Get the sort classes using the default class path.
 	 * 
 	 * @return set of available sort routines
 	 */
-	private Set<Class<?>> findSortClassesDefault() {
-		final Set<Class<?>> set = new LinkedHashSet<Class<?>>();
-		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier.getSingletonInstance();
-		set.addAll(runtimeSubclassIdentifier.find("help", Sorter.class, true));
-		set.addAll(runtimeSubclassIdentifier.find("sort", Sorter.class, true));
+	private Set<Class<? extends SortRoutine>> findSortClassesDefault() {
+		final Set<Class<? extends SortRoutine>> set = new LinkedHashSet<Class<? extends SortRoutine>>();
+		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier
+				.getSingletonInstance();
+		set.addAll(runtimeSubclassIdentifier.find("help", SortRoutine.class, true));
+		set.addAll(runtimeSubclassIdentifier.find("sort", SortRoutine.class, true));
 		return set;
 	}
 

@@ -95,7 +95,7 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 				if (Mode.DISPLAYED_HIST.equals(mode)) {
 					rval = his.getGates().get(which);
 				} else {
-					final List list = Gate.getGateList(his.getDimensionality());
+					final List<Gate> list = Gate.getGateList(his.getDimensionality());
 					rval = list.get(which);
 				}
 			}

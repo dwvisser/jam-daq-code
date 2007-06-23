@@ -290,7 +290,8 @@ public final class SetupSortOff extends AbstractSetup {
 	 *            event output stream class
 	 */
 	public void setupSort(final java.io.File classPath, final String sortName,
-			final Class inStream, final Class outStream) {
+			final Class<? extends AbstractEventInputStream> inStream,
+			final Class<? extends AbstractEventOutputStream> outStream) {
 		sortChooser.loadChooserClassPath(classPath);
 		sortChooser.selectSortClass(sortName);
 		inChooser.setSelectedItem(inStream);

@@ -136,7 +136,7 @@ public final class Group implements Nameable {
 	 * 
 	 * @return map of groups keyed by name
 	 */
-	public static Map getGroupMap() {
+	public static Map<String,Group> getGroupMap() {
 		return Collections.unmodifiableMap(NAME_MAP);
 	}
 

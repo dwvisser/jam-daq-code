@@ -305,10 +305,12 @@ final class ConvertHDFObjToJamObj {
 					ndgErr = ndgList.get(1);
 				}
 			} else {
-				throw new HDFException ("Encountered numerical data group with # of lists != 1 or 2: "+len);
+				throw new HDFException(
+						"Encountered numerical data group with # of lists != 1 or 2: "
+								+ len);
 			}
-			rval = extractHistData(group, mode, histAttributes, ndg,
-						ndgErr, name, title);
+			rval = extractHistData(group, mode, histAttributes, ndg, ndgErr,
+					name, title);
 		} else {
 			// Can reload without this histogram
 			if (mode == FileOpenMode.RELOAD) {
@@ -437,10 +439,10 @@ final class ConvertHDFObjToJamObj {
 
 	int convertParameters(final VirtualGroup currVG, final FileOpenMode mode) {
 		int numParameters = 0;
-		final List list = AbstractData.ofType(currVG.getObjects(),
+		final List<VDataDescription> list = AbstractData.ofType(currVG.getObjects(),
 				VDataDescription.class);
 		if (list.size() > 0) {
-			final VDataDescription vdd = (VDataDescription) list.get(0);
+			final VDataDescription vdd = list.get(0);
 			/* only the "parameters" VH (only one element) in the file */
 			if (vdd != null) {
 				numParameters = convertParameters(vdd, mode);
@@ -671,13 +673,12 @@ final class ConvertHDFObjToJamObj {
 
 	private AbstractCalibrationFunction makeCalibration(final String funcName)
 			throws HDFException {
-		Class calClass;
-		final Map calMap = AbstractCalibrationFunction.getMapFunctions();
+		final Map<String, Class<? extends AbstractCalibrationFunction>> calMap = AbstractCalibrationFunction
+				.getMapFunctions();
 		AbstractCalibrationFunction calFunc = null;
 		try {
 			if (calMap.containsKey(funcName)) {
-				calClass = (Class) calMap.get(funcName);
-				calFunc = (AbstractCalibrationFunction) calClass.newInstance();
+				calFunc = calMap.get(funcName).newInstance();
 			}
 		} catch (InstantiationException e) {
 			throw new HDFException("Cannot create calibration  " + funcName, e);

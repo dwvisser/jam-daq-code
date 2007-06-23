@@ -89,7 +89,7 @@ public final class Gate implements DataElement {
 	 *            of gates
 	 * @return list of gates with the given dimensionality
 	 */
-	public static List getGateList(final int dimension) {
+	public static List<Gate> getGateList(final int dimension) {
 		if (dimension < 1 || dimension > 2) {
 			throw new IllegalArgumentException(
 					"Gates may only have 1 or 2 dimensions, not " + dimension

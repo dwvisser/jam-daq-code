@@ -79,7 +79,8 @@ public class LoadFit {
 		final PanelOKApplyCancelButtons.Listener callback = new PanelOKApplyCancelButtons.AbstractListener(
 				dialog) {
 			public void apply() {
-				final Class fit = (Class) chooseFit.getSelectedItem();
+				final Class<? extends AbstractFit> fit = (Class<? extends AbstractFit>) chooseFit
+						.getSelectedItem();
 				try {
 					makeFit(fit);
 				} catch (JamException je) {
@@ -98,17 +99,21 @@ public class LoadFit {
 	private Object[] getFitClasses() {
 		final String package1 = "jam.fit";
 		final String package2 = "fit";
-		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier.getSingletonInstance();
-		final Set<Class<?>> set = runtimeSubclassIdentifier.find(package1, AbstractFit.class, false);
-		set.addAll(runtimeSubclassIdentifier.find(package2, AbstractFit.class, false));
+		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier
+				.getSingletonInstance();
+		final Set<Class<? extends AbstractFit>> set = runtimeSubclassIdentifier.find(package1,
+				AbstractFit.class, false);
+		set.addAll(runtimeSubclassIdentifier.find(package2, AbstractFit.class,
+				false));
 		return set.toArray();
 	}
 
-	private void makeFit(final Class fitClass) throws JamException {
+	private void makeFit(final Class<? extends AbstractFit> fitClass)
+			throws JamException {
 		final String fitName = fitClass.getName();
 		try {
 
-			final AbstractFit fit = (AbstractFit) fitClass.newInstance();
+			final AbstractFit fit = fitClass.newInstance();
 			final int indexPeriod = fitName.lastIndexOf('.');
 			final String fitNameFront = fitName.substring(indexPeriod + 1);
 			fit.createDialog(jamMain, display);

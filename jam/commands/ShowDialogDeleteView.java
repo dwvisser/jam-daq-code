@@ -14,7 +14,6 @@ import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -44,7 +43,8 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 					}
 				});
 
-		private static final Frame frame=null;
+		private static final Frame frame = null;
+
 		ViewDelete() {
 			super(frame, "Delete View", false);
 			setModal(false);
@@ -97,9 +97,7 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 			namesList.add(CHOOSE_NAME);
 			namesList.addAll(View.getNameList());
 			comboNames.removeAllItems();
-			final Iterator iter = namesList.iterator();
-			while (iter.hasNext()) {
-				final Object next = iter.next();
+			for (String next : namesList) {
 				if (!next.equals(View.SINGLE.getName())) {
 					comboNames.addItem(next);
 				}

@@ -86,7 +86,7 @@ public class ConfigurationDisplay extends JDialog {
 		final List<String> keys = new ArrayList<String>();
 		final StringBuffer strBuffProperties = new StringBuffer();
 		final Properties properties = JamProperties.getProperties();
-		final Enumeration names = properties.propertyNames();
+		final Enumeration<?> names = properties.propertyNames();
 		while (names.hasMoreElements()) {
 			final String key = (String) names.nextElement();
 			keys.add(key);

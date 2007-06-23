@@ -15,6 +15,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -37,8 +38,8 @@ public class RuntimeSubclassIdentifier {
 
 	private static final RuntimeSubclassIdentifier instance = new RuntimeSubclassIdentifier();
 
-	private static final Logger LOGGER = Logger.getLogger(RuntimeSubclassIdentifier.class
-			.getPackage().getName());
+	private static final Logger LOGGER = Logger
+			.getLogger(RuntimeSubclassIdentifier.class.getPackage().getName());
 
 	private static final String PERIOD = ".";
 
@@ -153,7 +154,7 @@ public class RuntimeSubclassIdentifier {
 	 * 
 	 * @param classname
 	 *            the class name in question
-	 * @param tosubclass
+	 * @param superclass
 	 *            the superclass
 	 * @param loader
 	 *            the class loader we need to resolve the classname with
@@ -161,11 +162,11 @@ public class RuntimeSubclassIdentifier {
 	 *            the collection to add to
 	 */
 	private void addToCollection(final String classname,
-			final Class tosubclass, final ClassLoader loader,
+			final Class<?> superclass, final ClassLoader loader,
 			final Collection<String> coll) {
 		try {
-			final Class clazz = loader.loadClass(classname);
-			if (canUseClassAs(tosubclass, clazz)) {
+			final Class<?> clazz = loader.loadClass(classname);
+			if (canUseClassAs(superclass, clazz)) {
 				coll.add(classname);
 			}
 		} catch (ClassNotFoundException cnfex) {
@@ -181,13 +182,14 @@ public class RuntimeSubclassIdentifier {
 	 * 
 	 * @param classpath
 	 *            folder containing the classpath to search
-	 * @param tosubclass
+	 * @param superclass
 	 *            the Class object to be assignable to
 	 * @return an alphabetically ordered set of classes assignable as requested
 	 */
-	public Set<Class<?>> find(final File classpath, final Class tosubclass) {
+	public <T> Set<Class<? extends T>> find(final File classpath,
+			final Class<T> superclass) {
 		/* used linked hash set to guarantee order is preserved */
-		final Set<Class<?>> rval = new LinkedHashSet<Class<?>>();
+		final Set<Class<? extends T>> rval = new LinkedHashSet<Class<? extends T>>();
 		ClassLoader loader = DEF_LOADER;
 		URL url = null;
 		if (classpath != null) {
@@ -199,19 +201,29 @@ public class RuntimeSubclassIdentifier {
 			}
 			if (url != null) {
 				final URL passUrl = url;
-				loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-					public ClassLoader run() {
-						return new URLClassLoader(new URL[] { passUrl });
-					}
-				});
+				loader = AccessController
+						.doPrivileged(new PrivilegedAction<ClassLoader>() {
+							public ClassLoader run() {
+								return new URLClassLoader(new URL[] { passUrl });
+							}
+						});
 			}
 		}
 		if (classpath != null) {
 			/* create the set of classes, preserving the name order */
-			rval.addAll(nameSetToClassSet(getClassesRecursively(tosubclass,
-					classpath.getAbsolutePath(), classpath, loader), loader));
+			final Set<Class<?>> addFrom = nameSetToClassSet(
+					getClassesRecursively(superclass, classpath
+							.getAbsolutePath(), classpath, loader), loader);
+			addAllToSet(rval, addFrom, superclass);
 		}
 		return rval;
+	}
+
+	private <T> void addAllToSet(final Collection<Class<? extends T>> addTo,
+			final Collection<Class<?>> addFrom, final Class<T> superclass) {
+		for (Class<?> clazz : addFrom) {
+			addTo.add(clazz.asSubclass(superclass));
+		}
 	}
 
 	/**
@@ -224,7 +236,7 @@ public class RuntimeSubclassIdentifier {
 	 *            whether to recurse into subfolders
 	 */
 	private void find(final String tosubclassname, final boolean recurse) {
-		final Class tosubclass = resolveClass(tosubclassname);
+		final Class<?> tosubclass = resolveClass(tosubclassname);
 		if (tosubclass != null) {
 			final Package[] pcks = Package.getPackages();
 			LOGGER.info("Packages:");
@@ -232,7 +244,8 @@ public class RuntimeSubclassIdentifier {
 				LOGGER.info("\t" + pcks[i].getName());
 			}
 			for (int i = 0; i < pcks.length; i++) {
-				for (Class clazz : find(pcks[i].getName(), tosubclass, recurse)) {
+				for (Class<?> clazz : find(pcks[i].getName(), tosubclass,
+						recurse)) {
 					LOGGER.info("Found class: " + clazz.getName());
 				}
 			}
@@ -250,20 +263,21 @@ public class RuntimeSubclassIdentifier {
 	 * @param recurse
 	 *            whether to recurse through sub-packages
 	 */
-	public Set<Class<?>> find(final String pckgname, final Class tosubclass,
-			final boolean recurse) {
+	public <T> Set<Class<? extends T>> find(final String pckgname,
+			final Class<T> tosubclass, final boolean recurse) {
 		final StringBuffer errmessage = new StringBuffer("Searching in ")
 				.append(pckgname)
 				.append(
 						"\nYou've probably incorrectly specified a classpath,\n")
 				.append("or moved/renamed an existing .class file.\n");
 		final Set<String> names = findClassNames(pckgname, tosubclass, recurse);
-		final Set<Class<?>> rval = new LinkedHashSet<Class<?>>(); // preserves
+		final Set<Class<? extends T>> rval = new LinkedHashSet<Class<? extends T>>(); // preserves
 		// order of
 		// add()'s
 		try {
 			for (String name : names) {
-				rval.add(DEF_LOADER.loadClass(name));
+				final Class<?> clazz = DEF_LOADER.loadClass(name);
+				rval.add(clazz.asSubclass(tosubclass));
 			}
 		} catch (ClassNotFoundException e) {
 			errmessage.append(e.getMessage());
@@ -290,11 +304,12 @@ public class RuntimeSubclassIdentifier {
 	 */
 	private void find(final String pckname, final String tosubclassname,
 			final boolean recurse) {
-		final Class tosubclass = resolveClass(tosubclassname);
-		final Set<Class<?>> result = find(pckname, tosubclass, recurse);
+		final Class<?> tosubclass = resolveClass(tosubclassname);
+		final Set<Class<?>> result = new LinkedHashSet<Class<?>>();
+		result.addAll(find(pckname, tosubclass, recurse));
 		LOGGER.info("Find classes assignable as " + tosubclass.getName()
 				+ " in \"" + pckname + "\"");
-		for (Class clazz : result) {
+		for (Class<?> clazz : result) {
 			LOGGER.info("\t" + clazz.getName());
 		}
 		LOGGER.info("done.");
@@ -313,7 +328,7 @@ public class RuntimeSubclassIdentifier {
 	 * @return an unordered list of classes assignable as requested
 	 */
 	private Set<String> findClassNames(final String pckgname,
-			final Class tosubclass, final boolean recurse) {
+			final Class<?> tosubclass, final boolean recurse) {
 		/*
 		 * Code from JWhich Translate the package name into an absolute path
 		 */
@@ -366,11 +381,11 @@ public class RuntimeSubclassIdentifier {
 	}
 
 	private Set<String> findClassNamesFromJarConnection(
-			final Enumeration enumeration, final Class tosubclass,
+			final Enumeration<JarEntry> enumeration, final Class<?> tosubclass,
 			final String starts) {
 		final SortedSet<String> rval = new TreeSet<String>();
 		while (enumeration.hasMoreElements()) {
-			final ZipEntry entry = (ZipEntry) enumeration.nextElement();
+			final JarEntry entry = enumeration.nextElement();
 			final String classname = jarEntryToClassname(entry, starts);
 			if (classname != null) {
 				addToCollection(classname, tosubclass, DEF_LOADER, rval);
@@ -380,7 +395,7 @@ public class RuntimeSubclassIdentifier {
 	}
 
 	private Set<String> findClassNamesFromJarURL(final URL url,
-			final Class tosubclass, final String starts) {
+			final Class<?> tosubclass, final String starts) {
 		JarURLConnection conn = null;
 		JarFile jfile = null;
 		final SortedSet<String> rval = new TreeSet<String>();
@@ -416,7 +431,7 @@ public class RuntimeSubclassIdentifier {
 	 * @return an alphabetically ordered set of classes assignable as
 	 *         <code>tosubclass</code>
 	 */
-	private SortedSet<String> getClassesRecursively(final Class tosubclass,
+	private SortedSet<String> getClassesRecursively(final Class<?> tosubclass,
 			final String classpath, final File file, final ClassLoader loader) {
 		final SortedSet<String> rval = new TreeSet<String>();
 		if (file.isDirectory()) {
@@ -431,7 +446,7 @@ public class RuntimeSubclassIdentifier {
 			if (file.getName().endsWith(CLASS_EXT)) {
 				final String temp = fileToClassname(file, classpath);
 				try {
-					final Class clazz = loader.loadClass(temp);
+					final Class<?> clazz = loader.loadClass(temp);
 					if (canUseClassAs(tosubclass, clazz)) {
 						rval.add(temp);
 					}
@@ -455,8 +470,8 @@ public class RuntimeSubclassIdentifier {
 	 *            fully qualified classname
 	 * @return the object referring to the Class, null if not found
 	 */
-	public Class loadClass(final File path, final String className) {
-		Class rval = null;
+	public Class<?> loadClass(final File path, final String className) {
+		Class<?> rval = null;
 		URL url = null;
 		try {
 			if (path != null) {
@@ -468,11 +483,12 @@ public class RuntimeSubclassIdentifier {
 		}
 		if (url != null) {
 			final URL passUrl = url;
-			final ClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-				public ClassLoader run() {
-					return new URLClassLoader(new URL[] { passUrl });
-				}
-			});
+			final ClassLoader loader = AccessController
+					.doPrivileged(new PrivilegedAction<ClassLoader>() {
+						public ClassLoader run() {
+							return new URLClassLoader(new URL[] { passUrl });
+						}
+					});
 			try {
 				rval = loader.loadClass(className);
 			} catch (ClassNotFoundException e) {
@@ -501,8 +517,8 @@ public class RuntimeSubclassIdentifier {
 		return rval;
 	}
 
-	private Class resolveClass(final String name) {
-		Class tosubclass = null;
+	private Class<?> resolveClass(final String name) {
+		Class<?> tosubclass = null;
 		try {
 			tosubclass = Class.forName(name);
 		} catch (ClassNotFoundException ex) {

@@ -230,7 +230,7 @@ public final class SelectionTree extends JPanel implements Observer {
 	 */
 	private TreePath pathForDataObject(final Object dataObject) {
 		TreePath treePath = null;
-		final Enumeration nodeEnum = ((DefaultMutableTreeNode) treeModel
+		final Enumeration<?> nodeEnum = ((DefaultMutableTreeNode) treeModel
 				.getRoot()).breadthFirstEnumeration();
 		while (nodeEnum.hasMoreElements()) {
 			final DefaultMutableTreeNode loopNode = (DefaultMutableTreeNode) nodeEnum
@@ -250,7 +250,7 @@ public final class SelectionTree extends JPanel implements Observer {
 	private void refreshGateSelection(final Gate gate,
 			final TreePath histTreePath) {
 		/* Iterate over all nodes below histogram node. */
-		final Enumeration nodeEnum = ((DefaultMutableTreeNode) histTreePath
+		final Enumeration<?> nodeEnum = ((DefaultMutableTreeNode) histTreePath
 				.getLastPathComponent()).breadthFirstEnumeration();
 		while (nodeEnum.hasMoreElements()) {
 			final DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) nodeEnum
@@ -267,7 +267,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		final DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree
 				.getModel().getRoot();
 		/* Iterate over all nodes below root node. */
-		final Enumeration nodeEnum = root.breadthFirstEnumeration();
+		final Enumeration<?> nodeEnum = root.breadthFirstEnumeration();
 		while (nodeEnum.hasMoreElements()) {
 			final DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) nodeEnum
 					.nextElement();

@@ -147,7 +147,7 @@ class HistogramComboBoxModel extends DefaultComboBoxModel {
 	private Object getHistogram(final int index) {
 		Object rval = null;
 		int countDown = index;
-		for (final Iterator it = histograms.iterator(); countDown >= 0
+		for (final Iterator<Histogram> it = histograms.iterator(); countDown >= 0
 				&& it.hasNext(); countDown--) {
 			rval = it.next();
 		}
