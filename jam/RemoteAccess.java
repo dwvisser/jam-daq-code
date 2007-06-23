@@ -66,10 +66,10 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 *             if there's a problem
 	 */
 	public String[] getHistogramNames() throws RemoteException {
-		final List hists = Histogram.getHistogramList();
+		final List<Histogram> hists = Histogram.getHistogramList();
 		final String[] names = new String[hists.size()];
 		for (int i = 0; i < hists.size(); i++) {
-			names[i] = ((Histogram) hists.get(i)).getFullName();
+			names[i] = hists.get(i).getFullName();
 		}
 		return names;
 	}
