@@ -7,7 +7,7 @@ package jam.data.peaks;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 2001-02-14
  */
-public final class Peak extends Object implements Comparable, Cloneable {
+public final class Peak extends Object implements Comparable<Peak>, Cloneable {
 
 	private double position, area, width;
 
@@ -114,27 +114,21 @@ public final class Peak extends Object implements Comparable, Cloneable {
 		return rval.toString();
 	}
 
-	public int compareTo(final Object object) {
-		int rval = 0;// default return value
-		if (getPosition() < ((Peak) object).getPosition()) {
-			rval = -1;
-		} else if (getPosition() > ((Peak) object).getPosition()) {
-			rval = 1;
-		}
-		return rval;
+	public int compareTo(final Peak other) {
+		return (int) Math.signum(getPosition() - other.getPosition());
 	}
 
-	public boolean equals(final Object object){
+	public boolean equals(final Object object) {
 		boolean rval = false;
 		if (object instanceof Peak) {
-			final Peak other = (Peak)object;
+			final Peak other = (Peak) object;
 			rval = getPosition() == other.getPosition();
 		}
 		return rval;
 	}
-	
-	public int hashCode(){
+
+	public int hashCode() {
 		return Double.valueOf(getPosition()).hashCode();
 	}
-	
+
 }
