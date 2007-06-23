@@ -52,20 +52,20 @@ public class DataParameter implements Nameable {
 					+ NAME_LENGTH
 					+ " characters or less.  Please modify sort file.");
 		}
-		name = stringUtil.makeLength(name, NAME_LENGTH);
+		String workingName = stringUtil.makeLength(name, NAME_LENGTH);
 		//make sure name is unique
 		int prime = 1;
 		String addition;
 		while (TABLE.containsKey(name)) {
 			addition = "[" + prime + "]";
-			name =
+			workingName =
 				stringUtil.makeLength(
 					name,
 					NAME_LENGTH - addition.length())
 					+ addition;
 			prime++;
 		}
-		this.name = name;
+		this.name = workingName;
 		this.value = 0.0; //default zero value	
 		// Add to list of parameters    	
 		TABLE.put(name, this);
