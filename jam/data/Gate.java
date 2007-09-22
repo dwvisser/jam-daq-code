@@ -490,7 +490,7 @@ public final class Gate implements DataElement {
 			throw new UnsupportedOperationException(
 					"setLimits(Polygon): can only be called for 2D gates.");
 		}
-		// set points true if in plolygon
+		// set points true if in polygon
 		for (int i = 0; i < sizeX; i++) {
 			for (int j = 0; j < sizeY; j++) {
 				if (gatePoly.contains(i, j)) {
