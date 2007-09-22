@@ -1,6 +1,7 @@
 package test.data;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import jam.data.DataBase;
 import jam.data.Gate;
 import jam.data.Group;
@@ -8,8 +9,9 @@ import jam.data.Histogram;
 
 import java.awt.Polygon;
 
+import junit.framework.TestCase;
+
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -18,69 +20,91 @@ import org.junit.Test;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @see Gate
  */
-public class GateTest {//NOPMD
+public class GateTest {// NOPMD
 
-    private transient Gate gate1, gate2; //1d and 2d, respectively
+	private transient final Group group = Group.createGroup("TestGateGroup", Group.Type.FILE);
+	
+	private static final int LOWER_LIMIT = 10;
 
-    /**
-     * Test for boolean inGate(int).
-     * 
-     * @see Gate#inGate(int)
-     */
-    @Test
-    public void inGateI() {
-        final boolean assertion1 = gate1.inGate(20);
-        final boolean assertion2 = !gate1.inGate(5);
-        final boolean assertion3 = !gate1.inGate(60);
-        assertTrue("20 not in gate.", assertion1);
-        assertTrue("5 in gate.", assertion2);
-        assertTrue("60 in gate.", assertion3);
-    }
+	private static final int UPPER_LIMIT = 50;
 
-    /**
-     * Test for boolean inGate(int, int).
-     * 
-     * @see Gate#inGate(int,int)
-     */
-    @Test
-    public void inGateII() {
-        final boolean assertion1 = gate2.inGate(20, 20);
-        final boolean assertion2 = !gate2.inGate(5, 20);
-        final boolean assertion3 = !gate2.inGate(60, 20);
-        final boolean assertion4 = !gate2.inGate(20, 5);
-        final boolean assertion5 = !gate2.inGate(5, 5);
-        final boolean assertion6 = !gate2.inGate(60, 60);
-        final boolean assertion7 = !gate2.inGate(20, 60);
-        assertTrue("20,20 not in gate.", assertion1);
-        assertTrue("5,20 in gate.", assertion2);
-        assertTrue("60,20 in gate.", assertion3);
-        assertTrue("20,5 in gate.", assertion4);
-        assertTrue("5,5 in gate.", assertion5);
-        assertTrue("60,60 in gate.", assertion6);
-        assertTrue("20,60 in gate.", assertion7);
-    }
+	private static final int LOWER_LIMIT_MINUS_1 = LOWER_LIMIT - 1;
 
-    /**
-     * Initialize local variables for the tests.
-     * 
-     * @see TestCase#setUp()
-     */
-    @Before
-    public void setUp() {
-        final Group group = Group.createGroup("TestGateGroup", Group.Type.FILE);
-        final Histogram hist1 = Histogram.createHistogram(group, new int[100], "h1");
-        gate1 = new Gate("g1", hist1);
-        gate1.setLimits(10, 50);
-        final Histogram hist2 = Histogram.createHistogram(group, new int[100][100], "h2");
-        gate2 = new Gate("g2", hist2);
-        final int[] xpoints = { 10, 50, 50, 10 };
-        final int[] ypoints = { 10, 10, 50, 50 };
-        final Polygon box = new Polygon(xpoints, ypoints, 4);
-        gate2.setLimits(box);
-    }
+	private static final int UPPER_LIMIT_PLUS_1 = UPPER_LIMIT + 1;
 
-    @After
-    public void tearDown(){
-    	DataBase.getInstance().clearAllLists();
-    }   
+	private static final int IN_GATE = (LOWER_LIMIT + UPPER_LIMIT) / 2;
+
+	/**
+	 * Test for boolean inGate(int).
+	 * 
+	 * @see Gate#inGate(int)
+	 */
+	@Test
+	public void inGateI() {
+		final Histogram hist1 = Histogram.createHistogram(group, new int[100],
+		"h1");
+		final Gate gate1 = new Gate("g1", hist1);
+		gate1.setLimits(LOWER_LIMIT, UPPER_LIMIT);
+		final String expected = "Expected channel in gate1: ";
+		assertTrue(expected + LOWER_LIMIT, gate1.inGate(LOWER_LIMIT));
+		assertTrue(expected + UPPER_LIMIT, gate1.inGate(UPPER_LIMIT));
+		final String notExpected = "Did not expect channel in gate1: ";
+		assertFalse(notExpected + LOWER_LIMIT_MINUS_1, gate1
+				.inGate(LOWER_LIMIT_MINUS_1));
+		assertFalse(notExpected + UPPER_LIMIT_PLUS_1, gate1
+				.inGate(UPPER_LIMIT_PLUS_1));
+	}
+
+	private String getAssertMessage(final int xchan, final int ychan,
+			final boolean expected) {
+		return "Expected inGate(" + xchan + "," + ychan + ") to return "
+				+ expected;
+	}
+
+	/**
+	 * Test for boolean inGate(int, int).
+	 * 
+	 * @see Gate#inGate(int,int)
+	 */
+	@Test
+	public void inGateII() {
+		final Histogram hist2 = Histogram.createHistogram(group,
+				new int[100][100], "h2");
+		final Gate gate2 = new Gate("g2", hist2);
+		final int[] xpoints = { LOWER_LIMIT, GateTest.UPPER_LIMIT_PLUS_1,
+				GateTest.UPPER_LIMIT_PLUS_1, LOWER_LIMIT };
+		final int[] ypoints = { LOWER_LIMIT, LOWER_LIMIT,
+				GateTest.UPPER_LIMIT_PLUS_1, GateTest.UPPER_LIMIT_PLUS_1 };
+		final Polygon box = new Polygon(xpoints, ypoints, 4);
+		gate2.setLimits(box);
+		assertTrue(getAssertMessage(GateTest.LOWER_LIMIT, GateTest.IN_GATE,
+				true), gate2.inGate(GateTest.LOWER_LIMIT, GateTest.IN_GATE));
+		assertFalse(this.getAssertMessage(GateTest.LOWER_LIMIT_MINUS_1,
+				GateTest.IN_GATE, false), gate2.inGate(
+				GateTest.LOWER_LIMIT_MINUS_1, GateTest.IN_GATE));
+		assertTrue(this.getAssertMessage(GateTest.UPPER_LIMIT,
+				GateTest.IN_GATE, true), gate2.inGate(GateTest.UPPER_LIMIT,
+				GateTest.IN_GATE));
+		assertFalse(this.getAssertMessage(GateTest.UPPER_LIMIT_PLUS_1,
+				GateTest.IN_GATE, false), gate2.inGate(
+				GateTest.UPPER_LIMIT_PLUS_1, GateTest.IN_GATE));
+		assertTrue(this.getAssertMessage(GateTest.IN_GATE,
+				GateTest.LOWER_LIMIT, true), gate2.inGate(GateTest.IN_GATE,
+				GateTest.LOWER_LIMIT));
+		assertFalse(this.getAssertMessage(GateTest.IN_GATE,
+				GateTest.LOWER_LIMIT_MINUS_1, false), gate2.inGate(
+				GateTest.IN_GATE, GateTest.LOWER_LIMIT_MINUS_1));
+		assertTrue(this.getAssertMessage(GateTest.IN_GATE,
+				GateTest.UPPER_LIMIT, true), gate2.inGate(GateTest.IN_GATE,
+				GateTest.UPPER_LIMIT));
+		assertFalse(this.getAssertMessage(GateTest.IN_GATE,
+				GateTest.UPPER_LIMIT_PLUS_1, false), gate2.inGate(
+				GateTest.IN_GATE, GateTest.UPPER_LIMIT_PLUS_1));
+
+	}
+
+	@After
+	public void tearDown() {
+		DataBase.getInstance().clearAllLists();
+	}
 }
