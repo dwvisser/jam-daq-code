@@ -149,7 +149,7 @@ final class Parameter {
 		this.options = options;
 		type = options & TYPE_MASK;
 		if (type == Parameter.TEXT) {
-			options |= KNOWN; // change default for TEXT
+			this.options |= KNOWN; // change default for TEXT
 		}
 		valueInt = 0;
 		valueDbl = 0.0;

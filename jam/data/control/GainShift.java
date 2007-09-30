@@ -186,7 +186,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			public void actionPerformed(final ActionEvent event) {
 				final Object selected = cfrom.getSelectedItem();
 				if (selected == null || selected instanceof String) {
-					hfrom = null; //NOPMD
+					hfrom = null; // NOPMD
 					pButtons.setButtonsEnabled(false, false, true);
 				} else {
 					hfrom = (AbstractHist1D) selected;
@@ -251,14 +251,14 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			final double slopeIn, final double interceptOut,
 			final double slopeOut, final int npts2, final int index) {
 		final double e1lo = interceptIn + slopeIn * (index - 0.5); // energy at
-																	// lower
-																	// edge
+		// lower
+		// edge
 		// of
 		// spec#1
 		// channel
 		final double e1hi = interceptIn + slopeIn * (index + 0.5); // energy at
-																	// upper
-																	// edge
+		// upper
+		// edge
 		// of
 		// spec#1
 		// channel
@@ -371,7 +371,8 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			final double interceptIn, final double slopeIn,
 			final double interceptOut, final double slopeOut, final int npts2)
 			throws DataException {
-		double[] countsOut = new double[npts2];// lang spec says elements init to zero
+		double[] countsOut = new double[npts2];// lang spec says elements init
+												// to zero
 		for (int n = 0; n < countsIn.length; n++) {
 			calculateIntermediateValues(interceptIn, slopeIn, interceptOut,
 					slopeOut, npts2, n);
@@ -502,7 +503,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			slope2 = Double.valueOf(text4.getText().trim()).doubleValue();
 		} catch (NumberFormatException nfe) {
 			throw new DataException(
-					"A Coefficient is not a valid number [GainShift]");
+					"A Coefficient is not a valid number [GainShift]", nfe);
 		}
 
 	}

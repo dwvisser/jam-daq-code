@@ -168,7 +168,7 @@ public final class ImpExpSPE extends AbstractImpExp {//NOPMD
 			dos.writeInt(4 * size);
 			dos.flush();
 		} catch (IOException ioe) {
-			throw new ImpExpException(ioe.toString());
+			throw new ImpExpException(ioe);
 		}
 	}
 

@@ -186,7 +186,7 @@ public final class UconnInputStream extends AbstractEventInputStream {
 
 		} catch (IOException ioe) {
 			throw new EventException("Reading Event header," + ioe.getMessage()
-					+ " [UconnnInputStream]");
+					+ " [UconnnInputStream]", ioe);
 		}
 	}
 

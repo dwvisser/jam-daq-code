@@ -72,7 +72,8 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 				bis.close();
 				inputFileOpen = false;
 			} catch (IOException ioe) {
-				throw new SortException("Unable to close file [DiskDaemon]");
+				throw new SortException("Unable to close file [DiskDaemon]",
+						ioe);
 			}
 		}
 	}
@@ -109,9 +110,10 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 				outputFileOpen = false;
 			} catch (EventException ee) {
 				throw new SortException("Unable to close file EventException:"
-						+ ee.getMessage() + " [DiskDaemon]");
+						+ ee.getMessage() + " [DiskDaemon]", ee);
 			} catch (IOException ioe) {
-				throw new SortException("Unable to close file [DiskDaemon]");
+				throw new SortException("Unable to close file [DiskDaemon]",
+						ioe);
 			}
 		}
 	}
@@ -153,8 +155,9 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 */
 	public void openEventInputFile(final File file) throws SortException {
 		if (file == null) {
-			final SortException exception = new SortException(getClass().getName()
-					+ ": Cannot open input event file, null name."); 
+			final SortException exception = new SortException(getClass()
+					.getName()
+					+ ": Cannot open input event file, null name.");
 			LOGGER.throwing("DiskDaemon", "openEventInputFile", exception);
 			throw exception;
 		}
@@ -166,7 +169,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 			inputFileOpen = true;
 		} catch (IOException ioe) {
 			throw new SortException("Unable to open file: " + file.getPath()
-					+ " [DiskDaemon]");
+					+ " [DiskDaemon]", ioe);
 		}
 	}
 
@@ -183,7 +186,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 				fileCount++;
 			} else {
 				LOGGER.severe("File does not have correct header. File: "
-								+ file.getAbsolutePath());
+						+ file.getAbsolutePath());
 			}
 		} catch (EventException ee) {
 			LOGGER.log(Level.SEVERE, ee.getMessage(), ee);
@@ -214,7 +217,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 			outputFileOpen = true;
 		} catch (IOException ioe) {
 			throw new SortException("Unable to open file: " + file.getPath()
-					+ " [DiskDaemon]");
+					+ " [DiskDaemon]", ioe);
 		}
 	}
 
@@ -265,7 +268,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 			}
 		} catch (IOException ioe) {
 			LOGGER.log(Level.SEVERE, "Error while writing data to file: "
-							+ ioe.getMessage(), ioe);
+					+ ioe.getMessage(), ioe);
 		}
 	}
 
@@ -280,7 +283,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 			eventOutput.writeHeader();
 		} catch (EventException ioe) {
 			throw new SortException(
-					"Could not write Header Record [DiskDaemon]");
+					"Could not write Header Record [DiskDaemon]", ioe);
 		}
 	}
 

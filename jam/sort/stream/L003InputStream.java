@@ -123,7 +123,7 @@ public final class L003InputStream extends AbstractEventInputStream {
 			return headerKey.equals(HEADER_START);
 		} catch (IOException ioe) {
 			throw new EventException("Reading event header -"
-					+ ioe.getMessage());
+					+ ioe.getMessage(), ioe);
 		}
 	}
 

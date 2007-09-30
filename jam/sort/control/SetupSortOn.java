@@ -515,7 +515,7 @@ public final class SetupSortOn extends AbstractSetup {
 		} catch (IllegalAccessException iae) {
 			throw new JamException(getClass().getName()
 					+ ": illegal access to EventInputStream: "
-					+ inChooser.getSelectedItem());
+					+ inChooser.getSelectedItem(), iae);
 		}
 		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 		try { // create new event input stream class

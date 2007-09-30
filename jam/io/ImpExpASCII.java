@@ -351,7 +351,7 @@ public class ImpExpASCII extends AbstractImpExp {//NOPMD
 			writer.flush();
 			buffout.flush();
 		} catch (IOException ioe) {
-			throw new ImpExpException(ioe.toString());
+			throw new ImpExpException(ioe);
 		}
 	}
 

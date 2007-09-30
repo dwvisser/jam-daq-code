@@ -325,9 +325,9 @@ public class SetupRemote extends JDialog implements ActionListener,
 						"Can't view remotely, sort mode locked [SetupRemote]");
 			}
 		} catch (RemoteException re) {
-			throw new JamException("Remote lookup up failed URL: " + url);
+			throw new JamException("Remote lookup up failed URL: " + url, re);
 		} catch (java.net.MalformedURLException mue) {
-			throw new JamException("Remote look up malformed URL: " + url);
+			throw new JamException("Remote look up malformed URL: " + url, mue);
 		} catch (NotBoundException nbe) {
 			throw new JamException("Remote look up could not find name " + url,
 					nbe);

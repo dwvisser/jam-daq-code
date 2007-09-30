@@ -91,7 +91,7 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 			rval = false;
 		} catch (IOException ioe) {
 			throw new EventException("Reading Block header," + ioe.getMessage()
-					+ " [KmaxInputStream]");
+					+ " [KmaxInputStream]", ioe);
 		}
 		return rval;
 	}
@@ -205,7 +205,7 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 			return true;
 		} catch (IOException ioe) {
 			throw new EventException("Reading event header from IOException "
-					+ ioe.getMessage() + " [KmaxInputStream]");
+					+ ioe.getMessage() + " [KmaxInputStream]", ioe);
 		}
 	}
 }

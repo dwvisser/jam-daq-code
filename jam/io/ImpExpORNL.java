@@ -135,7 +135,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			}
 			fileHis.close();
 		} catch (IOException ioe) {
-			throw new ImpExpException(ioe.toString());
+			throw new ImpExpException(ioe);
 		}
 	}
 
@@ -453,7 +453,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			LOGGER.info("Writing " + fileHis.getName());
 			writeHis(buffoutHis); // write out his file
 		} catch (IOException ioe) {
-			throw new ImpExpException(ioe.toString());
+			throw new ImpExpException(ioe);
 		}
 	}
 

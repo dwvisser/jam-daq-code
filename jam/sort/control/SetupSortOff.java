@@ -201,10 +201,10 @@ public final class SetupSortOff extends AbstractSetup {
 			}
 		} catch (InstantiationException ie) {
 			throw new JamException("Cannot instantize event output stream: "
-					+ outStream.getClass().getName());
+					+ outStream.getClass().getName(), ie);
 		} catch (IllegalAccessException iae) {
 			throw new JamException("Cannot access event output stream: "
-					+ outStream.getClass().getName());
+					+ outStream.getClass().getName(), iae);
 		}
 	}
 

@@ -9,9 +9,22 @@ package jam.data.peaks;
  */
 public final class Peak extends Object implements Comparable<Peak>, Cloneable {
 
-	private double position, area, width;
+	private static final String AREA = "\n  Area = ";
+
+	private static final String FWHM = "\n  FWHM = ";
+
+	private static final String PEAK_POSITION = "Peak\n  Position = ";
+
+	private static final String PLUSMINUS = " +/- ";
+
+	public static Peak createPeak(final double position, final double area,
+			final double width) {
+		return new Peak(position, area, width);
+	}
 
 	private transient double perr, aerr, werr;
+
+	private double position, area, width;
 
 	/**
 	 * Creates new Peak assuming no uncertainty in values.
@@ -25,11 +38,6 @@ public final class Peak extends Object implements Comparable<Peak>, Cloneable {
 	 */
 	private Peak(double position, double area, double width) {
 		this(position, 0.0, area, 0.0, width, 0.0);
-	}
-
-	public static Peak createPeak(final double position, final double area,
-			final double width) {
-		return new Peak(position, area, width);
 	}
 
 	/**
@@ -64,56 +72,6 @@ public final class Peak extends Object implements Comparable<Peak>, Cloneable {
 		return rval;
 	}
 
-	Peak offset(final double correction) {
-		return new Peak(position + correction, perr, area, aerr, width, werr);
-	}
-
-	/**
-	 * @return centroid of peak
-	 */
-	double getPosition() {
-		return position;
-	}
-
-	double getArea() {
-		return area;
-	}
-
-	double getWidth() {
-		return width;
-	}
-
-	private void setPosition(final double posn, final double unc) {
-		position = posn;
-		perr = unc;
-	}
-
-	void setArea(final double... intensity) {
-		final int len = intensity.length;
-		if (len > 0) {
-			area = intensity[0];
-			if (len > 1) {
-				aerr = intensity[1];
-			}
-		}
-	}
-
-	private void setWidth(final double wid, final double widErr) {
-		width = wid;
-		werr = widErr;
-	}
-
-	public String toString() {
-		final StringBuilder rval = new StringBuilder(58);
-		rval.append("Peak\n  Position = ");
-		rval.append(position).append(" +/- ");
-		rval.append(perr);
-		rval.append("\n  Area = ").append(area).append(" +/- ").append(aerr);
-		rval.append("\n  FWHM = ").append(width).append(" +/- ").append(werr);
-		rval.append('\n');
-		return rval.toString();
-	}
-
 	public int compareTo(final Peak other) {
 		return (int) Math.signum(getPosition() - other.getPosition());
 	}
@@ -127,8 +85,58 @@ public final class Peak extends Object implements Comparable<Peak>, Cloneable {
 		return rval;
 	}
 
+	double getArea() {
+		return area;
+	}
+
+	/**
+	 * @return centroid of peak
+	 */
+	double getPosition() {
+		return position;
+	}
+
+	double getWidth() {
+		return width;
+	}
+
 	public int hashCode() {
 		return Double.valueOf(getPosition()).hashCode();
+	}
+
+	Peak offset(final double correction) {
+		return new Peak(position + correction, perr, area, aerr, width, werr);
+	}
+
+	void setArea(final double... intensity) {
+		final int len = intensity.length;
+		if (len > 0) {
+			area = intensity[0];
+			if (len > 1) {
+				aerr = intensity[1];
+			}
+		}
+	}
+
+	private void setPosition(final double posn, final double unc) {
+		position = posn;
+		perr = unc;
+	}
+
+	private void setWidth(final double wid, final double widErr) {
+		width = wid;
+		werr = widErr;
+	}
+
+	public String toString() {
+		final StringBuilder rval = new StringBuilder(58);
+		rval.append(PEAK_POSITION);
+		rval.append(position).append(PLUSMINUS);
+		rval.append(perr);
+		rval.append(AREA).append(area).append(PLUSMINUS).append(aerr);
+		rval.append(FWHM).append(width).append(PLUSMINUS).append(werr);
+		rval.append('\n');
+		return rval.toString();
 	}
 
 }

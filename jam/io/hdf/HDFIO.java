@@ -919,10 +919,10 @@ public final class HDFIO implements DataIO {
 			}
 		} catch (FileNotFoundException e) {
 			throw new HDFException("Opening file: " + infile.getPath()
-					+ " Cannot find file or file is locked");
+					+ " Cannot find file or file is locked", e);
 		} catch (HDFException e) {
 			throw new HDFException("Reading file: '" + infile.getName()
-					+ "', Exception " + e.toString());
+					+ "', Exception " + e.toString(), e);
 		} finally {
 			try {
 				inHDF.close();
