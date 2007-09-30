@@ -9,8 +9,6 @@ import jam.data.Histogram;
 
 import java.awt.Polygon;
 
-import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Test;
 

@@ -19,6 +19,8 @@ import org.junit.Test;
 
 public final class ImpExpASCIITest {// NOPMD
 
+	private static final String ASCIITEST = "ASCIItest";
+
 	private transient File temp1, temp2;
 
 	private transient ImpExpASCII impExp;
@@ -29,8 +31,8 @@ public final class ImpExpASCIITest {// NOPMD
 	public void setUp() {
 		Histogram.clearList();
 		try {
-			temp1 = File.createTempFile("ASCIItest", ".txt");
-			temp2 = File.createTempFile("ASCIItest", ".txt");
+			temp1 = File.createTempFile(ASCIITEST, ".txt");
+			temp2 = File.createTempFile(ASCIITEST, ".txt");
 			final FileWriter writer = new FileWriter(temp1);
 			final FileWriter writer2 = new FileWriter(temp2);
 			writer.write(histName);

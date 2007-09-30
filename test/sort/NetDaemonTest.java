@@ -20,13 +20,14 @@ import org.junit.Test;
  */
 public final class NetDaemonTest{//NOPMD
 
+	private static final String LOCALHOST = "localhost";
 	private transient NetDaemon netDaemon;
 
 	@Before 
 	public void setUp() {//NOPMD
 		final RunControl runControl = RunControl.getSingletonInstance();
 		try{
-			netDaemon = new NetDaemon(null, null, "localhost", 8080);
+			netDaemon = new NetDaemon(null, null, LOCALHOST, 8080);
 			runControl.setupOn("Test", null, null, null, netDaemon, null);
 		} catch (SortException se) {//NOPMD
 			fail(se.getMessage());

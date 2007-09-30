@@ -12,6 +12,9 @@ import junit.framework.TestCase;
 
 public class HDFIOTest extends TestCase {
 	
+	private static final String SAMPLEDATA_EXAMPLE_GATES_HDF = "sampledata/exampleGates.hdf";
+
+
 	HDFIOTest(){
 		super();
 	}
@@ -19,7 +22,7 @@ public class HDFIOTest extends TestCase {
 
 	public void testReadFileFileOpenModeFile() {
 		final ClassLoader loader = this.getClass().getClassLoader();
-		final URL url = loader.getResource("sampledata/exampleGates.hdf");
+		final URL url = loader.getResource(SAMPLEDATA_EXAMPLE_GATES_HDF);
 		URI uri = null;
 		try {
 			uri = url.toURI();

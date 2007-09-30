@@ -10,33 +10,47 @@ import org.junit.Test;
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  */
-public final class PeakTest {//NOPMD
+public final class PeakTest {// NOPMD
 
-    /**
-     * Test for <code>compareTo(Object)</code>.
-     * 
-     * @see Peak#compareTo(Object)
-     */
-    @Test
-    public void testCompareTo() {
-        final Peak peak1 = Peak.createPeak(100, 10, 2);
-        final Peak p2a = Peak.createPeak(150, 10, 2);
-        final Peak p2b = Peak.createPeak(150, 10, 2);
-        final Peak peak3 = Peak.createPeak(200, 10, 2);
-         assertEquals("peak1 should have been < p2a", -1, peak1.compareTo(p2a));
-        assertEquals("peak1 should have been < p2b", -1, peak1.compareTo(p2b));
-        assertEquals("peak1 should have been < peak3", -1, peak1
-                .compareTo(peak3));
-        assertEquals("p2a should have been < peak3", -1, p2a.compareTo(peak3));
-        assertEquals("p2b should have been < peak3", -1, p2b.compareTo(peak3));
-        assertEquals("p2a should have been = p2b", 0, p2a.compareTo(p2b));
-        assertEquals("p2b should have been = p2a", 0, p2b.compareTo(p2a));
-        assertEquals("p2a should have been > peak1", 1, p2a.compareTo(peak1));
-        assertEquals("p2b should have been > peak1", 1, p2b.compareTo(peak1));
-        assertEquals("peak3 should have been > peak1", 1, peak3
-                .compareTo(peak1));
-        assertEquals("peak3 should have been > p2a", 1, peak3.compareTo(p2a));
-        assertEquals("peak3 should have been > p2b", 1, peak3.compareTo(p2b));
-    }
+	private static final String SHOULD = "peak1 should have been ";
+
+	private static final String PEAK2 = " peak2";
+
+	private void assertGreaterThan(final Peak peak1, final Peak peak2) {
+		assertEquals(SHOULD + ">" + PEAK2, 1, peak1.compareTo(peak2));
+	}
+
+	private void assertLessThan(final Peak peak1, final Peak peak2) {
+		assertEquals(SHOULD + "<" + PEAK2, -1, peak1.compareTo(peak2));
+	}
+
+	private void assertSameAs(final Peak peak1, final Peak peak2) {
+		assertEquals(SHOULD + "==" + PEAK2, 0, peak1.compareTo(peak2));
+	}
+
+	/**
+	 * Test for <code>compareTo(Object)</code>.
+	 * 
+	 * @see Peak#compareTo(Object)
+	 */
+	@Test
+	public void testCompareTo() {
+		final Peak peak1 = Peak.createPeak(100, 10, 2);
+		final Peak p2a = Peak.createPeak(150, 10, 2);
+		final Peak p2b = Peak.createPeak(150, 10, 2);
+		final Peak peak3 = Peak.createPeak(200, 10, 2);
+		assertLessThan(peak1, p2a);
+		assertLessThan(peak1, p2b);
+		assertLessThan(peak1, peak3);
+		assertLessThan(p2a, peak3);
+		assertLessThan(p2b, peak3);
+		assertSameAs(p2a, p2b);
+		assertSameAs(p2b, p2a);
+		assertGreaterThan(p2a, peak1);
+		assertGreaterThan(p2b, peak1);
+		assertGreaterThan(peak3, peak1);
+		assertGreaterThan(peak3, p2a);
+		assertGreaterThan(peak3, p2b);
+	}
 
 }

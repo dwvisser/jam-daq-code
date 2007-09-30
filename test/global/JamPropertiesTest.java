@@ -13,6 +13,8 @@ import org.junit.Test;
 
 public final class JamPropertiesTest {// NOPMD
 
+	private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
+
 	private static final String fileName = "JamConfig.ini";
 
 	private static final String testProp = "test.prop";
@@ -21,7 +23,7 @@ public final class JamPropertiesTest {// NOPMD
 
 	@Before
 	public void setUp() {
-		final String tmpDir = System.getProperty("java.io.tmpdir");
+		final String tmpDir = System.getProperty(JAVA_IO_TMPDIR);
 		final File out = new File(tmpDir, fileName);
 		out.deleteOnExit();
 		System.setProperty("jam.home", tmpDir);

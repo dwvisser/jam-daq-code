@@ -21,6 +21,8 @@ import org.junit.Test;
  */
 public final class RingBufferTest {//NOPMD
 
+	private static final String ARRAYS_SHOULD_HAVE_BEEN_EQUAL = "Arrays should have been equal.";
+
 	private transient RingBuffer ring, emptyRing;
 
 	private transient byte[] buffer;
@@ -53,7 +55,7 @@ public final class RingBufferTest {//NOPMD
 		assertFalse("Buffer full when it shouldn't have been.", ring.isFull());
 		/* Next expression true, since we did get right after each put. */
 		final boolean equality = Arrays.equals(buffer, out);
-		assertTrue("Arrays should have been equal.", equality);
+		assertTrue(ARRAYS_SHOULD_HAVE_BEEN_EQUAL, equality);
 		ring.clear();
 		for (int i = 0; i < RingBuffer.NUMBER_BUFFERS; i++) {
 			Arrays.fill(buffer, (byte) (i + 1));
