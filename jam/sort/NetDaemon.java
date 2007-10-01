@@ -169,8 +169,6 @@ public final class NetDaemon extends GoodThread {
 				} catch (RingFullException rfe) {
 					notSortCount++;
 					setEmptyBefore(true);
-				} catch (InterruptedException ie) {
-					throw new IOException(ie);
 				}
 				/* put buffer into to storage ring */
 				if (writerOn) {
@@ -179,8 +177,6 @@ public final class NetDaemon extends GoodThread {
 					} catch (RingFullException rfe) {
 						notStorCount++;
 						LOGGER.severe("Storage Buffer " + rfe.getMessage());
-					} catch (InterruptedException ie) {
-						throw new IOException(ie);
 					}
 				}
 			} else {// received a packet while thread state not RUN

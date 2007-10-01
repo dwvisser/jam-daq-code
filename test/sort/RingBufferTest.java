@@ -78,7 +78,7 @@ public final class RingBufferTest {// NOPMD
 	 * @returns last buffer inserted
 	 */
 	private byte[] fillEmptyRingBuffer(final RingBuffer ringbuffer,
-			final int numBuffers) throws InterruptedException {
+			final int numBuffers) {
 		assertRingBufferEmpty(ringbuffer);
 		final byte[] buffer = RingBuffer.freshBuffer();
 		for (int i = 0; i < numBuffers; i++) {
@@ -99,7 +99,7 @@ public final class RingBufferTest {// NOPMD
 	}
 
 	@Test
-	public void testCloseToFull() throws InterruptedException {
+	public void testCloseToFull() {
 		this.clear(ring);
 		this.fillEmptyRingBuffer(ring, RingBuffer.NUMBER_BUFFERS
 				- RingBuffer.CLOSE_TO_CAPACITY + 1);
@@ -107,7 +107,7 @@ public final class RingBufferTest {// NOPMD
 	}
 
 	@Test
-	public void testGetAvailableBuffers() throws InterruptedException {
+	public void testGetAvailableBuffers() {
 		assertEquals("Expected all buffers to be available.",
 				RingBuffer.NUMBER_BUFFERS, ring.getAvailableBuffers());
 		final byte[] buffer = RingBuffer.freshBuffer();

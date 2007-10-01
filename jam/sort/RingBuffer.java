@@ -69,24 +69,15 @@ public final class RingBuffer {
 	 * @exception RingFullException
 	 *                thrown when the ring is too full to be written to
 	 */
-	public void putBuffer(final byte[] inBuffer) throws RingFullException,
-			InterruptedException {
+	public void putBuffer(final byte[] inBuffer) throws RingFullException {
 		assert !isNull() : "Attempted putBuffer() on 'null' ring buffer.";
 		validateBuffer(inBuffer);
-		checkNotFullBeforePut();
-		buffer.put(inBuffer.clone());
-	}
-
-	/**
-	 * @throws RingFullException
-	 */
-	private void checkNotFullBeforePut() throws RingFullException {
-		if (isFull()) {
+		if (!buffer.offer(inBuffer.clone())){
 			final StringBuffer message = new StringBuffer(50);
 			message.append("Lost a buffer in thread \"");
 			message.append(Thread.currentThread().getName());
 			message.append("\" when putBuffer() called while already full.");
-			throw new RingFullException(message.toString());
+			throw new RingFullException(message.toString());			
 		}
 	}
 
