@@ -10,16 +10,19 @@ import java.net.URL;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
+
 public class HDFIOTest extends TestCase {
 	
 	private static final String SAMPLEDATA_EXAMPLE_GATES_HDF = "sampledata/exampleGates.hdf";
 
 
-	HDFIOTest(){
+	public HDFIOTest(){//NOPMD
 		super();
 	}
 	
 
+	@Test
 	public void testReadFileFileOpenModeFile() {
 		final ClassLoader loader = this.getClass().getClassLoader();
 		final URL url = loader.getResource(SAMPLEDATA_EXAMPLE_GATES_HDF);
