@@ -3,6 +3,8 @@
  */
 package jam.sort;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,15 +25,12 @@ public final class GainCalibration {
 
 	private transient final Map<Integer, Double> gains = new HashMap<Integer, Double>();
 
-	private transient final ClassLoader loader;
-
 	private transient final Map<Integer, Double> offsets = new HashMap<Integer, Double>();
 
-	private transient boolean suppress = false;//NOPMD
-
-	public GainCalibration(Object maker) {
+	private transient boolean suppress = false;
+	
+	public GainCalibration(){//NOPMD
 		super();
-		loader = maker.getClass().getClassLoader();
 	}
 
 	/**
@@ -87,7 +86,7 @@ public final class GainCalibration {
 	 * Alternately, the offset column may be ommited.
 	 * 
 	 * @param name
-	 *            of the gain file in the sort routine's package
+	 *            of the gain file
 	 * @param autoSuppress
 	 *            <code>true</code> adjust to zero any value for which no gain
 	 *            coeffiecients exist, <code>false</code> to simply return the
@@ -99,18 +98,15 @@ public final class GainCalibration {
 			throws SortException {
 		try {
 			suppress = autoSuppress;
-			InputStream input = loader.getResourceAsStream(name);
-			if (input == null) {
-				throw new SortException("File, \"" + name + "\", not found.");
-			}
+			FileInputStream input = new FileInputStream(new File(name));
 			final int rows = getNumberOfRows(input);
-			input = loader.getResourceAsStream(name);
+			input = new FileInputStream(new File(name));
 			final int columns = getNumberOfColumns(input);
 			if (columns < 2 || columns > 3) {
 				throw new SortException("File, \"" + name
 						+ "\", must be 2 or 3 columns.");
 			}
-			input = loader.getResourceAsStream(name);
+			input = new FileInputStream(new File(name));
 			readGains(input, rows, columns);
 		} catch (IOException ioe) {
 			throw new SortException(

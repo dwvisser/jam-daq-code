@@ -320,7 +320,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 		setWriteEnabled(false);
 		cnafCommands = new CamacCommands(this);
 		vmeMap = new VME_Map(this);
-		gains = new GainCalibration(this);
+		gains = new GainCalibration();
 	}
 
 	/**
