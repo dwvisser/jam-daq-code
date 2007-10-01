@@ -190,15 +190,7 @@ public class ConsoleLog implements MessageHandler {
 				}
 			} else if (part == END) {
 				messageFile = messageFile + mbuff + END_LINE;
-				try {
-					doc.insertString(doc.getLength(), mbuff.toString(),
-							SimpleAttributeSet.EMPTY);
-				} catch (BadLocationException e) {
-					JOptionPane.showMessageDialog(textLog, e.getMessage(),
-							getClass().getName(), JOptionPane.ERROR_MESSAGE);
-				}
-				trimLog();
-				textLog.setCaretPosition(doc.getLength());
+				appendBuffer(mbuff);
 				final JScrollBar scroll = jsp.getVerticalScrollBar();
 				scroll.setValue(scroll.getMaximum());
 				/* if file logging on write to file */
@@ -222,6 +214,21 @@ public class ConsoleLog implements MessageHandler {
 	}
 
 	/**
+	 * @param mbuff
+	 */
+	private void appendBuffer(final StringBuffer mbuff) {
+		try {
+			doc.insertString(doc.getLength(), mbuff.toString(),
+					SimpleAttributeSet.EMPTY);
+		} catch (BadLocationException e) {
+			JOptionPane.showMessageDialog(textLog, e.getMessage(),
+					getClass().getName(), JOptionPane.ERROR_MESSAGE);
+		}
+		trimLog();
+		textLog.setCaretPosition(doc.getLength());
+	}
+
+	/**
 	 * Output an empty line to the console.
 	 */
 	public void messageOutln() {
@@ -241,15 +248,7 @@ public class ConsoleLog implements MessageHandler {
 			messageFile = getDate() + ">" + message + END_LINE;
 			mbuff.append(END_LINE).append(getTime()).append('>')
 					.append(message);
-			try {
-				doc.insertString(doc.getLength(), mbuff.toString(),
-						SimpleAttributeSet.EMPTY);
-			} catch (BadLocationException e) {
-				JOptionPane.showMessageDialog(textLog, e.getMessage(),
-						getClass().getName(), JOptionPane.ERROR_MESSAGE);
-			}
-			trimLog();
-			textLog.setCaretPosition(doc.getLength());
+			this.appendBuffer(mbuff);
 			// if file logging on write to file
 			if (logFileOn) {
 				try {

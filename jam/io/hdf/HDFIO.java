@@ -256,6 +256,13 @@ public final class HDFIO implements DataIO {
 				message.append(groupName);
 			}
 		}
+		appendDataCounts(message);
+	}
+
+	/**
+	 * @param message
+	 */
+	private void appendDataCounts(final StringBuilder message) {
 		message.append(" (");
 		message.append(groupCount).append(" groups");
 		message.append(", ").append(histCount).append(" histograms");
@@ -304,14 +311,8 @@ public final class HDFIO implements DataIO {
 				asyncMonitor.setNote("Writing Data Objects");
 				out.writeFile();
 				asyncMonitor.setNote("Closing File");
-				message.append("Saved ").append(file.getName()).append(" (");
-				message.append(groupCount).append(" groups");
-				message.append(", ").append(histCount).append(" histograms");
-				message.append(", ").append(gateCount).append(" gates");
-				message.append(", ").append(scalerCount).append(" scalers");
-				message.append(", ").append(paramCount).append(" parameters");
-				message.append(')');
-
+				message.append("Saved ").append(file.getName());
+				this.appendDataCounts(message);
 			} catch (FileNotFoundException e) {
 				uiErrorMsg = "Opening file: " + file.getName();
 			} catch (HDFException e) {

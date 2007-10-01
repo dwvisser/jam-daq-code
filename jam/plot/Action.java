@@ -48,7 +48,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
-
 /**
  * Class the does the actions on plots. Receives commands from buttons and
  * command line. Performs action by performing command on plot, plot1d and
@@ -450,28 +449,35 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	private void expand() {// NOPMD
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		if (commandPresent) {
-			if (clicks.size() == 0) {
-				synchronized (cursorBin) {
-					currentPlot.initializeSelectingArea(cursorBin);
-					addClick(cursorBin);
-					textOut.messageOut(cursorBin.getCoordString() + S_TO);
-				}
-			} else {
-				currentPlot.setSelectingArea(false);
-				synchronized (cursorBin) {
-					textOut.messageOut(cursorBin.getCoordString(),
-							MessageHandler.END);
-					currentPlot.expand(getClick(0), cursorBin);
-				}
-				if (autoOnExpand) {
-					currentPlot.autoCounts();
-				}
-				done();
-			}
+			updateSelectedAreaForClick(currentPlot);
 		} else {
 			isCursorCommand = true;
 			init();
 			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
+		}
+	}
+
+	/**
+	 * @param currentPlot
+	 */
+	private void updateSelectedAreaForClick(final PlotContainer currentPlot) {
+		if (clicks.size() == 0) {
+			synchronized (cursorBin) {
+				currentPlot.initializeSelectingArea(cursorBin);
+				addClick(cursorBin);
+				textOut.messageOut(cursorBin.getCoordString() + S_TO);
+			}
+		} else {
+			currentPlot.setSelectingArea(false);
+			synchronized (cursorBin) {
+				textOut.messageOut(cursorBin.getCoordString(),
+						MessageHandler.END);
+				currentPlot.expand(getClick(0), cursorBin);
+			}
+			if (autoOnExpand) {
+				currentPlot.autoCounts();
+			}
+			done();
 		}
 	}
 
@@ -1143,23 +1149,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			isCursorCommand = true;
 			init();
 			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
-		} else if (clicks.size() == 0) {
-			synchronized (cursorBin) {
-				currentPlot.initializeSelectingArea(cursorBin);
-				addClick(cursorBin);
-				textOut.messageOut(cursorBin.getCoordString() + S_TO);
-			}
 		} else {
-			currentPlot.setSelectingArea(false);
-			synchronized (cursorBin) {
-				textOut.messageOut(cursorBin.getCoordString(),
-						MessageHandler.END);
-				currentPlot.expand(getClick(0), cursorBin);
-			}
-			if (autoOnExpand) {
-				currentPlot.autoCounts();
-			}
-			done();
+			updateSelectedAreaForClick(currentPlot);
 		}
 	}
 
