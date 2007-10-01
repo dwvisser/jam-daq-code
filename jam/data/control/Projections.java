@@ -407,9 +407,6 @@ public final class Projections extends AbstractManipulation implements
 	private double[] projectX(final double[][] inArray, final int outLength,
 			final Gate gate) {
 		double[] out = new double[outLength];
-		for (int k = 0; k < outLength; k++) {
-			out[k] = 0;
-		}
 		for (int i = 0; i < inArray.length; i++) {
 			for (int j = 0; j < inArray[0].length; j++) {
 				if (gate.inGate(i, j) && i < out.length) {
@@ -423,9 +420,6 @@ public final class Projections extends AbstractManipulation implements
 	private double[] projectY(final double[][] inArray, final int outLength,
 			final Gate gate) {
 		double[] out = new double[outLength];
-		for (int k = 0; k < outLength; k++) {
-			out[k] = 0;
-		}
 		for (int i = 0; i < inArray.length; i++) {
 			for (int j = 0; j < inArray[0].length; j++) {
 				if (gate.inGate(i, j) && j < out.length) {
