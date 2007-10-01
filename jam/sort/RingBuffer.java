@@ -1,8 +1,6 @@
 package jam.sort;
 
-import java.nio.ByteBuffer;
-
-import javax.swing.JOptionPane;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * <code>RingBuffer</code> is a list of buffers which starts repeating after
@@ -16,33 +14,29 @@ import javax.swing.JOptionPane;
 public final class RingBuffer {
 
 	/**
+	 * Total memory this ring buffer can take.
+	 */
+	private static final int MEMORY_FOOTPRINT = 0x400 * 0x400 * 2; // 2 MB
+
+	/**
 	 * Size in bytes of a single buffer.
 	 */
-	public static final int BUFFER_SIZE = 8 * 1024;
+	public static final int BUFFER_SIZE = 0x2000; // 8k
 
 	/**
 	 * Number of buffers in ring, must be a power of 2.
 	 */
-	public static final int NUMBER_BUFFERS = 1 << 6; //NOPMD
-
-	private static final int CLOSE_TO_CAPACITY = NUMBER_BUFFERS >> 5;
+	public static final int NUMBER_BUFFERS = MEMORY_FOOTPRINT / BUFFER_SIZE;
 
 	/**
-	 * Mask that makes counter less than Number buffers
+	 * We are close to capacity if available buffers is less than this.
 	 */
-	private static final int MASK = NUMBER_BUFFERS - 1;
+	public static final int CLOSE_TO_CAPACITY = Math
+			.max(2, NUMBER_BUFFERS / 16);
 
-	private transient final byte[][] buffer;
+	private transient ArrayBlockingQueue<byte[]> buffer;
 
-	/**
-	 * where we will put the next buffer
-	 */
-	private transient int posPut = 0;
-
-	/**
-	 * where we will get the next buffer from
-	 */
-	private transient int posGet = 0;
+	private transient final boolean hasBuffer;
 
 	/**
 	 * Creates a new ring buffer.
@@ -51,13 +45,12 @@ public final class RingBuffer {
 		this(false);
 	}
 
-	/**
-	 * Constructor.
-	 * @param empty whether to create a zero-capacity buffer or not.
-	 */
 	public RingBuffer(boolean empty) {
 		super();
-		buffer = empty ? new byte[0][0] : new byte[NUMBER_BUFFERS][BUFFER_SIZE];
+		hasBuffer = !empty; // NOPMD
+		if (hasBuffer) {
+			buffer = new ArrayBlockingQueue<byte[]>(NUMBER_BUFFERS);
+		}
 	}
 
 	/**
@@ -65,7 +58,7 @@ public final class RingBuffer {
 	 * @return whether this buffer was created with no capacity
 	 */
 	public boolean isNull() {
-		return buffer.length == 0;
+		return !hasBuffer;
 	}
 
 	/**
@@ -76,29 +69,34 @@ public final class RingBuffer {
 	 * @exception RingFullException
 	 *                thrown when the ring is too full to be written to
 	 */
-	public void putBuffer(final byte[] inBuffer) throws RingFullException {
-		synchronized (this) {
-			assert !isNull() : "Attempted putBuffer() on 'null' ring buffer.";
-			if (isFull()) {
-				final StringBuffer message = new StringBuffer(50);
-				message.append("Lost a buffer in thread \"");
-				message.append(Thread.currentThread().getName());
-				message
-						.append("\" when putBuffer() called while already full.");
-				throw new RingFullException(message.toString());
-			}
-			System.arraycopy(inBuffer, 0, buffer[posPut & MASK], 0,
-					inBuffer.length);
-			final boolean emptyBeforePut = isEmpty();
-			posPut++;
-			/*
-			 * The only reason another thread could be in wait() on this object
-			 * is that we were empty. Checking eliminates a lot of needless
-			 * notify() calls.
-			 */
-			if (emptyBeforePut) {
-				notifyAll();
-			}
+	public void putBuffer(final byte[] inBuffer) throws RingFullException,
+			InterruptedException {
+		assert !isNull() : "Attempted putBuffer() on 'null' ring buffer.";
+		validateBuffer(inBuffer);
+		checkNotFullBeforePut();
+		buffer.put(inBuffer.clone());
+	}
+
+	/**
+	 * @throws RingFullException
+	 */
+	private void checkNotFullBeforePut() throws RingFullException {
+		if (isFull()) {
+			final StringBuffer message = new StringBuffer(50);
+			message.append("Lost a buffer in thread \"");
+			message.append(Thread.currentThread().getName());
+			message.append("\" when putBuffer() called while already full.");
+			throw new RingFullException(message.toString());
+		}
+	}
+
+	private void validateBuffer(final byte[] inbuffer) {
+		if (inbuffer == null) {
+			throw new IllegalArgumentException("null buffer reference");
+		}
+		if (inbuffer.length != BUFFER_SIZE) {
+			throw new IllegalArgumentException(
+					"buffer capacity expected to be " + BUFFER_SIZE);
 		}
 	}
 
@@ -108,10 +106,7 @@ public final class RingBuffer {
 	 * 
 	 */
 	public void clear() {
-		synchronized (this) {
-			posPut = 0;
-			posGet = 0;
-		}
+		buffer.clear();
 	}
 
 	/**
@@ -121,22 +116,9 @@ public final class RingBuffer {
 	 * @param out
 	 *            array to copy the next buffer into
 	 */
-	public void getBuffer(final byte[] out) {
-		synchronized (this) {
-			while (isEmpty()) {
-				try {
-					/*
-					 * notified when a putBuffer() occurs on the empty ring
-					 */
-					wait();
-				} catch (InterruptedException ie) {
-					JOptionPane.showMessageDialog(null, ie.getMessage(),
-							getClass().getName(), JOptionPane.ERROR_MESSAGE);
-				}
-			}
-			/* & MASK serves to keep index accessed running 0..63,0..63, etc. */
-			System.arraycopy(buffer[(posGet++) & MASK], 0, out, 0, out.length);
-		}
+	public void getBuffer(final byte[] out) throws InterruptedException {
+		assert !isNull() : "Attempted getBuffer() on 'null' ring buffer.";
+		System.arraycopy(buffer.take(), 0, out, 0, out.length);
 	}
 
 	/**
@@ -146,9 +128,7 @@ public final class RingBuffer {
 	 * @return true if there are no buffers in the ring.
 	 */
 	public boolean isEmpty() {
-		synchronized (this) {
-			return posPut == posGet;
-		}
+		return isNull() ? true : buffer.isEmpty();
 	}
 
 	/**
@@ -157,9 +137,7 @@ public final class RingBuffer {
 	 * @return <code>true</code> if there are no more available buffers
 	 */
 	public boolean isFull() {
-		synchronized (this) {
-			return isNull() || (posPut - posGet + 1 > NUMBER_BUFFERS);
-		}
+		return isNull() || buffer.remainingCapacity() == 0;
 	}
 
 	/**
@@ -168,15 +146,13 @@ public final class RingBuffer {
 	 * @return the number of available buffers
 	 */
 	public int getAvailableBuffers() {
-		synchronized (this) {
-			final int rval;
-			if (isNull()) {
-				rval = 0;
-			} else {
-				rval = NUMBER_BUFFERS - getUsedBuffers();
-			}
-			return rval;
+		final int rval;
+		if (isNull()) {
+			rval = 0;
+		} else {
+			rval = NUMBER_BUFFERS - getUsedBuffers();
 		}
+		return rval;
 	}
 
 	/**
@@ -186,9 +162,7 @@ public final class RingBuffer {
 	 * @return <code>true</code> if the ring buffer is close to filling
 	 */
 	public boolean isCloseToFull() {
-		synchronized (this) {
-			return getAvailableBuffers() < CLOSE_TO_CAPACITY;
-		}
+		return getAvailableBuffers() < CLOSE_TO_CAPACITY;
 	}
 
 	/**
@@ -197,9 +171,7 @@ public final class RingBuffer {
 	 * @return the number of used buffers
 	 */
 	public int getUsedBuffers() {
-		synchronized (this) {
-			return posPut - posGet;
-		}
+		return isNull() ? 0 : buffer.size();
 	}
 
 	/**
@@ -209,6 +181,6 @@ public final class RingBuffer {
 	 * @return a fresh byte array equal in size to one of the buffers
 	 */
 	public static byte[] freshBuffer() {
-		return ByteBuffer.allocate(BUFFER_SIZE).array();
+		return new byte[BUFFER_SIZE];
 	}
 }

@@ -301,7 +301,12 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 		 */
 		while (checkState()) {
 			// read from pipe and write file
+			try {
 			ringBuffer.getBuffer(buffer);
+			} catch (InterruptedException e)
+			{
+				throw new IOException(e);
+			}
 			bos.write(buffer);
 			bufferCount++;
 			// check for end-of-run marker
