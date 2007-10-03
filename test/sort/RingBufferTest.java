@@ -5,9 +5,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.fail;
 import jam.sort.RingBuffer;
-import jam.sort.RingFullException;
 
 import java.util.Arrays;
 
@@ -83,13 +81,24 @@ public final class RingBufferTest {// NOPMD
 		final byte[] buffer = RingBuffer.freshBuffer();
 		for (int i = 0; i < numBuffers; i++) {
 			Arrays.fill(buffer, (byte) (i + 1));
-			try {
-				ringbuffer.putBuffer(buffer);
-			} catch (RingFullException re) {
-				fail(re.getMessage());
-			}
+			putBuffer(ringbuffer, buffer, true);
 		}
 		return buffer;
+	}
+
+	/**
+	 * @param ringbuffer
+	 * @param buffer
+	 */
+	private void putBuffer(final RingBuffer ringbuffer, final byte[] buffer,
+			final boolean expectedSuccess) {
+		final String message = expectedSuccess ? "Expected success putting buffer into ring."
+				: "Expected failure putting buffer into full ring.";
+		if (expectedSuccess) {
+			assertTrue(message, ringbuffer.tryPutBuffer(buffer));
+		} else {
+			assertFalse(message, ringbuffer.tryPutBuffer(buffer));
+		}
 	}
 
 	@Before
@@ -112,12 +121,8 @@ public final class RingBufferTest {// NOPMD
 				RingBuffer.NUMBER_BUFFERS, ring.getAvailableBuffers());
 		final byte[] buffer = RingBuffer.freshBuffer();
 		for (int i = 0; i < RingBuffer.NUMBER_BUFFERS; i++) {
-			try {
-				ring.putBuffer(buffer);
-				assertUsedBuffers(ring, i + 1);
-			} catch (RingFullException re) {
-				fail(re.getMessage());
-			}
+			putBuffer(ring, buffer, true);
+			assertUsedBuffers(ring, i + 1);
 		}
 		assertRingBufferFull(ring);
 		assertEquals("Expect no available buffers in empty ring.", 0, emptyRing
@@ -143,7 +148,7 @@ public final class RingBufferTest {// NOPMD
 	/**
 	 * Test for <code>putBuffer()</code>.
 	 * 
-	 * @see RingBuffer#putBuffer(byte [])
+	 * @see RingBuffer#tryPutBuffer(byte [])
 	 */
 	@Test
 	public void testPut() throws InterruptedException {
@@ -152,12 +157,8 @@ public final class RingBufferTest {// NOPMD
 		this.clear(ring);
 		for (int i = 0; i < RingBuffer.NUMBER_BUFFERS / 2; i++) {
 			Arrays.fill(buffer, (byte) i);
-			try {
-				ring.putBuffer(buffer);
-				this.assertUsedBuffers(ring, 1);
-			} catch (RingFullException re) {
-				fail(re.getMessage());
-			}
+			putBuffer(ring, buffer, true);
+			this.assertUsedBuffers(ring, 1);
 			ring.getBuffer(out);
 			this.assertRingBufferEmpty(ring);
 			assertArraysEqualButNotSame(out, buffer);
@@ -169,12 +170,8 @@ public final class RingBufferTest {// NOPMD
 		assertFalse("Expected arrays to not be equal.", Arrays.equals(buffer,
 				out));
 		assertFalse("Expected ring buffer to not be full.", ring.isFull());
-		try {
-			ring.putBuffer(buffer);
-			ring.putBuffer(buffer);
-			fail("Expected to hit RingFullException");
-		} catch (RingFullException rfe) {// NOPMD
-			// do nothing
-		}
+		putBuffer(ring, buffer, true);
+		assertRingBufferFull(ring);
+		putBuffer(ring, buffer, false);
 	}
 }

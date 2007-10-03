@@ -1,6 +1,7 @@
 package jam.sort;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * <code>RingBuffer</code> is a list of buffers which starts repeating after
@@ -34,9 +35,12 @@ public final class RingBuffer {
 	public static final int CLOSE_TO_CAPACITY = Math
 			.max(2, NUMBER_BUFFERS / 16);
 
-	private transient ArrayBlockingQueue<byte[]> buffer;
+	private transient ArrayBlockingQueue<byte[]> ring;
 
-	private transient final boolean hasBuffer;
+	private transient final LinkedBlockingDeque<byte[]> poolStack = new LinkedBlockingDeque<byte[]>(
+			NUMBER_BUFFERS);;
+
+	private transient final boolean hasRing;
 
 	/**
 	 * Creates a new ring buffer.
@@ -47,9 +51,9 @@ public final class RingBuffer {
 
 	public RingBuffer(boolean empty) {
 		super();
-		hasBuffer = !empty; // NOPMD
-		if (hasBuffer) {
-			buffer = new ArrayBlockingQueue<byte[]>(NUMBER_BUFFERS);
+		hasRing = !empty; // NOPMD
+		if (hasRing) {
+			ring = new ArrayBlockingQueue<byte[]>(NUMBER_BUFFERS);
 		}
 	}
 
@@ -58,7 +62,7 @@ public final class RingBuffer {
 	 * @return whether this buffer was created with no capacity
 	 */
 	public boolean isNull() {
-		return !hasBuffer;
+		return !hasRing;
 	}
 
 	/**
@@ -66,19 +70,27 @@ public final class RingBuffer {
 	 * 
 	 * @param inBuffer
 	 *            incoming data
-	 * @exception RingFullException
-	 *                thrown when the ring is too full to be written to
+	 * @return true if successful, false if full
 	 */
-	public void putBuffer(final byte[] inBuffer) throws RingFullException {
+	public boolean tryPutBuffer(final byte[] inBuffer) {
 		assert !isNull() : "Attempted putBuffer() on 'null' ring buffer.";
 		validateBuffer(inBuffer);
-		if (!buffer.offer(inBuffer.clone())){
-			final StringBuffer message = new StringBuffer(50);
-			message.append("Lost a buffer in thread \"");
-			message.append(Thread.currentThread().getName());
-			message.append("\" when putBuffer() called while already full.");
-			throw new RingFullException(message.toString());			
+		final byte[] pushBuffer = allocateFromPoolIfPossibleAndCopy(inBuffer);
+		return ring.offer(pushBuffer);
+	}
+
+	/**
+	 * @param inBuffer buffer to copy
+	 * @return copy of inBuffer, either from internal pool or fresh
+	 */
+	private byte[] allocateFromPoolIfPossibleAndCopy(final byte[] inBuffer) {
+		byte[] rval = poolStack.pollFirst();
+		if (rval == null) {
+			rval = inBuffer.clone();
+		} else {
+			System.arraycopy(inBuffer, 0, rval, 0, BUFFER_SIZE);
 		}
+		return rval;
 	}
 
 	private void validateBuffer(final byte[] inbuffer) {
@@ -97,19 +109,23 @@ public final class RingBuffer {
 	 * 
 	 */
 	public void clear() {
-		buffer.clear();
+		poolStack.addAll(ring);
+		ring.clear();
 	}
 
 	/**
 	 * Passes back a copy of the current buffer in the given <code>byte</code>
-	 * array.
+	 * array. Blocks until the buffer becomes available.
 	 * 
 	 * @param out
 	 *            array to copy the next buffer into
 	 */
 	public void getBuffer(final byte[] out) throws InterruptedException {
 		assert !isNull() : "Attempted getBuffer() on 'null' ring buffer.";
-		System.arraycopy(buffer.take(), 0, out, 0, out.length);
+		this.validateBuffer(out);
+		final byte[] bufferFromRing = ring.take();
+		System.arraycopy(bufferFromRing, 0, out, 0, RingBuffer.BUFFER_SIZE);
+		poolStack.addFirst(bufferFromRing);
 	}
 
 	/**
@@ -119,7 +135,7 @@ public final class RingBuffer {
 	 * @return true if there are no buffers in the ring.
 	 */
 	public boolean isEmpty() {
-		return isNull() ? true : buffer.isEmpty();
+		return isNull() ? true : ring.isEmpty();
 	}
 
 	/**
@@ -128,7 +144,7 @@ public final class RingBuffer {
 	 * @return <code>true</code> if there are no more available buffers
 	 */
 	public boolean isFull() {
-		return isNull() || buffer.remainingCapacity() == 0;
+		return isNull() || ring.remainingCapacity() == 0;
 	}
 
 	/**
@@ -162,7 +178,7 @@ public final class RingBuffer {
 	 * @return the number of used buffers
 	 */
 	public int getUsedBuffers() {
-		return isNull() ? 0 : buffer.size();
+		return isNull() ? 0 : ring.size();
 	}
 
 	/**

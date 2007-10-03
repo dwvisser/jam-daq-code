@@ -164,20 +164,14 @@ public final class NetDaemon extends GoodThread {
 				dataIn.getData();// data goes to bufferOut
 				packetCount++;
 				/* Put buffer into to sorting ring with sample fraction */
-				try {
-					sortingRing.putBuffer(bufferOut);
-				} catch (RingFullException rfe) {
+				if (!sortingRing.tryPutBuffer(bufferOut)){
 					notSortCount++;
 					setEmptyBefore(true);
 				}
 				/* put buffer into to storage ring */
-				if (writerOn) {
-					try {
-						storageRing.putBuffer(bufferOut);
-					} catch (RingFullException rfe) {
-						notStorCount++;
-						LOGGER.severe("Storage Buffer " + rfe.getMessage());
-					}
+				if (writerOn && !storageRing.tryPutBuffer(bufferOut)){
+					notStorCount++;
+					LOGGER.severe("Lost a storage buffer.");
 				}
 			} else {// received a packet while thread state not RUN
 				LOGGER
