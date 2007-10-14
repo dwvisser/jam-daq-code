@@ -192,7 +192,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		PlotPrefs.PREFS.addPreferenceChangeListener(this);
 	}
 
-	private void addClick(final Bin bin) {
+	private void cloneClickAndAdd(final Bin bin) {
 		synchronized (this) {
 			clicks.add((Bin) bin.clone());
 		}
@@ -223,7 +223,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		if (clicks.size() == 0) {
 			synchronized (cursorBin) {
-				addClick(cursorBin);
+				cloneClickAndAdd(cursorBin);
 				currentPlot.initializeSelectingArea(cursorBin);
 				currentPlot.markChannel(cursorBin);
 				textOut.messageOut(cursorBin.getCoordString() + S_TO);
@@ -292,9 +292,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	private void cursor() {// NOPMD
 		/* output counts for the channel */
 		final double count;
-		final int xch;
-		final int ych;
-		String binText;
+		final int xch, ych;
 		/* check that a histogram is defined */
 		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
@@ -304,6 +302,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			count = cursorBin.getCounts();
 		}
 		currentPlot.markChannel(cursorBin);
+		String binText;
 		if (currentPlot.getDimensionality() == 1) {
 			binText = "Bin " + xch + ":  Counts = " + numFormat.format(count);
 			if (existsAndIsCalibrated(hist)) {
@@ -464,7 +463,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		if (clicks.size() == 0) {
 			synchronized (cursorBin) {
 				currentPlot.initializeSelectingArea(cursorBin);
-				addClick(cursorBin);
+				cloneClickAndAdd(cursorBin);
 				textOut.messageOut(cursorBin.getCoordString() + S_TO);
 			}
 		} else {
@@ -632,7 +631,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final String sep = ", ";
 		final String equal = " = ";
 		synchronized (cursorBin) {
-			addClick(cursorBin);
+			cloneClickAndAdd(cursorBin);
 			StringBuffer output = new StringBuffer();
 			int xCoord = cursorBin.getX();
 			if (existsAndIsCalibrated(hist)) {
@@ -690,7 +689,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		currentPlot.setSelectingArea(false);
 		final Bin bin4;
 		synchronized (cursorBin) {
-			addClick(cursorBin);
+			cloneClickAndAdd(cursorBin);
 			bin4 = getClick(4);
 			currentPlot.markChannel(cursorBin);
 			markClick6inUI(currentPlot, bin4);
@@ -878,7 +877,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			// ************ First background Marker
 			// ***********************************
 			synchronized (cursorBin) {
-				addClick(cursorBin);
+				cloneClickAndAdd(cursorBin);
 				currentPlot.markChannel(cursorBin);
 				markClick1inUI(currentPlot);
 			}
@@ -886,7 +885,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			// ************ Second Background marker
 			// **********************************
 			synchronized (cursorBin) {
-				addClick(cursorBin);
+				cloneClickAndAdd(cursorBin);
 				final Bin bin1 = getClick(0);
 				currentPlot.markChannel(cursorBin);
 				markClick2inUI(currentPlot, bin1);
@@ -895,7 +894,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			// ************ Third Background Marker
 			// **********************************
 			synchronized (cursorBin) {
-				addClick(cursorBin);
+				cloneClickAndAdd(cursorBin);
 				currentPlot.markChannel(cursorBin);
 				markClick3inUI(currentPlot);
 			}
@@ -903,7 +902,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			// ************ Fourth Background Marker
 			// *********************************
 			synchronized (cursorBin) {
-				addClick(cursorBin);
+				cloneClickAndAdd(cursorBin);
 				final Bin bin1 = getClick(2);
 				currentPlot.markChannel(cursorBin);
 				markClick4inUI(currentPlot, bin1);
@@ -913,7 +912,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			// *********************************
 			synchronized (cursorBin) {
 				currentPlot.initializeSelectingArea(cursorBin);
-				addClick(cursorBin);
+				cloneClickAndAdd(cursorBin);
 				currentPlot.markChannel(cursorBin);
 				markClick5inUI(currentPlot);
 			}

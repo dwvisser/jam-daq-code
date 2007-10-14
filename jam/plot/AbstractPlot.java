@@ -71,7 +71,6 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 	 */
 	protected transient final List<Bin> markedChannels = new ArrayList<Bin>();
 
-
 	/**
 	 * The actual panel.
 	 */
@@ -79,17 +78,17 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 
 	/** Number of Histogram to plot */
 	private transient int plotHistNum = -1;
-	
+
 	/* Gives channels of mouse click. */
 	protected transient final PlotMouse plotMouse;
-	
+
 	protected transient final PlotSelection plotSelection = new PlotSelection();
 
 	/** Gate points in plot coordinates (channels). */
 	protected final Polygon pointsGate = new Polygon();
-	
+
 	private transient Scroller scrollbars;
-	
+
 	/**
 	 * Size of plot window in channels.
 	 */
@@ -115,14 +114,14 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 		initPrefs();
 		PREFS.addPreferenceChangeListener(this);
 	}
-	
+
 	/*
 	 * non-javadoc: add scrollbars
 	 */
 	void addScrollBars(final Scroller scroller) {
 		scrollbars = scroller;
 	}
-	
+
 	/**
 	 * Autoscale the counts scale. Set maximum scale to 110 percent of maximum
 	 * number of counts in view. Can't call refresh because we need to use the
@@ -151,7 +150,7 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 			plotSelection.areaClip.setSize(0, 0);
 		}
 	}
-	
+
 	protected abstract void copyCounts(Histogram hist);
 
 	abstract void displayFit(double[][] signals, double[] background,
@@ -176,7 +175,7 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 			}
 		}
 	}
-	
+
 	/*
 	 * non-javadoc: Set the histogram to plot. If the plot limits are null, make
 	 * one save all neccessary histogram parameters to local variables. Allows
@@ -199,7 +198,7 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 			panel.setDisplayingFit(false);
 		}
 	}
-	
+
 	/**
 	 * Show the making of a gate, point by point.
 	 * 
@@ -579,7 +578,6 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 		refresh();
 	}
 
-
 	/**
 	 * Set the last point the cursor was moved to.
 	 * 
@@ -635,18 +633,11 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 	 *            maximum counts
 	 */
 	void setMaximumCountsConstrained(final int maxC) {
-		int temp = maxC;
-		/* Don't go too small. */
 		final int FS_MIN = 5; // minumum that Counts can be set to
-		if (temp < FS_MIN) {
-			temp = FS_MIN;
-		}
-		/* Don't go too big. */
+		int temp = Math.max(maxC, FS_MIN);
 		/** Maximum that counts can be set to. */
 		final int FS_MAX = 1000000;
-		if (temp > FS_MAX) {
-			temp = FS_MAX;
-		}
+		temp = Math.min(temp, FS_MAX);
 		limits.setMaximumCounts(temp);
 	}
 
