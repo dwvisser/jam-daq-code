@@ -5,7 +5,6 @@ import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HistogramAttributes;
-import jam.ui.MultipleFileChooser;
 import jam.ui.SelectionTree;
 
 import java.awt.BorderLayout;

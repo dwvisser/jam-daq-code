@@ -1,4 +1,4 @@
-package jam.ui;
+package jam.io.control;
 
 import jam.io.ExtensionFileFilter;
 
@@ -221,17 +221,26 @@ public final class MultipleFileChooser extends JPanel {
 				&& fileChooser.getSelectedFile() != null) {
 			lastFile = fileChooser.getSelectedFile(); // save current
 														// directory
+			FileWriter saveStream = null;
 			try {
-				final FileWriter saveStream = new FileWriter(lastFile);
+				saveStream = new FileWriter(lastFile);
 				for (int i = 0; i < listFilesModel.size(); i++) {
 					final File file = (File) listFilesModel.elementAt(i);
 					saveStream.write(file.getAbsolutePath());
 					saveStream.write("\n");
 				}
-				saveStream.close();
 			} catch (IOException ioe) {
 				LOGGER.log(Level.SEVERE, "Unable to save list to file "
 						+ lastFile.getName(), ioe);
+			} finally {
+				if (saveStream != null) {
+					try {
+						saveStream.close();
+					} catch (IOException ioe) {
+						LOGGER.log(Level.SEVERE, "Unable to close file "
+								+ lastFile.getName(), ioe);
+					}
+				}
 			}
 		}
 	}
@@ -255,8 +264,9 @@ public final class MultipleFileChooser extends JPanel {
 	int readFileList(final File file) {
 		int numFiles = 0;
 		lastFile = file;
+		BufferedReader reader = null;
 		try {
-			final BufferedReader reader = new BufferedReader(new FileReader(
+			reader = new BufferedReader(new FileReader(
 					lastFile));
 			String listItem;
 			do {
@@ -267,10 +277,18 @@ public final class MultipleFileChooser extends JPanel {
 					numFiles++;
 				}
 			} while (listItem != null);
-			reader.close();
 		} catch (IOException ioe) {
 			LOGGER.log(Level.SEVERE, "Unable to load list from file " + file,
 					ioe);
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException ioe) {
+					LOGGER.log(Level.SEVERE, "Unable to close file " + file,
+							ioe);
+				}
+			} 
 		}
 		return numFiles;
 	}

@@ -9,12 +9,12 @@ import jam.global.JamStatus;
 import jam.global.RunInfo;
 import jam.global.RunState;
 import jam.io.ExtensionFileFilter;
+import jam.io.control.MultipleFileChooser;
 import jam.sort.AbstractStorageDaemon;
 import jam.sort.OfflineController;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
 import jam.ui.Icons;
-import jam.ui.MultipleFileChooser;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
