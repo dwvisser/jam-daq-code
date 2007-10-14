@@ -430,7 +430,7 @@ public final class VMECommunication extends GoodThread implements
 	 * 
 	 * @param camacCommands
 	 *            object containing CAMAC CNAF commands
-	 * @throws JamException
+	 * @throws IOException
 	 *             if there's a problem
 	 */
 	public void setupCamac(final CamacCommands camacCommands)

@@ -22,26 +22,19 @@ import java.util.prefs.PreferenceChangeListener;
  */
 public interface FrontEndCommunication extends Observer, PreferenceChangeListener {
 
-	/** 
-     * Setup up the networking to the Front End.
-     * Called when Online data taking is setup.
-     * 
-     * @throws JamException when something goes wrong
+	/**
+     * Tell the Front to clear the scalers
+     * sends a reply if OK or ERROR
      */
-    void setupAcquisition()  throws CommunicationsException;
+    void clearScalers();
     
     /**
-     * Tell the Front End to start acquistion.
+     * Tells the Front End that we want it to put it to
+     * debug mode.
+     * @param state TRUE to set the front end in debug mode
      */
-    void startAcquisition();
+     void debug(boolean state);
 
-    
-    /**
-     * Tell the Front End to stop acquisiton,
-     * should also flushes out existing data in
-     * the front end.
-     */
-    void stopAcquisition();
     
     /**
      * Tell the Front End to end a run.
@@ -58,19 +51,6 @@ public interface FrontEndCommunication extends Observer, PreferenceChangeListene
     void flush();
     
     /**
-     * Tell the VME to read the scalers
-     * send back to packets the packet with the scaler values
-     * and a packet if read OK or ERROR and message
-     */
-    void readScalers();
-    
-    /**
-     * Tell the Front to clear the scalers
-     * sends a reply if OK or ERROR
-     */
-    void clearScalers();
-    
-    /**
      * Tell the Front to read the counters
      * send back to packets the packet with the counter values
      * and a packet if read OK or ERROR and message
@@ -78,50 +58,11 @@ public interface FrontEndCommunication extends Observer, PreferenceChangeListene
     void readCounters();
     
     /**
-     * Tell the Font to zero the counters
-     * Front end should a reply with a OK or ERROR
+     * Tell the VME to read the scalers
+     * send back to packets the packet with the scaler values
+     * and a packet if read OK or ERROR and message
      */
-    void zeroCounters();
-    
-    /**
-     * Tells the Front End to reply with verbose status messages, 
-     * which can be output for the user to see.
-     * @param state TRUE to set the front end in verbose mode     
-     */
-    void verbose(boolean state);
-    
-    /**
-     * Tells the Front End that we want it to put it to
-     * debug mode.
-     * @param state TRUE to set the front end in debug mode
-     */
-     void debug(boolean state);
-    
-    /**
-     * New version uploads CAMAC CNAF commands with udp pakets, and 
-     * sets up the camac crate.
-     *
-     * @param commands object containing CAMAC CNAF commands
-     * @throws JamException if there is a problem setting up
-     */
-    void setupCamac(CamacCommands commands) throws IOException;
-
-    /**
-     * Send the map of VME parameters to the front end.
-     * 
-     * @param vmeMap which channels to use in the electronics
-     * @throws JamException if there is a problem setting up
-     */
-	void setupVMEmap(VME_Map vmeMap);
-	
-	/**
-	 * Send the number of milliseconds between blocks of scaler
-	 * values in the event stream.
-	 * 
-	 * @param milliseconds 
-	 * @throws JamException if there's a problem sending
-	 */
-	void sendScalerInterval(int milliseconds);
+    void readScalers();
     
     /** 
      * Method that is a deamon for receiving packets from the 
@@ -132,4 +73,61 @@ public interface FrontEndCommunication extends Observer, PreferenceChangeListene
      *
      */
     void run();
+    
+    /**
+	 * Send the number of milliseconds between blocks of scaler
+	 * values in the event stream.
+	 * 
+	 * @param milliseconds 
+	 */
+	void sendScalerInterval(int milliseconds);
+    
+    /** 
+     * Setup up the networking to the Front End.
+     * Called when Online data taking is setup.
+     * 
+     * @throws CommunicationsException when something goes wrong
+     */
+    void setupAcquisition() throws CommunicationsException;
+    
+    /**
+     * New version uploads CAMAC CNAF commands with udp pakets, and 
+     * sets up the camac crate.
+     *
+     * @param commands object containing CAMAC CNAF commands
+     * @throws IOException if there is a problem setting up
+     */
+    void setupCamac(CamacCommands commands) throws IOException;
+    
+    /**
+     * Send the map of VME parameters to the front end.
+     * 
+     * @param vmeMap which channels to use in the electronics
+     */
+	void setupVMEmap(VME_Map vmeMap);
+    
+    /**
+     * Tell the Front End to start acquistion.
+     */
+    void startAcquisition();
+
+    /**
+     * Tell the Front End to stop acquisiton,
+     * should also flushes out existing data in
+     * the front end.
+     */
+    void stopAcquisition();
+	
+	/**
+     * Tells the Front End to reply with verbose status messages, 
+     * which can be output for the user to see.
+     * @param state TRUE to set the front end in verbose mode     
+     */
+    void verbose(boolean state);
+    
+    /**
+     * Tell the Font to zero the counters
+     * Front end should a reply with a OK or ERROR
+     */
+    void zeroCounters();
 }      
