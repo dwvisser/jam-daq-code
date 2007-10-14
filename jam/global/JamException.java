@@ -1,4 +1,4 @@
-package jam;
+package jam.global;
 
 /**
  * Exception that can be thrown by classes in Jam

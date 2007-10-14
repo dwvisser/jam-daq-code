@@ -1,6 +1,6 @@
 package jam.ui;
 
-import jam.JamException;
+import jam.global.JamException;
 import jam.global.MessageHandler;
 
 import java.awt.Color;

@@ -1,8 +1,8 @@
 package jam.sort.control;
 
-import jam.JamException;
 import jam.comm.FrontEndCommunication;
 import jam.comm.VMECommunication;
+import jam.global.JamException;
 import jam.global.JamStatus;
 import jam.global.RunInfo;
 import jam.global.RunState;

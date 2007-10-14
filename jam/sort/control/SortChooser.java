@@ -1,7 +1,7 @@
 package jam.sort.control;
 
-import jam.JamException;
 import jam.data.Group;
+import jam.global.JamException;
 import jam.global.RuntimeSubclassIdentifier;
 import jam.sort.SortRoutine;
 

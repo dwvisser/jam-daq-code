@@ -1,8 +1,8 @@
 package jam.fit;
 
-import jam.JamException;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.JamException;
 import jam.global.JamStatus;
 import jam.global.RuntimeSubclassIdentifier;
 import jam.plot.PlotDisplay;

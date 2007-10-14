@@ -3,12 +3,12 @@
  */
 package jam.sort.control;
 
-import jam.JamException;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.JamException;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.PropertyKeys;

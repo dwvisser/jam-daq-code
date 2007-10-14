@@ -1,9 +1,9 @@
 package jam.sort.control;
 
-import jam.JamException;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
+import jam.global.JamException;
 import jam.global.SortMode;
 import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;

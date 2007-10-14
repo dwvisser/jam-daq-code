@@ -5,6 +5,7 @@ package jam;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
+import jam.global.JamException;
 import jam.global.JamStatus;
 import jam.global.SortMode;
 

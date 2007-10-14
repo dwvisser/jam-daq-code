@@ -1,6 +1,6 @@
 package jam.sort.control;
 
-import jam.JamException;
+import jam.global.JamException;
 import jam.sort.SortException;
 import jam.ui.Icons;
 

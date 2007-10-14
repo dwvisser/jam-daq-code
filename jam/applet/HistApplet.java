@@ -1,11 +1,11 @@
 package jam.applet;//NOPMD
 
 import jam.InitialHistograms;
-import jam.JamException;
 import jam.commands.CommandManager;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
+import jam.global.JamException;
 import jam.global.LoggerConfig;
 import jam.plot.PlotDisplay;
 import jam.ui.Console;
