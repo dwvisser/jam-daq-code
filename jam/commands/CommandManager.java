@@ -2,6 +2,7 @@ package jam.commands;
 
 import jam.comm.CommunicationPreferences;
 import jam.global.Broadcaster;
+import jam.global.CommandFinder;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
 import jam.global.CommandNames;

@@ -1,6 +1,6 @@
 package jam.ui;
 
-import jam.commands.CommandFinder;
+import jam.global.CommandFinder;
 import jam.global.CommandListener;
 
 import java.awt.BorderLayout;

@@ -1,4 +1,4 @@
-package jam.commands;
+package jam.global;
 
 import java.util.Collection;
 
