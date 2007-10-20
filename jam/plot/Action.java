@@ -21,11 +21,11 @@ import static jam.plot.PlotCommands.ZOOMHORZ;
 import static jam.plot.PlotCommands.ZOOMIN;
 import static jam.plot.PlotCommands.ZOOMOUT;
 import static jam.plot.PlotCommands.ZOOMVERT;
-import jam.commands.CommandManager;
 import jam.data.AbstractHist1D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.CommandFinder;
 import jam.global.GaussianConstants;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
@@ -163,6 +163,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 
 	/** Output text to */
 	private transient final MessageHandler textOut;
+	
+	private transient final CommandFinder commandFinder;
 
 	/**
 	 * Master constructor has no broadcaster.
@@ -172,15 +174,15 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * @param console
 	 *            Jam's console component
 	 */
-	Action(PlotDisplay disp, Console console) {
+	Action(PlotDisplay disp, Console console, CommandFinder finder) {
 		super();
+		this.commandFinder = finder;
 		plotDisplay = disp;
 		textOut = console.getLog();
 		final ParseCommand parseCommand = new ParseCommand(this);
 		console.addCommandListener(parseCommand);
 		cursorBin = Bin.create();
 		commandPresent = false;
-		// overlayState = false;
 		settingGate = false;
 		inquire = PlotFit.getInstance(); // class with area/centroid routines
 		/* numFormat for formatting energy output */
@@ -730,7 +732,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final StringBuffer buffer = new StringBuffer(240);
 		buffer
 				.append("Commands:\tli - Linear Scale\tlo - Log Scale\ta  - Auto Scale\tra - Range\tex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\td  - Display\to  - Overlay\tu  - Update\tg  - GoTo\tar - Area\tn  - Net Area\tre - Rebin\tc  - Bin\t");
-		final Collection<String> commands = CommandManager.getInstance()
+		final Collection<String> commands = commandFinder
 				.getAllCommands();
 		for (String command : commands) {
 			buffer.append(command).append('\t');

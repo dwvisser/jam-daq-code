@@ -8,6 +8,7 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.CommandFinder;
 import jam.global.ComponentPrintable;
 import jam.global.JamStatus;
 import jam.global.Nameable;
@@ -79,12 +80,12 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param console
 	 *            the class to call to print out messages
 	 */
-	public PlotDisplay(final Console console) {
+	public PlotDisplay(final Console console, final CommandFinder finder) {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		Bin.init(this);
 		/* display event handler */
-		action = new Action(this, console);
+		action = new Action(this, console, finder);
 		PREFS.addPreferenceChangeListener(this);
 		createGridPanel();
 		toolbar = new Toolbar(this, action);

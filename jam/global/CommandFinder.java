@@ -15,4 +15,9 @@ public interface CommandFinder {
 	 */
 	Collection<String> getSimilarCommnands(final String string,
 			final boolean onlyEnabled);
+	
+	/**
+	 * @return all commands in the map in alphabetical order
+	 */
+	public Collection<String> getAllCommands();
 }
