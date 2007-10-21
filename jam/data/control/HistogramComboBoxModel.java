@@ -18,6 +18,8 @@ import javax.swing.JOptionPane;
 class HistogramComboBoxModel extends DefaultComboBoxModel {
 
 	private transient Object selection = null;
+	
+	private transient final Object monitor = new Object();
 
 	private transient int lastSize = 0;// NOPMD
 
@@ -128,7 +130,7 @@ class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 *            the item to select
 	 */
 	public void setSelectedItem(final Object anItem) {
-		synchronized (this) {
+		synchronized (monitor) {
 			selection = anItem;
 		}
 	}
@@ -137,7 +139,9 @@ class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 * @return the selected item
 	 */
 	public Object getSelectedItem() {
-		return selection;
+		synchronized (monitor) {
+			return selection;
+		}
 	}
 
 	private int numHists() {

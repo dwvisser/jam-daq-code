@@ -21,7 +21,6 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Level;
 
 import javax.swing.JButton;
@@ -39,7 +38,7 @@ import javax.swing.border.EmptyBorder;
  * @version 0.5 April 1998
  * @author Ken Swartz
  */
-public final class GateSet extends AbstractControl implements Observer {// NOPMD
+public final class GateSet extends AbstractControl {
 
 	private transient final JButton addP, removeP, unset, save, cancel;
 

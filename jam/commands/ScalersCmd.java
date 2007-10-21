@@ -1,6 +1,7 @@
 package jam.commands;
 
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 
 /**
  * Command for scalers
@@ -28,7 +29,7 @@ public final class ScalersCmd extends AbstractCommand {
 		if (param == READ) {
 			readScalers();
 		} else if (param == ZERO) {
-			zeroScalers();
+			Broadcaster.zeroScalers();
 		} else {
 			LOGGER
 					.severe("Incomplete command: need 'scaler zero' or 'scaler read'.");
@@ -52,19 +53,5 @@ public final class ScalersCmd extends AbstractCommand {
 		if (STATUS.isOnline()) {
 			BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
 		}
-	}
-
-	/**
-	 * Does the scaler zeroing.
-	 */
-	public void zeroScalers() {
-		if (STATUS.isOnline()) {
-			BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_CLEAR);
-			BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
-
-		} else {
-			LOGGER.severe("Can only Zero Scalers when in Online mode.");
-		}
-
 	}
 }

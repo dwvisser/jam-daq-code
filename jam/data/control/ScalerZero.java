@@ -1,6 +1,6 @@
 package jam.data.control;
 
-import jam.commands.ScalersCmd;
+import jam.global.Broadcaster;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -30,14 +30,11 @@ public class ScalerZero extends AbstractControl {
 
 	private transient final JCheckBox chkDisable;
 
-	private transient final ScalersCmd scalersCmd;
-
 	/**
 	 * Constructs a new dialog for zeroing scaler values.
 	 */
 	public ScalerZero() {
 		super("Zero Scalers", true);
-		scalersCmd = new ScalersCmd();
 		final Container dzc = getContentPane();
 		setResizable(false);
 		setLocation(20, 50);
@@ -92,6 +89,6 @@ public class ScalerZero extends AbstractControl {
 	 * zero the camac crate scalers.
 	 */
 	private void zero() {
-		scalersCmd.zeroScalers();
+		Broadcaster.zeroScalers();
 	}
 }

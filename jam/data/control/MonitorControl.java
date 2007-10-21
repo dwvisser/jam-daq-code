@@ -44,22 +44,25 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 
 	// widgets for configuration
 
-	private transient final JPanel pMonitors;
-
-	private transient final JSpinner spinnerUpdate;
+	private static class BroadcastMonitorUpdate implements Runnable
+	{
+		public static final BroadcastMonitorUpdate instance = new BroadcastMonitorUpdate();
+		
+		private BroadcastMonitorUpdate(){
+			super();
+		}
+		
+		public void run() {
+			BROADCASTER
+					.broadcast(BroadcastEvent.Command.MONITORS_UPDATE);
+		}
+	}
 
 	private static final int BORDER_HEIGHT = 5;
 
-	private transient int interval; // update interval
-
-	private transient GoodThread loopThread; // loop to update monitors
-
-	private transient boolean configured = false; // monitors have been
-													// configured
+	private static final Object classMonitor = new Object();
 
 	private static MonitorControl singletonInstance = null;
-
-	private static final Object classMonitor = new Object();
 
 	/**
 	 * @return the only instance of this class
@@ -72,6 +75,17 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 			return singletonInstance;
 		}
 	}
+
+	private transient boolean configured = false; // monitors have been
+													// configured
+
+	private transient int interval; // update interval
+
+	private transient GoodThread loopThread; // loop to update monitors
+
+	private transient final JPanel pMonitors;
+
+	private transient final JSpinner spinnerUpdate;
 
 	MonitorControl() {
 		super("Monitors Setup", false);
@@ -159,85 +173,6 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	}
 
 	/**
-	 * Setup all monitors.
-	 */
-	public void doSetup() {
-		int numberMonitors;
-		final int cols = 6;
-		JPanel pRow = null;
-		numberMonitors = Monitor.getMonitorList().size();
-		/* Clear panel */
-		pMonitors.removeAll();
-		/*
-		 * for each monitor make a panel with label, threshold, maximum, and
-		 * alarm
-		 */
-		for (Monitor monitor : Monitor.getMonitorList()) {
-			pRow = updateMonitor(cols, monitor);
-		}
-		pack();
-		if (numberMonitors > 0) {
-			final Dimension dialogDim = calculateScrollDialogSize(this, pRow,
-					BORDER_HEIGHT, numberMonitors);
-			setSize(dialogDim);
-		}
-
-	}
-
-	/**
-	 * @param index
-	 * @param monitor
-	 * @return
-	 */
-	private JPanel updateMonitor(final int index, final Monitor monitor) {
-		JPanel pRow;
-		pRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-		pMonitors.add(pRow);
-		final JLabel labelConfig = new JLabel(monitor.getName(), CENTER);
-		final JPanel pLabel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-		pLabel.add(labelConfig);
-		pRow.add(pLabel);
-		final JTextField textThreshold = new JTextField();
-		textThreshold.setColumns(index);
-		textThreshold.setEditable(true);
-		final int DEFAULT_THRESHOLD = 10;
-		textThreshold.setText("" + DEFAULT_THRESHOLD);
-		pRow.add(textThreshold);
-		final JTextField textMaximum = new JTextField();
-		textMaximum.setColumns(index);
-		textMaximum.setEditable(true);
-		final int DEFAULT_MAX = 100;
-		textMaximum.setText("" + DEFAULT_MAX);
-		pRow.add(textMaximum);
-		final JCheckBox checkAlarm = new JCheckBox();
-		checkAlarm.setSelected(false);
-		pRow.add(checkAlarm);
-		return pRow;
-	}
-
-	/**
-	 * Recall the monitor's parameters and set the input fields.
-	 */
-	void recall() {
-		/* update interval */
-		spinnerUpdate.setValue(Integer.valueOf(interval));
-		/* get the Monitor parameters */
-		int base = 0;
-		for (Monitor monitor : Monitor.getMonitorList()) {
-			base += 4;
-			final JTextField textThreshold = (JTextField) pMonitors
-					.getComponent(base + 1);
-			final JTextField textMaximum = (JTextField) pMonitors
-					.getComponent(base + 2);
-			final JCheckBox checkAlarm = (JCheckBox) pMonitors
-					.getComponent(base + 3);
-			textThreshold.setText(String.valueOf(monitor.getThreshold()));
-			textMaximum.setText(String.valueOf(monitor.getMaximum()));
-			checkAlarm.setSelected(monitor.getAlarm());
-		}
-	}
-
-	/**
 	 * Configure the monitors, i.e. set the values their parameters according to
 	 * the input fields.
 	 * 
@@ -278,6 +213,80 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	}
 
 	/**
+	 * Setup all monitors.
+	 */
+	public void doSetup() {
+		int numberMonitors;
+		final int cols = 6;
+		JPanel pRow = null;
+		numberMonitors = Monitor.getMonitorList().size();
+		/* Clear panel */
+		pMonitors.removeAll();
+		/*
+		 * for each monitor make a panel with label, threshold, maximum, and
+		 * alarm
+		 */
+		for (Monitor monitor : Monitor.getMonitorList()) {
+			pRow = updateMonitor(cols, monitor);
+		}
+		pack();
+		if (numberMonitors > 0) {
+			final Dimension dialogDim = calculateScrollDialogSize(this, pRow,
+					BORDER_HEIGHT, numberMonitors);
+			setSize(dialogDim);
+		}
+
+	}
+
+	/**
+	 * Stop monitors interval updating loop
+	 */
+	private void loopThreadStopped() {
+		loopThread = null; //NOPMD
+		for (Monitor monitor : Monitor.getMonitorList()) {
+			monitor.reset();
+		}
+		BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_DISABLED);
+	}
+
+	/**
+	 * Recall the monitor's parameters and set the input fields.
+	 */
+	void recall() {
+		/* update interval */
+		spinnerUpdate.setValue(Integer.valueOf(interval));
+		/* get the Monitor parameters */
+		int base = 0;
+		for (Monitor monitor : Monitor.getMonitorList()) {
+			base += 4;
+			final JTextField textThreshold = (JTextField) pMonitors
+					.getComponent(base + 1);
+			final JTextField textMaximum = (JTextField) pMonitors
+					.getComponent(base + 2);
+			final JCheckBox checkAlarm = (JCheckBox) pMonitors
+					.getComponent(base + 3);
+			textThreshold.setText(String.valueOf(monitor.getThreshold()));
+			textMaximum.setText(String.valueOf(monitor.getMaximum()));
+			checkAlarm.setSelected(monitor.getAlarm());
+		}
+	}
+
+	/**
+	 * method to run and update monitors
+	 * 
+	 */
+	public void run() {
+		try {
+			while (loopThread.checkState()) { // loop until stopped
+				updatePeriodically();
+			} // loop until stopped
+		} catch (InterruptedException ie) {
+			LOGGER.log(Level.SEVERE, "Monitor Interupted", ie);
+		}
+		loopThreadStopped();
+	}
+
+	/**
 	 * Start monitors interval updating loop.
 	 * 
 	 * @throws IllegalStateException
@@ -300,31 +309,37 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	}
 
 	/**
-	 * Stop monitors interval updating loop
+	 * @param index
+	 * @param monitor
+	 * @return
 	 */
-	private void loopThreadStopped() {
-		loopThread = null; //NOPMD
-		for (Monitor monitor : Monitor.getMonitorList()) {
-			monitor.reset();
-		}
-		BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_DISABLED);
+	private JPanel updateMonitor(final int index, final Monitor monitor) {
+		JPanel pRow;
+		pRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+		pMonitors.add(pRow);
+		final JLabel labelConfig = new JLabel(monitor.getName(), CENTER);
+		final JPanel pLabel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+		pLabel.add(labelConfig);
+		pRow.add(pLabel);
+		final JTextField textThreshold = new JTextField();
+		textThreshold.setColumns(index);
+		textThreshold.setEditable(true);
+		final int DEFAULT_THRESHOLD = 10;
+		textThreshold.setText("" + DEFAULT_THRESHOLD);
+		pRow.add(textThreshold);
+		final JTextField textMaximum = new JTextField();
+		textMaximum.setColumns(index);
+		textMaximum.setEditable(true);
+		final int DEFAULT_MAX = 100;
+		textMaximum.setText("" + DEFAULT_MAX);
+		pRow.add(textMaximum);
+		final JCheckBox checkAlarm = new JCheckBox();
+		checkAlarm.setSelected(false);
+		pRow.add(checkAlarm);
+		return pRow;
 	}
-
-	/**
-	 * method to run and update monitors
-	 * 
-	 */
-	public void run() {
-		try {
-			while (loopThread.checkState()) { // loop until stopped
-				updatePeriodically();
-			} // loop until stopped
-		} catch (InterruptedException ie) {
-			LOGGER.log(Level.SEVERE, "Monitor Interupted", ie);
-		}
-		loopThreadStopped();
-	}
-
+	
+	
 	/**
 	 * @throws InterruptedException
 	 */
@@ -339,12 +354,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 			monitor.update();// update the monitor
 		} // end loop monitors
 		/* Broadcast event on UI thread */
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				BROADCASTER
-						.broadcast(BroadcastEvent.Command.MONITORS_UPDATE);
-			}
-		});
+		SwingUtilities.invokeLater(BroadcastMonitorUpdate.instance);
 		Thread.sleep(waitAfterRepaint);
 	}
 }

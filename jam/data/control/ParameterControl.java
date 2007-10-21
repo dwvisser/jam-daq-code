@@ -22,7 +22,6 @@ import java.util.logging.Level;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -165,6 +164,58 @@ public final class ParameterControl extends AbstractControl {
 	}
 
 	/**
+	 * @param name
+	 * @param listNotLoaded
+	 * @param saveProperties
+	 * @return
+	 */
+	private String copyPropertiesToParameters(final String name, final StringBuilder listNotLoaded, final Properties saveProperties) {
+		// copy from properties to parameters
+		String rval = name;
+		for (DataParameter parameter : DataParameter.getParameterList()) {
+			rval = parameter.getName().trim();
+			if (saveProperties.containsKey(rval)) {
+				final String valueString = (String) saveProperties.get(rval);
+				final double valueDouble = Double.parseDouble(valueString);
+				parameter.setValue(valueDouble);
+			} else {
+				if (listNotLoaded.length()>0) {
+					listNotLoaded.append(", ");
+				}
+				listNotLoaded.append(rval);
+			}
+		}
+		return rval;
+	}
+
+	/**
+	 * @param count
+	 * @param currentParameter
+	 */
+	private JLabel createParameterLabel(final DataParameter currentParameter) {
+		return new JLabel(currentParameter.getName()
+				.trim(), SwingConstants.RIGHT);
+	}
+
+	/**
+	 * @param count
+	 * @param pParam
+	 */
+	private JPanel createParameterPanel() {
+		return new JPanel(new FlowLayout(FlowLayout.RIGHT, 10,
+				0));
+	}
+
+	/**
+	 */
+	private JTextField createParameterText() {
+		final JTextField rval = new JTextField("");
+		rval.setColumns(10);
+		rval.setEditable(true);
+		return rval;
+	}
+
+	/**
 	 * Setup the display dialog box.
 	 * 
 	 */
@@ -198,43 +249,15 @@ public final class ParameterControl extends AbstractControl {
 		}
 	}
 
-	/**
-	 */
-	private JTextField createParameterText() {
-		final JTextField rval = new JTextField("");
-		rval.setColumns(10);
-		rval.setEditable(true);
-		return rval;
-	}
-
-	/**
-	 * @param count
-	 * @param currentParameter
-	 */
-	private JLabel createParameterLabel(final DataParameter currentParameter) {
-		return new JLabel(currentParameter.getName()
-				.trim(), SwingConstants.RIGHT);
-	}
-
-	/**
-	 * @param count
-	 * @param pParam
-	 */
-	private JPanel createParameterPanel() {
-		return new JPanel(new FlowLayout(FlowLayout.RIGHT, 10,
-				0));
-	}
-
 	private void load() {
-		final JFrame frame = null;
-		String name = null;
+		String name = "";
 		final StringBuilder listNotLoaded = new StringBuilder();
 		final JFileChooser fileDialog = new JFileChooser(lastFile);
 		fileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileDialog.setFileFilter(new ExtensionFileFilter(
 				new String[] { FILE_EXTENSION }, "List Files (*."
 						+ FILE_EXTENSION + ")"));
-		final int option = fileDialog.showOpenDialog(frame);
+		final int option = fileDialog.showOpenDialog(null);
 		// save current values
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fileDialog.getSelectedFile() != null) {
@@ -274,31 +297,6 @@ public final class ParameterControl extends AbstractControl {
 	}
 
 	/**
-	 * @param name
-	 * @param listNotLoaded
-	 * @param saveProperties
-	 * @return
-	 */
-	private String copyPropertiesToParameters(final String name, final StringBuilder listNotLoaded, final Properties saveProperties) {
-		// copy from properties to parameters
-		String rval = name;
-		for (DataParameter parameter : DataParameter.getParameterList()) {
-			rval = parameter.getName().trim();
-			if (saveProperties.containsKey(rval)) {
-				final String valueString = (String) saveProperties.get(rval);
-				final double valueDouble = Double.parseDouble(valueString);
-				parameter.setValue(valueDouble);
-			} else {
-				if (listNotLoaded.length()>0) {
-					listNotLoaded.append(", ");
-				}
-				listNotLoaded.append(rval);
-			}
-		}
-		return rval;
-	}
-
-	/**
 	 * Read the values from the Parameter Objects and display them.
 	 */
 	public void read() {
@@ -319,14 +317,13 @@ public final class ParameterControl extends AbstractControl {
 	 * 
 	 */
 	private void save() {
-		final JFrame frame = null;
 		set();
 		final JFileChooser fileDialog = new JFileChooser(lastFile);
 		fileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileDialog.setFileFilter(new ExtensionFileFilter(
 				new String[] { FILE_EXTENSION }, "List Files (*."
 						+ FILE_EXTENSION + ")"));
-		final int option = fileDialog.showSaveDialog(frame);
+		final int option = fileDialog.showSaveDialog(null);
 		// save current values
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fileDialog.getSelectedFile() != null) {

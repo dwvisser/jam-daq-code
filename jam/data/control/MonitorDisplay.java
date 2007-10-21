@@ -12,7 +12,6 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -30,7 +29,7 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  * 
  */
-public class MonitorDisplay extends AbstractControl implements Observer {
+public class MonitorDisplay extends AbstractControl {
 
 	private final static int BORDER_HEIGHT = 5;
 
@@ -63,6 +62,23 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 		checkAudio = new JCheckBox("Audio Alarm", true);
 		pal.add(checkAudio);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+	}
+
+	/**
+	 * @param monitor
+	 * @return
+	 */
+	private JPanel createPanel(final Monitor monitor) {
+		JPanel pMonitors;
+		pMonitors = new JPanel();
+		pMonitors.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+		pBars.add(pMonitors);
+		final JLabel labelDisp = new JLabel(monitor.getName(),
+				SwingConstants.RIGHT);
+		pMonitors.add(labelDisp);
+		final PlotBar plotBar = new PlotBar(monitor);
+		pMonitors.add(plotBar);
+		return pMonitors;
 	}
 
 	private void disableMonitors() {
@@ -102,23 +118,6 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 					BORDER_HEIGHT, numberMonitors);
 			setSize(dialogDim);
 		}
-	}
-
-	/**
-	 * @param monitor
-	 * @return
-	 */
-	private JPanel createPanel(final Monitor monitor) {
-		JPanel pMonitors;
-		pMonitors = new JPanel();
-		pMonitors.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-		pBars.add(pMonitors);
-		final JLabel labelDisp = new JLabel(monitor.getName(),
-				SwingConstants.RIGHT);
-		pMonitors.add(labelDisp);
-		final PlotBar plotBar = new PlotBar(monitor);
-		pMonitors.add(plotBar);
-		return pMonitors;
 	}
 
 	private void enableMonitors() {

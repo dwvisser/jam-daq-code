@@ -1,6 +1,5 @@
 package jam.data.control;
 
-import jam.commands.ScalersCmd;
 import jam.data.DataElement;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
@@ -12,12 +11,16 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -39,7 +42,7 @@ import javax.swing.text.JTextComponent;
  * @since JDK1.1
  */
 
-public final class ScalerDisplay extends AbstractControl implements Observer {
+public final class ScalerDisplay extends AbstractControl {
 
 	private static final int BORDER_HEIGHT = 5;
 
@@ -50,23 +53,22 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 
 	private transient final JButton bzero = new JButton("Zero");
 
+	private transient final JCheckBox checkDisabled = new JCheckBox("Disable Zero", true);
+
 	private transient final Object monitor = new Object();
 
 	private transient final JPanel pScalers;
 
-	private transient final ScalersCmd scalersCmd;
-
 	private transient final JamStatus status = JamStatus.getSingletonInstance();
 
 	private transient final List<JTextField> textScaler = new ArrayList<JTextField>();
-
+	
 	/**
 	 * Creates the dialog box for reading and zeroing scalers.
 	 */
 	public ScalerDisplay() {
 		super("Scalers", false);
 		broadcaster.addObserver(this);
-		scalersCmd = new ScalersCmd();
 		/* dialog box to display scalers */
 		final Container cddisp = getContentPane();
 		setLocation(20, 50);
@@ -92,8 +94,6 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 		});
 		doSetup();
 	}
-	
-	private transient final JCheckBox checkDisabled = new JCheckBox("Disable Zero", true);
 
 	/**
 	 * @param cddisp
@@ -115,7 +115,7 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 			public void actionPerformed(ActionEvent event) {
 				checkDisabled.setSelected(true);
 				bzero.setEnabled(false);
-				scalersCmd.zeroScalers();
+				Broadcaster.zeroScalers();
 			}
 		});
 		bzero.setEnabled(false);
