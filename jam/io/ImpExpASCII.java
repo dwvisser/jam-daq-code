@@ -5,6 +5,7 @@ import jam.data.HistDouble2D;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
 import jam.data.Histogram;
+import jam.global.ExtensionFileFilter;
 
 import java.io.File;
 import java.io.FileInputStream;

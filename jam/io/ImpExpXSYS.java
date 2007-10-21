@@ -35,6 +35,7 @@ import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.PolynomialFunction;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.ExtensionFileFilter;
 import jam.util.NumberUtilities;
 
 import java.io.DataInputStream;

@@ -2,6 +2,7 @@ package jam.io;
 
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
+import jam.global.ExtensionFileFilter;
 import jam.global.JamStatus;
 import jam.util.CollectionsUtil;
 import jam.util.FileUtilities;

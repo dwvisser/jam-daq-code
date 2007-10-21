@@ -1,4 +1,4 @@
-package jam.io;
+package jam.global;
 
 import java.io.File;
 

@@ -2,7 +2,7 @@ package jam.commands;
 
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
-import jam.io.ExtensionFileFilter;
+import jam.global.ExtensionFileFilter;
 import jam.ui.SummaryTable;
 
 import java.io.BufferedOutputStream;
