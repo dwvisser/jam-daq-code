@@ -168,7 +168,9 @@ public final class SetupSortOff extends AbstractSetup {
 				LOGGER.throwing("SetupSortOff", "doApply", exception);
 				throw exception;
 			}
-		} catch (Exception ex) {
+		} catch (JamException ex) {
+			LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+		} catch (SortException ex) {
 			LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 	}

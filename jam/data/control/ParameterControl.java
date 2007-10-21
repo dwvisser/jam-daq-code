@@ -1,7 +1,7 @@
 package jam.data.control;
 
 import jam.data.DataParameter;
-import jam.global.ExtensionFileFilter;
+import jam.ui.ExtensionFileFilter;
 
 import java.awt.Container;
 import java.awt.Dimension;

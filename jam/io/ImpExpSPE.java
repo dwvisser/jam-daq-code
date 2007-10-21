@@ -3,7 +3,7 @@ package jam.io;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
 import jam.data.Histogram;
-import jam.global.ExtensionFileFilter;
+import jam.ui.ExtensionFileFilter;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

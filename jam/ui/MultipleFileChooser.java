@@ -1,6 +1,5 @@
-package jam.io.control;
+package jam.ui;
 
-import jam.global.ExtensionFileFilter;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;

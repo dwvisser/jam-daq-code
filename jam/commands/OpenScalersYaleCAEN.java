@@ -1,9 +1,9 @@
 package jam.commands;
 
 import jam.global.CommandListenerException;
-import jam.global.ExtensionFileFilter;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
+import jam.ui.ExtensionFileFilter;
 import jam.util.YaleCAENgetScalers;
 
 import java.io.File;

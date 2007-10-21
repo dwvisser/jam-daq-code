@@ -2,7 +2,7 @@ package jam.io;
 
 import jam.data.Gate;
 import jam.data.Histogram;
-import jam.global.ExtensionFileFilter;
+import jam.ui.ExtensionFileFilter;
 
 import java.awt.Polygon;
 import java.io.File;
