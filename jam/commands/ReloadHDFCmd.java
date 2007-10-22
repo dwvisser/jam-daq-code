@@ -9,7 +9,6 @@ import jam.ui.SelectionTree;
 
 import java.awt.Event;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.util.Observable;
 
 import javax.swing.KeyStroke;
@@ -34,13 +33,12 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 	}
 
 	protected void execute(final Object[] cmdParams) {
-		final File file = null;
 		/*
 		 * FIXME KBS parse correctly if (cmdParams!=null) { file
 		 * =(File)cmdParams[0]; //loadGroup=(Group)cmdParams[1]; }
 		 */
 		final Group load = Group.getSortGroup();
-		loadHDFFile(file, load);
+		loadHDFFile(null, load);
 	}
 
 	public void update(final Observable observe, final Object obj) {

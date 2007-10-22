@@ -1,15 +1,15 @@
 package jam.commands;
 
+import jam.global.BroadcastEvent;
+import jam.global.CommandListenerException;
+import jam.global.SortMode;
+import jam.io.control.OpenMultipleFiles;
+
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.Action;
 import javax.swing.Icon;
-
-import jam.global.BroadcastEvent;
-import jam.global.CommandListenerException;
-import jam.global.SortMode;
-import jam.io.control.OpenMultipleFiles;
 
 /**
  * Shows the open multiple files dialog
