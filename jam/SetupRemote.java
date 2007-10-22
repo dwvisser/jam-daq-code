@@ -167,7 +167,7 @@ public class SetupRemote extends JDialog implements ActionListener,
 		final String command = event.getActionCommand();
 		final String name = textName.getText().trim();
 		try {
-			if (command == "ok" || command == "apply") {
+			if ("ok".equals(command) || "apply".equals(command)) {
 				if (mode == Mode.SERVER) {
 					server(name);
 					LOGGER.info("Jam made as server: " + name);

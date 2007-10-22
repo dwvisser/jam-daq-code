@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +22,7 @@ import java.util.prefs.Preferences;
 
 import javax.help.CSH;
 import javax.help.HelpSet;
+import javax.help.HelpSetException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -28,6 +30,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 /**
@@ -70,15 +73,27 @@ public class Help extends JDialog {
 					JamMain.quit();
 				}
 			});
-			frame.pack();
-			frame.setVisible(true);
+			SwingUtilities.invokeAndWait(new Runnable(){
+				public void run(){
+					frame.pack();
+					frame.setVisible(true);					
+				}
+			});
 			proxy.doClick();
-		} catch (Exception ee) {
-			JOptionPane.showMessageDialog(null, ee.getMessage(), ee.getClass()
-					.getName(), JOptionPane.ERROR_MESSAGE);
+		} catch (HelpSetException helpSetException) {
+			showErrorDialog(helpSetException);
+		} catch (InvocationTargetException invocationTargetException) {
+			showErrorDialog(invocationTargetException);
+		} catch (InterruptedException interruptedException) {
+			showErrorDialog(interruptedException);
 		}
 	}
 
+	private static void showErrorDialog(final Throwable throwable){
+		JOptionPane.showMessageDialog(null, throwable.getMessage(), throwable.getClass()
+				.getName(), JOptionPane.ERROR_MESSAGE);		
+	}
+	
 	private static void setLookAndFeel() {
 		final String linux = "Linux";
 		final String kunststoff = "com.incors.plaf.kunststoff.KunststoffLookAndFeel";

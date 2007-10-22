@@ -68,6 +68,8 @@ public final class JamMain extends JFrame implements Observer {
 	}
 
 	public static void quit() {
+		// it would better to kill all running threads so the process will
+		// end "naturally"
 		System.exit(0);
 	}
 
