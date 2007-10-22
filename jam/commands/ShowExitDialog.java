@@ -1,7 +1,5 @@
 package jam.commands;
 
-import jam.JamMain;
-
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
@@ -36,12 +34,12 @@ final class ShowExitDialog extends AbstractCommand {
 					"Are you sure you want to exit?", "Exit Jam Confirmation",
 					JOptionPane.YES_NO_OPTION);
 			if (rval == JOptionPane.YES_OPTION) {
-				JamMain.quit();
+				this.quit();
 			} else {
 				frame.setVisible(true);
 			}
 		} else {
-			JamMain.quit();
+			this.quit();
 		}
 	}
 
@@ -63,6 +61,12 @@ final class ShowExitDialog extends AbstractCommand {
 			cmdParmObj[0] = confirm;
 			execute(cmdParmObj);
 		}
+	}
+
+	private void quit() {
+		// it would better to kill all running threads so the process will
+		// end "naturally"
+		System.exit(0);
 	}
 
 }

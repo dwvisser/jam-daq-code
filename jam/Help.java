@@ -70,7 +70,7 @@ public class Help extends JDialog {
 			frame.getContentPane().add(exit, BorderLayout.CENTER);
 			exit.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					JamMain.quit();
+					System.exit(0);
 				}
 			});
 			SwingUtilities.invokeAndWait(new Runnable(){
