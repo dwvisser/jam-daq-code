@@ -1,9 +1,7 @@
 package jam.sort;
 
-import jam.global.Beginner;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.Ender;
 import jam.global.GoodThread;
 import jam.global.JamStatus;
 import jam.global.Sorter;
@@ -557,7 +555,7 @@ public class SortDaemon extends GoodThread {
 	 * Invokes begin() in the user's sort routine if it implements the
 	 * <code>Beginner</code> interface.
 	 * 
-	 * @see jam.global.Beginner
+	 * @see jam.sort.Beginner
 	 */
 	public void userBegin() {
 		synchronized (this) {
@@ -571,7 +569,7 @@ public class SortDaemon extends GoodThread {
 	 * Invokes end() in the user's sort routine if it implements the
 	 * <code>Ender</code> interface.
 	 * 
-	 * @see jam.global.Ender
+	 * @see jam.sort.Ender
 	 */
 	public void userEnd() {
 		synchronized (this) {

@@ -1,7 +1,7 @@
 /*
  * Created on Oct 11, 2004
  */
-package jam.global;
+package jam.sort;
 
 /**
  * Interface for sort routines to implement if the user wants

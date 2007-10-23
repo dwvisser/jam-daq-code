@@ -7,7 +7,7 @@ import java.awt.Color;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 1.4, 2003-12-31
  */
-public final class RunState {
+public final class RunState implements AcquisitionStatus{
 	
 	private static final String [] NAMES={"NO_ACQ","ACQ_ON",
 	"ACQ_OFF","RUN_ON","REMOTE"};

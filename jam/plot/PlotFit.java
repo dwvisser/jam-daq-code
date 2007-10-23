@@ -1,6 +1,6 @@
 package jam.plot;
 
-import jam.global.GaussianConstants;
+import jam.data.peaks.GaussianConstants;
 
 /**
  * Class to perform simple fits such as area and centroid

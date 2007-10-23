@@ -2,9 +2,9 @@ package jam;
 
 import jam.comm.CommunicationPreferences;
 import jam.commands.CommandManager;
+import jam.commands.CommandNames;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.CommandNames;
 import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.io.hdf.HDFPrefs;

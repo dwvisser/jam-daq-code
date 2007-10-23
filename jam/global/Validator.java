@@ -6,7 +6,7 @@ public interface Validator {
 	 * Gives whether an object is valid, i.e., is actually associated
 	 * with a current Jam database.
 	 * 
-	 * @param object to validate
+	 * @param candidate to validate
 	 */
-	boolean isValid(Object object);
+	boolean isValid(Nameable candidate);
 }

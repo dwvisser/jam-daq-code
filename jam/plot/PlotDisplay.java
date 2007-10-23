@@ -9,7 +9,6 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandFinder;
-import jam.global.ComponentPrintable;
 import jam.global.JamStatus;
 import jam.global.Nameable;
 import jam.global.BroadcastEvent.Command;

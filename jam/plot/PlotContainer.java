@@ -3,7 +3,6 @@ package jam.plot;
 import jam.data.AbstractHist1D;
 import jam.data.Gate;
 import jam.data.Histogram;
-import jam.global.ComponentPrintable;
 
 import java.awt.CardLayout;
 import java.awt.Color;

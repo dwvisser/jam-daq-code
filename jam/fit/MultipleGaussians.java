@@ -2,8 +2,8 @@
  *
  */
 package jam.fit;
-import static jam.global.GaussianConstants.MAGIC_A;
-import static jam.global.GaussianConstants.MAGIC_B;
+import static jam.data.peaks.GaussianConstants.MAGIC_A;
+import static jam.data.peaks.GaussianConstants.MAGIC_B;
 
 import java.util.Iterator;
 import java.util.SortedSet;

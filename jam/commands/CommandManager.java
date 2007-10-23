@@ -5,7 +5,6 @@ import jam.global.Broadcaster;
 import jam.global.CommandFinder;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
-import jam.global.CommandNames;
 import jam.io.hdf.HDFPrefs;
 import jam.plot.PlotPrefs;
 import jam.plot.color.ColorPrefs;

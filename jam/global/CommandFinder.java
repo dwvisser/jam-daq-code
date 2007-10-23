@@ -19,5 +19,5 @@ public interface CommandFinder {
 	/**
 	 * @return all commands in the map in alphabetical order
 	 */
-	public Collection<String> getAllCommands();
+	Collection<String> getAllCommands();
 }

@@ -1,7 +1,7 @@
 package jam;
 
 import jam.commands.CommandManager;
-import jam.global.CommandNames;
+import jam.commands.CommandNames;
 
 import javax.swing.JButton;
 

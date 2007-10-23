@@ -6,8 +6,6 @@ import jam.data.HistInt1D;
 import jam.data.HistInt2D;
 import jam.data.Histogram;
 import jam.data.Scaler;
-import jam.global.Beginner;
-import jam.global.Ender;
 import jam.global.Sorter;
 import jam.sort.stream.EventWriter;
 

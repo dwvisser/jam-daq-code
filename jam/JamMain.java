@@ -1,11 +1,11 @@
 package jam;
 
 import jam.commands.CommandManager;
+import jam.commands.CommandNames;
 import jam.data.control.AbstractControl;
 import jam.global.AcquisitionStatus;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.CommandNames;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.LoggerConfig;
@@ -156,7 +156,7 @@ public final class JamMain extends JFrame implements Observer {
 	/**
 	 * @return the current run state
 	 */
-	private RunState getRunState() {
+	private AcquisitionStatus getRunState() {
 		synchronized (runState) {
 			return runState;
 		}

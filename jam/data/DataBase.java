@@ -1,32 +1,32 @@
 package jam.data;
 
+import jam.global.Nameable;
 import jam.global.Validator;
 
 /**
- * Class that contains a <code>static</code>method to clear the lists
- * of all the data classes.
+ * Class that contains a <code>static</code>method to clear the lists of all
+ * the data classes.
  */
 public class DataBase implements Validator {
-	
-	private static final DataBase INSTANCE=new DataBase();
-	
-	private DataBase(){
+
+	private static final DataBase INSTANCE = new DataBase();
+
+	private DataBase() {
 		super();
 	}
-	
+
 	/**
 	 * Get the singleton instance of this class.
 	 * 
 	 * @return the only instance of this class
 	 */
-	static public DataBase getInstance(){
+	static public DataBase getInstance() {
 		return INSTANCE;
 	}
 
 	/**
-	 * Calls the <code>clearList</code> methods of the various data 
-	 * classes.
-	 *
+	 * Calls the <code>clearList</code> methods of the various data classes.
+	 * 
 	 * @see Histogram#clearList()
 	 * @see Gate#clearList()
 	 * @see Scaler#clearList()
@@ -42,17 +42,15 @@ public class DataBase implements Validator {
 		Monitor.clearList();
 		DataParameter.clearList();
 	}
-	
-	public boolean isValid(final Object object){
+
+	public boolean isValid(final Nameable candidate) {
 		boolean rval = false;
-		if (object != null){
-			if (object instanceof Group) {
-				rval = Group.isValid((Group)object);
-			} else if (object instanceof Histogram) {
-				rval = Histogram.isValid((Histogram)object);
-			} else if (object instanceof Gate) {
-				rval = Gate.isValid((Gate)object);
-			}
+		if (candidate instanceof Group) {
+			rval = Group.isValid((Group) candidate);
+		} else if (candidate instanceof Histogram) {
+			rval = Histogram.isValid((Histogram) candidate);
+		} else if (candidate instanceof Gate) {
+			rval = Gate.isValid((Gate) candidate);
 		}
 		return rval;
 	}

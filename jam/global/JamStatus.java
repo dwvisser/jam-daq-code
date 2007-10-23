@@ -15,7 +15,7 @@ import javax.swing.JFrame;
  * @author Ken Swartz
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
-public final class JamStatus {
+public final class JamStatus implements AcquisitionStatus{
 
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();

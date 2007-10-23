@@ -1,4 +1,4 @@
-package jam.global;
+package jam.commands;
 
 /**
  * The command names, used internally and also avaliable from

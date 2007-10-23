@@ -1,4 +1,4 @@
-package jam.global;
+package jam.plot;
 
 import java.awt.Component;
 import java.awt.Graphics;

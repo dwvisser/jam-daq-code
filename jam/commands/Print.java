@@ -3,7 +3,7 @@ package jam.commands;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
-import jam.global.ComponentPrintable;
+import jam.plot.ComponentPrintable;
 import jam.plot.PlotDisplay;
 import jam.ui.SelectionTree;
 

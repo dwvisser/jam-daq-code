@@ -8,7 +8,6 @@ import static jam.plot.PlotPrefs.PREFS;
 import jam.data.AbstractHist1D;
 import jam.data.Gate;
 import jam.data.Histogram;
-import jam.global.ComponentPrintable;
 import jam.global.RunInfo;
 import jam.plot.color.PlotColorMap;
 import jam.plot.common.Scale;
