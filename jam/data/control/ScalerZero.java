@@ -1,6 +1,6 @@
 package jam.data.control;
 
-import jam.global.Broadcaster;
+import jam.global.BroadcastUtilities;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -89,6 +89,6 @@ public class ScalerZero extends AbstractControl {
 	 * zero the camac crate scalers.
 	 */
 	private void zero() {
-		Broadcaster.zeroScalers();
+		BroadcastUtilities.zeroScalers();
 	}
 }

@@ -1,6 +1,5 @@
 package jam.data;
 
-import jam.global.Sorter;
 
 import java.applet.AudioClip;
 import java.util.ArrayList;

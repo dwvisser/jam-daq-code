@@ -1,5 +1,6 @@
 package jam.commands;
 
+import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.sort.control.SortControl;
 
@@ -27,7 +28,7 @@ final class ShowSortControl extends AbstractShowDialog implements Observer {
 	}
 
 	private void enable() {
-		final SortMode mode=STATUS.getSortMode();
+		final QuerySortMode mode=STATUS.getSortMode();
 		setEnabled(mode == SortMode.OFFLINE);
 	}
 

@@ -3,6 +3,7 @@
  */
 package jam.commands;
 
+import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.sort.control.SetupSortOff;
 
@@ -23,7 +24,7 @@ final class ShowSetupOffline extends AbstractShowDialog implements Observer {
 	}
 
 	private void enable() {
-		final SortMode mode=STATUS.getSortMode();
+		final QuerySortMode mode=STATUS.getSortMode();
 		setEnabled(!(mode == SortMode.ONLINE_DISK || 
 		mode == SortMode.ON_NO_DISK || 
 		mode == SortMode.REMOTE));

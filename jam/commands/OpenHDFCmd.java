@@ -5,6 +5,7 @@ import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
+import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
@@ -137,7 +138,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 	}
 
 	private void enable() {
-		final SortMode mode = STATUS.getSortMode();
+		final QuerySortMode mode = STATUS.getSortMode();
 		setEnabled(mode == SortMode.FILE || mode == SortMode.NO_SORT);
 	}
 

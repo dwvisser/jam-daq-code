@@ -6,7 +6,7 @@ import jam.data.HistInt1D;
 import jam.data.HistInt2D;
 import jam.data.Histogram;
 import jam.data.Scaler;
-import jam.global.Sorter;
+import jam.data.Sorter;
 import jam.sort.stream.EventWriter;
 
 import java.io.IOException;
@@ -402,7 +402,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	}
 
 	/**
-	 * @see jam.global.Sorter#initialize()
+	 * @see jam.data.Sorter#initialize()
 	 */
 	public abstract void initialize() throws Exception;//NOPMD
 
@@ -413,7 +413,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @param name
 	 *            name of monitor value to calculate
 	 * @see jam.data.Monitor
-	 * @see jam.global.Sorter#monitor(String)
+	 * @see jam.data.Sorter#monitor(String)
 	 * @return floating point value of the monitor
 	 */
 	public double monitor(final String name) {
@@ -504,7 +504,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	}
 
 	/**
-	 * @see jam.global.Sorter#sort(int[])
+	 * @see jam.data.Sorter#sort(int[])
 	 */
 	public abstract void sort(int[] dataWords) throws Exception;//NOPMD
 

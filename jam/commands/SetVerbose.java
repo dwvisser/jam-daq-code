@@ -1,5 +1,6 @@
 package jam.commands;
 import jam.comm.CommunicationPreferences;
+import jam.global.QuerySortMode;
 import jam.global.SortMode;
 
 import java.util.Observable;
@@ -26,7 +27,7 @@ Observer {
 	}
 
 	private void enable() {
-		final SortMode mode=STATUS.getSortMode();
+		final QuerySortMode mode=STATUS.getSortMode();
 		setEnabled(mode == SortMode.ONLINE_DISK || 
 		mode == SortMode.ON_NO_DISK);
 	}

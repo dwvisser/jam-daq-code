@@ -1,4 +1,4 @@
-package jam.global;
+package jam.data;
 
 /**
  * Interface for user-written sort classes.

@@ -15,7 +15,7 @@ import javax.swing.JFrame;
  * @author Ken Swartz
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
-public final class JamStatus implements AcquisitionStatus{
+public final class JamStatus implements AcquisitionStatus,QuerySortMode{
 
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
@@ -46,7 +46,7 @@ public final class JamStatus implements AcquisitionStatus{
 
 	private boolean showGUI = true;
 
-	private SortMode sortMode = SortMode.NO_SORT;
+	private QuerySortMode sortMode = SortMode.NO_SORT;
 
 	private transient String sortName = "";
 
@@ -134,7 +134,7 @@ public final class JamStatus implements AcquisitionStatus{
 	/**
 	 * @return the current sort mode
 	 */
-	public SortMode getSortMode() {
+	public QuerySortMode getSortMode() {
 		synchronized (sortMode) {
 			return sortMode;
 		}
@@ -166,6 +166,12 @@ public final class JamStatus implements AcquisitionStatus{
 	public boolean isOnline() {
 		synchronized (sortMode) {
 			return sortMode.isOnline();
+		}
+	}
+
+	public boolean isOffline() {
+		synchronized (sortMode) {
+			return sortMode.isOffline();
 		}
 	}
 
@@ -263,7 +269,7 @@ public final class JamStatus implements AcquisitionStatus{
 	 * @throws UnsupportedOperationException
 	 *             if we can't change mode
 	 */
-	public void setSortMode(final SortMode mode, final String sortName) {
+	public void setSortMode(final QuerySortMode mode, final String sortName) {
 		this.sortName = sortName;
 		synchronized (sortMode) {
 			if ((mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK

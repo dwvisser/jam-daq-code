@@ -2,6 +2,7 @@ package jam.commands;
 
 import jam.data.Group;
 import jam.global.BroadcastEvent;
+import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
@@ -40,7 +41,7 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 
 	private void saveSortGroup(final File file) {
 		final HDFIO hdfio = new HDFIO(STATUS.getFrame());
-		final SortMode mode = STATUS.getSortMode();
+		final QuerySortMode mode = STATUS.getSortMode();
 		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK
 				|| mode == SortMode.OFFLINE) {
 			/* find sort group */
@@ -85,7 +86,7 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 	}
 
 	private void enable() {
-		final SortMode mode = STATUS.getSortMode();
+		final QuerySortMode mode = STATUS.getSortMode();
 		setEnabled(mode == SortMode.OFFLINE || mode == SortMode.ONLINE_DISK
 				|| mode == SortMode.ON_NO_DISK);
 	}

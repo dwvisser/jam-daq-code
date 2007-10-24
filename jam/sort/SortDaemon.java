@@ -1,10 +1,10 @@
 package jam.sort;
 
+import jam.data.Sorter;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.JamStatus;
-import jam.global.Sorter;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.EventException;
 import jam.sort.stream.AbstractEventInputStream.EventInputStatus;

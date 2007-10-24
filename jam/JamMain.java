@@ -9,6 +9,7 @@ import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.LoggerConfig;
+import jam.global.QuerySortMode;
 import jam.global.RunState;
 import jam.global.SortMode;
 import jam.plot.PlotDisplay;
@@ -243,7 +244,7 @@ public final class JamMain extends JFrame implements Observer {
 	private void sortModeChanged() {
 		final StringBuilder title = new StringBuilder("Jam - ");
 		final String disk = "disk";
-		final SortMode mode = status.getSortMode();
+		final QuerySortMode mode = status.getSortMode();
 		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK) {
 			setRunState(RunState.ACQ_OFF);
 			title.append("Online Sorting");

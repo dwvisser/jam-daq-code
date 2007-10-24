@@ -7,6 +7,7 @@ import jam.comm.CommunicationsException;
 import jam.global.JamException;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
+import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.sort.DiskDaemon;
 import jam.sort.EventSizeMode;
@@ -399,7 +400,7 @@ public final class SetupSortOn extends AbstractSetup {
 		bbrowsed.setEnabled(notlock);
 		btnSpecifyPath.setEnabled(notlock);
 		btnDefaultPath.setEnabled(notlock);
-		final SortMode sortMode = notlock ? SortMode.NO_SORT : (cdisk
+		final QuerySortMode sortMode = notlock ? SortMode.NO_SORT : (cdisk
 				.isSelected() ? SortMode.ONLINE_DISK : SortMode.ON_NO_DISK);
 		final String name;
 		final SortRoutine sortRoutine = sortChooser.getSortRoutine();

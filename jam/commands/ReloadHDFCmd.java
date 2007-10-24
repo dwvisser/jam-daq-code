@@ -3,6 +3,7 @@ package jam.commands;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
+import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.ui.SelectionTree;
@@ -50,7 +51,7 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 	}
 
 	private void enable() {
-		final SortMode mode = STATUS.getSortMode();
+		final QuerySortMode mode = STATUS.getSortMode();
 		final boolean online = mode == SortMode.ONLINE_DISK
 				|| mode == SortMode.ON_NO_DISK;
 		final boolean offline = mode == SortMode.OFFLINE;

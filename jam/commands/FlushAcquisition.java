@@ -4,6 +4,7 @@
 package jam.commands;
 
 import jam.global.BroadcastEvent;
+import jam.global.QuerySortMode;
 import jam.global.RunState;
 import jam.global.SortMode;
 import jam.sort.control.RunControl;
@@ -57,7 +58,7 @@ final class FlushAcquisition extends AbstractCommand implements Observer {
 	}
 
 	private boolean online() {
-		final SortMode mode=STATUS.getSortMode();
+		final QuerySortMode mode=STATUS.getSortMode();
 		return mode == SortMode.ONLINE_DISK || 
 		mode == SortMode.ON_NO_DISK;
 	}

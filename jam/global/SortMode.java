@@ -8,7 +8,7 @@ package jam.global;
  * @since 1.5.1
  * @see jam.global.JamStatus#setSortMode(SortMode,String)
  */
-public final class SortMode {// NOPMD
+public final class SortMode implements QuerySortMode {
 
 	static private final int I_FILE = 6; // we have read in a file
 
@@ -25,32 +25,32 @@ public final class SortMode {// NOPMD
 	/**
 	 * Looking at data that was read in from a file.
 	 */
-	static public final SortMode FILE = new SortMode(I_FILE);
+	static public final QuerySortMode FILE = new SortMode(I_FILE);
 	
 	/**
 	 * Not sorting, and no file loaded.
 	 */
-	static public final SortMode NO_SORT = new SortMode(I_NOSORT);
+	static public final QuerySortMode NO_SORT = new SortMode(I_NOSORT);
 
 	/**
 	 * Sorting data from disk, that is, sorting offline.
 	 */
-	static public final SortMode OFFLINE = new SortMode(I_OFFLINE);
+	static public final QuerySortMode OFFLINE = new SortMode(I_OFFLINE);
 
 	/**
 	 * Sort online data without storing events.
 	 */
-	static public final SortMode ON_NO_DISK = new SortMode(I_ON_NODISK);
+	static public final QuerySortMode ON_NO_DISK = new SortMode(I_ON_NODISK);
 
 	/**
 	 * Sorting online data and storing events to disk.
 	 */
-	static public final SortMode ONLINE_DISK = new SortMode(I_ON_DISK);
+	static public final QuerySortMode ONLINE_DISK = new SortMode(I_ON_DISK);
 
 	/**
 	 * Acting as a client to a remote Jam process.
 	 */
-	static public final SortMode REMOTE = new SortMode(I_REMOTE);
+	static public final QuerySortMode REMOTE = new SortMode(I_REMOTE);
 
 	private final transient int mode;
 
@@ -59,19 +59,15 @@ public final class SortMode {// NOPMD
 		mode = iMode;
 	}
 
-	/**
-	 * Returns whether this mode represents offline sorting.
-	 * 
-	 * @return whether this mode represents offline sorting
+	/* (non-Javadoc)
+	 * @see jam.global.QuerySortMode#isOffline()
 	 */
 	public boolean isOffline() {
 		return mode == I_OFFLINE;
 	}
 
-	/**
-	 * Returns whether this mode represents online data acquisition.
-	 * 
-	 * @return whether this mode represents online data acquisition
+	/* (non-Javadoc)
+	 * @see jam.global.QuerySortMode#isOnline()
 	 */
 	public boolean isOnline() {
 		return mode == I_ON_DISK || mode == I_ON_NODISK;

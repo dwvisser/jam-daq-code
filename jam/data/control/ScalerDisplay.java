@@ -3,6 +3,7 @@ package jam.data.control;
 import jam.data.DataElement;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
+import jam.global.BroadcastUtilities;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 
@@ -115,7 +116,7 @@ public final class ScalerDisplay extends AbstractControl {
 			public void actionPerformed(ActionEvent event) {
 				checkDisabled.setSelected(true);
 				bzero.setEnabled(false);
-				Broadcaster.zeroScalers();
+				BroadcastUtilities.zeroScalers();
 			}
 		});
 		bzero.setEnabled(false);

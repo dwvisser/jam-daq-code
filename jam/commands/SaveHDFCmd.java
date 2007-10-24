@@ -1,6 +1,7 @@
 package jam.commands;
 
 import jam.global.BroadcastEvent;
+import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.io.hdf.HDFIO;
 
@@ -79,7 +80,7 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	}
 
 	private void enable() {
-		final SortMode mode = STATUS.getSortMode();
+		final QuerySortMode mode = STATUS.getSortMode();
 		final boolean file = STATUS.getOpenFile() != null;
 		setEnabled(file && (mode == SortMode.FILE || mode == SortMode.NO_SORT));
 	}

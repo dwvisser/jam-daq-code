@@ -1,7 +1,7 @@
 package jam.commands;
 
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
+import jam.global.BroadcastUtilities;
 
 /**
  * Command for scalers
@@ -29,7 +29,7 @@ public final class ScalersCmd extends AbstractCommand {
 		if (param == READ) {
 			readScalers();
 		} else if (param == ZERO) {
-			Broadcaster.zeroScalers();
+			BroadcastUtilities.zeroScalers();
 		} else {
 			LOGGER
 					.severe("Incomplete command: need 'scaler zero' or 'scaler read'.");

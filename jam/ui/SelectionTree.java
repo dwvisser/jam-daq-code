@@ -9,6 +9,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.Nameable;
+import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.global.UnNamed;
 import jam.global.Validator;
@@ -203,7 +204,7 @@ public final class SelectionTree extends JPanel implements Observer {
 	 * Load the tree for the data objects.
 	 */
 	private void loadTree() {
-		final SortMode sortMode = STATUS.getSortMode();
+		final QuerySortMode sortMode = STATUS.getSortMode();
 		if (sortMode == SortMode.FILE) {
 			final String fileName = STATUS.getSortName();
 			rootNode = new DefaultMutableTreeNode("File: " + fileName);

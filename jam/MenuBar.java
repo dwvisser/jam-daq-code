@@ -6,6 +6,7 @@ import jam.commands.CommandNames;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
+import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.io.hdf.HDFPrefs;
 import jam.plot.PlotDisplay;
@@ -273,7 +274,7 @@ final class MenuBar implements Observer {
 
 	private void sortModeChanged() {
 		final JamStatus status = JamStatus.getSingletonInstance();
-		final SortMode mode = status.getSortMode();
+		final QuerySortMode mode = status.getSortMode();
 		final boolean file = mode == SortMode.FILE || mode == SortMode.NO_SORT;
 		impHist.setEnabled(file);
 	}

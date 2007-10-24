@@ -2,6 +2,7 @@ package jam.commands;
 
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
+import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.io.control.OpenMultipleFiles;
 
@@ -50,7 +51,7 @@ public class OpenMultipleHDFCmd extends AbstractCommand  implements Observer{
 	}
 	
 	private void enable(){
-		final SortMode mode=STATUS.getSortMode();
+		final QuerySortMode mode=STATUS.getSortMode();
 		setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);		
 	}
 	

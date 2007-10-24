@@ -2,6 +2,7 @@ package jam.commands;
 
 import jam.data.Group;
 import jam.global.BroadcastEvent;
+import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
 
@@ -45,7 +46,7 @@ final class AddHDF extends AbstractLoaderHDF {
 		final BroadcastEvent event = (BroadcastEvent) obj;
 		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
-			final SortMode mode = STATUS.getSortMode();
+			final QuerySortMode mode = STATUS.getSortMode();
 			setEnabled(mode != SortMode.REMOTE);
 		}
 	}
