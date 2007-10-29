@@ -201,6 +201,8 @@ public abstract class Histogram implements DataElement {
 		DIM_LIST.add(0, new ArrayList<Histogram>());
 		DIM_LIST.add(1, new ArrayList<Histogram>());
 	}
+	
+	private transient GateCollection gates;
 
 	/**
 	 * Clears the list of histograms.
@@ -434,11 +436,6 @@ public abstract class Histogram implements DataElement {
 	 */
 	protected transient boolean clear = false;
 
-	/**
-	 * gates that belong to this histogram
-	 */
-	private transient final List<Gate> gates = new ArrayList<Gate>();
-
 	/** Name of group histogram belongs to */
 	private transient String groupName;
 
@@ -505,7 +502,7 @@ public abstract class Histogram implements DataElement {
 		updateNames(group);// puts in name map as well
 		/* Add to group */
 		group.addHistogram(this);
-		gates.clear();
+		gates = new GateCollection(type.getDimensionality());
 		assignNewNumber();
 		/* allow memory for gates and define sizes */
 		final boolean oneD = type.getDimensionality() == 1;
@@ -619,28 +616,6 @@ public abstract class Histogram implements DataElement {
 	 */
 	public abstract void addCounts(Object countsIn);
 
-	/**
-	 * Add a <code>Gate</code> to this histogram.
-	 * 
-	 * @param gate
-	 *            to add
-	 * @throws UnsupportedOperationException
-	 *             if a gate of a different type is given
-	 */
-	public void addGate(final Gate gate) {
-		if (gate.getDimensionality() == getDimensionality()) {
-			synchronized (this) {
-				if (!gates.contains(gate)) {
-					gates.add(gate);
-				}
-			}
-		} else {
-			throw new UnsupportedOperationException("Can't add "
-					+ gate.getDimensionality() + "D gate to "
-					+ getDimensionality() + "D histogram.");
-		}
-	}
-
 	private void assignNewNumber() {
 		final int last = NUMBER_MAP.isEmpty() ? 0 : (NUMBER_MAP.lastKey())
 				.intValue();
@@ -703,15 +678,6 @@ public abstract class Histogram implements DataElement {
 	 */
 	public String getFullName() {
 		return uniqueName;
-	}
-
-	/**
-	 * Returns the list of gates that belong to this histogram.
-	 * 
-	 * @return the list of gates that belong to this histogram
-	 */
-	public List<Gate> getGates() {
-		return Collections.unmodifiableList(gates);
 	}
 
 	/**
@@ -804,24 +770,6 @@ public abstract class Histogram implements DataElement {
 	}
 
 	/**
-	 * @param gate
-	 *            that we're wondering about
-	 * @return whether this histogram has the given gate
-	 */
-	public boolean hasGate(final Gate gate) {
-		boolean rval = false;// default return value
-		synchronized (this) {
-			for (int i = 0; i < gates.size(); i++) {
-				if (gates.get(i) == gate) {
-					rval = true;
-					break;// drop out of loop
-				}
-			}
-		}
-		return rval;
-	}
-
-	/**
 	 * @return whether clearCounts() has been called on this histogram
 	 */
 	public boolean isClear() {
@@ -830,6 +778,10 @@ public abstract class Histogram implements DataElement {
 		}
 	}
 
+	public GateCollection getGateCollection(){
+		return this.gates;
+	}
+	
 	/**
 	 * Set the counts array using the given <code>int</code> or
 	 * <code>double</code> array.

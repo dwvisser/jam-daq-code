@@ -113,7 +113,7 @@ public class CI extends SortRoutine {
 		idGe = vmeMap.eventParameter(2, ADC_BASE, 0, THRESHOLDS);
 		idNaI = vmeMap.eventParameter(2, ADC_BASE, 1, THRESHOLDS);
 		idTAC = vmeMap.eventParameter(2, ADC_BASE, 2, THRESHOLDS);
-		hTAC_g2d.addGate(gTAC);
+		hTAC_g2d.getGateCollection().addGate(gTAC);
 	}//end of initialize()
 
 	/**

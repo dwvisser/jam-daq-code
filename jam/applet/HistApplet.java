@@ -2,6 +2,8 @@ package jam.applet;//NOPMD
 
 import jam.InitialHistograms;
 import jam.commands.CommandManager;
+import jam.data.DataElement;
+import jam.data.DimensionalData;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
@@ -247,7 +249,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 					LOGGER.log(Level.WARNING, "Error: histogram null");
 				} else {
 					display.displayHistogram(hist);
-					setGateList(hist.getGates());
+					setGateList(hist.getGateCollection().getGates());
 				}
 			}
 
@@ -316,12 +318,12 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	 * @param gates
 	 *            the list of gates
 	 */
-	public void setGateList(final List<Gate> gates) {
+	public void setGateList(final List<DimensionalData> gates) {
 		/* if we have gates load gates of current histogram into chooser */
 		if (gateChooser != null) {
 			gateChooser.removeAll();
 			/* set proper model */
-			gateChooser.setModel(new DefaultComboBoxModel(new Vector<Gate>(// NOPMD
+			gateChooser.setModel(new DefaultComboBoxModel(new Vector<DimensionalData>(// NOPMD
 					gates)));
 		}
 	}
@@ -342,7 +344,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 		}
 		if (firstHist != null) {
 			display.displayHistogram(firstHist);
-			setGateList(firstHist.getGates());
+			setGateList(firstHist.getGateCollection().getGates());
 		}
 		flselect = new FlowLayout(FlowLayout.LEFT, 10, 5);
 		pselect.setLayout(flselect);

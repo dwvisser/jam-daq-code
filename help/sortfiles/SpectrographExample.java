@@ -177,12 +177,12 @@ public final class SpectrographExample extends SortRoutine {
 		gFrntCthd = new Gate("Fw-Ca", hFrntCthd);
 		// gate on Front Cathode
 		gFrntRear = new Gate("Fw-Rw", hFrntPRearP);
-		hFrntSntrGSC.addGate(gFrntSntr);
-		hFrntCthdGSC.addGate(gFrntCthd);
-		hSntrCthdGFC.addGate(gSntrCthd);
-		hFrntSntrGFC.addGate(gFrntSntr);
-		hSntrCthdGFS.addGate(gSntrCthd);
-		hFrntCthdGFS.addGate(gFrntCthd);
+		hFrntSntrGSC.getGateCollection().addGate(gFrntSntr);
+		hFrntCthdGSC.getGateCollection().addGate(gFrntCthd);
+		hSntrCthdGFC.getGateCollection().addGate(gSntrCthd);
+		hFrntSntrGFC.getGateCollection().addGate(gFrntSntr);
+		hSntrCthdGFS.getGateCollection().addGate(gSntrCthd);
+		hFrntCthdGFS.getGateCollection().addGate(gFrntCthd);
 		/* scalers */
 		final Scaler sBic = createScaler("BIC", 0);
 		final Scaler sClck = createScaler("Clock", 1);

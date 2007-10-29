@@ -37,5 +37,5 @@ public interface DataElement extends Nameable {
      * 
      * @return which kind of element this is
      */
-    Type getElementType();    
+    Type getElementType();        
 }

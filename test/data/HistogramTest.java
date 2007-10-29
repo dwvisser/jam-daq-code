@@ -108,7 +108,7 @@ public final class HistogramTest {// NOPMD
 	 */
 	@Test
 	public void testGetGates() {
-		final int size = hist1.getGates().size();
+		final int size = hist1.getGateCollection().getGates().size();
 		final int expectedSize = 1;
 		assertEquals("Expected list size to be " + expectedSize, size,
 				expectedSize);
@@ -150,7 +150,7 @@ public final class HistogramTest {// NOPMD
 			message = message + "not ";
 		}
 		message = message + "have gate " + gate.getName();
-		assertEquals(message, hasGate, histogram.hasGate(gate));
+		assertEquals(message, hasGate, histogram.getGateCollection().hasGate(gate));
 	}
 
 }

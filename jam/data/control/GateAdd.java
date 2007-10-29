@@ -106,7 +106,7 @@ public final class GateAdd extends AbstractControl {
 		} else {
 			final Histogram hist = (Histogram) SelectionTree
 					.getCurrentHistogram();
-			hist.addGate(currentGateAdd);
+			hist.getGateCollection().addGate(currentGateAdd);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
 			LOGGER.info("Added gate '" + currentGateAdd.getName().trim()
 					+ "' to histogram '" + hist.getFullName() + "'");

@@ -93,7 +93,7 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 						.getCurrentHistogram();
 				final int which = index - 1;
 				if (Mode.DISPLAYED_HIST.equals(mode)) {
-					rval = his.getGates().get(which);
+					rval = his.getGateCollection().getGates().get(which);
 				} else {
 					final List<Gate> list = Gate.getGateList(his.getDimensionality());
 					rval = list.get(which);
@@ -139,7 +139,7 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 		if (named instanceof Histogram) {
 			final Histogram hist = (Histogram) named;
 			if (Mode.DISPLAYED_HIST.equals(mode)) {
-				numG = hist.getGates().size();
+				numG = hist.getGateCollection().getGates().size();
 			} else { // ALL
 				numG = Gate.getGateList(hist.getDimensionality()).size();
 			}

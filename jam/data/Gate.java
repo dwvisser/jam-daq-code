@@ -20,7 +20,7 @@ import java.util.TreeSet;
  * @version 0.5
  * @since JDK 1.1
  */
-public final class Gate implements DataElement {
+public final class Gate implements DimensionalData {
 
 	private static final List<List<Gate>> DIM_LIST = new ArrayList<List<Gate>>();
 
@@ -168,7 +168,7 @@ public final class Gate implements DataElement {
 		histUniqueName = hist.getFullName();
 		// Set of names of gates for histogram this gate belongs to
 		final Set<String> gateNames = new TreeSet<String>();
-		for (Gate gate : hist.getGates()) {
+		for (DimensionalData gate : hist.getGateCollection().getGates()) {
 			gateNames.add(gate.getName());
 		}
 		this.name = stringUtil.makeUniqueName(nameIn, gateNames, NAME_LENGTH);
@@ -178,7 +178,7 @@ public final class Gate implements DataElement {
 		sizeY = hist.getSizeY();
 		unsetLimits();
 		addToCollections();
-		hist.addGate(this);
+		hist.getGateCollection().addGate(this);
 	}
 
 	private void addToCollections() {

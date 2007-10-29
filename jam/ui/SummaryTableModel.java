@@ -1,7 +1,7 @@
 package jam.ui;
 
 import jam.data.DataElement;
-import jam.data.Gate;
+import jam.data.DimensionalData;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
@@ -111,7 +111,7 @@ final class SummaryTableModel implements TableModel {
 					dataList.add(new RowDataElement(gname, hist));//NOPMD
 				}
 				if (showGates) {
-					for (Gate gate : hist.getGates()) {
+					for (DimensionalData gate : hist.getGateCollection().getGates()) {
 						dataList.add(new RowDataElement(gname, gate));//NOPMD
 					}
 				}

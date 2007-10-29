@@ -2,6 +2,7 @@ package jam.ui;
 
 import jam.data.AbstractHist1D;
 import jam.data.DataBase;
+import jam.data.DimensionalData;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
@@ -165,7 +166,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		final DefaultMutableTreeNode histNode = new DefaultMutableTreeNode(hist);
 		groupNode.add(histNode);
 		// Loop through gates and load them
-		for (Gate gate : hist.getGates()) {
+		for (DimensionalData gate : hist.getGateCollection().getGates()) {
 			histNode.add(new DefaultMutableTreeNode(gate));// NOPMD
 		}
 	}

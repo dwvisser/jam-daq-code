@@ -2,6 +2,7 @@ package jam.io.hdf;
 
 import jam.data.AbstractHist1D;
 import jam.data.DataParameter;
+import jam.data.DimensionalData;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
@@ -650,8 +651,8 @@ public final class HDFIO implements DataIO {
 			final VirtualGroup globalGates, final Histogram hist,
 			final VirtualGroup histVGroup) {
 		/* Loop for all gates */
-		for (Gate gate : hist.getGates()) {
-			addGates(wrtSettings, globalGates, histVGroup, gate);
+		for (DimensionalData gate : hist.getGateCollection().getGates()) {
+			addGates(wrtSettings, globalGates, histVGroup, (Gate)gate);
 		} // end loop gates
 	}
 

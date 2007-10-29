@@ -2,6 +2,7 @@ package jam.data.control;
 
 import static javax.swing.SwingConstants.RIGHT;
 import jam.data.DataException;
+import jam.data.DimensionalData;
 import jam.data.Gate;
 import jam.data.HistDouble2D;
 import jam.data.HistInt2D;
@@ -249,8 +250,8 @@ public final class Projections extends AbstractManipulation implements
 		/* add gates to chooser */
 		final Histogram hfrom = Histogram.getHistogram(hfromname);
 		if (hfrom != null) {
-			for (Gate gate : hfrom.getGates()) {
-				if (gate.isDefined()) {
+			for (DimensionalData gate : hfrom.getGateCollection().getGates()) {
+				if (((Gate)gate).isDefined()) {
 					cchan.addItem(gate);
 				}
 			}

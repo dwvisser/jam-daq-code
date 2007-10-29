@@ -2,6 +2,7 @@
  */
 package jam;
 
+import jam.data.DimensionalData;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.Monitor;
@@ -104,9 +105,9 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	public List<String> getGateNames(final String histName)
 			throws RemoteException {
 		final Histogram hist = Histogram.getHistogram(histName);
-		final List<Gate> gates = hist.getGates();
+		final List<DimensionalData> gates = hist.getGateCollection().getGates();
 		final List<String> names = new ArrayList<String>();
-		for (Gate gate : gates) {
+		for (DimensionalData gate : gates) {
 			names.add(gate.getName());
 		}
 		return Collections.unmodifiableList(names);

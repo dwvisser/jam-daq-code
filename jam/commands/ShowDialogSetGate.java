@@ -28,7 +28,7 @@ final class ShowDialogSetGate extends AbstractShowDialog implements Observer {
 		final Nameable named = SelectionTree.getCurrentHistogram();
 		if (named instanceof Histogram) {
 			final Histogram hist = (Histogram) named;
-			setEnabled(!hist.getGates().isEmpty());
+			setEnabled(!hist.getGateCollection().getGates().isEmpty());
 		}
 	}
 

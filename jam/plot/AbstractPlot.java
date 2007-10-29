@@ -164,7 +164,7 @@ abstract class AbstractPlot implements PreferenceChangeListener {
 	void displayGate(final Gate gate) {
 		synchronized (this) {
 			final Histogram plotHist = getHistogram();
-			if (plotHist != null && plotHist.hasGate(gate)) {
+			if (plotHist != null && plotHist.getGateCollection().hasGate(gate)) {
 				panel.setDisplayingGate(true);
 				setCurrentGate(gate);
 				panel.repaint();
