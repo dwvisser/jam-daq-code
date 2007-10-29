@@ -283,7 +283,7 @@ public class MonitorApplet extends JApplet implements ActionListener,// NOPMD
 		final int numberMonitors = 3;
 		monitorList = new ArrayList<Monitor>(numberMonitors);
 		monitorValues.clear();
-		final Scaler scal = new Scaler(testGroup, "ex", 0);
+		final Scaler scal = testGroup.createScaler("ex", 0);
 		Monitor monitor = new Monitor("test", scal);
 		monitor.setThreshold(10);
 		monitorList.add(0, monitor);

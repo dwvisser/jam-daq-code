@@ -2,15 +2,12 @@ package jam.data;
 
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.util.StringUtilities;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Class representing an individual scaler in the experiment.
@@ -100,20 +97,10 @@ public final class Scaler implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if name ><code>NAME_LENGTH</code> characters
 	 */
-	public Scaler(Group group, String nameIn, int idNum) {
+	Scaler(String nameIn, String uniqueName, int idNum) {
 		super();
-		final StringUtilities stringUtil = StringUtilities.getInstance();
-		// Set of names of gates for histogram this gate belongs to
-		final Set<String> scalerNames = new TreeSet<String>();
-		for (Scaler scaler : group.getScalerList()) {
-			scalerNames.add(scaler.getName());
-		}
-		name = stringUtil.makeUniqueName(nameIn, scalerNames, NAME_LENGTH);
-		group.addScaler(this);
+		name = nameIn;
 		number = idNum;
-		/* Add to list of scalers */
-		final String uniqueName = stringUtil
-				.makeFullName(group.getName(), name);
 		TABLE.put(uniqueName, this);
 		LIST.add(this);
 	}

@@ -259,7 +259,7 @@ public class ImpExpXSYS extends AbstractImpExp {//NOPMD
 	 * @param scalerId
 	 */
 	private void createScaler(final String scalerTitle, final int scalerId) {
-		new Scaler(importGroup, scalerTitle, scalerId);
+		importGroup.createScaler(scalerTitle, scalerId);
 	}
 
 	/**

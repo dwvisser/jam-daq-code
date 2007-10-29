@@ -728,7 +728,7 @@ final class ConvertHDFObjToJamObj {
 		// FIXME check works for unique name and
 		// create unique name should be a utility
 		final String uniqueName = group.getName() + "/" + name;
-		return mode.isOpenMode() ? new Scaler(group, name, number) : Scaler
+		return mode.isOpenMode() ? group.createScaler(name, number) : Scaler
 				.getScaler(uniqueName);
 	}
 

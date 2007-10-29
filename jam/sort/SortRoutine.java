@@ -269,7 +269,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 */
 	protected static Scaler createScaler(final String name, final int number) {
 		final Group sortGroup = Group.getSortGroup();
-		return new Scaler(sortGroup, name, number);
+		return sortGroup.createScaler(name, number);
 	}
 
 	/**

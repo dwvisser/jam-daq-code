@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A group of histograms, A node in the tree
@@ -65,7 +67,7 @@ public final class Group implements Nameable {
 		synchronized (Group.class) {
 			NAME_MAP.clear();
 			LIST.clear();
-			sortGroup = null; //NOPMD
+			sortGroup = null; // NOPMD
 		}
 	}
 
@@ -136,7 +138,7 @@ public final class Group implements Nameable {
 	 * 
 	 * @return map of groups keyed by name
 	 */
-	public static Map<String,Group> getGroupMap() {
+	public static Map<String, Group> getGroupMap() {
 		return Collections.unmodifiableMap(NAME_MAP);
 	}
 
@@ -211,7 +213,6 @@ public final class Group implements Nameable {
 	 */
 	private Group(String groupName, Type type, String fileName) {
 		super();
-		final StringUtilities stringUtil = StringUtilities.getInstance();
 		String tempFullName = "GROUP";
 		final boolean filenameNotNull = fileName != null;
 		final boolean groupNameNotNull = groupName != null;
@@ -355,5 +356,24 @@ public final class Group implements Nameable {
 
 	public String toString() {
 		return fullName;
+	}
+
+	private static final StringUtilities stringUtil = StringUtilities
+			.getInstance();
+
+	public Scaler createScaler(final String nameIn, final int idNum) {
+		// Set of names of gates for histogram this gate belongs to
+		final Set<String> scalerNames = new TreeSet<String>();
+		for (Scaler scaler : this.getScalerList()) {
+			scalerNames.add(scaler.getName());
+		}
+
+		final String name = stringUtil.makeUniqueName(nameIn, scalerNames,
+				Scaler.NAME_LENGTH);
+		final String uniqueName = stringUtil.makeFullName(this.getName(), name);
+		final Scaler result = new Scaler(name, uniqueName, idNum);
+		this.addScaler(result);
+		/* Add to list of scalers */
+		return result;
 	}
 }
