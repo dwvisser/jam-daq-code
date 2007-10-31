@@ -29,15 +29,15 @@ public final class HistDouble2D extends AbstractHist2D {
 	 * @param group
 	 *            that this histogram belongs to
 	 */
-	HistDouble2D(Group group, String name, String title, double[][] countsIn) {
-		super(group, name, Type.TWO_D_DOUBLE, countsIn.length,
+	HistDouble2D(String title, double[][] countsIn) {
+		super(Type.TWO_D_DOUBLE, countsIn.length,
 				countsIn[0].length, title);
 		initCounts(countsIn);
 	}
 
-	HistDouble2D(Group group, String name, String title, String axisLabelX,
+	HistDouble2D(String title, String axisLabelX,
 			String axisLabelY, double[][] countsIn) {
-		super(group, name, Type.TWO_D_DOUBLE, countsIn.length,
+		super(Type.TWO_D_DOUBLE, countsIn.length,
 				countsIn[0].length, title, axisLabelX, axisLabelY);
 		initCounts(countsIn);
 	}

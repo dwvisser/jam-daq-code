@@ -37,7 +37,7 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 		final JFrame frame = STATUS.getFrame();
 		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
 		final String name = hist.getFullName().trim();
-		final Group.Type type = hist.getGroup().getType();
+		final Group.Type type = Group.getGroup(hist).getType();
 		/* Cannot delete sort histograms */
 		if (type == Group.Type.SORT) {
 			LOGGER
@@ -47,7 +47,7 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 			if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(frame,
 					"Delete " + name + "?", "Delete histogram",
 					JOptionPane.YES_NO_OPTION)) {
-				Histogram.deleteHistogram(hist.getFullName());
+				Group.deleteHistogram(hist);
 				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			}
 		}

@@ -439,8 +439,8 @@ final class ConvertHDFObjToJamObj {
 
 	int convertParameters(final VirtualGroup currVG, final FileOpenMode mode) {
 		int numParameters = 0;
-		final List<VDataDescription> list = AbstractData.ofType(currVG.getObjects(),
-				VDataDescription.class);
+		final List<VDataDescription> list = AbstractData.ofType(currVG
+				.getObjects(), VDataDescription.class);
 		if (list.size() > 0) {
 			final VDataDescription vdd = list.get(0);
 			/* only the "parameters" VH (only one element) in the file */
@@ -695,8 +695,8 @@ final class ConvertHDFObjToJamObj {
 	Histogram openHistogram(final Group group, final String name,
 			final String title, final int number, final Object histData,
 			final Object histErrorData) {
-		final Histogram histogram = Histogram.createHistogram(group, histData,
-				name, title);
+		final Histogram histogram = group
+				.createHistogram(histData, name, title);
 		histogram.setNumber(number);
 		if (histErrorData != null) {
 			((AbstractHist1D) histogram).setErrors((double[]) histErrorData);

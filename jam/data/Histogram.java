@@ -1,5 +1,6 @@
 package jam.data;
 
+import jam.global.Nameable;
 import jam.util.StringUtilities;
 
 import java.util.ArrayList;
@@ -201,7 +202,7 @@ public abstract class Histogram implements DataElement {
 		DIM_LIST.add(0, new ArrayList<Histogram>());
 		DIM_LIST.add(1, new ArrayList<Histogram>());
 	}
-	
+
 	private transient GateCollection gates;
 
 	/**
@@ -220,96 +221,19 @@ public abstract class Histogram implements DataElement {
 	}
 
 	/**
-	 * Creates a new histogram, using the given array as the template.
-	 * 
-	 * @param group
-	 *            group to create histogram in
-	 * @param array
-	 *            1d or 2d int or double array
-	 * @param name
-	 *            unique identifier
-	 * @return a newly created histogram
-	 */
-	static public Histogram createHistogram(final Group group,
-			final Object array, final String name) {
-		return createHistogram(group, array, name, name, null, null);
-	}
-
-	/**
-	 * Creates a new histogram, using the given array as the template.
-	 * 
-	 * @param group
-	 *            group to create histogram in
-	 * @param array
-	 *            1d or 2d int or double array
-	 * @param name
-	 *            unique identifier
-	 * @param title
-	 *            verbose description
-	 * @return a newly created histogram
-	 */
-	static public Histogram createHistogram(final Group group,
-			final Object array, final String name, final String title) {
-		return createHistogram(group, array, name, title, null, null);
-	}
-
-	/**
-	 * Creates a new histogram, using the given array as the template.
-	 * 
-	 * @param group
-	 *            group to create histogram in
-	 * @param array
-	 *            1d or 2d int or double array
-	 * @param name
-	 *            unique identifier
-	 * @param title
-	 *            verbose description
-	 * @param labelX
-	 *            x-axis label
-	 * @param labelY
-	 *            y-axis label
-	 * @return a newly created histogram
-	 */
-	static public Histogram createHistogram(final Group group,
-			final Object array, final String name, final String title,
-			final String labelX, final String labelY) {
-		final Histogram rval;
-		final Type hType = Type.getArrayType(array);
-		if (hType == Type.ONE_DIM_INT) {
-			rval = new HistInt1D(group, name, title, labelX, labelY,
-					(int[]) array);
-		} else if (hType == Type.ONE_D_DOUBLE) {
-			rval = new HistDouble1D(group, name, title, labelX, labelY,
-					(double[]) array);
-		} else if (hType == Type.TWO_DIM_INT) {
-			rval = new HistInt2D(group, name, title, labelX, labelY,
-					(int[][]) array);
-		} else {// TWO_D_DOUBLE
-			rval = new HistDouble2D(group, name, title, labelX, labelY,
-					(double[][]) array);
-		}
-		return rval;
-	}
-
-	/**
 	 * Remove the histogram with the given name from memory.
 	 * 
 	 * @param histName
 	 *            name of histogram to remove
 	 */
-	public static void deleteHistogram(final String histName) {
-		if (NAME_MAP.containsKey(histName)) {
-			final Histogram histogram = getHistogram(histName);
-			if (histogram != null) {
-				histogram.clearInfo();
-				LIST.remove(histogram);
-				NAME_MAP.remove(histogram.getFullName());
-				NUMBER_MAP.remove(histogram.getNumber());
-				for (List<Histogram> list : DIM_LIST) {
-					list.clear();
-				}
-				final Group group = histogram.getGroup();
-				group.removeHistogram(histogram);
+	static void deleteHistogram(final Histogram histogram) {
+		if (histogram != null) {
+			histogram.clearInfo();
+			LIST.remove(histogram);
+			NAME_MAP.remove(histogram.getFullName());
+			NUMBER_MAP.remove(histogram.getNumber());
+			for (List<Histogram> list : DIM_LIST) {
+				list.clear();
 			}
 		}
 	}
@@ -486,22 +410,12 @@ public abstract class Histogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(Group group, String nameIn, Type type, int sizeX,
-			int sizeY, String title) {
+	protected Histogram(Type type, int sizeX, int sizeY, String title) {
 		super();
-		assert(group != null);
 		this.type = type;
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
 		this.title = title;
-		/* Make a unique name in the group */
-		final Map<String, Histogram> groupHistMap = group.getHistogramMap();
-		final StringUtilities stringUtil = StringUtilities.getInstance();
-		name = stringUtil.makeUniqueName(nameIn, groupHistMap.keySet(),
-				NAME_LENGTH);
-		updateNames(group);// puts in name map as well
-		/* Add to group */
-		group.addHistogram(this);
 		gates = new GateCollection(type.getDimensionality());
 		assignNewNumber();
 		/* allow memory for gates and define sizes */
@@ -542,9 +456,9 @@ public abstract class Histogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(Group group, String name, Type type, int sizeX,
-			int sizeY, String title, String axisLabelX, String axisLabelY) {
-		this(group, name, type, sizeX, sizeY, title);
+	protected Histogram(Type type, int sizeX, int sizeY, String title,
+			String axisLabelX, String axisLabelY) {
+		this(type, sizeX, sizeY, title);
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
 	}
@@ -568,9 +482,8 @@ public abstract class Histogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(Group group, String nameIn, Type type, int size,
-			String title) {
-		this(group, nameIn, type, size, size, title);
+	protected Histogram(Type type, int size, String title) {
+		this(type, size, size, title);
 	}
 
 	/**
@@ -596,9 +509,9 @@ public abstract class Histogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(Group group, String name, Type type, int size,
-			String title, String axisLabelX, String axisLabelY) {
-		this(group, name, type, size, size, title);
+	protected Histogram(Type type, int size, String title, String axisLabelX,
+			String axisLabelY) {
+		this(type, size, size, title);
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
 	}
@@ -685,8 +598,8 @@ public abstract class Histogram implements DataElement {
 	 * 
 	 * @return the Group
 	 */
-	public Group getGroup() {
-		return Group.getGroup(groupName);
+	public String getGroupName() {
+		return groupName;
 	}
 
 	/**
@@ -714,6 +627,10 @@ public abstract class Histogram implements DataElement {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	void setName(final String value) {
+		name = value;
 	}
 
 	/**
@@ -778,10 +695,10 @@ public abstract class Histogram implements DataElement {
 		}
 	}
 
-	public GateCollection getGateCollection(){
+	public GateCollection getGateCollection() {
 		return this.gates;
 	}
-	
+
 	/**
 	 * Set the counts array using the given <code>int</code> or
 	 * <code>double</code> array.
@@ -860,7 +777,7 @@ public abstract class Histogram implements DataElement {
 	}
 
 	/* Create the full histogram name with group name. */
-	final void updateNames(final Group group) {
+	final void updateNames(final Nameable group) {
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		groupName = group.getName();
 		NAME_MAP.remove(uniqueName);

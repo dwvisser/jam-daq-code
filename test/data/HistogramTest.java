@@ -28,13 +28,23 @@ public final class HistogramTest {// NOPMD
 
 	private transient Gate gate1, gate2;
 
-	private transient HistInt1D hist1;
+	private transient final HistInt1D hist1;
 
-	private transient HistDouble1D hist1f;
+	private transient final HistDouble1D hist1f;
 
-	private transient HistInt2D hist2;
+	private transient final HistInt2D hist2;
 
-	private transient HistDouble2D hist2f;
+	private transient final HistDouble2D hist2f;
+	
+	public HistogramTest(){
+		final Group group = Group.createGroup(TEST_HISTOGRAM_GROUP,
+				Group.Type.FILE);
+		hist1 = (HistInt1D) group.createHistogram(new int[100], "h1");
+		hist1f = (HistDouble1D) group.createHistogram(new double[100], "h1f");
+		hist2 = (HistInt2D) group.createHistogram(new int[100][100], "h2");
+		hist2f = (HistDouble2D) group.createHistogram(new double[100][100],
+				"h2f");		
+	}
 
 	/**
 	 * Initialize local variables for the tests.
@@ -43,16 +53,6 @@ public final class HistogramTest {// NOPMD
 	 */
 	@Before
 	public void setUp() throws Exception {
-		final Group group = Group.createGroup(TEST_HISTOGRAM_GROUP,
-				Group.Type.FILE);
-		hist1 = (HistInt1D) Histogram
-				.createHistogram(group, new int[100], "h1");
-		hist1f = (HistDouble1D) Histogram.createHistogram(group,
-				new double[100], "h1f");
-		hist2 = (HistInt2D) Histogram.createHistogram(group, new int[100][100],
-				"h2");
-		hist2f = (HistDouble2D) Histogram.createHistogram(group,
-				new double[100][100], "h2f");
 		for (int i = 0; i < hist1.getSizeX(); i++) {
 			hist1.setCounts(i, i);
 			hist1f.setCounts(i, i);
@@ -96,9 +96,11 @@ public final class HistogramTest {// NOPMD
 	 * @param area1before
 	 * @param should
 	 */
-	private void assertAreaDoubled(final Histogram histogram, final double area1before) {
+	private void assertAreaDoubled(final Histogram histogram,
+			final double area1before) {
 		final String should = "should be double before.";
-		assertEquals(histogram.getName() + should, histogram.getArea(), 2 * area1before);
+		assertEquals(histogram.getName() + should, histogram.getArea(),
+				2 * area1before);
 	}
 
 	/**
@@ -150,7 +152,8 @@ public final class HistogramTest {// NOPMD
 			message = message + "not ";
 		}
 		message = message + "have gate " + gate.getName();
-		assertEquals(message, hasGate, histogram.getGateCollection().hasGate(gate));
+		assertEquals(message, hasGate, histogram.getGateCollection().hasGate(
+				gate));
 	}
 
 }

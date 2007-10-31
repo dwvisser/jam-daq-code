@@ -376,4 +376,132 @@ public final class Group implements Nameable {
 		/* Add to list of scalers */
 		return result;
 	}
+
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param group
+	 *            group to create histogram in
+	 * @param array
+	 *            1d or 2d int or double array
+	 * @param name
+	 *            unique identifier
+	 * @return a newly created histogram
+	 */
+	public Histogram createHistogram(final Object array, final String name) {
+		return createHistogram(array, name, name, null, null);
+	}
+
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param group
+	 *            group to create histogram in
+	 * @param array
+	 *            1d or 2d int or double array
+	 * @param name
+	 *            unique identifier
+	 * @param title
+	 *            verbose description
+	 * @return a newly created histogram
+	 */
+	public Histogram createHistogram(final Object array, final String name,
+			final String title) {
+		return createHistogram(array, name, title, null, null);
+	}
+
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param group
+	 *            group to create histogram in
+	 * @param array
+	 *            1d or 2d int or double array
+	 * @param name
+	 *            unique identifier
+	 * @param title
+	 *            verbose description
+	 * @param labelX
+	 *            x-axis label
+	 * @param labelY
+	 *            y-axis label
+	 * @return a newly created histogram
+	 */
+	public Histogram createHistogram(final Object array, final String name,
+			final String title, final String labelX, final String labelY) {
+		final Histogram rval;
+		final Histogram.Type hType = Histogram.Type.getArrayType(array);
+		if (hType == Histogram.Type.ONE_DIM_INT) {
+			rval = createHistInt1D(name, title, labelX, labelY, (int[]) array);
+		} else if (hType == Histogram.Type.ONE_D_DOUBLE) {
+			rval = createHistDouble1D(name, title, labelX, labelY,
+					(double[]) array);
+		} else if (hType == Histogram.Type.TWO_DIM_INT) {
+			rval = createHistInt2D(name, title, labelX, labelY, (int[][]) array);
+		} else {// TWO_D_DOUBLE
+			rval = createHistDouble2D(name, title, labelX, labelY,
+					(double[][]) array);
+		}
+		return rval;
+	}
+
+	private HistDouble2D createHistDouble2D(final String name,
+			final String title, final String labelX, final String labelY,
+			final double[][] array) {
+		final HistDouble2D result = new HistDouble2D(title, labelX, labelY,
+				array);
+		addGroupInfoToHist(result, name);
+		return result;
+	}
+
+	private HistInt2D createHistInt2D(final String name, final String title,
+			final String labelX, final String labelY, final int[][] array) {
+		final HistInt2D result = new HistInt2D(title, labelX, labelY, array);
+		addGroupInfoToHist(result, name);
+		return result;
+	}
+
+	private HistDouble1D createHistDouble1D(final String name,
+			final String title, final String labelX, final String labelY,
+			final double[] array) {
+		final HistDouble1D result = new HistDouble1D(title, labelX, labelY,
+				array);
+		addGroupInfoToHist(result, name);
+		return result;
+	}
+
+	private HistInt1D createHistInt1D(final String name, final String title,
+			final String labelX, final String labelY, final int[] array) {
+		final HistInt1D result = new HistInt1D(title, labelX, labelY, array);
+		addGroupInfoToHist(result, name);
+		return result;
+	}
+
+	private void addGroupInfoToHist(final Histogram hist, final String name) {
+		hist.setName(stringUtil.makeUniqueName(name, histogramMap.keySet(),
+				Histogram.NAME_LENGTH));
+		hist.updateNames(this);// puts in name map as well
+		/* Add to group */
+		this.addHistogram(hist);
+		/* Make a unique name in the group */
+	}
+	
+	public void deleteHistogram(final String histName) {
+		final Histogram histogram = Histogram.getHistogram(histName);
+		deleteHistogram(histogram);
+	}
+
+	/**
+	 * @param histogram
+	 */
+	public static void deleteHistogram(final Histogram histogram) {
+		if (histogram != null){
+			Histogram.deleteHistogram(histogram);
+			Group.getGroup(histogram.getGroupName()).removeHistogram(histogram);
+		}
+	}
+	
+	public static Group getGroup(Histogram histogram){
+		return Group.getGroup(histogram.getGroupName());
+	}
 }

@@ -33,8 +33,8 @@ public final class HistInt1D extends AbstractHist1D {
 	 * @param group
 	 *            that this histogram belongs to
 	 */
-	HistInt1D(Group group, String name, String title, int[] countsIn) {
-		super(group, name, Type.ONE_DIM_INT, countsIn.length, title);
+	HistInt1D(String title, int[] countsIn) {
+		super(Type.ONE_DIM_INT, countsIn.length, title);
 		initCounts(countsIn);
 	}
 
@@ -58,10 +58,8 @@ public final class HistInt1D extends AbstractHist1D {
 	 * @param group
 	 *            that this histogram belongs to
 	 */
-	HistInt1D(Group group, String name, String title, String axisLabelX,
-			String axisLabelY, int[] countsIn) {
-		super(group, name, Type.ONE_DIM_INT, countsIn.length, title,
-				axisLabelX, axisLabelY);
+	HistInt1D(String title, String axisLabelX, String axisLabelY, int[] countsIn) {
+		super(Type.ONE_DIM_INT, countsIn.length, title, axisLabelX, axisLabelY);
 		initCounts(countsIn);
 	}
 
@@ -95,9 +93,8 @@ public final class HistInt1D extends AbstractHist1D {
 		synchronized (this) {
 			counts = EMPTY_INT;
 			unsetErrors();
-			setCalibration(AbstractCalibrationFunction
-					.getNoCalibration());
-			clear=true;
+			setCalibration(AbstractCalibrationFunction.getNoCalibration());
+			clear = true;
 		}
 	}
 
@@ -127,7 +124,7 @@ public final class HistInt1D extends AbstractHist1D {
 	 * 
 	 * @return <code>int []</code>
 	 */
-	public int [] getCounts() {
+	public int[] getCounts() {
 		synchronized (this) {
 			return counts.clone();
 		}

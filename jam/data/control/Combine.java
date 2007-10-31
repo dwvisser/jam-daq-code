@@ -2,6 +2,7 @@ package jam.data.control;
 
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
+import jam.data.Group;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
 import jam.data.Histogram;
@@ -192,7 +193,7 @@ public class Combine extends AbstractManipulation implements Observer {
 							BROADCASTER
 									.broadcast(BroadcastEvent.Command.REFRESH);
 							SelectionTree.setCurrentHistogram(hto);
-							STATUS.setCurrentGroup(hto.getGroup());
+							STATUS.setCurrentGroup(Group.getGroup(hto));
 							BROADCASTER.broadcast(
 									BroadcastEvent.Command.HISTOGRAM_SELECT,
 									hto);

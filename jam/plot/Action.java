@@ -22,6 +22,7 @@ import static jam.plot.PlotCommands.ZOOMIN;
 import static jam.plot.PlotCommands.ZOOMOUT;
 import static jam.plot.PlotCommands.ZOOMVERT;
 import jam.data.AbstractHist1D;
+import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.peaks.GaussianConstants;
 import jam.global.BroadcastEvent;
@@ -342,7 +343,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			} else {
 				final JamStatus status = JamStatus.getSingletonInstance();
 				SelectionTree.setCurrentHistogram(histogram);
-				status.setCurrentGroup(histogram.getGroup());
+				status.setCurrentGroup(Group.getGroup(histogram));
 				textOut.messageOut(Integer.toString(num) + " ",
 						MessageHandler.END);
 				plotDisplay.removeOverlays();

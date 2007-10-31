@@ -44,7 +44,7 @@ import javax.swing.filechooser.FileFilter;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  * @version 1.0
  */
-public class ImpExpASCII extends AbstractImpExp {//NOPMD
+public class ImpExpASCII extends AbstractImpExp {// NOPMD
 
 	private transient boolean line1isTitle = false;
 
@@ -149,7 +149,7 @@ public class ImpExpASCII extends AbstractImpExp {//NOPMD
 		for (int i = 0; i < counts.length; i++) {
 			counts[i] = scanner.nextDouble();
 		}
-		Histogram.createHistogram(importGroup, counts, name, title);
+		importGroup.createHistogram(counts, name, title);
 	}
 
 	private transient int maxX, maxY;
@@ -206,7 +206,7 @@ public class ImpExpASCII extends AbstractImpExp {//NOPMD
 			final int channel = (int) scanner.nextDouble();
 			counts[channel] = scanner.nextDouble();
 		}
-		Histogram.createHistogram(importGroup, counts, name, title);
+		importGroup.createHistogram(counts, name, title);
 	}
 
 	private void readHistXYZ(final InputStream inputStream, final String name,
@@ -223,7 +223,7 @@ public class ImpExpASCII extends AbstractImpExp {//NOPMD
 			final int channelY = (int) scanner.nextDouble();
 			counts[channelX][channelY] = scanner.nextDouble();
 		}
-		Histogram.createHistogram(importGroup, counts, name, title);
+		importGroup.createHistogram(counts, name, title);
 	}
 
 	private void readHistMatrix(final InputStream inputStream,
@@ -240,7 +240,7 @@ public class ImpExpASCII extends AbstractImpExp {//NOPMD
 				counts[i][j] = scanner.nextDouble();
 			}
 		}
-		Histogram.createHistogram(importGroup, counts, name, title);
+		importGroup.createHistogram(counts, name, title);
 	}
 
 	private String getHistTitle() throws IOException {
@@ -265,41 +265,53 @@ public class ImpExpASCII extends AbstractImpExp {//NOPMD
 	}
 
 	private int getNumberOfRows() throws IOException {
-		final LineNumberReader lnr = new LineNumberReader(new FileReader(
-				getLastFile()));
-		/*
-		 * Read in header lines. Headers are lines that start with a non-number
-		 * token.
-		 */
-		if (line1isTitle) {
-			lnr.readLine();
-		} else {
-			lnr.setLineNumber(1);
+		int rval = 0;
+		LineNumberReader lnr = null;
+		try {
+			lnr = new LineNumberReader(new FileReader(getLastFile()));
+			/*
+			 * Read in header lines. Headers are lines that start with a
+			 * non-number token.
+			 */
+			if (line1isTitle) {
+				lnr.readLine();
+			} else {
+				lnr.setLineNumber(1);
+			}
+			final CharBuffer buffer = CharBuffer.allocate(8 * 1024);
+			int numRead = 0;
+			do {
+				numRead = lnr.read(buffer);
+				buffer.clear();
+			} while (numRead >= 0);
+			rval = lnr.getLineNumber();
+		} finally {
+			if (lnr != null) {
+				lnr.close();
+			}
 		}
-		final CharBuffer buffer = CharBuffer.allocate(8*1024);
-		int numRead = 0;
-		do {
-			numRead = lnr.read(buffer);
-			buffer.clear();
-		} while (numRead >= 0);
-		final int rval = lnr.getLineNumber();
-		lnr.close();
 		return rval;
 	}
 
 	private int getNumberOfColumns() throws IOException {
 		int rval = 0;
-		final LineNumberReader lnr = new LineNumberReader(new FileReader(
-				getLastFile()));
-		/*
-		 * Read in header lines. Headers are lines that start with a non-number
-		 * token.
-		 */
-		if (line1isTitle) {
-			lnr.readLine();
+		LineNumberReader lnr = null;
+		String line = null;
+		try {
+			lnr = new LineNumberReader(new FileReader(getLastFile()));
+			/*
+			 * Read in header lines. Headers are lines that start with a
+			 * non-number token.
+			 */
+			if (line1isTitle) {
+				lnr.readLine();
+			}
+			line = lnr.readLine();
+		} finally {
+			if (lnr != null) {
+				lnr.close();
+			}
 		}
-		final String line = lnr.readLine();
-		lnr.close();
 		if (line != null) {
 			final Scanner scanner = new Scanner(new StringReader(line));
 			while (scanner.hasNextDouble()) {

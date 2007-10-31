@@ -110,7 +110,7 @@ public final class ImpExpSPE extends AbstractImpExp {//NOPMD
 			dis.readInt(); // should read a hex 2000 dec 8192
 			/* parameters of histogram */
 			final String nameHist = String.valueOf(cName);
-			Histogram.createHistogram(importGroup, counts, nameHist);
+			importGroup.createHistogram(counts, nameHist);
 			dis.close();
 		} catch (IOException ioe) {
 			throw new ImpExpException("Problem reading spectrum file.", ioe);

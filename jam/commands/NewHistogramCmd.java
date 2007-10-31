@@ -7,7 +7,7 @@ import jam.data.Group;
  * Command to create a histogram
  * 
  * @author Ken Swartz
- *  
+ * 
  */
 final class NewHistogramCmd extends AbstractCommand {
 
@@ -21,13 +21,14 @@ final class NewHistogramCmd extends AbstractCommand {
 	protected void execute(final Object[] cmdParams) {
 		final String name = (String) cmdParams[0];
 		final String title = (String) cmdParams[1];
-		final int type = ((Integer)cmdParams[2]).intValue();
+		final int type = ((Integer) cmdParams[2]).intValue();
 		final Histogram.Type hType = type == 1 ? Histogram.Type.ONE_D_DOUBLE
 				: Histogram.Type.TWO_D_DOUBLE;
 		final int sizeX = ((Integer) cmdParams[3]).intValue();
 		final int sizeY = ((Integer) cmdParams[4]).intValue();
-		final Group currentGroup= (Group)STATUS.getCurrentGroup();
-		Histogram.createHistogram(currentGroup, hType.getSampleArray(sizeX,sizeY), name, title);
+		final Group currentGroup = (Group) STATUS.getCurrentGroup();
+		currentGroup.createHistogram(hType.getSampleArray(sizeX, sizeY), name,
+				title);
 	}
 
 	/**
@@ -41,8 +42,10 @@ final class NewHistogramCmd extends AbstractCommand {
 				: Histogram.Type.TWO_D_DOUBLE;
 		final int sizeX = Integer.parseInt(cmdParams[3]);
 		final int sizeY = Integer.parseInt(cmdParams[4]);
-		final Group workingGroup =Group.createGroup("Working", Group.Type.FILE);
-		Histogram.createHistogram(workingGroup, hType.getSampleArray(sizeX,sizeY), name, title);
+		final Group workingGroup = Group
+				.createGroup("Working", Group.Type.FILE);
+		workingGroup.createHistogram(hType.getSampleArray(sizeX, sizeY), name,
+				title);
 	}
 
 }

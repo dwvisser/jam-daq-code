@@ -348,7 +348,7 @@ public class BatchExport extends JDialog implements Observer {
 			final jam.data.AbstractHist1D hist1D = (jam.data.AbstractHist1D) model
 					.getElementAt(i);
 			exportHistograms[i] = hist1D;
-			final String groupName = hist1D.getGroup().getName();
+			final String groupName = hist1D.getGroupName();
 			final String histName = hist1D.getName().trim();
 			exportFiles[i] = createExportFile(exportDir, groupName, histName,
 					exportFormat.getDefaultExtension());

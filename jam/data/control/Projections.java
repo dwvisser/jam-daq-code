@@ -4,6 +4,7 @@ import static javax.swing.SwingConstants.RIGHT;
 import jam.data.DataException;
 import jam.data.DimensionalData;
 import jam.data.Gate;
+import jam.data.Group;
 import jam.data.HistDouble2D;
 import jam.data.HistInt2D;
 import jam.data.Histogram;
@@ -154,7 +155,7 @@ public final class Projections extends AbstractManipulation implements
 					project();
 					BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
 					SelectionTree.setCurrentHistogram(hto);
-					STATUS.setCurrentGroup(hto.getGroup());
+					STATUS.setCurrentGroup(Group.getGroup(hto));
 					BROADCASTER.broadcast(
 							BroadcastEvent.Command.HISTOGRAM_SELECT, hto);
 				} catch (DataException de) {

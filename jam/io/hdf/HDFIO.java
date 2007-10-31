@@ -1122,8 +1122,9 @@ public final class HDFIO implements DataIO {
 			groupsToUse = new ArrayList<Group>();
 			histsToUse = histograms;
 			for (Histogram hist : histsToUse) {
-				if (!groupsToUse.contains(hist.getGroup())) {
-					groupsToUse.add(hist.getGroup());
+				final Group group = Group.getGroup(hist);
+				if (!groupsToUse.contains(group)) {
+					groupsToUse.add(group);
 				}
 			}
 		} else {

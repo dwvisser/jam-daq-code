@@ -20,8 +20,9 @@ import org.junit.Test;
  */
 public class GateTest {// NOPMD
 
-	private transient final Group group = Group.createGroup("TestGateGroup", Group.Type.FILE);
-	
+	private transient final Group group = Group.createGroup("TestGateGroup",
+			Group.Type.FILE);
+
 	private static final int LOWER_LIMIT = 10;
 
 	private static final int UPPER_LIMIT = 50;
@@ -39,8 +40,7 @@ public class GateTest {// NOPMD
 	 */
 	@Test
 	public void inGateI() {
-		final Histogram hist1 = Histogram.createHistogram(group, new int[100],
-		"h1");
+		final Histogram hist1 = group.createHistogram(new int[100], "h1");
 		final Gate gate1 = new Gate("g1", hist1);
 		gate1.setLimits(LOWER_LIMIT, UPPER_LIMIT);
 		final String expected = "Expected channel in gate1: ";
@@ -66,8 +66,7 @@ public class GateTest {// NOPMD
 	 */
 	@Test
 	public void inGateII() {
-		final Histogram hist2 = Histogram.createHistogram(group,
-				new int[100][100], "h2");
+		final Histogram hist2 = group.createHistogram(new int[100][100], "h2");
 		final Gate gate2 = new Gate("g2", hist2);
 		final int[] xpoints = { LOWER_LIMIT, GateTest.UPPER_LIMIT_PLUS_1,
 				GateTest.UPPER_LIMIT_PLUS_1, LOWER_LIMIT };

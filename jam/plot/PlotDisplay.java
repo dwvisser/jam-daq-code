@@ -5,6 +5,7 @@ import static jam.plot.PlotPrefs.ENABLE_SCROLLING;
 import static jam.plot.PlotPrefs.PREFS;
 import jam.data.AbstractHist1D;
 import jam.data.Gate;
+import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -274,7 +275,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			/* Tell the framework the current hist */
 			SelectionTree.setCurrentHistogram(hist);
 			if (hist != null) {
-				status.setCurrentGroup(hist.getGroup());
+				status.setCurrentGroup(Group.getGroup(hist));
 			}
 			SelectionTree.setCurrentGate(null);
 			status.clearOverlays();

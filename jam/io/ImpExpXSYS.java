@@ -30,7 +30,6 @@ import static jam.io.XsysHeader.XSYS_BUFFER_SIZE;
 import jam.data.AbstractHist1D;
 import jam.data.DataBase;
 import jam.data.Histogram;
-import jam.data.Scaler;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.PolynomialFunction;
 import jam.global.BroadcastEvent;
@@ -55,8 +54,7 @@ import javax.swing.filechooser.FileFilter;
  * @version 0.5
  * @author Ken Swartz
  */
-public class ImpExpXSYS extends AbstractImpExp {//NOPMD
-	
+public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 
 	// XSYS dir information for each data area
 	private transient int areaNumber;
@@ -141,9 +139,8 @@ public class ImpExpXSYS extends AbstractImpExp {//NOPMD
 							+ " ";
 					final int[] counts = unPackData1d(dis, areaSizeX,
 							areaLengthPage);
-					final AbstractHist1D hist = (AbstractHist1D) Histogram
-							.createHistogram(importGroup, counts, areaName,
-									areaTitle);
+					final AbstractHist1D hist = (AbstractHist1D) importGroup
+							.createHistogram(counts, areaName, areaTitle);
 					hist.setNumber(areaNumber);
 
 					// calibrate histogram if flag set
@@ -157,8 +154,8 @@ public class ImpExpXSYS extends AbstractImpExp {//NOPMD
 					final String areaTitle = areaNumber + "  " + areaName + " ";
 					final int[][] counts2d = unPackData2d(dis, areaSizeX,
 							areaSizeY, areaLengthPage);
-					final Histogram hist = Histogram.createHistogram(
-							importGroup, counts2d, areaName, areaTitle);
+					final Histogram hist = importGroup.createHistogram(
+							counts2d, areaName, areaTitle);
 					hist.setNumber(areaNumber);
 					specRead++;
 				} else if (areaDataType == XSYS1DR4) {
@@ -269,7 +266,8 @@ public class ImpExpXSYS extends AbstractImpExp {//NOPMD
 	 * @return
 	 * @throws IOException
 	 */
-	private boolean readBuffers(final InputStream buffin, final int[] buffer) throws IOException {
+	private boolean readBuffers(final InputStream buffin, final int[] buffer)
+			throws IOException {
 		/*
 		 * read in full buffer, because there is stuff in buffer we want to skip
 		 */

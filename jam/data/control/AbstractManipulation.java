@@ -114,7 +114,7 @@ abstract class AbstractManipulation extends AbstractControl {
 		if (group == null) {
 			group = Group.createGroup(groupName, Group.Type.FILE);
 		}
-		hist = Histogram.createHistogram(group, new double[size], histName);
+		hist = group.createHistogram(new double[size], histName);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		return hist;
 	}

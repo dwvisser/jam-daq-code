@@ -181,7 +181,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		final byte bChilText[] = new byte[80]; // chill file text;
 		numRead = disDrr.read(bChilText); // ASCII text from CHIL file
 		if (numRead < bChilText.length) {
-			throw new ImpExpException("Couldn't read 80 characters expected in CHIL section.");
+			throw new ImpExpException(
+					"Couldn't read 80 characters expected in CHIL section.");
 		}
 		readDrrInfo(parLabelb, titleb, disDrr);
 		/* read in id list */
@@ -260,12 +261,14 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			offSet[i] = readInt(disDrr); // offset in 16 bit words
 			int numRead = disDrr.read(parLabelb); // x param label
 			if (numRead < parLabelb.length) {
-				throw new IOException("Wasn't able to read expected number of bytes for parameter label.");
+				throw new IOException(
+						"Wasn't able to read expected number of bytes for parameter label.");
 			}
 			parLabelX[i] = String.valueOf(parLabelb);
 			numRead = disDrr.read(parLabelb); // y param label
 			if (numRead < parLabelb.length) {
-				throw new IOException("Wasn't able to read expected number of bytes for parameter label.");
+				throw new IOException(
+						"Wasn't able to read expected number of bytes for parameter label.");
 			}
 			parLabelY[i] = String.valueOf(parLabelb);
 			cal1[i] = disDrr.readFloat(); // calibaration const
@@ -274,7 +277,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			cal4[i] = disDrr.readFloat(); // calibaration const
 			numRead = disDrr.read(titleb); // sub-Title
 			if (numRead < titleb.length) {
-				throw new IOException("Wasn't able to read expected number of bytes for title.");
+				throw new IOException(
+						"Wasn't able to read expected number of bytes for title.");
 			}
 			titleDrr[i] = String.valueOf(titleb);
 		}
@@ -368,8 +372,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			throw new IOException("File uses " + wordCh
 					+ " words/channel, which can't be read.");
 		}
-		final Histogram hist = Histogram.createHistogram(importGroup, counts,
-				name);
+		final Histogram hist = importGroup.createHistogram(counts, name);
 		hist.setNumber(number);
 	}
 
@@ -418,8 +421,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			throw new IOException("File uses " + wordCh
 					+ " words/channel, which I don't know how to read.");
 		}
-		final Histogram hist = Histogram.createHistogram(importGroup, counts2d,
-				name);
+		final Histogram hist = importGroup.createHistogram(counts2d, name);
 		hist.setNumber(number);
 	}
 
@@ -679,17 +681,23 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 								.getName(), "drr", FileUtilities.FORCE))
 						: inFile;
 				final FileInputStream inStream = new FileInputStream(drrFile);
-				final BufferedInputStream inBuffStream = new BufferedInputStream(
-						inStream, BUFFER_SIZE);
-				if (!silent) {
-					LOGGER.info(msg + " " + getFileName(inFile));
+				InputStream inBuffStream = null;
+				try {
+					inBuffStream = new BufferedInputStream(inStream,
+							BUFFER_SIZE);
+					if (!silent) {
+						LOGGER.info(msg + " " + getFileName(inFile));
+					}
+					/* implementing class implement following method */
+					readData(inBuffStream);
+					if (!silent) {
+						LOGGER.info("File import done.");
+					}
+				} finally {
+					if (inBuffStream != null) {
+						inBuffStream.close();
+					}
 				}
-				/* implementing class implement following method */
-				readData(inBuffStream);
-				if (!silent) {
-					LOGGER.info("File import done.");
-				}
-				inBuffStream.close();
 				rval = true;
 			}
 		} catch (IOException ioe) {

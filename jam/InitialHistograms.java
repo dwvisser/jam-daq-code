@@ -27,13 +27,13 @@ public final class InitialHistograms {
 		super();
 		final Group group = Group.createGroup("Initial", Group.Type.FILE);
 		/* histogram with Jam name 2d */
-		final Histogram histJam2d = Histogram.createHistogram(group,
-				histNameJam2d(), "Histogram2D", "Jam Name 2D");
+		final Histogram histJam2d = group.createHistogram(histNameJam2d(),
+				"Histogram2D", "Jam Name 2D");
 		/* histogram with Jam name */
-		final Histogram histJam1d = Histogram.createHistogram(group,
-				histNameJam1d(), "Histogram1D", "Jam Name 1D");
+		final Histogram histJam1d = group.createHistogram(histNameJam1d(),
+				"Histogram1D", "Jam Name 1D");
 		/* histogram with triangles */
-		Histogram.createHistogram(group, histTriangle(), "Triangle");
+		group.createHistogram(histTriangle(), "Triangle");
 		new Gate("Letter A", histJam1d); // gate
 		new Gate("Letter B", histJam1d); // gate
 		new Gate("Letter C", histJam1d); // gate

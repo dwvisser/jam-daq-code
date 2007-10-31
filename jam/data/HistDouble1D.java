@@ -30,15 +30,14 @@ public final class HistDouble1D extends AbstractHist1D {
 	 * @param countsIn
 	 *            array of counts to initialize with
 	 */
-	HistDouble1D(Group group, String name, String title, double[] countsIn) {
-		super(group, name, Type.ONE_D_DOUBLE, countsIn.length, title);
+	HistDouble1D(String title, double[] countsIn) {
+		super(Type.ONE_D_DOUBLE, countsIn.length, title);
 		initCounts(countsIn);
 	}
 
-	HistDouble1D(Group group, String name, String title, String axisLabelX,
-			String axisLabelY, double[] countsIn) {
-		super(group, name, Type.ONE_D_DOUBLE, countsIn.length, title,
-				axisLabelX, axisLabelY);
+	HistDouble1D(String title, String axisLabelX, String axisLabelY,
+			double[] countsIn) {
+		super(Type.ONE_D_DOUBLE, countsIn.length, title, axisLabelX, axisLabelY);
 		initCounts(countsIn);
 	}
 
@@ -103,8 +102,7 @@ public final class HistDouble1D extends AbstractHist1D {
 		synchronized (this) {
 			countsDouble = EMPTY;
 			unsetErrors();
-			setCalibration(AbstractCalibrationFunction
-					.getNoCalibration());
+			setCalibration(AbstractCalibrationFunction.getNoCalibration());
 			clear = true;
 		}
 	}

@@ -206,8 +206,7 @@ public class HistogramNew extends AbstractControl {
 			histGroup = Group.getGroup(groupName);
 			STATUS.setCurrentGroup(histGroup);
 		}
-		final Histogram hist = Histogram.createHistogram(histGroup, array,
-				name, title);
+		final Histogram hist = histGroup.createHistogram(array, name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		final JamStatus status = JamStatus.getSingletonInstance();
 		SelectionTree.setCurrentHistogram(hist);

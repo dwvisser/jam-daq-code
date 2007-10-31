@@ -85,8 +85,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 */
 	protected static HistInt1D createHist1D(final int numCh, final String name) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt1D) Histogram.createHistogram(sortGroup, new int[numCh],
-				name);
+		return (HistInt1D) sortGroup.createHistogram(new int[numCh], name);
 	}
 
 	/**
@@ -103,8 +102,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	protected static HistInt1D createHist1D(final int numCh, final String name,
 			final String title) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt1D) Histogram.createHistogram(sortGroup, new int[numCh],
-				name, title);
+		return (HistInt1D) sortGroup.createHistogram(new int[numCh], name,
+				title);
 	}
 
 	/**
@@ -125,8 +124,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	protected static HistInt1D createHist1D(final int numCh, final String name,
 			final String title, final String labelX, final String labelY) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt1D) Histogram.createHistogram(sortGroup, new int[numCh],
-				name, title, labelX, labelY);
+		return (HistInt1D) sortGroup.createHistogram(new int[numCh], name,
+				title, labelX, labelY);
 	}
 
 	/**
@@ -143,8 +142,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	protected static HistInt2D createHist2D(final int chX, final int chY,
 			final String name) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D) Histogram.createHistogram(sortGroup,
-				new int[chX][chY], name);
+		return (HistInt2D) sortGroup.createHistogram(new int[chX][chY], name);
 	}
 
 	/**
@@ -163,8 +161,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	protected static HistInt2D createHist2D(final int chX, final int chY,
 			final String name, final String title) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D) Histogram.createHistogram(sortGroup,
-				new int[chX][chY], name, title);
+		return (HistInt2D) sortGroup.createHistogram(new int[chX][chY], name,
+				title);
 	}
 
 	/**
@@ -188,8 +186,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 			final String name, final String title, final String labelX,
 			final String labelY) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D) Histogram.createHistogram(sortGroup,
-				new int[chX][chY], name, title, labelX, labelY);
+		return (HistInt2D) sortGroup.createHistogram(new int[chX][chY], name,
+				title, labelX, labelY);
 	}
 
 	/**
@@ -203,8 +201,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 */
 	protected static HistInt2D createHist2D(final int chans, final String name) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D) Histogram.createHistogram(sortGroup,
-				new int[chans][chans], name);
+		return (HistInt2D) sortGroup.createHistogram(new int[chans][chans],
+				name);
 	}
 
 	/**
@@ -221,8 +219,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	protected static HistInt2D createHist2D(final int chans, final String name,
 			final String title) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D) Histogram.createHistogram(sortGroup,
-				new int[chans][chans], name, title);
+		return (HistInt2D) sortGroup.createHistogram(new int[chans][chans],
+				name, title);
 	}
 
 	/**
@@ -243,8 +241,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	protected static HistInt2D createHist2D(final int chans, final String name,
 			final String title, final String labelX, final String labelY) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D) Histogram.createHistogram(sortGroup,
-				new int[chans][chans], name, title, labelX, labelY);
+		return (HistInt2D) sortGroup.createHistogram(new int[chans][chans],
+				name, title, labelX, labelY);
 	}
 
 	/**
@@ -360,7 +358,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @throws SortException
 	 *             when there is no event size yet
 	 */
-	public int getEventSize(){
+	public int getEventSize() {
 		final int rval;
 		if (evtSizeMode.isSet()) {
 			if (evtSizeMode == EventSizeMode.CNAF) {
@@ -404,7 +402,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	/**
 	 * @see jam.data.Sorter#initialize()
 	 */
-	public abstract void initialize() throws Exception;//NOPMD
+	public abstract void initialize() throws Exception;// NOPMD
 
 	/**
 	 * Required by the <code>Sorter</code> interface. As written always
@@ -506,7 +504,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	/**
 	 * @see jam.data.Sorter#sort(int[])
 	 */
-	public abstract void sort(int[] dataWords) throws Exception;//NOPMD
+	public abstract void sort(int[] dataWords) throws Exception;// NOPMD
 
 	/**
 	 * Writes an event to the event output stream. Used by the
@@ -521,7 +519,9 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	public final void writeEvent(final int[] event) throws SortException {
 		if (getWriteEnabled()) {
 			try {
-				eventOutput.writeEvent(event);
+				synchronized (eventOutput) {
+					eventOutput.writeEvent(event);
+				}
 			} catch (IOException e) {
 				throw new SortException(e);
 			}
