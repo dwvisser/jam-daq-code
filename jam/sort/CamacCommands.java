@@ -1,6 +1,5 @@
 package jam.sort;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +34,7 @@ public class CamacCommands {
 
 	private transient final List<CNAF> clearCmds = new ArrayList<CNAF>();
 
-	private transient final SortRoutine sortRoutine;
+	private transient final EventSizeModeClient eventSizeModeClient;
 
 	private transient int eventSize = 0;
 
@@ -116,13 +115,13 @@ public class CamacCommands {
 	 * initially contain no commands.
 	 * </p>
 	 * 
-	 * @param sorter
+	 * @param client
 	 *            <code>AbstractSortRoutine</code> to which this object belongs
 	 * @see jam.sort.SortRoutine#cnafCommands
 	 */
-	public CamacCommands(SortRoutine sorter) {
+	public CamacCommands(EventSizeModeClient client) {
 		super();
-		sortRoutine = sorter;
+		eventSizeModeClient = client;
 	}
 
 	/**
@@ -151,7 +150,7 @@ public class CamacCommands {
 		eventSize++;
 		eventCmds
 				.add(new CNAF(paramId, crate, number, address, function, data));
-		sortRoutine.setEventSizeMode(EventSizeMode.CNAF);
+		eventSizeModeClient.setEventSizeMode(EventSizeMode.CNAF);
 		return (paramId - 1);
 	}
 

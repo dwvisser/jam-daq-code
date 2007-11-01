@@ -32,7 +32,7 @@ public final class VME_Channel {
 	 * Creates an event parameter. V775/V785 TDC's/ADC's can have base addresses
 	 * from 0x20000000-0xe0ff0000.
 	 * 
-	 * @param map
+	 * @param message
 	 *            the map this channel belongs to
 	 * @param slot
 	 *            the slot the module occupies in the VME crate
@@ -46,7 +46,7 @@ public final class VME_Channel {
 	 * @throws SortException
 	 *             if passed invalid values
 	 */
-	VME_Channel(VME_Map map, int slot, int baseAddress, int channel,
+	VME_Channel(StringBuffer message, int slot, int baseAddress, int channel,
 			int threshold) throws SortException {
 		super();
 		if (channel >= 0 && channel < 32) {
@@ -72,7 +72,7 @@ public final class VME_Channel {
 		}
 		if (threshold >= 0 && threshold < 4096) {
 			final int threshNum = (int) Math.round(threshold / 16.0);
-			map.appendMessage("Requested threshold: " + threshold
+			message.append("Requested threshold: " + threshold
 					+ ", truncated to: " + threshNum + ", actual threshold: "
 					+ threshNum * 16 + "\n");
 			this.threshold = threshNum;

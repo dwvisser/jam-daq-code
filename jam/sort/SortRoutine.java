@@ -42,7 +42,8 @@ import java.io.IOException;
  * @see jam.data.Monitor
  * @see jam.data.Gate
  */
-public abstract class SortRoutine implements Sorter, Beginner, Ender {
+public abstract class SortRoutine implements Sorter, Beginner, Ender,
+		EventSizeModeClient {
 
 	/**
 	 * constant to define a 1d histogram type int
@@ -466,7 +467,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @throws SortException
 	 *             if called inappropriately
 	 */
-	void setEventSizeMode(final EventSizeMode mode) throws SortException {
+	public void setEventSizeMode(final EventSizeMode mode) throws SortException {
 		final StringBuffer mess = new StringBuffer();
 		if ((!evtSizeMode.equals(mode))
 				&& (!evtSizeMode.equals(EventSizeMode.INIT))) {
