@@ -20,7 +20,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.NumberFormat;
 import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Level;
 
 import javax.swing.ButtonGroup;
@@ -38,8 +37,7 @@ import javax.swing.border.EmptyBorder;
  * @author Dale Visser, Ken Swartz
  * @version JDK 1.1
  */
-public class GainShift extends AbstractManipulation implements ItemListener,
-		Observer {
+public class GainShift extends AbstractManipulation implements ItemListener {
 
 	private transient final JCheckBox cchan, ccoeff;
 
