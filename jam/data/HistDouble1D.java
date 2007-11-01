@@ -116,6 +116,13 @@ public final class HistDouble1D extends AbstractHist1D {
 		}
 	}
 
+	protected void getCounts(final double[] array) {
+		synchronized (this) {
+			final int max = Math.min(countsDouble.length, array.length);
+			System.arraycopy(countsDouble, 0, array, 0, max);
+		}
+	}
+
 	public double getCount() {
 		return getArea();
 	}

@@ -85,6 +85,12 @@ public abstract class AbstractHist1D extends Histogram {
 	 * @return 1-sigma error bars
 	 */
 	public abstract double[] getErrors();
+	
+	/**
+	 * Gets the histogram's counts as floating-point values.
+	 * @param array given array to populate with the histogram's counts
+	 */
+	protected abstract void getCounts(double [] array);
 
 	/**
 	 * Attempt to find gaussian peaks.
@@ -103,19 +109,8 @@ public abstract class AbstractHist1D extends Histogram {
 	public double[][] findPeaks(final double sensitivity, final double width,
 			final boolean cal) {
 		synchronized (this) {
-			double[] histArray;
-			if (getType() == Type.ONE_D_DOUBLE) {
-				histArray = ((HistDouble1D)this).getCounts();
-			} else if (getType() == Type.ONE_DIM_INT) { // INT type
-				final int[] temp = ((HistInt1D)this).getCounts();
-				histArray = new double[temp.length];
-				for (int i = 0; i < temp.length; i++) {//NOPMD
-					histArray[i] = temp[i];
-				}				
-			} else { // 2D
-				throw new UnsupportedOperationException(
-						"findPeaks() called on 2D hist");
-			}
+			final double[] histArray = new double[this.getSizeX()];
+			this.getCounts(histArray);				
 			final List<Double> posn = PeakFinder.getInstance().getCentroids(
 					histArray, sensitivity, width);
 			double[][] rval = new double[3][posn.size()];
