@@ -99,6 +99,10 @@ final class Plot1d extends AbstractPlot {
 		super();
 		setPeakFind(PlotPrefs.PREFS.getBoolean(PlotPrefs.AUTO_PEAK_FIND, true));
 	}
+	
+	public int getDimensionality(){
+		return 1;
+	}
 
 	private void addToMouseMoveClip(final int xcoord, final int ycoord) {
 		synchronized (mouseMoveClip) {

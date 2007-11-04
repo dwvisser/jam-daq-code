@@ -1,5 +1,5 @@
 package jam.data;
 
-public interface DimensionalData extends DataElement {
-    int getDimensionality();
+public interface DimensionalData extends DataElement, Dimensional {
+	// no need for more signatures
 }

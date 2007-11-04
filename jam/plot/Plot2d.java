@@ -65,6 +65,10 @@ final class Plot2d extends AbstractPlot {
 				true));
 	}
 
+	public int getDimensionality(){
+		return 2;
+	}
+
 	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		if (key.equals(ColorPrefs.SMOOTH_SCALE)) {

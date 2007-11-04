@@ -6,6 +6,7 @@ import static jam.plot.PlotPrefs.BLACK_BACKGROUND;
 import static jam.plot.PlotPrefs.HIGHLIGHT_GATE;
 import static jam.plot.PlotPrefs.PREFS;
 import jam.data.AbstractHist1D;
+import jam.data.Dimensional;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.RunInfo;
@@ -40,7 +41,7 @@ import javax.swing.SwingUtilities;
  * @since JDK 1.1
  * @author Ken Swartz
  */
-abstract class AbstractPlot implements PreferenceChangeListener {
+abstract class AbstractPlot implements PreferenceChangeListener, Dimensional {
 
 	protected transient final Options options = new Options();
 

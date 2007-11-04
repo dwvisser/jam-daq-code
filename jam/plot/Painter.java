@@ -4,6 +4,7 @@ import static jam.plot.common.Constants.BOTTOM;
 import static jam.plot.common.Constants.LEFT;
 import static jam.plot.common.Constants.LOG_FAKE_ZERO;
 import static jam.plot.common.Constants.TOP;
+import jam.data.Dimensional;
 import jam.plot.color.ColorScale;
 import jam.plot.color.DiscreteColorScale;
 import jam.plot.color.GradientColorScale;
@@ -93,18 +94,14 @@ final class Painter {
 	 * @param plot
 	 *            the plot this belongs to
 	 */
-	Painter(AbstractPlot plot) {
+	Painter(Dimensional plot) {
 		graphLayout = GraphicsLayout.LABELS;
 		/* class that draws tick marks and makes color thresholds */
 		tickmarks = new Tickmarks();
 		/* margin for printing */
 		/* maybe should be avaliable in constructor, middle of plot */
 		middle = new Point();
-		if (plot instanceof Plot1d) {
-			plotDimensions = 1;
-		} else {// Plot2d
-			plotDimensions = 2;
-		}
+		plotDimensions = plot.getDimensionality();
 		setLayout(GraphicsLayout.Type.WITH_LABELS);
 	}
 
