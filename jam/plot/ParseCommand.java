@@ -43,11 +43,11 @@ final class ParseCommand implements CommandListener {
 		CMD_MAP.put("s", PlotCommands.SCALE);
 	}
 
-	private transient final Action action;
+	private transient final Commandable commandable;
 
-	ParseCommand(Action action) {
+	ParseCommand(Commandable commandable) {
 		super();
-		this.action = action;
+		this.commandable = commandable;
 	}
 
 	/**
@@ -100,23 +100,23 @@ final class ParseCommand implements CommandListener {
 					} else {
 						cursor.setChannel(iVal, 0);
 					}
-					action.setCursor(cursor);
-					action.doCommand(PlotCommands.CURSOR, true);
+					commandable.setCursor(cursor);
+					commandable.doCommand(PlotCommands.CURSOR, true);
 				}
 			} else {
 				if (vertical) {// use 0,counts
 					for (double dVal : parameters) {
 						cursor.setChannel(0, (int) dVal);
-						action.setCursor(cursor);
-						action.doCommand(PlotCommands.CURSOR, true);
+						commandable.setCursor(cursor);
+						commandable.doCommand(PlotCommands.CURSOR, true);
 					}
 				} else {
 					/* 2D: x and y dimensions */
 					for (int i = 0; i < numParam - 1; i = i + 2) {
 						cursor.setChannel(parameters.get(i).intValue(),
 								parameters.get(i + 1).intValue());
-						action.setCursor(cursor);
-						action.doCommand(PlotCommands.CURSOR, true);
+						commandable.setCursor(cursor);
+						commandable.doCommand(PlotCommands.CURSOR, true);
 					}
 				}
 			}
@@ -136,22 +136,22 @@ final class ParseCommand implements CommandListener {
 		final List<Double> parameters = convertParameters(cmdParams);
 		if (command.equals(Console.NUMBERS_ONLY)) {
 			accept = true;
-			if (action.getIsCursorCommand()) {
-				final boolean vertical = PlotCommands.RANGE.equals(action
+			if (commandable.getIsCursorCommand()) {
+				final boolean vertical = PlotCommands.RANGE.equals(commandable
 						.getCurrentCommand());
 				cursorChannel(parameters, vertical);
 			} else {
-				action.doCommand(null, parameters, true);
+				commandable.doCommand(null, parameters, true);
 			}
 		} else if (CMD_MAP.containsKey(command)) {
 			accept = true;
 			final String inCommand = CMD_MAP.get(command);
-			action.doCommand(inCommand, parameters, true);
-			if (action.getIsCursorCommand()) {
+			commandable.doCommand(inCommand, parameters, true);
+			if (commandable.getIsCursorCommand()) {
 				final boolean vertical = PlotCommands.RANGE.equals(inCommand);
 				cursorChannel(parameters, vertical);
 			} else {
-				action.doCommand(null, parameters, true);
+				commandable.doCommand(null, parameters, true);
 			}
 		} else {
 			accept = false;

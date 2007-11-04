@@ -49,6 +49,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
+
+
 /**
  * Class the does the actions on plots. Receives commands from buttons and
  * command line. Performs action by performing command on plot, plot1d and
@@ -75,7 +77,8 @@ import java.util.prefs.PreferenceChangeListener;
  * @version 0.5
  */
 
-class Action implements PlotMouseListener, PreferenceChangeListener {
+class Action implements PlotMouseListener, PreferenceChangeListener,
+		Commandable {
 
 	/** Broadcaster for event and gate change */
 	private static final Broadcaster BROADCASTER = Broadcaster
@@ -164,7 +167,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 
 	/** Output text to */
 	private transient final MessageHandler textOut;
-	
+
 	private transient final CommandFinder commandFinder;
 
 	/**
@@ -371,14 +374,14 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * 
 	 * @param inCommand
 	 */
-	void doCommand(final String inCommand, final boolean console) {
+	public void doCommand(final String inCommand, final boolean console) {
 		doCommand(inCommand, null, console);
 	}
 
 	/*
 	 * non-javadoc: does a command with parameters
 	 */
-	void doCommand(final String inCommand, final List<Double> inParams,
+	public void doCommand(final String inCommand, final List<Double> inParams,
 			final boolean console) {
 		synchronized (this) {
 			/* if inCommand is null, keep currentCommand */
@@ -398,7 +401,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				}
 			}
 			/* check that a histogram is defined */
-			if (SelectionTree.getCurrentHistogram() != UnNamed.getSingletonInstance()) {
+			if (SelectionTree.getCurrentHistogram() != UnNamed
+					.getSingletonInstance()) {
 				doCurrentCommand(inParams, console);
 			}
 		}
@@ -522,11 +526,13 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		return clicks.get(bin);
 	}
 
-	String getCurrentCommand() {
-		return currentCommand;
+	public String getCurrentCommand() {
+		synchronized (this) {
+			return currentCommand;
+		}
 	}
 
-	boolean getIsCursorCommand() {
+	public boolean getIsCursorCommand() {
 		synchronized (this) {
 			return isCursorCommand;
 		}
@@ -721,7 +727,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final int upperLimit = bgdPts[3] + 1;
 		final double[] bkgd = new double[upperLimit - lowerLimit + 1];
 		System.arraycopy(channelBackground, lowerLimit, bkgd, 0, bkgd.length);
-		plotAccessor.getPlotContainer().displayFit(null, bkgd, null, lowerLimit);
+		plotAccessor.getPlotContainer()
+				.displayFit(null, bkgd, null, lowerLimit);
 		done();
 	}
 
@@ -733,8 +740,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final StringBuffer buffer = new StringBuffer(240);
 		buffer
 				.append("Commands:\tli - Linear Scale\tlo - Log Scale\ta  - Auto Scale\tra - Range\tex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\td  - Display\to  - Overlay\tu  - Update\tg  - GoTo\tar - Area\tn  - Net Area\tre - Rebin\tc  - Bin\t");
-		final Collection<String> commands = commandFinder
-				.getAllCommands();
+		final Collection<String> commands = commandFinder.getAllCommands();
 		for (String command : commands) {
 			buffer.append(command).append('\t');
 		}
@@ -1100,7 +1106,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		}
 	}
 
-	void setCursor(final Bin cursorIn) {
+	public void setCursor(final Bin cursorIn) {
 		synchronized (this) {
 			cursorBin.setChannel(cursorIn);
 		}
