@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.print.PageFormat;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -196,6 +197,26 @@ public final class PlotContainer implements PlotSelectListener {
 	}
 
 	/**
+	 * Overlay a histogram.
+	 * 
+	 * @param num
+	 *            the number of the hist to overlay
+	 */
+	public void overlayHistogram(final int num) {
+		final Histogram hist = Histogram.getHistogram(num);
+		/* Check we can overlay. */
+		if (getDimensionality() != 1) {
+			throw new UnsupportedOperationException(
+					"Overlay attempted for non-1D histogram.");
+		}
+		if (hist.getDimensionality() != 1) {
+			throw new IllegalArgumentException(
+					"You may only overlay 1D histograms.");
+		}
+		overlayHistograms(Collections.singletonList((AbstractHist1D)hist));
+	}
+
+	/**
 	 * Clear overlays.
 	 */
 	void removeOverlays() {
@@ -269,7 +290,7 @@ public final class PlotContainer implements PlotSelectListener {
 		}
 	}
 
-	void displayFit(final double[][] signals, final double[] background,
+	public void displayFit(final double[][] signals, final double[] background,
 			final double[] residuals, final int lowerLimit) {
 		getPlot().displayFit(signals, background, residuals, lowerLimit);
 	}

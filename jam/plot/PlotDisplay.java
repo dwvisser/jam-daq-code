@@ -22,7 +22,6 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.print.PageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -42,7 +41,7 @@ import javax.swing.JPanel;
  * @since JDK1.1
  */
 public final class PlotDisplay extends JPanel implements PlotSelectListener,
-		PreferenceChangeListener, Observer {
+		PreferenceChangeListener, Observer, CurrentPlotAccessor {
 
 	private transient final Action action; // handles display events
 
@@ -65,7 +64,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	private transient boolean isScrolling;
 
 	/** Array of all available plots */
-	private transient final List<PlotContainer> plotList = new ArrayList<PlotContainer>();
+	private transient final List<PlotContainer> plotContainers = new ArrayList<PlotContainer>();
 
 	private transient final Object plotLock = new Object();
 
@@ -156,8 +155,8 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 *            the number of plots to create
 	 */
 	private void createPlots(final int numberPlots) {
-		for (int i = plotList.size(); i < numberPlots; i++) {
-			plotList.add(PlotContainer.createPlotContainer(this));
+		for (int i = plotContainers.size(); i < numberPlots; i++) {
+			plotContainers.add(PlotContainer.createPlotContainer(this));
 		}
 	}
 
@@ -238,30 +237,10 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 */
 	private void overlayHistogram(final List<AbstractHist1D> hists) {
 		if (hists.isEmpty()) {
-			removeOverlays();
+			currentPlot.removeOverlays();
 		} else {
 			currentPlot.overlayHistograms(hists);
 		}
-	}
-
-	/**
-	 * Overlay a histogram.
-	 * 
-	 * @param num
-	 *            the number of the hist to overlay
-	 */
-	public void overlayHistogram(final int num) {
-		final Histogram hist = Histogram.getHistogram(num);
-		/* Check we can overlay. */
-		if (!(getPlotContainer().getDimensionality() == 1)) {
-			throw new UnsupportedOperationException(
-					"Overlay attempted for non-1D histogram.");
-		}
-		if (hist.getDimensionality() != 1) {
-			throw new IllegalArgumentException(
-					"You may only overlay 1D histograms.");
-		}
-		overlayHistogram(Collections.singletonList((AbstractHist1D)hist));
 	}
 
 	/**
@@ -270,7 +249,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	public void plotSelected(final Object selectedObject) {
 		final PlotContainer selectedPlot = (PlotContainer) selectedObject;
 		if (selectedPlot != getPlotContainer()) {
-			setPlot(selectedPlot);
+			setPlotContainer(selectedPlot);
 			final Histogram hist = selectedPlot.getHistogram();
 			/* Tell the framework the current hist */
 			SelectionTree.setCurrentHistogram(hist);
@@ -298,13 +277,6 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		}
 		updateLayout();
 		update();
-	}
-
-	/**
-	 * Remove all overlays.
-	 */
-	public void removeOverlays() {
-		currentPlot.removeOverlays();
 	}
 
 	/**
@@ -354,7 +326,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * 
 	 * @param container
 	 */
-	private void setPlot(final PlotContainer container) {
+	private void setPlotContainer(final PlotContainer container) {
 		synchronized (plotLock) {
 			/* Only do something if the plot has changed */
 			if (!container.equals(currentPlot)) {
@@ -371,7 +343,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 					container.addPlotMouseListener(action);
 				}
 				/* Change selected plot */
-				for (PlotContainer plotContainer : plotList) {
+				for (PlotContainer plotContainer : plotContainers) {
 					plotContainer.select(false);
 				}
 				action.setDefiningGate(false);
@@ -416,7 +388,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		PlotContainer plotContainer = null;
 		/* Set initial states for all plots */
 		for (int i = 0; i < numberPlots; i++) {
-			plotContainer = plotList.get(i);
+			plotContainer = plotContainers.get(i);
 			plotContainer.removeAllPlotMouseListeners();
 			plotContainer.setNumber(i);
 			plotContainer.select(false);
@@ -428,7 +400,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		updateLayout();
 		// Default set to first plot
 		currentPlot = null;//NOPMD
-		plotContainer = plotList.get(0);
+		plotContainer = plotContainers.get(0);
 		plotSelected(plotContainer);
 	}
 
@@ -436,8 +408,8 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * Update all the plots.
 	 * 
 	 */
-	void update() {
-		for (PlotContainer container : plotList) {
+	public void update() {
+		for (PlotContainer container : plotContainers) {
 			container.update();
 		}
 	}
@@ -498,13 +470,13 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	private void histogramsCleared() {
 		/* Clear plots select first plot */
 		/* Set initial states for all plots */
-		for (PlotContainer plots : plotList) {
+		for (PlotContainer plots : plotContainers) {
 			plots.removeAllPlotMouseListeners();
 			plots.select(false);
 			plots.reset();
 			plots.displayHistogram(null);
 		}
-		plotSelected(plotList.get(0));
+		plotSelected(plotContainers.get(0));
 	}
 
 	/**
@@ -526,7 +498,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			plotLayout = PlotContainer.LayoutType.NO_LABELS_BORDER;
 			scrollTemp = isScrolling;
 		}
-		for (PlotContainer plot : plotList) {
+		for (PlotContainer plot : plotContainers) {
 			plot.setLayoutType(plotLayout);
 			plot.enableScrolling(scrollTemp);
 		}

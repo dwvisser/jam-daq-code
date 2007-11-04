@@ -498,7 +498,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 				background[i] = this.calculateBackground(i + lowerLimit);
 			}
 		}
-		display.displayFit(signals, background, residuals, lowerLimit);
+		display.getPlotContainer().displayFit(signals, background, residuals, lowerLimit);
 	}
 
 	/**
