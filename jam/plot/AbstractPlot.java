@@ -41,7 +41,8 @@ import javax.swing.SwingUtilities;
  * @since JDK 1.1
  * @author Ken Swartz
  */
-abstract class AbstractPlot implements PreferenceChangeListener, Dimensional {
+abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
+		CountsContainer {
 
 	protected transient final Options options = new Options();
 
@@ -53,7 +54,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional {
 	/**
 	 * Plot graphics handler.
 	 */
-	protected transient final Painter graph;
+	protected transient final Painter painter;
 
 	/**
 	 * last point mouse moved to, uses plot coordinates when selecting an area,
@@ -106,9 +107,9 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional {
 		super();
 		panel.setOpaque(true);
 		panel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-		graph = new Painter(this);
+		painter = new Painter(this);
 		// Create plot mouse
-		plotMouse = new PlotMouse(graph);
+		plotMouse = new PlotMouse(painter);
 		panel.addMouseListener(plotMouse);
 		// Setup preferences
 		initPrefs();
@@ -289,11 +290,6 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional {
 	 */
 	protected abstract double getCount(Bin bin);
 
-	/**
-	 * @return the counts array for the displayed histogram
-	 */
-	protected abstract Object getCounts();
-
 	/*
 	 * non-javadoc: Gets the current date and time as a String.
 	 */
@@ -426,10 +422,10 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional {
 	void paintHeader(final Graphics graphics) {
 		graphics.setColor(PlotColorMap.getInstance().getForeground());
 		if (options.isPrinting()) { // output to printer
-			graph.drawDate(getDate()); // date
-			graph.drawRun(RunInfo.getInstance().runNumber); // run number
+			painter.drawDate(getDate()); // date
+			painter.drawRun(RunInfo.getInstance().runNumber); // run number
 		}
-		graph.drawBorder();
+		painter.drawBorder();
 	}
 
 	/**
@@ -594,7 +590,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional {
 	 * non-javadoc: Update layout.
 	 */
 	void setLayout(final GraphicsLayout.Type type) {
-		graph.setLayout(type);
+		painter.setLayout(type);
 	}
 
 	/**
@@ -677,16 +673,5 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional {
 		if (getCounts() != null) {
 			refresh();
 		}
-	}
-
-	void warning(final String mess) {
-		final Runnable task = new Runnable() {
-			public void run() {
-				final String plotErrorTitle = "Plot Warning";
-				JOptionPane.showMessageDialog(panel, mess, plotErrorTitle,
-						JOptionPane.WARNING_MESSAGE);
-			}
-		};
-		SwingUtilities.invokeLater(task);
 	}
 }

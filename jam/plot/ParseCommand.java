@@ -20,6 +20,8 @@ final class ParseCommand implements CommandListener {
 
 	private static final Map<String, String> CMD_MAP = new HashMap<String, String>();
 
+	private transient final CurrentPlotAccessor plotAccessor;
+
 	static {
 		CMD_MAP.put("help", PlotCommands.HELP);
 		CMD_MAP.put("ex", PlotCommands.EXPAND);
@@ -45,9 +47,10 @@ final class ParseCommand implements CommandListener {
 
 	private transient final Commandable commandable;
 
-	ParseCommand(Commandable commandable) {
+	ParseCommand(Commandable commandable, CurrentPlotAccessor plotAccessor) {
 		super();
 		this.commandable = commandable;
+		this.plotAccessor = plotAccessor;
 	}
 
 	/**
@@ -90,8 +93,7 @@ final class ParseCommand implements CommandListener {
 		/* Must have at least 1 parameter */
 		if (numParam > 0) {
 			final Bin cursor = Bin.create();
-			if (PlotDisplay.getDisplay()
-					.getPlotContainer().getDimensionality() == 1) {
+			if (plotAccessor.getPlotContainer().getDimensionality() == 1) {
 				/* we have a 1D plot: only x dimension */
 				for (double dVal : parameters) {
 					final int iVal = (int) dVal;

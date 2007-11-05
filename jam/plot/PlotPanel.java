@@ -12,7 +12,9 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 
 final class PlotPanel extends JPanel {
@@ -157,18 +159,18 @@ final class PlotPanel extends JPanel {
 			// FIXME KBS font not set
 			// graph.setFont(printFont);
 			pcm.setColorMap(Mode.PRINT);
-			plot.graph.setView(pageformat);
+			plot.painter.setView(pageformat);
 		} else { // output to screen
 			// graph.setFont(screenFont);
 			pcm.setColorMap(colorMode);
-			plot.graph.setView(null);
+			plot.painter.setView(null);
 		}
 		final Color foreground = pcm.getForeground();
-		graphics.setColor(foreground); // color foreground
+		graphics.setColor(foreground);
 		this.setForeground(foreground);
 		this.setBackground(pcm.getBackground());
 		plot.viewSize = getSize();
-		plot.graph.update(graphics, plot.viewSize, plot.limits);
+		plot.painter.update(graphics, plot.viewSize, plot.limits);
 		/*
 		 * give graph all pertinent info, draw outline, tickmarks, labels, and
 		 * title
@@ -180,8 +182,7 @@ final class PlotPanel extends JPanel {
 				final Plot1d plot1d = (Plot1d)plot;
 				if (plot1d.getBinWidth() > plotHist.getSizeX()) {
 					plot1d.setBinWidth(1.0);
-					plot
-						.warning("Bin width > hist size, so setting bin width back to 1.");
+					warning("Bin width > hist size, so setting bin width back to 1.");
 				}
 			}
 			plot.paintHistogram(graphics);
@@ -275,4 +276,16 @@ final class PlotPanel extends JPanel {
 			settingGate = state;
 		}
 	}
+	
+	private void warning(final String mess) {
+		final Runnable task = new Runnable() {
+			public void run() {
+				final String plotErrorTitle = "Plot Warning";
+				JOptionPane.showMessageDialog(PlotPanel.this, mess, plotErrorTitle,
+						JOptionPane.WARNING_MESSAGE);
+			}
+		};
+		SwingUtilities.invokeLater(task);
+	}
+
 }

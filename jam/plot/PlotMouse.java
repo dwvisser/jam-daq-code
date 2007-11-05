@@ -16,10 +16,10 @@ import java.util.List;
  */
 class PlotMouse extends MouseAdapter {
 	/* list of listeners for plotmouse */
-	private transient final List<PlotMouseListener> listenersList = new ArrayList<PlotMouseListener>();
+	private transient final List<PlotMouseListener> listeners = new ArrayList<PlotMouseListener>();
 
 	/* converts screen pixels to data values */
-	private transient final Painter plotGraphics;
+	private transient final Painter painter;
 
 	/* Called so a change in select plot can be made */
 	private transient PlotSelectListener plotListener;
@@ -30,7 +30,7 @@ class PlotMouse extends MouseAdapter {
 	 */
 	PlotMouse(Painter plotGraphics) {
 		super();
-		this.plotGraphics = plotGraphics;
+		this.painter = plotGraphics;
 	}
 
 	/*
@@ -45,7 +45,7 @@ class PlotMouse extends MouseAdapter {
 	 * event occurs. Listener must implement PlotMouseListener (have method plot
 	 */
 	void addListener(final PlotMouseListener listener) {
-		listenersList.add(listener);
+		listeners.add(listener);
 	}
 
 	/*
@@ -53,14 +53,14 @@ class PlotMouse extends MouseAdapter {
 	 * returns true if it could remove this listener
 	 */
 	boolean removeListener(final PlotMouseListener listener) {
-		return listenersList.remove(listener);
+		return listeners.remove(listener);
 	}
 
 	/**
 	 * Remove all listeners
 	 */
 	void removeAllListeners() {
-		listenersList.clear();
+		listeners.clear();
 	}
 
 	/**
@@ -71,15 +71,15 @@ class PlotMouse extends MouseAdapter {
 	 *            the mouse-pressed event
 	 */
 	public void mousePressed(final MouseEvent event) {
-		final AbstractPlot selectedPlot = ((PlotPanel) event
+		final CountsContainer selectedPlot = ((PlotPanel) event
 				.getSource()).getPlot();
 		/* First listeners about selected plot firsts */
 		plotListener.plotSelected(selectedPlot);
 		/* Only fire event if plot has counts */
 		if (selectedPlot.getCounts() != null) {
 			final Point pin = event.getPoint();
-			final Bin pout = plotGraphics.toData(pin);
-			for (PlotMouseListener listener : listenersList) {
+			final Bin pout = painter.toData(pin);
+			for (PlotMouseListener listener : listeners) {
 				listener.plotMousePressed(pout, pin);
 			}
 		}

@@ -123,7 +123,7 @@ final class Plot2d extends AbstractPlot {
 	protected void paintMarkedChannels(final Graphics graphics) {
 		graphics.setColor(plotColorMap.getMark());
 		for (Bin bin : markedChannels) {
-			graph.markChannel2d(bin);
+			painter.markChannel2d(bin);
 		}
 	}
 
@@ -143,7 +143,7 @@ final class Plot2d extends AbstractPlot {
 		final Graphics2D context2d = (Graphics2D) context;
 		context2d.setColor(plotColorMap.getArea());
 		synchronized (lastMovePoint) {
-			graph.markArea2dOutline(plotSelection.start, Bin
+			painter.markArea2dOutline(plotSelection.start, Bin
 					.create(lastMovePoint));
 		}
 		panel.setMouseMoved(false);
@@ -184,9 +184,9 @@ final class Plot2d extends AbstractPlot {
 		context2d.setComposite(AlphaComposite.getInstance(
 				AlphaComposite.SRC_OVER, 0.5f));
 		context.setColor(plotColorMap.getArea());
-		graph.clipPlot();
+		painter.clipPlot();
 		synchronized (areaMark) {
-			graph.markArea2d(graph.getRectangleOutline2d(areaMark));
+			painter.markArea2d(painter.getRectangleOutline2d(areaMark));
 		}
 	}
 
@@ -211,7 +211,7 @@ final class Plot2d extends AbstractPlot {
 		} else if (mode == GateSetMode.GATE_CONTINUE) {
 			pointsGate.addPoint(pChannel.getX(), pChannel.getY());
 			/* update variables */
-			final Point tempP = graph.toViewLin(pChannel);
+			final Point tempP = painter.toViewLin(pChannel);
 			setLastGatePoint(tempP);
 			if (pPixel == null) {
 				setLastMovePoint(lastGatePoint);
@@ -229,7 +229,7 @@ final class Plot2d extends AbstractPlot {
 					final Bin lpoint = Bin.create(pointsGate.xpoints[last],
 							pointsGate.ypoints[last]);
 					/* update variables */
-					final Point tempP = graph.toViewLin(lpoint);
+					final Point tempP = painter.toViewLin(lpoint);
 					setLastGatePoint(tempP);
 					setLastMovePoint(lastGatePoint);
 				}
@@ -249,7 +249,7 @@ final class Plot2d extends AbstractPlot {
 
 	protected void paintSetGatePoints(final Graphics context) {
 		context.setColor(plotColorMap.getGateDraw());
-		graph.settingGate2d(pointsGate);
+		painter.settingGate2d(pointsGate);
 	}
 
 	/**
@@ -300,7 +300,7 @@ final class Plot2d extends AbstractPlot {
 	 * 
 	 * @return the counts for the displayed 2d histogram
 	 */
-	protected Object getCounts() {
+	public Object getCounts() {
 		return counts2d;
 	}
 
@@ -391,41 +391,41 @@ final class Plot2d extends AbstractPlot {
 		final Scale scale = limits.getScale();
 		context.setColor(plotColorMap.getHistogram());
 		context.getClipBounds(clipBounds);
-		final int minX = graph.toDataHorz((int) clipBounds.getMinX());
-		final int maxX = graph.toDataHorz((int) clipBounds.getMaxX());
-		final int minY = graph.toDataVert((int) clipBounds.getMaxY());
-		final int maxY = graph.toDataVert((int) clipBounds.getMinY());
+		final int minX = painter.toDataHorz((int) clipBounds.getMinX());
+		final int maxX = painter.toDataHorz((int) clipBounds.getMaxX());
+		final int minY = painter.toDataVert((int) clipBounds.getMaxY());
+		final int maxY = painter.toDataVert((int) clipBounds.getMinY());
 		final DiscreteColorScale dcs = DiscreteColorScale.getScale(scale);
 		if (getSmoothColorScale()) {
-			graph.drawHist2d(counts2d, minX, minY, maxX, maxY);
+			painter.drawHist2d(counts2d, minX, minY, maxX, maxY);
 			context.setPaintMode();
 			context.setColor(plotColorMap.getForeground());
-			graph.drawScale2d();
+			painter.drawScale2d();
 		} else {
-			graph.drawHist2d(counts2d, minX, minY, maxX, maxY, dcs);
+			painter.drawHist2d(counts2d, minX, minY, maxX, maxY, dcs);
 			context.setPaintMode();
 			context.setColor(plotColorMap.getForeground());
-			graph.drawScale2d(dcs);
+			painter.drawScale2d(dcs);
 		}
 		/* draw labels/ticks after histogram so they are on top */
 		context.setColor(plotColorMap.getForeground());
-		graph.drawTitle(plotHist.getTitle(), TOP);
-		graph.drawNumber(plotHist.getNumber(), new int[0]);
-		graph.drawTicks(BOTTOM);
-		graph.drawLabels(BOTTOM);
-		graph.drawTicks(LEFT);
-		graph.drawLabels(LEFT);
+		painter.drawTitle(plotHist.getTitle(), TOP);
+		painter.drawNumber(plotHist.getNumber(), new int[0]);
+		painter.drawTicks(BOTTOM);
+		painter.drawLabels(BOTTOM);
+		painter.drawTicks(LEFT);
+		painter.drawLabels(LEFT);
 		final String axisLabelX = plotHist.getLabelX();
 		if (axisLabelX == null) {
-			graph.drawAxisLabel(X_LABEL_2D, BOTTOM);
+			painter.drawAxisLabel(X_LABEL_2D, BOTTOM);
 		} else {
-			graph.drawAxisLabel(axisLabelX, BOTTOM);
+			painter.drawAxisLabel(axisLabelX, BOTTOM);
 		}
 		final String axisLabelY = plotHist.getLabelY();
 		if (axisLabelY == null) {
-			graph.drawAxisLabel(Y_LABEL_2D, LEFT);
+			painter.drawAxisLabel(Y_LABEL_2D, LEFT);
 		} else {
-			graph.drawAxisLabel(axisLabelY, LEFT);
+			painter.drawAxisLabel(axisLabelY, LEFT);
 		}
 		context.setPaintMode();
 		context.setColor(plotColorMap.getForeground());
@@ -445,7 +445,7 @@ final class Plot2d extends AbstractPlot {
 		if (options.isNoFillMode()) {
 			paintPolyGate(graphics2d);
 		} else {
-			graph.drawGate2d(currentGate.getLimits2d());
+			painter.drawGate2d(currentGate.getLimits2d());
 		}
 	}
 
@@ -464,21 +464,21 @@ final class Plot2d extends AbstractPlot {
 		if (gatePoints != null) {
 			final int numberPoints = gatePoints.npoints;
 			if (numberPoints > 0) {// avoids negative array indices
-				graph.clipPlot();
+				painter.clipPlot();
 				final int lastI = numberPoints - 1;
 				for (int i = 0; i < lastI; i++) {
 					final int xval1 = gatePoints.xpoints[i];
 					final int yval1 = gatePoints.ypoints[i];
 					final int xval2 = gatePoints.xpoints[i + 1];
 					final int yval2 = gatePoints.ypoints[i + 1];
-					graph.drawDataLine(xval1, yval1, xval2, yval2);
+					painter.drawDataLine(xval1, yval1, xval2, yval2);
 				}
 				if (gatePoints.xpoints[0] != gatePoints.xpoints[lastI]) {
 					final int xval1 = gatePoints.xpoints[0];
 					final int yval1 = gatePoints.ypoints[0];
 					final int xval2 = gatePoints.xpoints[lastI];
 					final int yval2 = gatePoints.ypoints[lastI];
-					graph.drawDataLine(xval1, yval1, xval2, yval2);
+					painter.drawDataLine(xval1, yval1, xval2, yval2);
 				}
 			}
 		}
@@ -535,7 +535,7 @@ final class Plot2d extends AbstractPlot {
 					addToSelectClip(plotSelection.start, Bin
 							.create(lastMovePoint));
 				}
-				lastMovePoint.setLocation(graph.toData(event.getPoint())
+				lastMovePoint.setLocation(painter.toData(event.getPoint())
 						.getPoint());
 				addToSelectClip(plotSelection.start, Bin.create(lastMovePoint));
 			}
@@ -558,7 +558,7 @@ final class Plot2d extends AbstractPlot {
 	 */
 	private void addToSelectClip(final Bin bin1, final Bin bin2) {
 		synchronized (plotSelection.areaClip) {
-			plotSelection.areaClip.add(graph.getRectangleOutline2d(bin1, bin2));
+			plotSelection.areaClip.add(painter.getRectangleOutline2d(bin1, bin2));
 		}
 	}
 
@@ -586,7 +586,7 @@ final class Plot2d extends AbstractPlot {
 			final Bin bin2 = Bin.create(bin1.getX() + box.width, bin1.getY()
 					+ box.height);
 			/* now do conversion */
-			box.setBounds(graph.getRectangleOutline2d(bin1, bin2));
+			box.setBounds(painter.getRectangleOutline2d(bin1, bin2));
 			box.width += 1;
 			box.height += 1;
 		} else {
@@ -595,8 +595,8 @@ final class Plot2d extends AbstractPlot {
 			 * polygon using channel coordinates.
 			 */
 			final Polygon shape = new Polygon();
-			final Bin bin1 = graph.toData(box.getLocation());
-			final Bin bin2 = graph.toData(new Point(box.x + box.width, box.y
+			final Bin bin1 = painter.toData(box.getLocation());
+			final Bin bin2 = painter.toData(new Point(box.x + box.width, box.y
 					+ box.height));
 			shape.addPoint(bin1.getX(), bin1.getY());
 			shape.addPoint(bin2.getX(), bin2.getY());

@@ -182,7 +182,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 		this.commandFinder = finder;
 		plotAccessor = disp;
 		textOut = console.getLog();
-		final ParseCommand parseCommand = new ParseCommand(this);
+		final ParseCommand parseCommand = new ParseCommand(this, disp);
 		console.addCommandListener(parseCommand);
 		cursorBin = Bin.create();
 		commandPresent = false;
