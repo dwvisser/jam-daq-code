@@ -87,7 +87,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional {
 	/** Gate points in plot coordinates (channels). */
 	protected final Polygon pointsGate = new Polygon();
 
-	private transient Scroller scrollbars;
+	private transient Limitable scrollbars;
 
 	/**
 	 * Size of plot window in channels.
@@ -118,7 +118,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional {
 	/*
 	 * non-javadoc: add scrollbars
 	 */
-	void addScrollBars(final Scroller scroller) {
+	void addScrollBars(final Limitable scroller) {
 		scrollbars = scroller;
 	}
 

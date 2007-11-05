@@ -82,7 +82,6 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	public PlotDisplay(final Console console, final CommandFinder finder) {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
-		Bin.init(this);
 		/* display event handler */
 		action = new Action(this, console, finder);
 		PREFS.addPreferenceChangeListener(this);

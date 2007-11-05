@@ -50,7 +50,6 @@ import java.util.logging.Logger;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
-
 /**
  * Class the does the actions on plots. Receives commands from buttons and
  * command line. Performs action by performing command on plot, plot1d and
@@ -232,7 +231,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 				cloneClickAndAdd(cursorBin);
 				currentPlot.initializeSelectingArea(cursorBin);
 				currentPlot.markChannel(cursorBin);
-				textOut.messageOut(cursorBin.getCoordString() + S_TO);
+				textOut.messageOut(getCoordString(cursorBin) + S_TO);
 			}
 		} else {
 			currentPlot.setSelectingArea(false);
@@ -256,7 +255,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 				}
 			} else {// 2D histogram
 				synchronized (cursorBin) {
-					textOut.messageOut(cursorBin.getCoordString());
+					textOut.messageOut(getCoordString(cursorBin));
 					final double[][] counts = (double[][]) currentPlot
 							.getCounts();
 					final double area = inquire
@@ -305,7 +304,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 		synchronized (cursorBin) {
 			xch = cursorBin.getX();
 			ych = cursorBin.getY();
-			count = cursorBin.getCounts();
+			count = getCounts(cursorBin);
 		}
 		currentPlot.markChannel(cursorBin);
 		String binText;
@@ -471,12 +470,12 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			synchronized (cursorBin) {
 				currentPlot.initializeSelectingArea(cursorBin);
 				cloneClickAndAdd(cursorBin);
-				textOut.messageOut(cursorBin.getCoordString() + S_TO);
+				textOut.messageOut(getCoordString(cursorBin) + S_TO);
 			}
 		} else {
 			currentPlot.setSelectingArea(false);
 			synchronized (cursorBin) {
-				textOut.messageOut(cursorBin.getCoordString(),
+				textOut.messageOut(getCoordString(cursorBin),
 						MessageHandler.END);
 				currentPlot.expand(getClick(0), cursorBin);
 			}
@@ -785,7 +784,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			textOut.messageOut(crt + "Background " + cursorBin.getX() + S_TO,
 					MessageHandler.CONTINUE);
 		} else {
-			textOut.messageOut(cursorBin.getCoordString() + S_TO,
+			textOut.messageOut(getCoordString(cursorBin) + S_TO,
 					MessageHandler.CONTINUE);
 		}
 	}
@@ -799,7 +798,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			currentPlot.markArea(bin1, cursorBin);
 			textOut.messageOut(Integer.toString(cursorBin.getX()));
 		} else {
-			textOut.messageOut(cursorBin.getCoordString(),
+			textOut.messageOut(getCoordString(cursorBin),
 					MessageHandler.CONTINUE);
 		}
 	}
@@ -812,7 +811,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			textOut.messageOut(" and " + cursorBin.getX() + S_TO);
 
 		} else {
-			textOut.messageOut(cursorBin.getCoordString() + S_TO,
+			textOut.messageOut(getCoordString(cursorBin) + S_TO,
 					MessageHandler.CONTINUE);
 		}
 	}
@@ -827,7 +826,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			textOut.messageOut(String.valueOf(cursorBin.getX()),
 					MessageHandler.CONTINUE);
 		} else {
-			textOut.messageOut(cursorBin.getCoordString(),
+			textOut.messageOut(getCoordString(cursorBin),
 					MessageHandler.CONTINUE);
 		}
 	}
@@ -843,7 +842,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 					MessageHandler.CONTINUE);
 		} else {
 
-			textOut.messageOut(cursorBin.getCoordString() + S_TO,
+			textOut.messageOut(getCoordString(cursorBin) + S_TO,
 					MessageHandler.CONTINUE);
 		}
 	}
@@ -859,7 +858,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 					.messageOut(cursorBin.getX() + ". ",
 							MessageHandler.CONTINUE);
 		} else {
-			textOut.messageOut(cursorBin.getCoordString() + ". ",
+			textOut.messageOut(getCoordString(cursorBin) + ". ",
 					MessageHandler.CONTINUE);
 		}
 	}
@@ -1029,7 +1028,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			final PlotContainer plot = plotAccessor.getPlotContainer();
 			final boolean twoD = plot.getDimensionality() == 2;
 			final boolean useCounts = twoD && !console;
-			final double cts = useCounts ? cursorBin.getCounts() : cursorBin
+			final double cts = useCounts ? getCounts(cursorBin) : cursorBin
 					.getY();
 			if (clicks.size() == 0) {
 				countLow = (int) cts;
@@ -1194,4 +1193,21 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	private void zoomvert() {// NOPMD
 		// do-nothing
 	}
+
+	private double getCounts(final Bin bin) {
+		synchronized (this) {
+			return plotAccessor.getPlotContainer().getCount(bin);
+		}
+	}
+
+	private String getCoordString(final Bin bin) {
+		synchronized (this) {
+			final StringBuffer rval = new StringBuffer().append(bin.getX());
+			if (plotAccessor.getPlotContainer().getDimensionality() == 2) {
+				rval.append(',').append(bin.getY());
+			}
+			return rval.toString();
+		}
+	}
+
 }

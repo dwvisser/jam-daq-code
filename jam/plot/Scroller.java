@@ -17,7 +17,7 @@ import javax.swing.JScrollBar;
  * @author Ken Swartz
  * @author Dale Visser
  */
-class Scroller extends JPanel implements AdjustmentListener {
+class Scroller extends JPanel implements AdjustmentListener, Limitable {
 
 	// constants for count scroll bar
 
@@ -102,7 +102,7 @@ class Scroller extends JPanel implements AdjustmentListener {
 	 * @param limits
 	 *            new limits
 	 */
-	void setLimits(final Limits limits) {
+	public void setLimits(final Limits limits) {
 		synchronized (LOCK) {
 			plotLimits = limits;
 			scrollHorz.setModel(plotLimits.getModelX());
@@ -156,7 +156,7 @@ class Scroller extends JPanel implements AdjustmentListener {
 	 * called to reset the counts scroll bar used because mouse release is not
 	 * alwayed call
 	 */
-	void update() {
+	public void update() {
 		synchronized (LOCK) {
 			if (plot.hasHistogram()) {
 				lastCountMax = plot.getLimits().getMaximumCounts();
@@ -179,19 +179,20 @@ class Scroller extends JPanel implements AdjustmentListener {
 			if (!countChanging) {
 				lastCountMax = plot.getLimits().getMaximumCounts();
 			}
-			
+
 			// whether we are under or over the midpoint determines the sign
 			// of the adjustment
 			final int sign = scrollValue < COUNT_SCROLL_MID ? -1 : 1;
 			final double scrolldiff = sign * (scrollValue - COUNT_SCROLL_MID);
-			
+
 			// change 1% for every 1
 			final double scaleChange = 1.0 + 0.01 * scrolldiff;
-			
+
 			// effectively multiplies if we are increasing, divides if we
 			// are decreasing
-			int newMax = lastCountMax * (int) Math.round(Math.pow(scaleChange, sign));
-			
+			int newMax = lastCountMax
+					* (int) Math.round(Math.pow(scaleChange, sign));
+
 			// change by one at least
 			if (newMax == lastCountMax) {
 				newMax = lastCountMax + sign;

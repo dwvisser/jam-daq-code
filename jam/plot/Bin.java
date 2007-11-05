@@ -14,12 +14,6 @@ public final class Bin implements Cloneable {
 	 */
 	private transient final Point channel = new Point();
 
-	private static PlotDisplay display = null;
-
-	static void init(final PlotDisplay disp) {
-		Bin.display = disp;
-	}
-
 	/**
 	 * Constructs a bin with coordinates identical to those of the given
 	 * <code>Point</code>.
@@ -29,9 +23,6 @@ public final class Bin implements Cloneable {
 	 * @return bin at the given coordinates
 	 */
 	public static Bin create(final Point point) {
-		if (display == null) {
-			throw new IllegalStateException("Bin not initialized.");
-		}
 		return new Bin(point);
 	}
 
@@ -74,12 +65,6 @@ public final class Bin implements Cloneable {
 		}
 	}
 
-	double getCounts() {
-		synchronized (this) {
-			return display.getPlotContainer().getCount(this);
-		}
-	}
-
 	Point getPoint() {
 		synchronized (this) {
 			return new Point(channel);
@@ -108,16 +93,6 @@ public final class Bin implements Cloneable {
 		}
 	}
 
-	String getCoordString() {
-		synchronized (this) {
-			final StringBuffer rval = new StringBuffer().append(channel.x);
-			if (display.getPlotContainer().getDimensionality() == 2) {
-				rval.append(',').append(channel.y);
-			}
-			return rval.toString();
-		}
-	}
-
 	public boolean equals(final Object object) {
 		boolean rval = object instanceof Bin;
 		if (rval) {
@@ -129,24 +104,5 @@ public final class Bin implements Cloneable {
 
 	public int hashCode() {
 		return channel.hashCode();
-	}
-
-	Bin closestInsideBin() {
-		synchronized (this) {
-			int xChan = channel.x;
-			int yChan = channel.y;
-			final PlotContainer currentPlot = display.getPlotContainer();
-			if (xChan < 0) {
-				xChan = 0;
-			} else if (xChan >= currentPlot.getSizeX()) {
-				xChan = currentPlot.getSizeX() - 1;
-			}
-			if (yChan < 0) {
-				yChan = 0;
-			} else if (yChan >= currentPlot.getSizeY()) {
-				yChan = currentPlot.getSizeY() - 1;
-			}
-			return create(xChan, yChan);
-		}
 	}
 }
