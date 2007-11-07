@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 /**
@@ -69,7 +70,7 @@ final class Plot1d extends AbstractPlot {
 	private double binWidth = 1.0;
 
 	private transient final PlotColorMap colorMap = PlotColorMap.getInstance();
-	
+
 	/**
 	 * 1D counts.
 	 */
@@ -99,8 +100,8 @@ final class Plot1d extends AbstractPlot {
 		super();
 		setPeakFind(PlotPrefs.PREFS.getBoolean(PlotPrefs.AUTO_PEAK_FIND, true));
 	}
-	
-	public int getDimensionality(){
+
+	public int getDimensionality() {
 		return 1;
 	}
 
@@ -122,8 +123,8 @@ final class Plot1d extends AbstractPlot {
 	 */
 	private void addToSelectClip(final Bin bin1, final Bin bin2) {
 		synchronized (plotSelection.areaClip) {
-			plotSelection.areaClip.add(painter.getRectangleOutline1d(bin1.getX(),
-					bin2.getX()));
+			plotSelection.areaClip.add(painter.getRectangleOutline1d(bin1
+					.getX(), bin2.getX()));
 		}
 	}
 
@@ -303,8 +304,8 @@ final class Plot1d extends AbstractPlot {
 			 */
 			final Polygon shape = new Polygon();
 			final Bin bin1 = painter.toData(rval.getLocation());
-			final Bin bin2 = painter.toData(new Point(rval.x + rval.width, rval.y
-					+ rval.height));
+			final Bin bin2 = painter.toData(new Point(rval.x + rval.width,
+					rval.y + rval.height));
 			shape.addPoint(bin1.getX(), bin1.getY());
 			shape.addPoint(bin2.getX(), bin2.getY());
 			rval.setBounds(getClipBounds(shape, true));
@@ -507,6 +508,10 @@ final class Plot1d extends AbstractPlot {
 		if (plotHist.getDimensionality() != 1) {
 			return;// not sure how this happens, but need to check
 		}
+		if (getBinWidth() > plotHist.getSizeX()) {
+			setBinWidth(1.0);
+			warning("Bin width > hist size, so setting bin width back to 1.");
+		}
 		graphics.setColor(colorMap.getHistogram());
 		painter.drawHist(counts, getBinWidth());
 		if (autoPeakFind) {
@@ -533,6 +538,17 @@ final class Plot1d extends AbstractPlot {
 		} else {
 			painter.drawAxisLabel(axisLabelY, LEFT);
 		}
+	}
+	
+	private void warning(final String mess) {
+		final Runnable task = new Runnable() {
+			public void run() {
+				final String plotErrorTitle = "Plot Warning";
+				JOptionPane.showMessageDialog(panel, mess, plotErrorTitle,
+						JOptionPane.WARNING_MESSAGE);
+			}
+		};
+		SwingUtilities.invokeLater(task);
 	}
 
 	protected void paintMarkArea(final Graphics graphics) {

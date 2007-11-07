@@ -178,13 +178,6 @@ final class PlotPanel extends JPanel {
 		final Histogram plotHist = plot.getHistogram();
 		if (plotHist != null) {
 			plot.paintHeader(graphics);
-			if (plot instanceof Plot1d){
-				final Plot1d plot1d = (Plot1d)plot;
-				if (plot1d.getBinWidth() > plotHist.getSizeX()) {
-					plot1d.setBinWidth(1.0);
-					warning("Bin width > hist size, so setting bin width back to 1.");
-				}
-			}
 			plot.paintHistogram(graphics);
 			paintAdditional(graphics);
 		}
@@ -276,16 +269,4 @@ final class PlotPanel extends JPanel {
 			settingGate = state;
 		}
 	}
-	
-	private void warning(final String mess) {
-		final Runnable task = new Runnable() {
-			public void run() {
-				final String plotErrorTitle = "Plot Warning";
-				JOptionPane.showMessageDialog(PlotPanel.this, mess, plotErrorTitle,
-						JOptionPane.WARNING_MESSAGE);
-			}
-		};
-		SwingUtilities.invokeLater(task);
-	}
-
 }
