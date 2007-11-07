@@ -71,12 +71,12 @@ class PlotMouse extends MouseAdapter {
 	 *            the mouse-pressed event
 	 */
 	public void mousePressed(final MouseEvent event) {
-		final CountsContainer selectedPlot = ((PlotPanel) event
-				.getSource()).getPlot();
+		final CountsContainer countsContainer = (CountsContainer) event
+				.getSource();
 		/* First listeners about selected plot firsts */
-		plotListener.plotSelected(selectedPlot);
+		plotListener.plotSelected(countsContainer);
 		/* Only fire event if plot has counts */
-		if (selectedPlot.getCounts() != null) {
+		if (countsContainer.getCounts() != null) {
 			final Point pin = event.getPoint();
 			final Bin pout = painter.toData(pin);
 			for (PlotMouseListener listener : listeners) {

@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 
-final class PlotPanel extends JPanel {
+final class PlotPanel extends JPanel implements CountsContainer {
 
 	/**
 	 * currently have an area already marked?
@@ -87,11 +87,8 @@ final class PlotPanel extends JPanel {
 		this.plot = plot;
 	}
 
-	/**
-	 * @return the container class instance
-	 */
-	public AbstractPlot getPlot() {
-		return plot;
+	public Object getCounts() {
+		return plot.getCounts();
 	}
 
 	boolean isAreaMarked() {
