@@ -42,19 +42,12 @@ import javax.swing.SwingUtilities;
  * @author Ken Swartz
  */
 abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
-		CountsContainer {
-
-	protected transient final Options options = new Options();
+		Plot {
 
 	/**
 	 * The currently selected gate.
 	 */
 	protected transient Gate currentGate;
-
-	/**
-	 * Plot graphics handler.
-	 */
-	protected transient final Painter painter;
 
 	/**
 	 * last point mouse moved to, uses plot coordinates when selecting an area,
@@ -71,6 +64,13 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * Channels that have been marked by clicking or typing.
 	 */
 	protected transient final List<Bin> markedChannels = new ArrayList<Bin>();
+
+	protected transient final Options options = new Options();
+
+	/**
+	 * Plot graphics handler.
+	 */
+	protected transient final Painter painter;
 
 	/**
 	 * The actual panel.
@@ -310,7 +310,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 */
 	abstract double getEnergy(double channel);
 
-	Histogram getHistogram() {
+	public Histogram getHistogram() {
 		synchronized (this) {
 			return plotHistNum < 0 ? null : Histogram.getHistogram(plotHistNum);// NOPMD
 		}
@@ -358,6 +358,10 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 		options.setNoFillMode(!PREFS.getBoolean(HIGHLIGHT_GATE, true));
 	}
 
+	public boolean isPrinting() {
+		return options.isPrinting();
+	}
+
 	/**
 	 * @return <code>true</code> if the area selection clip is clear
 	 */
@@ -395,7 +399,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param mouseEvent
 	 *            created when the mouse is moved
 	 */
-	abstract protected void mouseMoved(MouseEvent mouseEvent);
+	abstract public void mouseMoved(MouseEvent mouseEvent);
 
 	abstract void overlayHistograms(List<AbstractHist1D> overlayHists);
 
@@ -405,7 +409,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param graphics
 	 *            the graphics context
 	 */
-	abstract protected void paintFit(Graphics graphics);
+	abstract public void paintFit(Graphics graphics);
 
 	/**
 	 * Method overriden for 1 and 2 d for painting the gate.
@@ -413,13 +417,13 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param graphics
 	 *            the graphics context
 	 */
-	abstract protected void paintGate(Graphics graphics);
+	abstract public void paintGate(Graphics graphics);
 
 	/*
 	 * non-javadoc: Paints header for plot to screen and printer. Also sets
 	 * colors and the size in pixels for a plot.
 	 */
-	void paintHeader(final Graphics graphics) {
+	public void paintHeader(final Graphics graphics) {
 		graphics.setColor(PlotColorMap.getInstance().getForeground());
 		if (options.isPrinting()) { // output to printer
 			painter.drawDate(getDate()); // date
@@ -434,7 +438,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param graphics
 	 *            the graphics context
 	 */
-	abstract protected void paintHistogram(Graphics graphics);
+	abstract public void paintHistogram(Graphics graphics);
 
 	/**
 	 * Method for painting a clicked area.
@@ -442,7 +446,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param graphics
 	 *            the graphics context
 	 */
-	abstract protected void paintMarkArea(Graphics graphics);
+	abstract public void paintMarkArea(Graphics graphics);
 
 	/**
 	 * Method for painting a clicked channel.
@@ -450,7 +454,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param graphics
 	 *            the graphics context
 	 */
-	abstract protected void paintMarkedChannels(Graphics graphics);
+	abstract public void paintMarkedChannels(Graphics graphics);
 
 	/**
 	 * Paint called if mouse moved is enabled.
@@ -458,7 +462,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param graphics
 	 *            the graphics context
 	 */
-	final void paintMouseMoved(final Graphics graphics) {
+	public final void paintMouseMoved(final Graphics graphics) {
 		if (panel.isSettingGate()) {
 			paintSettingGate(graphics);
 		} else if (panel.isSelectingArea()) {
@@ -472,7 +476,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param graphics
 	 *            the graphics context
 	 */
-	abstract protected void paintOverlay(Graphics graphics);
+	abstract public void paintOverlay(Graphics graphics);
 
 	/**
 	 * Method for painting a area while it is being selected.
@@ -488,7 +492,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param graphics
 	 *            the graphics context
 	 */
-	abstract protected void paintSetGatePoints(Graphics graphics);
+	abstract public void paintSetGatePoints(Graphics graphics);
 
 	/**
 	 * Method for painting segments while setting a gate.
@@ -609,8 +613,6 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 		panel.repaint();
 	}
 
-	/* Plot mouse methods */
-
 	void setMarkArea(final boolean marked) {
 		panel.setAreaMarked(marked);
 	}
@@ -637,7 +639,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 		limits.setMaximumCounts(temp);
 	}
 
-	/* End Plot mouse methods */
+	/* Plot mouse methods */
 
 	/*
 	 * non-javadoc: method to set Counts scale
@@ -664,6 +666,16 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 		panel.setSelectingArea(selecting);
 	}
 
+	/* End Plot mouse methods */
+
+	public void setView(final PageFormat format) {
+		painter.setView(format);
+	}
+
+	public void setViewSize(final Dimension size) {
+		this.viewSize = size;
+	}
+
 	/**
 	 * Updated the display, resetting so that fits, gates and overlays are no
 	 * longer shown.
@@ -673,5 +685,9 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 		if (getCounts() != null) {
 			refresh();
 		}
+	}
+
+	public void update(final Graphics graph) {
+		painter.update(graph, viewSize, limits);
 	}
 }

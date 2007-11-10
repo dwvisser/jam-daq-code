@@ -12,9 +12,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 
 final class PlotPanel extends JPanel implements CountsContainer {
@@ -70,7 +68,7 @@ final class PlotPanel extends JPanel implements CountsContainer {
 
 	private transient PageFormat pageformat = null;
 
-	private transient final AbstractPlot plot;
+	private transient final Plot plot;
 
 	/**
 	 * currently selecting an area?
@@ -82,7 +80,7 @@ final class PlotPanel extends JPanel implements CountsContainer {
 	 */
 	private transient boolean settingGate = false;
 
-	PlotPanel(AbstractPlot plot) {
+	PlotPanel(Plot plot) {
 		super(false);
 		this.plot = plot;
 	}
@@ -152,22 +150,22 @@ final class PlotPanel extends JPanel implements CountsContainer {
 	protected void paintComponent(final Graphics graphics) {
 		super.paintComponent(graphics);
 		final PlotColorMap pcm = PlotColorMap.getInstance();
-		if (plot.options.isPrinting()) { // output to printer
+		if (plot.isPrinting()) { // output to printer
 			// FIXME KBS font not set
 			// graph.setFont(printFont);
 			pcm.setColorMap(Mode.PRINT);
-			plot.painter.setView(pageformat);
+			plot.setView(pageformat);
 		} else { // output to screen
 			// graph.setFont(screenFont);
 			pcm.setColorMap(colorMode);
-			plot.painter.setView(null);
+			plot.setView(null);
 		}
 		final Color foreground = pcm.getForeground();
 		graphics.setColor(foreground);
 		this.setForeground(foreground);
 		this.setBackground(pcm.getBackground());
-		plot.viewSize = getSize();
-		plot.painter.update(graphics, plot.viewSize, plot.limits);
+		plot.setViewSize(getSize());
+		plot.update(graphics);
 		/*
 		 * give graph all pertinent info, draw outline, tickmarks, labels, and
 		 * title

@@ -35,25 +35,32 @@ import javax.swing.SwingUtilities;
 
 final class Plot2d extends AbstractPlot {
 
-	/** last pixel point added to gate list */
-	private transient final Point lastGatePoint = new Point();
-
-	/** areaMark is a rectangle in channel space */
-	private transient final Rectangle areaMark = new Rectangle();
-
-	private transient final PlotColorMap plotColorMap = PlotColorMap
-			.getInstance();
-
-	private transient boolean smoothScale = true;
+	private static final double[][] EMPTY = new double[0][0];
 
 	private static final String X_LABEL_2D = "Channels";
 
 	private static final String Y_LABEL_2D = "Channels";
 
+	/** areaMark is a rectangle in channel space */
+	private transient final Rectangle areaMark = new Rectangle();
+
+	// only used in one method, but don't want to keep creating
+	private transient final Rectangle clipBounds = new Rectangle();// NOPMD
+
+	private transient double[][] counts2d = EMPTY;
+
+	/** last pixel point added to gate list */
+	private transient final Point lastGatePoint = new Point();
+
 	private transient final Object monitor = new Object();
 
 	/** clip to use when repainting for mouse movement, in graphics coordinates */
 	private transient final Polygon mouseMoveClip = new Polygon();
+
+	private transient final PlotColorMap plotColorMap = PlotColorMap
+			.getInstance();
+
+	private transient boolean smoothScale = true;
 
 	/**
 	 * Creates a Plot object for displaying 2D histograms.
@@ -65,23 +72,21 @@ final class Plot2d extends AbstractPlot {
 				true));
 	}
 
-	public int getDimensionality(){
-		return 2;
-	}
-
-	public void preferenceChange(final PreferenceChangeEvent pce) {
-		final String key = pce.getKey();
-		if (key.equals(ColorPrefs.SMOOTH_SCALE)) {
-			setSmoothColorScale(Boolean.valueOf(pce.getNewValue())
-					.booleanValue());
-		} else {
-			super.preferenceChange(pce);
+	/**
+	 * Add to the selection clip region, using the two given
+	 * graphics-coordinates points to indicate the corners of a rectangular
+	 * region of channels that needs to be included.
+	 * 
+	 * @param bin1
+	 *            in plot coordinates
+	 * @param bin2
+	 *            in plot coordinates
+	 */
+	private void addToSelectClip(final Bin bin1, final Bin bin2) {
+		synchronized (plotSelection.areaClip) {
+			plotSelection.areaClip.add(painter
+					.getRectangleOutline2d(bin1, bin2));
 		}
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				panel.repaint();
-			}
-		});
 	}
 
 	protected void copyCounts(final Histogram hist) {
@@ -108,23 +113,9 @@ final class Plot2d extends AbstractPlot {
 		}
 	}
 
-	private void setSmoothColorScale(final boolean bool) {
-		synchronized (monitor) {
-			smoothScale = bool;
-		}
-	}
-
-	private boolean getSmoothColorScale() {
-		synchronized (monitor) {
-			return smoothScale;
-		}
-	}
-
-	protected void paintMarkedChannels(final Graphics graphics) {
-		graphics.setColor(plotColorMap.getMark());
-		for (Bin bin : markedChannels) {
-			painter.markChannel2d(bin);
-		}
+	void displayFit(final double[][] signals, final double[] background,
+			final double[] residuals, final int lowerLimit) {
+		// NOP
 	}
 
 	void displayHistogram(final Histogram hist) {
@@ -133,60 +124,6 @@ final class Plot2d extends AbstractPlot {
 				counts2d = EMPTY;
 			}
 			super.displayHistogram(hist);
-		}
-	}
-
-	/**
-	 * Paint call while selecting an area.
-	 */
-	protected void paintSelectingArea(final Graphics context) {
-		final Graphics2D context2d = (Graphics2D) context;
-		context2d.setColor(plotColorMap.getArea());
-		synchronized (lastMovePoint) {
-			painter.markArea2dOutline(plotSelection.start, Bin
-					.create(lastMovePoint));
-		}
-		panel.setMouseMoved(false);
-		clearSelectingAreaClip();
-	}
-
-	/**
-	 * Mark a rectangular area on the plot.
-	 * 
-	 * @param bin1
-	 *            a corner of the rectangle in plot coordinates
-	 * @param bin2
-	 *            a corner of the rectangle in plot coordinates
-	 */
-	void markArea(final Bin bin1, final Bin bin2) {
-		// While storing the boolean condition could make the code a
-		// few lines more compact, this form makes the code analysis
-		// engine happier about the null check and has the additional
-		// benefit of reducing operations in the sychronized block.
-		if (bin1 == null || bin2 == null) {
-			synchronized (monitor) {
-				panel.setAreaMarked(false);
-			}
-		} else {
-			synchronized (monitor) {
-				panel.setAreaMarked(true);
-			}
-			synchronized (areaMark) {
-				areaMark.setSize(0, 0);
-				areaMark.setLocation(bin1.getPoint());
-				areaMark.add(bin2.getPoint());
-			}
-		}
-	}
-
-	protected void paintMarkArea(final Graphics context) {
-		final Graphics2D context2d = (Graphics2D) context;
-		context2d.setComposite(AlphaComposite.getInstance(
-				AlphaComposite.SRC_OVER, 0.5f));
-		context.setColor(plotColorMap.getArea());
-		painter.clipPlot();
-		synchronized (areaMark) {
-			painter.markArea2d(painter.getRectangleOutline2d(areaMark));
 		}
 	}
 
@@ -247,63 +184,6 @@ final class Plot2d extends AbstractPlot {
 		}
 	}
 
-	protected void paintSetGatePoints(final Graphics context) {
-		context.setColor(plotColorMap.getGateDraw());
-		painter.settingGate2d(pointsGate);
-	}
-
-	/**
-	 * Called by mouse movement while setting a gate
-	 * 
-	 * @param context
-	 *            graphics context
-	 */
-	protected void paintSettingGate(final Graphics context) {
-		final Graphics2D context2d = (Graphics2D) context;
-		context2d.setColor(plotColorMap.getGateDraw());
-		context2d.setComposite(AlphaComposite.getInstance(
-				AlphaComposite.SRC_OVER, 0.8f));
-		synchronized (lastMovePoint) {
-			context2d.drawLine(lastGatePoint.x, lastGatePoint.y,
-					lastMovePoint.x, lastMovePoint.y);
-		}
-		panel.setMouseMoved(false);
-		mouseMoveClip.reset();
-	}
-
-	private void setLastGatePoint(final Point point) {
-		synchronized (lastGatePoint) {
-			lastGatePoint.setLocation(point);
-		}
-	}
-
-	/**
-	 * Get the counts for a particular channel.
-	 * 
-	 * @param point
-	 *            the channel to get counts for
-	 * @return the counts at channel <code>p</code>
-	 */
-	protected double getCount(final Bin point) {
-		return counts2d[point.getX()][point.getY()];
-	}
-
-	/**
-	 * Caller should have checked 'isCalibrated' first.
-	 */
-	double getEnergy(final double channel) {
-		return 0.0;
-	}
-
-	/**
-	 * Get the counts for the displayed 2d histogram.
-	 * 
-	 * @return the counts for the displayed 2d histogram
-	 */
-	public Object getCounts() {
-		return counts2d;
-	}
-
 	/**
 	 * Get the maximum counts in the region of currently displayed 2d Histogram.
 	 * 
@@ -328,22 +208,6 @@ final class Plot2d extends AbstractPlot {
 			}
 		}
 		return maxCounts;
-	}
-
-	private int getChannelMin(final int channel) {
-		int rval = channel;
-		if ((channel == 0) && (options.isIgnoreChZero())) {
-			rval = 1;
-		}
-		return rval;
-	}
-
-	private int getChannelMax(final int channel, final int sizeIn) {
-		int rval = channel;
-		if (((channel == sizeIn - 1)) && (options.isIgnoreChFull())) {
-			rval = sizeIn - 2;
-		}
-		return rval;
 	}
 
 	/**
@@ -372,194 +236,24 @@ final class Plot2d extends AbstractPlot {
 		return minCounts;
 	}
 
-	// only used in one method, but don't want to keep creating
-	private transient final Rectangle clipBounds = new Rectangle();// NOPMD
-
-	private static final double[][] EMPTY = new double[0][0];
-
-	private transient double[][] counts2d = EMPTY;
-
-	/**
-	 * Called to draw a 2d histogram, including title, border, tickmarks,
-	 * tickmark labels and last but not least update the scrollbars.
-	 * 
-	 * @param context
-	 *            the graphics context to paint to
-	 */
-	protected void paintHistogram(final Graphics context) {
-		final Histogram plotHist = getHistogram();
-		final Scale scale = limits.getScale();
-		context.setColor(plotColorMap.getHistogram());
-		context.getClipBounds(clipBounds);
-		final int minX = painter.toDataHorz((int) clipBounds.getMinX());
-		final int maxX = painter.toDataHorz((int) clipBounds.getMaxX());
-		final int minY = painter.toDataVert((int) clipBounds.getMaxY());
-		final int maxY = painter.toDataVert((int) clipBounds.getMinY());
-		final DiscreteColorScale dcs = DiscreteColorScale.getScale(scale);
-		if (getSmoothColorScale()) {
-			painter.drawHist2d(counts2d, minX, minY, maxX, maxY);
-			context.setPaintMode();
-			context.setColor(plotColorMap.getForeground());
-			painter.drawScale2d();
-		} else {
-			painter.drawHist2d(counts2d, minX, minY, maxX, maxY, dcs);
-			context.setPaintMode();
-			context.setColor(plotColorMap.getForeground());
-			painter.drawScale2d(dcs);
-		}
-		/* draw labels/ticks after histogram so they are on top */
-		context.setColor(plotColorMap.getForeground());
-		painter.drawTitle(plotHist.getTitle(), TOP);
-		painter.drawNumber(plotHist.getNumber(), new int[0]);
-		painter.drawTicks(BOTTOM);
-		painter.drawLabels(BOTTOM);
-		painter.drawTicks(LEFT);
-		painter.drawLabels(LEFT);
-		final String axisLabelX = plotHist.getLabelX();
-		if (axisLabelX == null) {
-			painter.drawAxisLabel(X_LABEL_2D, BOTTOM);
-		} else {
-			painter.drawAxisLabel(axisLabelX, BOTTOM);
-		}
-		final String axisLabelY = plotHist.getLabelY();
-		if (axisLabelY == null) {
-			painter.drawAxisLabel(Y_LABEL_2D, LEFT);
-		} else {
-			painter.drawAxisLabel(axisLabelY, LEFT);
-		}
-		context.setPaintMode();
-		context.setColor(plotColorMap.getForeground());
+	int getChannel(final double energy) {
+		return 0;
 	}
 
-	/**
-	 * Paint a gate as a set of blocks that are channels in the gate.
-	 * 
-	 * @param graphics
-	 *            the graphics context to paint to
-	 */
-	protected void paintGate(final Graphics graphics) {
-		final Graphics2D graphics2d = (Graphics2D) graphics;
-		graphics2d.setComposite(AlphaComposite.getInstance(
-				AlphaComposite.SRC_OVER, 0.5f));
-		graphics2d.setColor(plotColorMap.getGateShow());
-		if (options.isNoFillMode()) {
-			paintPolyGate(graphics2d);
-		} else {
-			painter.drawGate2d(currentGate.getLimits2d());
+	private int getChannelMax(final int channel, final int sizeIn) {
+		int rval = channel;
+		if (((channel == sizeIn - 1)) && (options.isIgnoreChFull())) {
+			rval = sizeIn - 2;
 		}
+		return rval;
 	}
 
-	/**
-	 * Paint a gate as a polygon.
-	 * 
-	 * @param context
-	 *            the graphics context to paint to
-	 * @throws DataException
-	 *             if there's a problem painting the gate
-	 */
-	void paintPolyGate(final Graphics context) {
-		context.setPaintMode();
-		context.setColor(plotColorMap.getGateShow());
-		final Polygon gatePoints = currentGate.getBananaGate();
-		if (gatePoints != null) {
-			final int numberPoints = gatePoints.npoints;
-			if (numberPoints > 0) {// avoids negative array indices
-				painter.clipPlot();
-				final int lastI = numberPoints - 1;
-				for (int i = 0; i < lastI; i++) {
-					final int xval1 = gatePoints.xpoints[i];
-					final int yval1 = gatePoints.ypoints[i];
-					final int xval2 = gatePoints.xpoints[i + 1];
-					final int yval2 = gatePoints.ypoints[i + 1];
-					painter.drawDataLine(xval1, yval1, xval2, yval2);
-				}
-				if (gatePoints.xpoints[0] != gatePoints.xpoints[lastI]) {
-					final int xval1 = gatePoints.xpoints[0];
-					final int yval1 = gatePoints.ypoints[0];
-					final int xval2 = gatePoints.xpoints[lastI];
-					final int yval2 = gatePoints.ypoints[lastI];
-					painter.drawDataLine(xval1, yval1, xval2, yval2);
-				}
-			}
+	private int getChannelMin(final int channel) {
+		int rval = channel;
+		if ((channel == 0) && (options.isIgnoreChZero())) {
+			rval = 1;
 		}
-	}
-
-	/**
-	 * Paint a fit; not used in 2d.
-	 * 
-	 * @param context
-	 *            the graphics context to paint on
-	 */
-	protected void paintFit(final Graphics context) {
-		error("Cannot plot fits with 2D histograms.");
-	}
-
-	/**
-	 * Paint an overlay; not used in 2d.
-	 * 
-	 * @param context
-	 *            the graphics context to paint with
-	 */
-	protected void paintOverlay(final Graphics context) {
-		error("Cannot plot overlays with 2D histograms.");
-	}
-
-	/**
-	 * Mouse moved so update drawing gate or marking area as appropriate For
-	 * gate undo last line draw, and draw a new line.
-	 * 
-	 * @param event
-	 *            created when the mouse pointer moves while in the plot
-	 */
-	protected void mouseMoved(final MouseEvent event) {
-		if (panel.isSettingGate()) {
-			/* only if we have 1 or more */
-			if (pointsGate.npoints > 0) {
-				/* draw new line */
-				synchronized (lastMovePoint) {
-					if (mouseMoveClip.npoints == 0) {
-						mouseMoveClip
-								.addPoint(lastGatePoint.x, lastGatePoint.y);
-						mouseMoveClip
-								.addPoint(lastMovePoint.x, lastMovePoint.y);
-					}
-					lastMovePoint.setLocation(event.getPoint());
-					mouseMoveClip.addPoint(lastMovePoint.x, lastMovePoint.y);
-				}
-				panel.setMouseMoved(true);
-				panel.repaint(getClipBounds(mouseMoveClip, false));
-			}
-		} else if (panel.isSelectingArea()) {
-			synchronized (lastMovePoint) {
-				if (isSelectingAreaClipClear()) {
-					addToSelectClip(plotSelection.start, Bin
-							.create(lastMovePoint));
-				}
-				lastMovePoint.setLocation(painter.toData(event.getPoint())
-						.getPoint());
-				addToSelectClip(plotSelection.start, Bin.create(lastMovePoint));
-			}
-			panel.setMouseMoved(true);
-			synchronized (plotSelection.areaClip) {
-				panel.repaint(getClipBounds(plotSelection.areaClip, false));
-			}
-		}
-	}
-
-	/**
-	 * Add to the selection clip region, using the two given
-	 * graphics-coordinates points to indicate the corners of a rectangular
-	 * region of channels that needs to be included.
-	 * 
-	 * @param bin1
-	 *            in plot coordinates
-	 * @param bin2
-	 *            in plot coordinates
-	 */
-	private void addToSelectClip(final Bin bin1, final Bin bin2) {
-		synchronized (plotSelection.areaClip) {
-			plotSelection.areaClip.add(painter.getRectangleOutline2d(bin1, bin2));
-		}
+		return rval;
 	}
 
 	/**
@@ -605,21 +299,328 @@ final class Plot2d extends AbstractPlot {
 		return box;
 	}
 
-	void displayFit(final double[][] signals, final double[] background,
-			final double[] residuals, final int lowerLimit) {
-		// NOP
+	/**
+	 * Get the counts for a particular channel.
+	 * 
+	 * @param point
+	 *            the channel to get counts for
+	 * @return the counts at channel <code>p</code>
+	 */
+	protected double getCount(final Bin point) {
+		return counts2d[point.getX()][point.getY()];
+	}
+
+	/**
+	 * Get the counts for the displayed 2d histogram.
+	 * 
+	 * @return the counts for the displayed 2d histogram
+	 */
+	public Object getCounts() {
+		return counts2d;
+	}
+
+	public int getDimensionality() {
+		return 2;
+	}
+
+	/**
+	 * Caller should have checked 'isCalibrated' first.
+	 */
+	double getEnergy(final double channel) {
+		return 0.0;
+	}
+
+	private boolean getSmoothColorScale() {
+		synchronized (monitor) {
+			return smoothScale;
+		}
+	}
+
+	/**
+	 * Mark a rectangular area on the plot.
+	 * 
+	 * @param bin1
+	 *            a corner of the rectangle in plot coordinates
+	 * @param bin2
+	 *            a corner of the rectangle in plot coordinates
+	 */
+	void markArea(final Bin bin1, final Bin bin2) {
+		// While storing the boolean condition could make the code a
+		// few lines more compact, this form makes the code analysis
+		// engine happier about the null check and has the additional
+		// benefit of reducing operations in the sychronized block.
+		if (bin1 == null || bin2 == null) {
+			synchronized (monitor) {
+				panel.setAreaMarked(false);
+			}
+		} else {
+			synchronized (monitor) {
+				panel.setAreaMarked(true);
+			}
+			synchronized (areaMark) {
+				areaMark.setSize(0, 0);
+				areaMark.setLocation(bin1.getPoint());
+				areaMark.add(bin2.getPoint());
+			}
+		}
+	}
+
+	/**
+	 * Mouse moved so update drawing gate or marking area as appropriate For
+	 * gate undo last line draw, and draw a new line.
+	 * 
+	 * @param event
+	 *            created when the mouse pointer moves while in the plot
+	 */
+	public void mouseMoved(final MouseEvent event) {
+		if (panel.isSettingGate()) {
+			/* only if we have 1 or more */
+			if (pointsGate.npoints > 0) {
+				/* draw new line */
+				synchronized (lastMovePoint) {
+					if (mouseMoveClip.npoints == 0) {
+						mouseMoveClip
+								.addPoint(lastGatePoint.x, lastGatePoint.y);
+						mouseMoveClip
+								.addPoint(lastMovePoint.x, lastMovePoint.y);
+					}
+					lastMovePoint.setLocation(event.getPoint());
+					mouseMoveClip.addPoint(lastMovePoint.x, lastMovePoint.y);
+				}
+				panel.setMouseMoved(true);
+				panel.repaint(getClipBounds(mouseMoveClip, false));
+			}
+		} else if (panel.isSelectingArea()) {
+			synchronized (lastMovePoint) {
+				if (isSelectingAreaClipClear()) {
+					addToSelectClip(plotSelection.start, Bin
+							.create(lastMovePoint));
+				}
+				lastMovePoint.setLocation(painter.toData(event.getPoint())
+						.getPoint());
+				addToSelectClip(plotSelection.start, Bin.create(lastMovePoint));
+			}
+			panel.setMouseMoved(true);
+			synchronized (plotSelection.areaClip) {
+				panel.repaint(getClipBounds(plotSelection.areaClip, false));
+			}
+		}
 	}
 
 	void overlayHistograms(final List<AbstractHist1D> overlayHists) {
 		// NOP
 	}
 
+	/**
+	 * Paint a fit; not used in 2d.
+	 * 
+	 * @param context
+	 *            the graphics context to paint on
+	 */
+	public void paintFit(final Graphics context) {
+		error("Cannot plot fits with 2D histograms.");
+	}
+
+	/**
+	 * Paint a gate as a set of blocks that are channels in the gate.
+	 * 
+	 * @param graphics
+	 *            the graphics context to paint to
+	 */
+	public void paintGate(final Graphics graphics) {
+		final Graphics2D graphics2d = (Graphics2D) graphics;
+		graphics2d.setComposite(AlphaComposite.getInstance(
+				AlphaComposite.SRC_OVER, 0.5f));
+		graphics2d.setColor(plotColorMap.getGateShow());
+		if (options.isNoFillMode()) {
+			paintPolyGate(graphics2d);
+		} else {
+			painter.drawGate2d(currentGate.getLimits2d());
+		}
+	}
+
+	/**
+	 * Called to draw a 2d histogram, including title, border, tickmarks,
+	 * tickmark labels and last but not least update the scrollbars.
+	 * 
+	 * @param context
+	 *            the graphics context to paint to
+	 */
+	public void paintHistogram(final Graphics context) {
+		final Histogram plotHist = getHistogram();
+		final Scale scale = limits.getScale();
+		context.setColor(plotColorMap.getHistogram());
+		context.getClipBounds(clipBounds);
+		final int minX = painter.toDataHorz((int) clipBounds.getMinX());
+		final int maxX = painter.toDataHorz((int) clipBounds.getMaxX());
+		final int minY = painter.toDataVert((int) clipBounds.getMaxY());
+		final int maxY = painter.toDataVert((int) clipBounds.getMinY());
+		final DiscreteColorScale dcs = DiscreteColorScale.getScale(scale);
+		if (getSmoothColorScale()) {
+			painter.drawHist2d(counts2d, minX, minY, maxX, maxY);
+			context.setPaintMode();
+			context.setColor(plotColorMap.getForeground());
+			painter.drawScale2d();
+		} else {
+			painter.drawHist2d(counts2d, minX, minY, maxX, maxY, dcs);
+			context.setPaintMode();
+			context.setColor(plotColorMap.getForeground());
+			painter.drawScale2d(dcs);
+		}
+		/* draw labels/ticks after histogram so they are on top */
+		context.setColor(plotColorMap.getForeground());
+		painter.drawTitle(plotHist.getTitle(), TOP);
+		painter.drawNumber(plotHist.getNumber(), new int[0]);
+		painter.drawTicks(BOTTOM);
+		painter.drawLabels(BOTTOM);
+		painter.drawTicks(LEFT);
+		painter.drawLabels(LEFT);
+		final String axisLabelX = plotHist.getLabelX();
+		if (axisLabelX == null) {
+			painter.drawAxisLabel(X_LABEL_2D, BOTTOM);
+		} else {
+			painter.drawAxisLabel(axisLabelX, BOTTOM);
+		}
+		final String axisLabelY = plotHist.getLabelY();
+		if (axisLabelY == null) {
+			painter.drawAxisLabel(Y_LABEL_2D, LEFT);
+		} else {
+			painter.drawAxisLabel(axisLabelY, LEFT);
+		}
+		context.setPaintMode();
+		context.setColor(plotColorMap.getForeground());
+	}
+
+	public void paintMarkArea(final Graphics context) {
+		final Graphics2D context2d = (Graphics2D) context;
+		context2d.setComposite(AlphaComposite.getInstance(
+				AlphaComposite.SRC_OVER, 0.5f));
+		context.setColor(plotColorMap.getArea());
+		painter.clipPlot();
+		synchronized (areaMark) {
+			painter.markArea2d(painter.getRectangleOutline2d(areaMark));
+		}
+	}
+
+	public void paintMarkedChannels(final Graphics graphics) {
+		graphics.setColor(plotColorMap.getMark());
+		for (Bin bin : markedChannels) {
+			painter.markChannel2d(bin);
+		}
+	}
+
+	/**
+	 * Paint an overlay; not used in 2d.
+	 * 
+	 * @param context
+	 *            the graphics context to paint with
+	 */
+	public void paintOverlay(final Graphics context) {
+		error("Cannot plot overlays with 2D histograms.");
+	}
+
+	/**
+	 * Paint a gate as a polygon.
+	 * 
+	 * @param context
+	 *            the graphics context to paint to
+	 * @throws DataException
+	 *             if there's a problem painting the gate
+	 */
+	void paintPolyGate(final Graphics context) {
+		context.setPaintMode();
+		context.setColor(plotColorMap.getGateShow());
+		final Polygon gatePoints = currentGate.getBananaGate();
+		if (gatePoints != null) {
+			final int numberPoints = gatePoints.npoints;
+			if (numberPoints > 0) {// avoids negative array indices
+				painter.clipPlot();
+				final int lastI = numberPoints - 1;
+				for (int i = 0; i < lastI; i++) {
+					final int xval1 = gatePoints.xpoints[i];
+					final int yval1 = gatePoints.ypoints[i];
+					final int xval2 = gatePoints.xpoints[i + 1];
+					final int yval2 = gatePoints.ypoints[i + 1];
+					painter.drawDataLine(xval1, yval1, xval2, yval2);
+				}
+				if (gatePoints.xpoints[0] != gatePoints.xpoints[lastI]) {
+					final int xval1 = gatePoints.xpoints[0];
+					final int yval1 = gatePoints.ypoints[0];
+					final int xval2 = gatePoints.xpoints[lastI];
+					final int yval2 = gatePoints.ypoints[lastI];
+					painter.drawDataLine(xval1, yval1, xval2, yval2);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Paint call while selecting an area.
+	 */
+	protected void paintSelectingArea(final Graphics context) {
+		final Graphics2D context2d = (Graphics2D) context;
+		context2d.setColor(plotColorMap.getArea());
+		synchronized (lastMovePoint) {
+			painter.markArea2dOutline(plotSelection.start, Bin
+					.create(lastMovePoint));
+		}
+		panel.setMouseMoved(false);
+		clearSelectingAreaClip();
+	}
+
+	public void paintSetGatePoints(final Graphics context) {
+		context.setColor(plotColorMap.getGateDraw());
+		painter.settingGate2d(pointsGate);
+	}
+
+	/**
+	 * Called by mouse movement while setting a gate
+	 * 
+	 * @param context
+	 *            graphics context
+	 */
+	protected void paintSettingGate(final Graphics context) {
+		final Graphics2D context2d = (Graphics2D) context;
+		context2d.setColor(plotColorMap.getGateDraw());
+		context2d.setComposite(AlphaComposite.getInstance(
+				AlphaComposite.SRC_OVER, 0.8f));
+		synchronized (lastMovePoint) {
+			context2d.drawLine(lastGatePoint.x, lastGatePoint.y,
+					lastMovePoint.x, lastMovePoint.y);
+		}
+		panel.setMouseMoved(false);
+		mouseMoveClip.reset();
+	}
+
+	public void preferenceChange(final PreferenceChangeEvent pce) {
+		final String key = pce.getKey();
+		if (key.equals(ColorPrefs.SMOOTH_SCALE)) {
+			setSmoothColorScale(Boolean.valueOf(pce.getNewValue())
+					.booleanValue());
+		} else {
+			super.preferenceChange(pce);
+		}
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				panel.repaint();
+			}
+		});
+	}
+
 	void removeOverlays() {
 		// NOP
 	}
 
-	int getChannel(final double energy) {
-		return 0;
+	private void setLastGatePoint(final Point point) {
+		synchronized (lastGatePoint) {
+			lastGatePoint.setLocation(point);
+		}
+	}
+
+	private void setSmoothColorScale(final boolean bool) {
+		synchronized (monitor) {
+			smoothScale = bool;
+		}
 	}
 
 }

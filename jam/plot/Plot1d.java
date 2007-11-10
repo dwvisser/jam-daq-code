@@ -101,10 +101,6 @@ final class Plot1d extends AbstractPlot {
 		setPeakFind(PlotPrefs.PREFS.getBoolean(PlotPrefs.AUTO_PEAK_FIND, true));
 	}
 
-	public int getDimensionality() {
-		return 1;
-	}
-
 	private void addToMouseMoveClip(final int xcoord, final int ycoord) {
 		synchronized (mouseMoveClip) {
 			mouseMoveClip.addPoint(xcoord, ycoord);
@@ -327,6 +323,10 @@ final class Plot1d extends AbstractPlot {
 		return counts;
 	}
 
+	public int getDimensionality() {
+		return 1;
+	}
+
 	/*
 	 * non-javadoc: Caller should have checked 'isCalibrated' first.
 	 */
@@ -392,7 +392,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Called when the mouse has moved
 	 */
-	protected void mouseMoved(final MouseEvent event) {
+	public void mouseMoved(final MouseEvent event) {
 		panel.setMouseMoved(true);
 		if (panel.isSelectingArea()) {
 			if (isSelectingAreaClipClear()) {
@@ -451,7 +451,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * paints a fit to a given graphics
 	 */
-	protected void paintFit(final Graphics graphics) {
+	public void paintFit(final Graphics graphics) {
 		if (fitChannels != null && fitChannels.length > 0) {
 			if (fitBackground != null) {
 				graphics.setColor(colorMap.getFitBackground());
@@ -484,7 +484,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Paint a gate on the give graphics object
 	 */
-	protected void paintGate(final Graphics graphics) {
+	public void paintGate(final Graphics graphics) {
 		final Graphics2D graphics2D = (Graphics2D) graphics;
 		final Composite prev = graphics2D.getComposite();
 		final boolean noFill = options.isNoFillMode();
@@ -503,7 +503,7 @@ final class Plot1d extends AbstractPlot {
 	 * Draw the current histogram including title, border, tickmarks, tickmark
 	 * labels and last but not least update the scrollbars
 	 */
-	protected void paintHistogram(final Graphics graphics) {
+	public void paintHistogram(final Graphics graphics) {
 		final Histogram plotHist = getHistogram();
 		if (plotHist.getDimensionality() != 1) {
 			return;// not sure how this happens, but need to check
@@ -539,19 +539,8 @@ final class Plot1d extends AbstractPlot {
 			painter.drawAxisLabel(axisLabelY, LEFT);
 		}
 	}
-	
-	private void warning(final String mess) {
-		final Runnable task = new Runnable() {
-			public void run() {
-				final String plotErrorTitle = "Plot Warning";
-				JOptionPane.showMessageDialog(panel, mess, plotErrorTitle,
-						JOptionPane.WARNING_MESSAGE);
-			}
-		};
-		SwingUtilities.invokeLater(task);
-	}
 
-	protected void paintMarkArea(final Graphics graphics) {
+	public void paintMarkArea(final Graphics graphics) {
 		final Graphics2D graphics2D = (Graphics2D) graphics;
 		final Composite prev = graphics2D.getComposite();
 		graphics2D.setComposite(AlphaComposite.getInstance(
@@ -562,7 +551,7 @@ final class Plot1d extends AbstractPlot {
 		graphics2D.setComposite(prev);
 	}
 
-	protected void paintMarkedChannels(final Graphics graphics) {
+	public void paintMarkedChannels(final Graphics graphics) {
 		graphics.setColor(colorMap.getMark());
 		for (Bin bin : markedChannels) {
 			final int xChannel = bin.getX();
@@ -573,7 +562,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Draw a overlay of another data set
 	 */
-	protected void paintOverlay(final Graphics graphics) {
+	public void paintOverlay(final Graphics graphics) {
 		final Graphics2D graphics2d = (Graphics2D) graphics;
 		int index = 0;
 		/*
@@ -603,7 +592,7 @@ final class Plot1d extends AbstractPlot {
 		clearSelectingAreaClip();
 	}
 
-	protected void paintSetGatePoints(final Graphics graphics) {
+	public void paintSetGatePoints(final Graphics graphics) {
 		graphics.setColor(colorMap.getGateShow());
 		painter.settingGate1d(painter.toView(pointsGate));
 	}
@@ -639,12 +628,12 @@ final class Plot1d extends AbstractPlot {
 		overlayNumber.clear();
 	}
 
-	/* Preferences */
-
 	void reset() {
 		super.reset();
 		setBinWidth(1.0);
 	}
+
+	/* Preferences */
 
 	/**
 	 * @param signals
@@ -669,6 +658,17 @@ final class Plot1d extends AbstractPlot {
 		synchronized (LOCK) {
 			binWidth = width;
 		}
+	}
+
+	private void warning(final String mess) {
+		final Runnable task = new Runnable() {
+			public void run() {
+				final String plotErrorTitle = "Plot Warning";
+				JOptionPane.showMessageDialog(panel, mess, plotErrorTitle,
+						JOptionPane.WARNING_MESSAGE);
+			}
+		};
+		SwingUtilities.invokeLater(task);
 	}
 
 }
