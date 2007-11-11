@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * @see      GaussianFit
  * @see      AbstractFit#estimate
  */
-public abstract class AbstractNonLinearFit extends AbstractFit {
+public abstract class AbstractNonLinearFit extends AbstractFit implements NonLinearFit {
 
 	/**
 	 * does the actual matrix algebra to find the best fit
@@ -85,24 +85,13 @@ public abstract class AbstractNonLinearFit extends AbstractFit {
 		addParameter(highChannel);
 	}
 
-	/**
-	 * Evaluates at x for given parameters.
-	 * 
-	 * @param xValue
-	 *            value at which to evaluate the fit function
-	 * @return value of fit function at <code>x</code>
+	/* (non-Javadoc)
+	 * @see jam.fit.NonLinearFit#valueAt(double)
 	 */
 	public abstract double valueAt(double xValue);
 
-	/**
-	 * Evaluates derivative with respect to <code>parameterName</code> at
-	 * <code>x</code>.
-	 * 
-	 * @param parameterName
-	 *            the name of the parameter to differentiate with respect to
-	 * @param xValue
-	 *            value to evalueate at
-	 * @return df(<code>x</code>)/d(<code>parameterName</code>) at x
+	/* (non-Javadoc)
+	 * @see jam.fit.NonLinearFit#derivative(double, java.lang.String)
 	 */
 	public abstract double derivative(double xValue, String parameterName);
 

@@ -53,7 +53,7 @@ import javax.swing.border.LineBorder;
  * @see AbstractNonLinearFit
  * @see GaussianFit
  */
-public abstract class AbstractFit implements PlotMouseListener {
+public abstract class AbstractFit implements PlotMouseListener, Fit {
 
 	private static final ValueAndUncertaintyFormatter FORMAT = ValueAndUncertaintyFormatter
 			.getSingletonInstance();
@@ -577,7 +577,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 *            dialog box)
 	 * @return the <code>Parameter</code> object going by that name
 	 */
-	protected final Parameter getParameter(final String which) {
+	public final Parameter getParameter(final String which) {
 		return parameterTable.get(which);
 	}
 
@@ -587,11 +587,11 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 * @return the contents of <code>parameters</code>
 	 * @see #parameters
 	 */
-	final List<Parameter> getParameters() {
+	public final List<Parameter> getParameters() {
 		return parameters;
 	}
 
-	final MessageHandler getTextInfo() {
+	public final MessageHandler getTextInfo() {
 		return textInfo;
 	}
 

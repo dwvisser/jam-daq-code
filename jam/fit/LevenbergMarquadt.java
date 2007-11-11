@@ -48,7 +48,7 @@ final class LevenbergMarquadt {
 	/**
 	 * reference to NonLinearFit object
 	 */
-	private transient final AbstractNonLinearFit nonLinFit;
+	private transient final NonLinearFit nonLinFit;
 
 	/**
 	 * proportional to second derivative of chi-squared with respect to
@@ -152,7 +152,7 @@ final class LevenbergMarquadt {
 	 * @param nlf
 	 *            the parent <code>NonLinearFit</code> object creating this
 	 */
-	public LevenbergMarquadt(AbstractNonLinearFit nlf) {
+	public LevenbergMarquadt(NonLinearFit nlf) {
 		super();
 		nonLinFit = nlf;
 		messages = nlf.getTextInfo();
