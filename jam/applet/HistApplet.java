@@ -2,7 +2,6 @@ package jam.applet;//NOPMD
 
 import jam.InitialHistograms;
 import jam.commands.CommandManager;
-import jam.data.DataElement;
 import jam.data.DimensionalData;
 import jam.data.Gate;
 import jam.data.Histogram;
@@ -95,7 +94,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 			incommand = "link";
 		}
 		try {
-			if (incommand == "link") {
+			if ("link".equals(incommand)) {
 				hostName = textHost.getText().trim();
 				LOGGER.info("Trying " + hostName);
 				link(hostName);

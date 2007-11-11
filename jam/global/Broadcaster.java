@@ -1,6 +1,5 @@
 package jam.global;
 import java.util.Observable;
-import java.util.logging.Logger;
 
 /**
  * Part of a client server to handle message between packages

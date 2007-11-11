@@ -21,7 +21,7 @@ public class BroadcastUtilities {
 	}
 
 	private BroadcastUtilities(){
-		
+		// Only static methods, so suppress creation of instances.
 	}
 
 }
