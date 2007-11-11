@@ -176,6 +176,7 @@ public abstract class AbstractImpExp {
 	 */
 	protected boolean openFile(final File file, final String msg) {
 		boolean rval = false; // default return value
+		BufferedInputStream inBuffStream = null;
 		try {
 			final File inFile = (file == null) ? getFileOpen(msg) : file;
 			if (inFile != null) { // if Open file was not canceled
@@ -186,8 +187,7 @@ public abstract class AbstractImpExp {
 				importGroup = Group.createGroup(groupName, Group.Type.FILE);
 				setLastFile(inFile);
 				final FileInputStream inStream = new FileInputStream(inFile);
-				final BufferedInputStream inBuffStream = new BufferedInputStream(
-						inStream, BUFFER_SIZE);
+				inBuffStream = new BufferedInputStream(inStream, BUFFER_SIZE);
 				if (!silent) {
 					LOGGER.info(msg + " " + getFileName(inFile));
 				}
@@ -205,6 +205,15 @@ public abstract class AbstractImpExp {
 		} catch (ImpExpException iee) {
 			LOGGER.log(Level.SEVERE, "Problem while importing or exporting: "
 					+ iee.getMessage(), iee);
+		} finally {
+			if (inBuffStream != null) {
+				try {
+					inBuffStream.close();
+				} catch (IOException ioe) {
+					LOGGER.log(Level.SEVERE, "Problem closing file: "
+							+ ioe.getMessage(), ioe);
+				}
+			}
 		}
 		return rval;
 	}
@@ -223,7 +232,8 @@ public abstract class AbstractImpExp {
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the msgHandler
 	 */
-	protected void saveFile(final String msg, final Histogram hist) throws ImpExpException {
+	protected void saveFile(final String msg, final Histogram hist)
+			throws ImpExpException {
 		final File outFile = getFileSave(msg);
 		try {// open file dialog
 			if (outFile != null) { // if Save file dialog was not canceled
@@ -254,7 +264,8 @@ public abstract class AbstractImpExp {
 	 * @param hist
 	 * @throws ImpExpException
 	 */
-	public void saveFile(final File outFile, final Histogram hist) throws ImpExpException {
+	public void saveFile(final File outFile, final Histogram hist)
+			throws ImpExpException {
 		try {
 			final FileOutputStream outStream = new FileOutputStream(outFile);
 			final BufferedOutputStream buffStream = new BufferedOutputStream(
