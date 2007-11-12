@@ -17,6 +17,7 @@ import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
 import jam.data.func.AbstractCalibrationFunction;
+import jam.data.func.AbstractCalibrationFunctionCollection;
 import jam.data.func.CalibrationFitException;
 import jam.io.FileOpenMode;
 import jam.util.StringUtilities;
@@ -673,7 +674,7 @@ final class ConvertHDFObjToJamObj {
 
 	private AbstractCalibrationFunction makeCalibration(final String funcName)
 			throws HDFException {
-		final Map<String, Class<? extends AbstractCalibrationFunction>> calMap = AbstractCalibrationFunction
+		final Map<String, Class<? extends AbstractCalibrationFunction>> calMap = AbstractCalibrationFunctionCollection
 				.getMapFunctions();
 		AbstractCalibrationFunction calFunc = null;
 		try {

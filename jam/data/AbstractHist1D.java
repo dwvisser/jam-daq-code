@@ -4,6 +4,7 @@
 package jam.data;
 
 import jam.data.func.AbstractCalibrationFunction;
+import jam.data.func.AbstractCalibrationFunctionCollection;
 import jam.data.peaks.PeakFinder;
 
 import java.util.List;
@@ -18,7 +19,8 @@ public abstract class AbstractHist1D extends Histogram {
 	/**
 	 * The calibration function. Set to <code>null</code> if there is none.
 	 */
-	protected transient AbstractCalibrationFunction calibFunc=AbstractCalibrationFunction.getNoCalibration();
+	protected transient AbstractCalibrationFunction calibFunc = AbstractCalibrationFunctionCollection
+			.getNoCalibration();
 
 	/**
 	 * Array which contains the errors in the channel counts.
@@ -35,8 +37,8 @@ public abstract class AbstractHist1D extends Histogram {
 	 */
 	protected transient boolean errorsSet;
 
-	AbstractHist1D(Type type, int len, String title,
-			String axisLabelX, String axisLabelY) {
+	AbstractHist1D(Type type, int len, String title, String axisLabelX,
+			String axisLabelY) {
 		super(type, len, title, axisLabelX, axisLabelY);
 		unsetErrors();
 	}
@@ -85,12 +87,14 @@ public abstract class AbstractHist1D extends Histogram {
 	 * @return 1-sigma error bars
 	 */
 	public abstract double[] getErrors();
-	
+
 	/**
 	 * Gets the histogram's counts as floating-point values.
-	 * @param array given array to populate with the histogram's counts
+	 * 
+	 * @param array
+	 *            given array to populate with the histogram's counts
 	 */
-	protected abstract void getCounts(double [] array);
+	protected abstract void getCounts(double[] array);
 
 	/**
 	 * Attempt to find gaussian peaks.
@@ -110,7 +114,7 @@ public abstract class AbstractHist1D extends Histogram {
 			final boolean cal) {
 		synchronized (this) {
 			final double[] histArray = new double[this.getSizeX()];
-			this.getCounts(histArray);				
+			this.getCounts(histArray);
 			final List<Double> posn = PeakFinder.getInstance().getCentroids(
 					histArray, sensitivity, width);
 			double[][] rval = new double[3][posn.size()];
@@ -201,8 +205,8 @@ public abstract class AbstractHist1D extends Histogram {
 	public boolean isCalibrated() {
 		boolean calibrated = false;
 		synchronized (this) {
-			if (calibFunc!=null) {
-				calibrated= calibFunc.isCalibrated();
+			if (calibFunc != null) {
+				calibrated = calibFunc.isCalibrated();
 			}
 		}
 		return calibrated;

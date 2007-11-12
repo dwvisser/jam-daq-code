@@ -1,6 +1,6 @@
 package jam.ui;
 
-import jam.data.func.AbstractCalibrationFunction;
+import jam.data.func.AbstractCalibrationFunctionCollection;
 
 import java.awt.Component;
 
@@ -16,8 +16,8 @@ import javax.swing.UIManager;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 17 Dec 2003
  */
-public class CalibrationListCellRenderer extends DefaultListCellRenderer {//NOPMD
-	
+public class CalibrationListCellRenderer extends DefaultListCellRenderer {// NOPMD
+
 	/**
 	 * Returns a <code>JLabel</code> for the gate, with name and number, and a
 	 * red or green icon indicating if the gate is set.
@@ -41,8 +41,8 @@ public class CalibrationListCellRenderer extends DefaultListCellRenderer {//NOPM
 			setIcon(null);
 		} else {
 			setText(value.toString());
-			final ImageIcon icon = AbstractCalibrationFunction.getIcon(value
-					.toString());
+			final ImageIcon icon = AbstractCalibrationFunctionCollection
+					.getIcon(value.toString());
 			setIcon(icon);
 		}
 		setBorder((cellHasFocus) ? UIManager

@@ -3,7 +3,7 @@
  */
 package jam.data;
 
-import jam.data.func.AbstractCalibrationFunction;
+import jam.data.func.AbstractCalibrationFunctionCollection;
 
 import java.util.Arrays;
 
@@ -93,7 +93,8 @@ public final class HistInt1D extends AbstractHist1D {
 		synchronized (this) {
 			counts = EMPTY_INT;
 			unsetErrors();
-			setCalibration(AbstractCalibrationFunction.getNoCalibration());
+			setCalibration(AbstractCalibrationFunctionCollection
+					.getNoCalibration());
 			clear = true;
 		}
 	}

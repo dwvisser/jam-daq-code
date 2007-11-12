@@ -1,16 +1,7 @@
 package jam.data.func;
 
-import java.net.URL;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
 /**
  * A function that can be use to calibrate a histogram. Most often used to
@@ -21,31 +12,6 @@ import javax.swing.JOptionPane;
  * @version 1.0
  */
 public abstract class AbstractCalibrationFunction implements Function {
-
-	private static final Map<String, Class<? extends AbstractCalibrationFunction>> FUNCTIONS = new HashMap<String, Class<? extends AbstractCalibrationFunction>>();
-
-	private static final List<String> NAMES = new ArrayList<String>();
-
-	private static final Map<String, ImageIcon> ICONS = new HashMap<String, ImageIcon>();
-
-	private static final AbstractCalibrationFunction noFunc = new NoFunction();
-
-	static {
-		clearAll();
-		addFunction(noFunc.getName(), noFunc.getClass());
-		final AbstractCalibrationFunction linearFunc = new LinearFunction();
-		addFunction(linearFunc.getName(), linearFunc.getClass());
-		final AbstractCalibrationFunction quadFunc = new QuadraticFunction();
-		addFunction(quadFunc.getName(), quadFunc.getClass());
-		final AbstractCalibrationFunction cubicFunc = new CubicFunction();
-		addFunction(cubicFunc.getName(), cubicFunc.getClass());
-		final AbstractCalibrationFunction sqrtEFunc = new SqrtEnergyFunction();
-		addFunction(sqrtEFunc.getName(), sqrtEFunc.getClass());
-	}
-
-	static public AbstractCalibrationFunction getNoCalibration() {
-		return noFunc;
-	}
 
 	public boolean isCalibrated() {
 		return true;
@@ -110,76 +76,10 @@ public abstract class AbstractCalibrationFunction implements Function {
 		super();
 	}
 
-	/**
-	 * Returns the list of function names.
-	 * 
-	 * @return the list of function names
-	 */
-	public static List<String> getListNames() {
-		return Collections.unmodifiableList(NAMES);
-	}
-
-	/**
-	 * Returns the map of function names to functions.
-	 * 
-	 * @return the map of function names to functions
-	 */
-	public static Map<String, Class<? extends AbstractCalibrationFunction>> getMapFunctions() {
-		return Collections.unmodifiableMap(FUNCTIONS);
-	}
-
-	/**
-	 * Clear the collections.
-	 */
-	private static void clearAll() {
-		FUNCTIONS.clear();
-		ICONS.clear();
-		NAMES.clear();
-	}
-
-	private static void addFunction(final String name,
-			final Class<? extends AbstractCalibrationFunction> funcClass) {
-		/* Only add once. */
-		if (!FUNCTIONS.containsKey(name)) {
-			FUNCTIONS.put(name, funcClass);
-			NAMES.add(name);
-		}
-	}
-
-	/**
-	 * Sets an icon for the given function name.
-	 * 
-	 * @param name
-	 *            of the function
-	 * @param icon
-	 *            for the function
-	 */
-	public static void setIcon(final String name, final ImageIcon icon) {
-		ICONS.put(name, icon);
-	}
-
-	public static ImageIcon getIcon(final String name) {
-		return ICONS.get(name);
-	}
-
-	static void loadIcon(final AbstractCalibrationFunction calFunc,
-			final String iconFile) {
-		final ClassLoader loader = ClassLoader.getSystemClassLoader();
-
-		final URL urlIcon = loader.getResource(iconFile);
-		if (urlIcon == null) {
-			JOptionPane.showMessageDialog(null,
-					"Can't load resource for calibration function icon "
-							+ iconFile);
-		} else {
-			AbstractCalibrationFunction.setIcon(calFunc.getName(),
-					new ImageIcon(urlIcon));
-		}
-
-	}
 
 	/**
 	 * Creates a new <code>CalibrationFunction</code> object.
+	 * 
 	 * @param name
 	 *            name of function
 	 * @param numberTerms
@@ -430,8 +330,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 		if (delta == 0.0) {
 			rval[0] = 0.0;
 			rval[1] = 0.0;
-			throw new CalibrationFitException(
-					"Linear regression failed.");
+			throw new CalibrationFitException("Linear regression failed.");
 		}
 		aEst = (sumxx * sumy - sumx * sumxy) / delta;
 		bEst = (sumxy * sum - sumx * sumy) / delta;
@@ -457,7 +356,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 		final int numTerms = order + 1;
 		// Check data
 		if (xVal.length < numTerms) {
-			throw new IllegalArgumentException (
+			throw new IllegalArgumentException(
 					"Need more positions than order for polynomial fit");
 		}
 		if (xVal.length != yVal.length) {
@@ -475,18 +374,18 @@ public abstract class AbstractCalibrationFunction implements Function {
 		for (int k = 0; k < xVal.length; k++) {
 			xNorm[k] = xVal[k] - xMean;
 		}
-		final double [][] matrixA = new double[numTerms][numTerms];
-		final double [] vectorB = new double[numTerms];
+		final double[][] matrixA = new double[numTerms][numTerms];
+		final double[] vectorB = new double[numTerms];
 		buildPolyMatrix(xVal, yVal, numTerms, matrixA, vectorB);
 		// Copy vector b into a column matrix
-		double [][] gaussMatrixB = new double[vectorB.length][1];
+		double[][] gaussMatrixB = new double[vectorB.length][1];
 		for (int i = 0; i < vectorB.length; i++) {// NOPMD
 			gaussMatrixB[i][0] = vectorB[i];
 		}
 		// Do gaussian elimination
 		gaussj(matrixA, gaussMatrixB);
 		// Copy vector b into a column matrix
-		double [] polyCoeffs = new double[vectorB.length];
+		double[] polyCoeffs = new double[vectorB.length];
 		for (int i = 0; i < polyCoeffs.length; i++) {
 			polyCoeffs[i] = gaussMatrixB[i][0];
 		}
@@ -627,20 +526,20 @@ public abstract class AbstractCalibrationFunction implements Function {
 	}
 
 	private void multiplyArray(double[] array, final double factor) {
-		for (int i = array.length-1; i >= 0; i--) {
+		for (int i = array.length - 1; i >= 0; i--) {
 			array[i] *= factor;
 		}
 	}
 
 	private void subtractRows(double[][] array, final int row1, final int row2,
 			final double factor) {
-		for (int i = array[row1].length-1; i >= 0; i--) {
+		for (int i = array[row1].length - 1; i >= 0; i--) {
 			array[row1][i] -= factor * array[row2][i];
 		}
 	}
 
 	private void swapRows(double[][] array, final int row1, final int row2) {
-		for (int i = array[row1].length-1; i >= 0; i--) {
+		for (int i = array[row1].length - 1; i >= 0; i--) {
 			final double temp = array[row1][i];
 			array[row1][i] = array[row2][i];
 			array[row2][i] = temp;

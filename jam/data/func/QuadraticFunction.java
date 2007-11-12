@@ -20,7 +20,8 @@ public class QuadraticFunction extends AbstractCalibrationFunction {
 		labels[0] = "a0";
 		labels[1] = "a1";
 		labels[2] = "a2";
-		loadIcon(this, "jam/data/func/quad.png");
+		AbstractCalibrationFunctionCollection.loadIcon(this,
+				"jam/data/func/quad.png");
 	}
 
 	/**

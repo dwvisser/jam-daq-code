@@ -17,7 +17,8 @@ public class LinearFunction extends AbstractCalibrationFunction {
 		title = "E = a0 + a1\u2219ch";
 		labels[0] = "a0";
 		labels[1] = "a1";
-		loadIcon(this, "jam/data/func/line.png");
+		AbstractCalibrationFunctionCollection.loadIcon(this,
+				"jam/data/func/line.png");
 	}
 
 	/**

@@ -20,7 +20,8 @@ public class SqrtEnergyFunction extends AbstractCalibrationFunction {
 		title = "\u221aE = a0 + a1\u2219ch";
 		labels[0] = "a0";
 		labels[1] = "a1";
-		loadIcon(this, "jam/data/func/sqrt.png");
+		AbstractCalibrationFunctionCollection.loadIcon(this,
+				"jam/data/func/sqrt.png");
 	}
 
 	/**

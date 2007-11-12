@@ -20,7 +20,8 @@ public class CubicFunction extends AbstractCalibrationFunction {
 		labels[1] = "a1";
 		labels[2] = "a2";
 		labels[3] = "a3";
-		loadIcon(this, "jam/data/func/cubic.png");
+		AbstractCalibrationFunctionCollection.loadIcon(this,
+				"jam/data/func/cubic.png");
 	}
 
 	/**
