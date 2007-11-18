@@ -58,7 +58,7 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  */
-public class RunControl extends JDialog implements Controller {
+public class RunControl extends JDialog implements Controller, RunController {
 
 	private static enum Device {
 		/**
@@ -184,7 +184,7 @@ public class RunControl extends JDialog implements Controller {
 		contents.add(pButtons, BorderLayout.SOUTH);
 		final JPanel pGrid = new JPanel(new GridLayout(1, 0, 50, 5));
 		pButtons.add(pGrid);
-		begin = new Begin(this, textRunTitle);
+		begin = new Begin(this, this, textRunTitle);
 		final JButton bbegin = new JButton(begin);
 		pGrid.add(bbegin);
 		end = new End(this);
@@ -257,7 +257,7 @@ public class RunControl extends JDialog implements Controller {
 	 * @throws SortException
 	 *             if there's a problem while sorting
 	 */
-	void beginRun() throws JamException, SortException {
+	public void beginRun() throws JamException, SortException {
 		try {// get run number and title
 			RunInfo.getInstance().runNumber = Integer.parseInt(tRunNumber
 					.getText().trim());
@@ -318,7 +318,7 @@ public class RunControl extends JDialog implements Controller {
 	 * sort calls back isEndRun when it sees the end of run marker and write out
 	 * histogram, gates and scalers if requested
 	 */
-	void endRun() {
+	public void endRun() {
 		RunInfo.getInstance().runEndTime = new Date();
 		vmeComm.end(); // stop Acq. flush buffer
 		vmeComm.readScalers(); // read scalers

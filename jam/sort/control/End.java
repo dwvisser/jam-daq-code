@@ -9,9 +9,9 @@ import javax.swing.Action;
 
 class End extends AbstractAction {
 
-	private transient final RunControl runControl;
+	private transient final RunController runControl;
 
-	End(RunControl runControl) {
+	End(RunController runControl) {
 		super();
 		this.runControl = runControl;
 		putValue(Action.NAME, "End Run");

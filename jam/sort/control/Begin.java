@@ -4,6 +4,7 @@ import jam.global.JamException;
 import jam.sort.SortException;
 import jam.ui.Icons;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,12 +18,15 @@ class Begin extends AbstractAction {
 	
 	private static final Logger LOGGER = Logger.getLogger(Begin.class.getPackage().getName());
 
-	private transient final RunControl runControl;
+	private transient final RunController runControl;
+	
+	private transient final Component parent;
 
 	private transient final JTextComponent textRunTitle;
 
-	Begin(RunControl runControl, JTextComponent text) {
+	Begin(Component parent, RunController runControl, JTextComponent text) {
 		super();
+		this.parent = parent;
 		this.runControl = runControl;
 		textRunTitle = text;
 		putValue(Action.NAME, "Begin Run");
@@ -33,7 +37,7 @@ class Begin extends AbstractAction {
 
 	public void actionPerformed(final ActionEvent event) {
 		final String runTitle = textRunTitle.getText().trim();
-		final boolean confirm = (JOptionPane.showConfirmDialog(runControl,
+		final boolean confirm = (JOptionPane.showConfirmDialog(parent,
 				"Is this title OK? :\n" + runTitle, "Run Title Confirmation",
 				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
 		if (confirm) {
