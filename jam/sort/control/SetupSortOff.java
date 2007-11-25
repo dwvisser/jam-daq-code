@@ -140,6 +140,7 @@ public final class SetupSortOff extends AbstractSetup {
 		dialog.pack();
 	}
 
+	@Override
 	protected void doApply(final boolean dispose) {
 		try {
 			if (STATUS.canSetup()) {
@@ -175,11 +176,13 @@ public final class SetupSortOff extends AbstractSetup {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void loadEventInput() throws JamException {
 		try {// create new event input stream class
 			synchronized (this) {
-				inStream = (AbstractEventInputStream) ((Class) inChooser
-						.getSelectedItem()).newInstance();
+				Class<? extends AbstractEventInputStream> class1 = (Class<? extends AbstractEventInputStream>) inChooser
+						.getSelectedItem();
+				inStream = class1.newInstance();
 			}
 			inStream.setConsoleExists(true);
 		} catch (InstantiationException ie) {
@@ -195,10 +198,11 @@ public final class SetupSortOff extends AbstractSetup {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void loadEventOutput() throws JamException {
 		try {// create new event output stream class
 			synchronized (this) {
-				outStream = (AbstractEventOutputStream) ((Class) outChooser
+				outStream = ((Class<? extends AbstractEventOutputStream>) outChooser
 						.getSelectedItem()).newInstance();
 			}
 		} catch (InstantiationException ie) {
@@ -210,6 +214,7 @@ public final class SetupSortOff extends AbstractSetup {
 		}
 	}
 
+	@Override
 	protected void lockMode(final boolean lock) {
 		final boolean notLock = !lock;
 		checkLock.setEnabled(lock);
@@ -248,6 +253,7 @@ public final class SetupSortOff extends AbstractSetup {
 		lockMode(false);
 	}
 
+	@Override
 	protected void setupSort() throws SortException, JamException {
 		initializeSorter();
 		/* setup sorting */

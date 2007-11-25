@@ -30,6 +30,7 @@ final class SortChooser extends JComboBox {
 		super();
 		setToolTipText("Select sort routine class");
 		addActionListener(new ActionListener() {
+			@SuppressWarnings("unchecked")
 			public void actionPerformed(final ActionEvent event) {
 				sortClass = (Class<? extends SortRoutine>) getSelectedItem();
 			}
@@ -53,6 +54,7 @@ final class SortChooser extends JComboBox {
 	 * @throws JamException
 	 *             if there's a problem
 	 */
+	@SuppressWarnings("unchecked")
 	protected void loadSorter(final boolean userSpecifiedPath)
 			throws JamException {
 		if (sortClass == null) {
@@ -174,8 +176,10 @@ final class SortChooser extends JComboBox {
 		final Set<Class<? extends SortRoutine>> set = new LinkedHashSet<Class<? extends SortRoutine>>();
 		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier
 				.getSingletonInstance();
-		set.addAll(runtimeSubclassIdentifier.find("help", SortRoutine.class, true));
-		set.addAll(runtimeSubclassIdentifier.find("sort", SortRoutine.class, true));
+		set.addAll(runtimeSubclassIdentifier.find("help", SortRoutine.class,
+				true));
+		set.addAll(runtimeSubclassIdentifier.find("sort", SortRoutine.class,
+				true));
 		return set;
 	}
 

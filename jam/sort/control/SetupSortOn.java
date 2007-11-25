@@ -16,6 +16,8 @@ import jam.sort.RingBuffer;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
 import jam.sort.SortRoutine;
+import jam.sort.stream.AbstractEventInputStream;
+import jam.sort.stream.AbstractEventOutputStream;
 import jam.ui.ConsoleLog;
 
 import java.awt.BorderLayout;
@@ -176,8 +178,8 @@ public final class SetupSortOn extends AbstractSetup {
 		pLabels.add(llfp);
 		/* blank label balances out the grid */
 		final JLabel lssf = new JLabel(/*
-										 * "Sort sample fraction", RIGHT
-										 */);
+		 * "Sort sample fraction", RIGHT
+		 */);
 		pLabels.add(lssf);
 		/* Entries Panel */
 		final JPanel pEntries = new JPanel(new GridLayout(0, 1, gap, gap));
@@ -299,6 +301,7 @@ public final class SetupSortOn extends AbstractSetup {
 
 	}
 
+	@Override
 	protected void doApply(final boolean dispose) {
 		try {
 			if (!loadNames()) {
@@ -375,6 +378,7 @@ public final class SetupSortOn extends AbstractSetup {
 
 	}
 
+	@Override
 	protected void lockMode(final boolean lock) {
 		final boolean notlock = !lock;
 		checkLock.setEnabled(lock);
@@ -496,6 +500,8 @@ public final class SetupSortOn extends AbstractSetup {
 		frontEnd.setupCamac(sortChooser.getSortRoutine().getCamacCommands());
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
 	protected void setupSort() throws jam.sort.SortException, JamException {
 		initializeSorter();
 		/* interprocess buffering between daemons */
@@ -504,7 +510,7 @@ public final class SetupSortOn extends AbstractSetup {
 		final RingBuffer storageRing = new RingBuffer(!cdisk.isSelected());
 		/* typical setup of event streams */
 		try { // create new event input stream class
-			inStream = (jam.sort.stream.AbstractEventInputStream) ((Class) inChooser
+			inStream = ((Class<? extends AbstractEventInputStream>) inChooser
 					.getSelectedItem()).newInstance();
 			inStream.setConsoleExists(true);
 		} catch (InstantiationException ie) {
@@ -520,7 +526,7 @@ public final class SetupSortOn extends AbstractSetup {
 		}
 		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 		try { // create new event input stream class
-			outStream = (jam.sort.stream.AbstractEventOutputStream) ((Class) outChooser
+			outStream = ((Class<? extends AbstractEventOutputStream>) outChooser
 					.getSelectedItem()).newInstance();
 			outStream.setEventSize(sortRoutine.getEventSize());
 		} catch (InstantiationException ie) {

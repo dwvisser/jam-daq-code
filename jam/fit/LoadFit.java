@@ -78,6 +78,7 @@ public class LoadFit {
 		pFit.add(chooseFit);
 		final PanelOKApplyCancelButtons.Listener callback = new PanelOKApplyCancelButtons.AbstractListener(
 				dialog) {
+			@SuppressWarnings("unchecked")
 			public void apply() {
 				final Class<? extends AbstractFit> fit = (Class<? extends AbstractFit>) chooseFit
 						.getSelectedItem();
@@ -101,8 +102,8 @@ public class LoadFit {
 		final String package2 = "fit";
 		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier
 				.getSingletonInstance();
-		final Set<Class<? extends AbstractFit>> set = runtimeSubclassIdentifier.find(package1,
-				AbstractFit.class, false);
+		final Set<Class<? extends AbstractFit>> set = runtimeSubclassIdentifier
+				.find(package1, AbstractFit.class, false);
 		set.addAll(runtimeSubclassIdentifier.find(package2, AbstractFit.class,
 				false));
 		return set.toArray();
