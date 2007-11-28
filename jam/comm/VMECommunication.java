@@ -30,9 +30,9 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.Preferences;
 
 /**
- * Class to communicate with VME crate using udp packets Two udp sockets can be
+ * Class to communicate with VME crate using UDP packets Two UDP sockets can be
  * setup with a daemon that receives packets and knows what to do with them The
- * first int of a packet indicates what type of packe it is.
+ * first int of a packet indicates what type of packet it is.
  * 
  * @version 0.5 April 98
  * @author Ken Swartz and Dale Visser
@@ -80,6 +80,7 @@ public final class VMECommunication extends GoodThread implements
 	private VMECommunication() {
 		super();
 		setName("Network Messenger");
+		BROADCASTER.addObserver(this);
 	}
 
 	/**
@@ -126,7 +127,7 @@ public final class VMECommunication extends GoodThread implements
 			throw new CommunicationsException(
 					"Problem creating receive socket.", se);
 		}
-		// setup and start receiving deamon
+		// Setup and start receiving daemon.
 		setDaemon(true);
 		setPriority(jam.sort.ThreadPriorities.MESSAGING);
 		start();
@@ -204,7 +205,7 @@ public final class VMECommunication extends GoodThread implements
 	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
-		final boolean state = Boolean.valueOf(newValue).booleanValue();
+		final boolean state = Boolean.parseBoolean(newValue);
 		if (key.equals(CommunicationPreferences.DEBUG)) {
 			debug(state);
 		} else if (key.equals(CommunicationPreferences.VERBOSE)) {
@@ -237,6 +238,7 @@ public final class VMECommunication extends GoodThread implements
 	 * first int of the packet is the status word. It determines how the packet
 	 * is to be handled.
 	 */
+	@Override
 	public void run() {
 		final byte[] bufferIn = new byte[Constants.MAX_PACKET_SIZE];
 		try {
@@ -399,7 +401,7 @@ public final class VMECommunication extends GoodThread implements
 	}
 
 	/**
-	 * Sets up networking. Two udp sockets are created: one for receiving and
+	 * Sets up networking. Two UDP sockets are created: one for receiving and
 	 * one for sending. A daemon is also set up for receiving.
 	 * 
 	 * @throws CommunicationsException
@@ -577,7 +579,7 @@ public final class VMECommunication extends GoodThread implements
 	}
 
 	/**
-	 * Recieves distributed events. Can listen for broadcasted event.
+	 * Receives distributed events. Can listen for broadcasted event.
 	 * Implementation of Observable interface.
 	 * 
 	 * @param observable
