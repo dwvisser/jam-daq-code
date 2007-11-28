@@ -1,5 +1,6 @@
 package jam.sort.control;
 
+import jam.global.Help;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 
@@ -17,6 +18,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
+import javax.help.HelpBroker;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -41,10 +43,12 @@ public class ConfigurationDisplay extends JDialog {
 		setSize(400, 400);
 		setLocation(20, 50);
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
 
+			@Override
 			public void windowOpened(final WindowEvent event) {
 				setup();
 			}
@@ -67,6 +71,10 @@ public class ConfigurationDisplay extends JDialog {
 		// Low panel buttons
 		final JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		contents.add(buttonPanel, BorderLayout.SOUTH);
+		final JButton help = new JButton("Help");
+		final HelpBroker broker = Help.getInstance().getHelpBroker();
+		broker.enableHelpOnButton(help, "configure", null);
+		buttonPanel.add(help);
 		final JButton btnClose = new JButton("Close");
 		buttonPanel.add(btnClose);
 		btnClose.addActionListener(new ActionListener() {
@@ -104,14 +112,14 @@ public class ConfigurationDisplay extends JDialog {
 	 * Setup loads the properties into the text pane and lays out the dialog
 	 * 
 	 */
-	public void setup() {//NOPMD
+	public void setup() {// NOPMD
 		textConfig.setText(propertyString());
 		pack();
 	}
 
 	/**
 	 * override of JDialog.close()
-	 *
+	 * 
 	 */
 	public void close() {
 		dispose();

@@ -1,9 +1,7 @@
 package jam.commands;
 
 import jam.global.CommandListenerException;
-
-import java.net.URL;
-import java.util.logging.Level;
+import jam.global.Help;
 
 import javax.help.CSH;
 import javax.help.HelpSet;
@@ -18,26 +16,20 @@ final class ShowUserGuide extends AbstractCommand {
 
 	ShowUserGuide() {
 		super("User Guide\u2026");
-		final String helpsetName = "help/jam.hs";
-		try {
-			final URL hsURL = getClass().getClassLoader().getResource(
-					helpsetName);
-			final HelpSet help = new HelpSet(null, hsURL);
-			proxy.addActionListener(new CSH.DisplayHelpFromSource(help
-					.createHelpBroker()));
-		} catch (Exception ee) {
-			final String message = "HelpSet " + helpsetName + " not found";
-			LOGGER.log(Level.WARNING, message, ee);
-		}
+		final HelpSet help = Help.getInstance().getHelpSet();
+		proxy.addActionListener(new CSH.DisplayHelpFromSource(help
+				.createHelpBroker()));
 	}
 
 	/**
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		proxy.doClick();
 	}
 
+	@Override
 	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
 		execute(null);
