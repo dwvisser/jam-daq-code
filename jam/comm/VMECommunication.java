@@ -334,14 +334,12 @@ public final class VMECommunication extends GoodThread implements
 	 *             if there's a problem
 	 */
 	private void sendPacket(final byte[] byteMessage) throws IOException {
-		synchronized (LOCK) {
-			final DatagramPacket packetMessage = new DatagramPacket(
-					byteMessage, byteMessage.length, addressVME, vmePort);
-			if (socketSend == null) {
-				throw new IllegalStateException("Send socket not setup.");
-			}
-			socketSend.send(packetMessage);
+		final DatagramPacket packetMessage = new DatagramPacket(byteMessage,
+				byteMessage.length, addressVME, vmePort);
+		if (socketSend == null) {
+			throw new IllegalStateException("Send socket not setup.");
 		}
+		socketSend.send(packetMessage);
 	}
 
 	/**
@@ -370,22 +368,20 @@ public final class VMECommunication extends GoodThread implements
 	 *             if we haven't established a connection yet
 	 */
 	private void sendToVME(final PacketTypes status, final String message) {
-		synchronized (LOCK) {
-			if (socketSend == null) {
-				throw new IllegalStateException(
-						"Attempted to send a message without a connection.");
-			}
-			final DatagramPacket packetMessage = PacketBuilder.getInstance()
-					.message(status, message, addressVME, vmePort);
-			try {// create and send packet
-				socketSend.send(packetMessage);
-			} catch (IOException e) {
-				LOGGER
-						.log(
-								Level.SEVERE,
-								"Jam encountered a network communication error attempting to send a packet.",
-								e);
-			}
+		if (socketSend == null) {
+			throw new IllegalStateException(
+					"Attempted to send a message without a connection.");
+		}
+		final DatagramPacket packetMessage = PacketBuilder.getInstance()
+				.message(status, message, addressVME, vmePort);
+		try {// create and send packet
+			socketSend.send(packetMessage);
+		} catch (IOException e) {
+			LOGGER
+					.log(
+							Level.SEVERE,
+							"Jam encountered a network communication error attempting to send a packet.",
+							e);
 		}
 	}
 
