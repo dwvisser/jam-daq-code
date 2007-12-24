@@ -382,11 +382,10 @@ public final class JamProperties {
 	private void setDefaultConfig() {
 		PROPERTIES.setProperty(JAM_HOME, (new File(userCurrentDir)).getPath());
 		PROPERTIES.setProperty(HOST_IP, "localhost");
-		PROPERTIES.setProperty(HOST_PORT_SEND, "5003");
 		PROPERTIES.setProperty(HOST_PORT_SEND, "5002");
 		PROPERTIES.setProperty(HOST_PORT_RECV, "5005");
-		PROPERTIES.setProperty(TARGET_IP, "frontend");
-		PROPERTIES.setProperty(TARGET_PORT, "5002");
+		PROPERTIES.setProperty(TARGET_IP, "localhost");
+		PROPERTIES.setProperty(TARGET_PORT, "5003");
 		PROPERTIES.setProperty(HOST_DATA_IP, "localhost");
 		PROPERTIES.setProperty(HOST_DATA_P_RECV, "10205");
 	}
