@@ -73,10 +73,10 @@ public class Help extends JDialog {
 					System.exit(0);
 				}
 			});
-			SwingUtilities.invokeAndWait(new Runnable(){
-				public void run(){
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
 					frame.pack();
-					frame.setVisible(true);					
+					frame.setVisible(true);
 				}
 			});
 			proxy.doClick();
@@ -89,11 +89,11 @@ public class Help extends JDialog {
 		}
 	}
 
-	private static void showErrorDialog(final Throwable throwable){
-		JOptionPane.showMessageDialog(null, throwable.getMessage(), throwable.getClass()
-				.getName(), JOptionPane.ERROR_MESSAGE);		
+	private static void showErrorDialog(final Throwable throwable) {
+		JOptionPane.showMessageDialog(null, throwable.getMessage(), throwable
+				.getClass().getName(), JOptionPane.ERROR_MESSAGE);
 	}
-	
+
 	private static void setLookAndFeel() {
 		final String linux = "Linux";
 		final String kunststoff = "com.incors.plaf.kunststoff.KunststoffLookAndFeel";
@@ -144,8 +144,8 @@ public class Help extends JDialog {
 		this.setResizable(true);
 		contents.setLayout(new BorderLayout());
 		final JPanel center = new JPanel(new GridLayout(0, 1));
-		final InputStream license_in = getClass().getClassLoader()
-				.getResourceAsStream("license.txt");
+		final InputStream license_in = Thread.currentThread()
+				.getContextClassLoader().getResourceAsStream("license.txt");
 		final Reader reader = new InputStreamReader(license_in);
 		int length = 0;
 		final char[] textarray = new char[2000];
@@ -177,5 +177,4 @@ public class Help extends JDialog {
 		this.setSize(this.getWidth(), screen.height / 2);
 		this.setLocation(POS_X, screen.height / 4);
 	}
-
 }
