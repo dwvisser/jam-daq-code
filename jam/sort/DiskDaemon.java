@@ -66,6 +66,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 * @exception SortException
 	 *                exception that sends message to console
 	 */
+	@Override
 	public void closeEventInputFile() throws SortException {
 		if (inputFileOpen) {
 			try {
@@ -82,6 +83,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 * Close event input file that is from the list, if one from the list is
 	 * open.
 	 */
+	@Override
 	public boolean closeEventInputListFile() {
 		boolean rval = true;
 		try {
@@ -100,6 +102,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 * @exception SortException
 	 *                exception that sends message to console
 	 */
+	@Override
 	public void closeEventOutputFile() throws SortException {
 		if (outputFileOpen) {
 			try {
@@ -124,6 +127,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 * @exception SortException
 	 *                thrown for unrecoverable errors
 	 */
+	@Override
 	public InputStream getEventInputFileStream() throws SortException {
 		return bis;
 	}
@@ -136,6 +140,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 * @exception SortException
 	 *                thrown for unrecoverable errors
 	 */
+	@Override
 	public OutputStream getEventOutputFileStream() throws SortException {
 		return bos;
 	}
@@ -143,6 +148,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	/**
 	 * Need to implement such that sets a variable to stop write loop.
 	 */
+	@Override
 	public boolean hasMoreFiles() {
 		return sortFiles.hasNext();
 	}
@@ -153,6 +159,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 * @exception SortException
 	 *                exception that sends message to console
 	 */
+	@Override
 	public void openEventInputFile(final File file) throws SortException {
 		if (file == null) {
 			final SortException exception = new SortException(getClass()
@@ -176,6 +183,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	/**
 	 * Open next file in list.
 	 */
+	@Override
 	public boolean openEventInputListFile() {
 		boolean rval = false;
 		final File file = sortFiles.next();
@@ -204,6 +212,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 * @exception SortException
 	 *                exception that sends message to console
 	 */
+	@Override
 	public void openEventOutputFile(final File file) throws SortException {
 		if (file == null) {
 			throw new SortException(getClass().getName()
@@ -227,6 +236,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 * @exception SortException
 	 *                thrown for unrecoverable errors
 	 */
+	@Override
 	public boolean readHeader() throws SortException {
 		try {
 			final BufferedInputStream headerInputStream = new BufferedInputStream(
@@ -258,6 +268,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	/**
 	 * Starting point of thread for online writing to disk
 	 */
+	@Override
 	public void run() {
 		try {
 			if (mode == Mode.ONLINE) {
@@ -278,6 +289,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 * @exception SortException
 	 *                thrown for unrecoverable errors
 	 */
+	@Override
 	public void writeHeader() throws SortException {
 		try {
 			eventOutput.writeHeader();
@@ -302,9 +314,8 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 		while (checkState()) {
 			// read from pipe and write file
 			try {
-			ringBuffer.getBuffer(buffer);
-			} catch (InterruptedException e)
-			{
+				ringBuffer.getBuffer(buffer);
+			} catch (InterruptedException e) {
 				throw new IOException(e);
 			}
 			bos.write(buffer);

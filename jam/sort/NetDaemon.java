@@ -40,7 +40,7 @@ public final class NetDaemon extends GoodThread {
 	private transient final RingBuffer storageRing;
 
 	/**
-	 * set if we want data to be put is writing pipe writting out data
+	 * Set if we want data to be put is writing pipe writing out data.
 	 */
 	private transient boolean writerOn = false;
 
@@ -95,6 +95,7 @@ public final class NetDaemon extends GoodThread {
 	 * 
 	 * @see #receiveLoop()
 	 */
+	@Override
 	public void run() {
 		final StringBuffer message = new StringBuffer(getClass().getName())
 				.append("--communication with acquisition halted, because of ");
@@ -164,12 +165,12 @@ public final class NetDaemon extends GoodThread {
 				dataIn.getData();// data goes to bufferOut
 				packetCount++;
 				/* Put buffer into to sorting ring with sample fraction */
-				if (!sortingRing.tryPutBuffer(bufferOut)){
+				if (!sortingRing.tryPutBuffer(bufferOut)) {
 					notSortCount++;
 					setEmptyBefore(true);
 				}
 				/* put buffer into to storage ring */
-				if (writerOn && !storageRing.tryPutBuffer(bufferOut)){
+				if (writerOn && !storageRing.tryPutBuffer(bufferOut)) {
 					notStorCount++;
 					LOGGER.severe("Lost a storage buffer.");
 				}
