@@ -1,13 +1,22 @@
 package test.sort;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import jam.sort.RingBuffer;
 
 import java.util.Arrays;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +30,7 @@ import org.junit.internal.ArrayComparisonFailure;
  */
 public final class RingBufferTest {// NOPMD
 
-	private static final String ARRAYS_SHOULD_HAVE_BEEN_EQUAL = "Arrays should have been equal.";
+	private static final String ARRAYS_NOT_EQUAL = "Arrays should have been equal.";
 
 	private transient RingBuffer ring, emptyRing;
 
@@ -34,7 +43,7 @@ public final class RingBufferTest {// NOPMD
 	 */
 	private void assertArraysEqualButNotSame(final byte[] output,
 			final byte[] input) throws ArrayComparisonFailure {
-		assertArrayEquals(ARRAYS_SHOULD_HAVE_BEEN_EQUAL, input, output);
+		assertArrayEquals(ARRAYS_NOT_EQUAL, input, output);
 		assertNotSame("Expect two different arrays.", input, output);
 	}
 
@@ -173,5 +182,70 @@ public final class RingBufferTest {// NOPMD
 		putBuffer(ring, buffer, true);
 		assertRingBufferFull(ring);
 		putBuffer(ring, buffer, false);
+	}
+
+	@Test
+	public void testGetWaitingOnPut() {
+		ring.clear();
+		final BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(
+				2);
+		final ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 200L,
+				TimeUnit.MILLISECONDS, queue);
+		final long sleepMilliseconds = 10L;
+		final long timeoutMsec = 2 * sleepMilliseconds;
+		final Putter putter = new Putter(ring, sleepMilliseconds);
+		final Getter getter = new Getter(ring);
+		final Future<Boolean> putFuture = executor.submit(putter);
+		final Future<byte[]> getFuture = executor.submit(getter);
+		try {
+			assertTrue("Expected put to return true.", putFuture.get(
+					timeoutMsec, TimeUnit.MILLISECONDS));
+			getFuture.get(timeoutMsec, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException ie) {
+			fail("Test interrupted.\n" + ie.getMessage());
+		} catch (TimeoutException te) {
+			fail("Test timed out.\n" + te.getMessage());
+		} catch (ExecutionException ee) {
+			fail("Worker threw an exception.\n" + ee.getMessage());
+		}
+	}
+
+	static class Getter implements Callable<byte[]> {
+		private transient final RingBuffer ring;
+		private static final byte[] buffer = RingBuffer.freshBuffer();
+
+		Getter(RingBuffer ring) {
+			this.ring = ring;
+		}
+
+		public byte[] call() throws InterruptedException {
+			ring.getBuffer(buffer);
+			return buffer;
+		}
+	}
+
+	static class Putter implements Callable<Boolean> {
+
+		private transient final RingBuffer ring;
+
+		private transient final long msecToSleep;
+
+		Putter(RingBuffer ring, long milliseconds) {
+			this.ring = ring;
+			this.msecToSleep = milliseconds;
+		}
+
+		public Boolean call() {
+			Boolean rval = Boolean.FALSE;
+			try {
+				Thread.sleep(this.msecToSleep);
+				final boolean result = ring.tryPutBuffer(RingBuffer
+						.freshBuffer());
+				rval = Boolean.valueOf(result);
+			} catch (InterruptedException ie) {
+				// failure
+			}
+			return rval;
+		}
 	}
 }
