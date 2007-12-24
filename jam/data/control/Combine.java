@@ -432,6 +432,7 @@ public class Combine extends AbstractManipulation implements Observer {
 	 * if 1 d
 	 * 
 	 */
+	@Override
 	public void doSetup() {
 		String lfrom1, lfrom2, lto;
 
@@ -493,6 +494,7 @@ public class Combine extends AbstractManipulation implements Observer {
 	 * Implementation of Observable interface listeners for broadcast events.
 	 * broadcast events where there are new histograms or histograms added.
 	 */
+	@Override
 	public void update(final Observable observable, final Object object) {
 		final BroadcastEvent event = (BroadcastEvent) object;
 		final BroadcastEvent.Command command = event.getCommand();
@@ -504,16 +506,14 @@ public class Combine extends AbstractManipulation implements Observer {
 
 	boolean validateFactors() throws DataException {
 		try {// read information for first histogram
-			fac1 = Double.valueOf(ttimes1.getText().trim()).doubleValue();
+			fac1 = Double.parseDouble(ttimes1.getText().trim());
 		} catch (NumberFormatException nfe) {
-			throw new DataException(
-					"First factor is not a valid number.", nfe);
+			throw new DataException("First factor is not a valid number.", nfe);
 		}
 		try {// read in information for second histogram
-			fac2 = Double.valueOf(ttimes2.getText().trim()).doubleValue();
+			fac2 = Double.parseDouble(ttimes2.getText().trim());
 		} catch (NumberFormatException nfe) {
-			throw new DataException(
-					"Second factor is not a valid number.", nfe);
+			throw new DataException("Second factor is not a valid number.", nfe);
 		}
 		return true;
 	}
