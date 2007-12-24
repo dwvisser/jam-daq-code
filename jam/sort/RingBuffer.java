@@ -38,7 +38,7 @@ public final class RingBuffer {
 	private transient ArrayBlockingQueue<byte[]> ring;
 
 	private transient final LinkedBlockingDeque<byte[]> poolStack = new LinkedBlockingDeque<byte[]>(
-			NUMBER_BUFFERS);;
+			NUMBER_BUFFERS);
 
 	private transient final boolean hasRing;
 
@@ -80,7 +80,8 @@ public final class RingBuffer {
 	}
 
 	/**
-	 * @param inBuffer buffer to copy
+	 * @param inBuffer
+	 *            buffer to copy
 	 * @return copy of inBuffer, either from internal pool or fresh
 	 */
 	private byte[] allocateFromPoolIfPossibleAndCopy(final byte[] inBuffer) {
@@ -135,7 +136,7 @@ public final class RingBuffer {
 	 * @return true if there are no buffers in the ring.
 	 */
 	public boolean isEmpty() {
-		return isNull() ? true : ring.isEmpty();
+		return isNull() || ring.isEmpty();
 	}
 
 	/**
@@ -153,13 +154,7 @@ public final class RingBuffer {
 	 * @return the number of available buffers
 	 */
 	public int getAvailableBuffers() {
-		final int rval;
-		if (isNull()) {
-			rval = 0;
-		} else {
-			rval = NUMBER_BUFFERS - getUsedBuffers();
-		}
-		return rval;
+		return isNull() ? 0 : ring.remainingCapacity();
 	}
 
 	/**
@@ -169,7 +164,7 @@ public final class RingBuffer {
 	 * @return <code>true</code> if the ring buffer is close to filling
 	 */
 	public boolean isCloseToFull() {
-		return getAvailableBuffers() < CLOSE_TO_CAPACITY;
+		return isNull() || ring.remainingCapacity() < CLOSE_TO_CAPACITY;
 	}
 
 	/**
