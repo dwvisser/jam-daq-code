@@ -1,12 +1,5 @@
 package jam.sort.stream;
 
-import static jam.sort.stream.CAEN_StreamFields.BUFFER_DEPTH;
-import static jam.sort.stream.CAEN_StreamFields.BUFFER_END;
-import static jam.sort.stream.CAEN_StreamFields.BUFFER_PAD;
-import static jam.sort.stream.CAEN_StreamFields.END_PAD;
-import static jam.sort.stream.CAEN_StreamFields.NUM_CHANNELS;
-import static jam.sort.stream.CAEN_StreamFields.SCALER_BLOCK;
-import static jam.sort.stream.CAEN_StreamFields.STOP_PAD;
 import jam.data.Scaler;
 
 import java.io.EOFException;
@@ -30,44 +23,46 @@ import java.util.Map;
 public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 
 	private static enum BufferStatus {
-	    /**
-	     * Indicates the state where flushing of the remaining contents of the
-	     * buffer is occuring.
-	     */
-	    FIFO_ENDRUN_FLUSH,
-	    
-	    /**
-	     * State for when buffer is still filling and no output is available yet.
-	     */
-	    FIFO_FILLING,
-	    
-	    /**
-	     * This is the state when the EventStream has characters in it indicating that
-	     * acquisition has been stopped or ended.  In this situation, all data has been 
-	     * read out from the ADC's and been sent to Jam.  So the stream needs to empty out
-	     * it's remaining contents to the sort routine.
-	     */
-	    FIFO_FLUSH,
-	    
-	    /**
-	     * In this state every new read from the stream requires that the oldest 
-	     * event in the the "FIFO" buffer be pulled to be returned so as to make room
-	     * for a new event counter.
-	     */
-	    FIFO_FULL,
-	    
-	    /**
-	     * Indicates the state where we're reading through end-of-buffer
-	     * padding characters.
-	     */
-	    PADDING,
-	    
-	    /**
-	     * Indicates the state where a scaler block is being read.
-	     */
-	    SCALER
+		/**
+		 * Indicates the state where flushing of the remaining contents of the
+		 * buffer is occuring.
+		 */
+		FIFO_ENDRUN_FLUSH,
+
+		/**
+		 * State for when buffer is still filling and no output is available
+		 * yet.
+		 */
+		FIFO_FILLING,
+
+		/**
+		 * This is the state when the EventStream has characters in it
+		 * indicating that acquisition has been stopped or ended. In this
+		 * situation, all data has been read out from the ADC's and been sent to
+		 * Jam. So the stream needs to empty out it's remaining contents to the
+		 * sort routine.
+		 */
+		FIFO_FLUSH,
+
+		/**
+		 * In this state every new read from the stream requires that the oldest
+		 * event in the the "FIFO" buffer be pulled to be returned so as to make
+		 * room for a new event counter.
+		 */
+		FIFO_FULL,
+
+		/**
+		 * Indicates the state where we're reading through end-of-buffer padding
+		 * characters.
+		 */
+		PADDING,
+
+		/**
+		 * Indicates the state where a scaler block is being read.
+		 */
+		SCALER
 	}
-	
+
 	/**
 	 * Type of pointer in FIFO buffer.
 	 * 
@@ -88,7 +83,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 
 	static private final int END_COMPARE = 0x4000000;
 
-	private static final short ENDRUN = (short) (END_PAD & 0xffff);
+	private static final short ENDRUN = (short) (CAEN_StreamFields.END_PAD & 0xffff);
 
 	static private final int HEAD_COMPARE = 0x2000000;
 
@@ -98,15 +93,16 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 
 	// event counter/event should be retrieved
 	// from
-	private transient int[] eventNumbers = new int[BUFFER_DEPTH];;
+	private transient final int[] eventNumbers = new int[CAEN_StreamFields.BUFFER_DEPTH];;
 
 	/**
 	 * Hashtable keys are the event numbers, objects are the array indices.
 	 */
 	private transient final Map<Integer, Integer> eventNumMap = Collections
-			.synchronizedMap(new HashMap<Integer, Integer>(BUFFER_DEPTH));
+			.synchronizedMap(new HashMap<Integer, Integer>(
+					CAEN_StreamFields.BUFFER_DEPTH));
 
-	private transient final int[][] fifo = new int[BUFFER_DEPTH][NUM_CHANNELS];
+	private transient final int[][] fifo = new int[CAEN_StreamFields.BUFFER_DEPTH][CAEN_StreamFields.NUM_CHANNELS];
 
 	private transient BufferStatus internalStat = BufferStatus.FIFO_FILLING;
 
@@ -120,7 +116,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 
 	private transient final int[] tempData = new int[32];
 
-	//private transient final int[] tempParams = new int[32];
+	private transient final int[] tempParams = new int[32];
 
 	/**
 	 * Make sure to issue a setConsole() after using this constructor. It is
@@ -131,7 +127,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 		posPut = 0;
 		posGet = 0;
 		lastIncr = FifoPointer.GET;// initially empty requires last incremented
-									// to be GET
+		// to be GET
 	}
 
 	/**
@@ -148,14 +144,15 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 		super(console, eventSize);
 	}
 
-	public String getFormatDescription(){
+	@Override
+	public String getFormatDescription() {
 		return "Not an L002 format, but uses similar delimiters for special blocks.";
 	}
 
 	private void addEventIndex(final int eventNumber) {
 		eventNumbers[posPut] = eventNumber;
 		// automatically initialized to all zeros
-		final int[] zeros = new int[NUM_CHANNELS];
+		final int[] zeros = new int[CAEN_StreamFields.NUM_CHANNELS];
 		System.arraycopy(zeros, 0, fifo[posPut], 0, zeros.length);
 		eventNumMap.put(eventNumber, posPut);
 		incrementPut();
@@ -208,10 +205,9 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 			}
 			final int arrayIndex = getEventIndex(eventNumber);
 			/* copy data in, item by item */
-//			for (int i = 0; i < numParams; i++) {
-//				fifo[arrayIndex][tempParams[i]] = tempData[i];
-//			}
-			System.arraycopy(tempData, 0, fifo[arrayIndex], 0, numParams);
+			for (int i = 0; i < numParams; i++) {// NOPMD
+				fifo[arrayIndex][tempParams[i]] = tempData[i];
+			}
 		} else {
 			throw new EventException(
 					getClass().getName()
@@ -220,27 +216,30 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 		}
 	}
 
-	private void handleSpecialHeaders(final int header) {
-		if (header == BUFFER_END) {// return end of buffer
+	private EventInputStatus handleSpecialHeaders(final int header,
+			final EventInputStatus init) {
+		EventInputStatus rval = init;
+		if (header == CAEN_StreamFields.BUFFER_END) {// return end of buffer
 			// to
 			// SortDaemon
 			/* no need to flush here */
-			eventInputStatus = EventInputStatus.END_BUFFER;
+			rval = EventInputStatus.END_BUFFER;
 			internalStat = BufferStatus.PADDING;
-		} else if (header == BUFFER_PAD) {
-			eventInputStatus = EventInputStatus.IGNORE;
+		} else if (header == CAEN_StreamFields.BUFFER_PAD) {
+			rval = EventInputStatus.IGNORE;
 			internalStat = BufferStatus.PADDING;
-		} else if (header == STOP_PAD) {
+		} else if (header == CAEN_StreamFields.STOP_PAD) {
 			internalStat = BufferStatus.FIFO_FLUSH;
-		} else if (header == END_PAD) {
+		} else if (header == CAEN_StreamFields.END_PAD) {
 			internalStat = BufferStatus.FIFO_ENDRUN_FLUSH;
 			showMessage("Scaler blocks in file =" + nScalrBlocks);
 			nScalrBlocks = 0;
 		} else {
 			/* using IGNORE since UNKNOWN WORD causes annoying beeps */
-			eventInputStatus = EventInputStatus.IGNORE;
+			rval = EventInputStatus.IGNORE;
 			internalStat = BufferStatus.PADDING;
 		}
+		return rval;
 	}
 
 	private void incrementGet() {
@@ -271,6 +270,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 		return (data & TYPE_MASK) == END_COMPARE;
 	}
 
+	@Override
 	public boolean isEndRun(final short dataWord) {
 		return (ENDRUN == dataWord);
 	}
@@ -288,12 +288,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 	private boolean isParameter(final int data) {
 		return (data & TYPE_MASK) == PARM_COMPARE;
 	}
-	
-	//pre-allocated objects used by readEvent() allocated here
-	//to avoid allocation every time readEvent() is called
-	private transient final List<Integer> tempScalerValues = new ArrayList<Integer>(32); //NOPMD	
-	private transient EventInputStatus eventInputStatus = null; //NOPMD
-	
+
 	/**
 	 * Reads an event from the input stream Expects the stream position to be
 	 * the beginning of an event. It is up to the user to ensure this.
@@ -301,10 +296,12 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 	 * @exception EventException
 	 *                thrown for errors in the event stream
 	 */
+	@Override
 	public EventInputStatus readEvent(final int[] data) throws EventException {
 		synchronized (this) {
-			eventInputStatus = EventInputStatus.EVENT;
-			int localParameter = 0;
+			EventInputStatus rval = EventInputStatus.EVENT;
+			int lastParameterRead = 0;
+			final List<Integer> scalerValues = new ArrayList<Integer>(32);
 			try {
 				/*
 				 * internal_status may also be in a "flush" mode in which case
@@ -318,80 +315,86 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 					 */
 					final int header = dataInput.readInt();
 					if (isHeader(header)) {
-						localParameter = handleHeader();
-					} else if (header == SCALER_BLOCK) {// read and ignore
-						readScalers(tempScalerValues);
-						Scaler.update(tempScalerValues);
-						eventInputStatus = EventInputStatus.SCALER_VALUE;
+						lastParameterRead = readEventParameters(header);
+					} else if (header == CAEN_StreamFields.SCALER_BLOCK) {
+						/*
+						 * Read and ignore scaler values.
+						 */
+						final int numScalers = dataInput.readInt();
+						nScalrBlocks++;
+						scalerValues.clear();
+						for (int i = 0; i < numScalers; i++) {
+							scalerValues.add(dataInput.readInt());
+						}
+						Scaler.update(scalerValues);
+						rval = EventInputStatus.SCALER_VALUE;
 						internalStat = BufferStatus.SCALER;
 					} else {
-						handleSpecialHeaders(header);
+						rval = handleSpecialHeaders(header, rval);
 					}
 				}// end of while loop
-				readWhenNotFilling(data);
-			} catch (EOFException eofe) {// we got to the end of a file or
-				// stream
-				eventInputStatus = EventInputStatus.END_FILE;
-				LOGGER.warning(getClass().getName()
+				rval = readWhenNotFilling(data, rval);
+			} catch (EOFException eofe) {
+				/*
+				 * we got to the end of a file or stream
+				 */
+				rval = EventInputStatus.END_FILE;
+				LOGGER
+						.warning(getClass().getName()
 								+ ".readEvent(): End of File reached...file may be corrupted, or run not ended properly.");
 			} catch (IOException ioe) {// we got to the end of a file or stream
-				eventInputStatus = EventInputStatus.UNKNOWN_WORD;
+				rval = EventInputStatus.UNKNOWN_WORD;
 				LOGGER.warning(getClass().getName()
 						+ ".readEvent(): Problem reading integer from stream.");
 			} catch (EventException e) {
-				eventInputStatus = EventInputStatus.UNKNOWN_WORD;
+				rval = EventInputStatus.UNKNOWN_WORD;
 				throw new EventException(getClass().getName()
-						+ ".readEvent() parameter = " + localParameter, e);
+						+ ".readEvent() parameter = " + lastParameterRead, e);
 			}
-			return eventInputStatus;
+			return rval;
 		}
 	}
 
 	/**
-	 * @param parameter
-	 * @return
+	 * Read in the event parameters associated with the given header.
+	 * 
+	 * @param header
+	 *            the header word that was before the parameters
+	 * @return the last parameter word that was read
 	 * @throws IOException
+	 *             if there is a problem reading data
 	 * @throws EventException
+	 *             if an unexpected word is read
 	 */
-	private int handleHeader() throws IOException, EventException {
+	private int readEventParameters(final int header) throws IOException,
+			EventException {
 		/* ADC's & TDC's in slots 2-31 */
+		final int slot = (header >>> 27) & 0x1f;
 		boolean keepGoing = true;
+		int lastParameterRead = 0;
 		int paramIndex = 0;
+		int numParams = 0;
 		int endblock = 0;
-		int localParameter = 0;
 		while (keepGoing) {
-			localParameter = dataInput.readInt();
-			if (isParameter(localParameter)) {
-				tempData[paramIndex] = localParameter & 0xfff;
+			lastParameterRead = dataInput.readInt();
+			if (isParameter(lastParameterRead)) {
+				numParams++;
+				final int channel = (lastParameterRead >>> 16) & 0x3f;
+				tempParams[paramIndex] = 32 * (slot - 2) + channel;
+				tempData[paramIndex] = lastParameterRead & 0xfff;
 				paramIndex++;
-			} else if (isEndBlock(localParameter)) {
-				endblock = localParameter;
+			} else if (isEndBlock(lastParameterRead)) {
+				endblock = lastParameterRead;
 				keepGoing = false;
 			} else {
 				throw new EventException(
 						getClass().getName()
 								+ ".readEvent(): didn't get a Parameter or End-of-Block when expected, int datum = 0x"
-								+ Integer
-										.toHexString(localParameter));
+								+ Integer.toHexString(lastParameterRead));
 			}
 		}
-		handleEndBlock(endblock, paramIndex);
-		return localParameter;
-	}
-
-	/**
-	 * @param tval
-	 * @return
-	 * @throws IOException
-	 */
-	private void readScalers(final List<Integer> tval) throws IOException {
-		// scaler
-		// values
-		final int numScalers = dataInput.readInt();
-		nScalrBlocks++;
-		for (int i = 0; i < numScalers; i++) {
-			tval.add(dataInput.readInt());
-		}
+		handleEndBlock(endblock, numParams);
+		return lastParameterRead;
 	}
 
 	/*
@@ -400,18 +403,20 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 	 * encountered buffer pad or scaler) The first case is handled here, if it's
 	 * true.
 	 */
-	private void readWhenNotFilling(final int[] data) {
+	private EventInputStatus readWhenNotFilling(final int[] data,
+			final EventInputStatus init) {
+		EventInputStatus rval = init;
 		if (inFlushState()) {// in one of the 2 flush states
 			if (fifoEmpty()) {
 				if (internalStat == BufferStatus.FIFO_FLUSH) {
-					eventInputStatus = EventInputStatus.END_BUFFER;
+					rval = EventInputStatus.END_BUFFER;
 				} else {// internal status must be "endrun flush"
-					eventInputStatus = EventInputStatus.END_RUN;
+					rval = EventInputStatus.END_RUN;
 				}
 				internalStat = BufferStatus.FIFO_FILLING;
 			} else {// all events flushed, make ready for next event
 				getFirstEvent(data);
-				eventInputStatus = EventInputStatus.EVENT;
+				rval = EventInputStatus.EVENT;
 			}
 			/*
 			 * The other possibility is that the FIFO is full and we need to
@@ -420,10 +425,11 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 		} else if (internalStat == BufferStatus.FIFO_FULL) {
 			getFirstEvent(data);// routine retrieves data and updates
 			// tracking variables
-			eventInputStatus = EventInputStatus.EVENT;
+			rval = EventInputStatus.EVENT;
 		} else {// internal status=SCALER or PADDING
 			/* set to FIFO_FILLING so next call will enter loop */
 			internalStat = BufferStatus.FIFO_FILLING;
 		}
+		return rval;
 	}
 }

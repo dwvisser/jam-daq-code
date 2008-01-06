@@ -177,9 +177,7 @@ public final class SetupSortOn extends AbstractSetup {
 		final JLabel llfp = new JLabel("Log file path", RIGHT);
 		pLabels.add(llfp);
 		/* blank label balances out the grid */
-		final JLabel lssf = new JLabel(/*
-		 * "Sort sample fraction", RIGHT
-		 */);
+		final JLabel lssf = new JLabel();
 		pLabels.add(lssf);
 		/* Entries Panel */
 		final JPanel pEntries = new JPanel(new GridLayout(0, 1, gap, gap));
@@ -309,9 +307,8 @@ public final class SetupSortOn extends AbstractSetup {
 				return;
 			}
 
-			/* lock setup so fields cant be edited */
+			/* lock setup so fields can't be edited */
 			if (STATUS.canSetup()) {
-
 				setup(dispose);
 			} else {
 				throw new JamException("Can't setup sorting, mode locked ");
@@ -469,8 +466,6 @@ public final class SetupSortOn extends AbstractSetup {
 		/* Kill all existing Daemons and clear data areas */
 		resetAcq(false);
 		sortChooser.loadSorter(btnSpecifyPath.isSelected()); // load
-		// sorting
-		// routine
 		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 		if (sortRoutine != null) {
 			lockMode(true);

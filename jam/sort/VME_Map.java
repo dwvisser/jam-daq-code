@@ -1,6 +1,5 @@
 package jam.sort;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,15 +14,16 @@ import java.util.Map;
  */
 public final class VME_Map {
 
-	/* contains all event parameters */
+	/** Contains all event parameters. */
 	private transient final List<VME_Channel> eventParams = new ArrayList<VME_Channel>();
 
 	private transient final EventSizeModeClient eventSizeModeClient;
 
-	private transient int interval = 1;// interval in milliseconds for the VME
-										// to
-
-	// insert scalers into the event stream
+	/**
+	 * Interval in milliseconds for the VME to insert scalers into the event
+	 * stream.
+	 */
+	private transient int interval = 1;
 
 	private transient final Map<Integer, Byte> V775ranges = new HashMap<Integer, Byte>();
 
@@ -65,13 +65,14 @@ public final class VME_Map {
 	 */
 	public int eventParameter(final int slot, final int baseAddress,
 			final int channel, final int threshold) throws SortException {
-		final VME_Channel vmec = new VME_Channel(this.messages, slot, baseAddress,
-				channel, threshold);
+		final VME_Channel vmec = new VME_Channel(this.messages, slot,
+				baseAddress, channel, threshold);
 		eventParams.add(vmec);
 		eventSizeModeClient.setEventSizeMode(EventSizeMode.VME_MAP);
-		final int paramNumber = vmec.getParameterNumber();// ADC's and TDC's
-		// in
-		// slots 2-7
+		/*
+		 * ADC's and TDC's in slots 2-7.
+		 */
+		final int paramNumber = vmec.getParameterNumber();
 		if (paramNumber > maxParamNum) {
 			maxParamNum = paramNumber;
 		}
