@@ -82,7 +82,35 @@ public final class JamMain extends JFrame implements Observer {
 
 	private transient final SummaryTable summaryTable;
 
-	JamMain(final boolean showGUI) {
+	private static JamMain instance;
+
+	private static Object staticLock = new Object();
+
+	/**
+	 * Returns the singleton instance.
+	 * 
+	 * @param showGUI
+	 *            whether to have the window visible when returned
+	 * @return the singleton instance
+	 */
+	public static JamMain getInstance(final boolean showGUI) {
+		synchronized (staticLock) {
+			if (null == instance) {
+				instance = new JamMain(showGUI);
+			} else {
+				instance.setVisible(showGUI);
+			}
+		}
+		return instance;
+	}
+
+	@Override
+	public void setVisible(final boolean show) {
+		super.setVisible(show);
+		status.setShowGUI(show);
+	}
+
+	private JamMain(final boolean showGUI) {
 		super("Jam");
 		status.setShowGUI(showGUI);
 		showSplashScreen(showGUI);
@@ -94,14 +122,14 @@ public final class JamMain extends JFrame implements Observer {
 				return getRunState().isAcqOn();
 			}
 		});
-		/* class to distrute events to all listeners */
+		/* class to distribute events to all listeners */
 		final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 		broadcaster.addObserver(this);
 		/* Create main window GUI */
 		loadIcon();
 		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
-		/* Ouput/Input text console */
+		/* Output/Input text console */
 		LOGGER.info("Welcome to Jam v" + Version.getInstance().getName());
 		SetupSortOn.createInstance(console.getLog());
 		final ToolBar jamToolBar = new ToolBar();
@@ -129,10 +157,12 @@ public final class JamMain extends JFrame implements Observer {
 		/* operations to close window */
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosed(final WindowEvent event) {
 				exit();
 			}
 
+			@Override
 			public void windowClosing(final WindowEvent event) {
 				exit();
 			}

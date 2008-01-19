@@ -410,7 +410,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 			if (fifoEmpty()) {
 				if (internalStat == BufferStatus.FIFO_FLUSH) {
 					rval = EventInputStatus.END_BUFFER;
-				} else {// internal status must be "endrun flush"
+				} else {// internal status must be FIFO_ENDRUN_FLUSH
 					rval = EventInputStatus.END_RUN;
 				}
 				internalStat = BufferStatus.FIFO_FILLING;

@@ -167,6 +167,7 @@ public abstract class Histogram implements DataElement {
 		/**
 		 * @see Object#toString()
 		 */
+		@Override
 		public String toString() {
 			return STRING[typeNum];
 		}
@@ -203,7 +204,7 @@ public abstract class Histogram implements DataElement {
 		DIM_LIST.add(1, new ArrayList<Histogram>());
 	}
 
-	private transient GateCollection gates;
+	private transient final GateCollection gates;
 
 	/**
 	 * Clears the list of histograms.
@@ -382,7 +383,7 @@ public abstract class Histogram implements DataElement {
 	/** title of histogram */
 	private transient String title;
 
-	private transient Type type; // one or two dimension
+	private transient final Type type; // one or two dimension
 
 	/** unique name amongst all histograms */
 	private transient String uniqueName;
@@ -772,6 +773,7 @@ public abstract class Histogram implements DataElement {
 	 * 
 	 * @return its name
 	 */
+	@Override
 	public String toString() {
 		return uniqueName;
 	}

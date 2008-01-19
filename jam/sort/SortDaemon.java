@@ -42,10 +42,10 @@ public class SortDaemon extends GoodThread {
 	private int eventCount;
 
 	/**
-	 * allocate only once to avoid GC having to collect abandoned
-	 * references in sortOnline() loop
+	 * allocate only once to avoid GC having to collect abandoned references in
+	 * sortOnline() loop
 	 */
-	EventInputStatus eventInputStatus;//NOPMD
+	EventInputStatus eventInputStatus;// NOPMD
 
 	private transient AbstractEventInputStream eventInputStream;
 
@@ -103,10 +103,10 @@ public class SortDaemon extends GoodThread {
 	 * @param eventData
 	 * @throws Exception
 	 */
-	private void checkIntervalAndSortEvent(final int[] eventData) throws Exception {//NOPMD
+	private void checkIntervalAndSortEvent(final int[] eventData)
+			throws Exception {// NOPMD
 		/* Sort only the sortInterval'th events. */
-		if (getCallSort()
-				&& getEventCount() % getSortInterval() == 0) {
+		if (getCallSort() && getEventCount() % getSortInterval() == 0) {
 			sorter.sort(eventData);
 			incrementSortedCount();
 		}
@@ -210,8 +210,7 @@ public class SortDaemon extends GoodThread {
 		}
 	}
 
-	private void handleStatusOnline()
-			throws SortException {
+	private void handleStatusOnline() throws SortException {
 		if (eventInputStatus == EventInputStatus.END_BUFFER) {
 			/* We have reached the end of a buffer. */
 			incrementBufferCount();
@@ -291,6 +290,7 @@ public class SortDaemon extends GoodThread {
 	/**
 	 * Reads events from the event stream.
 	 */
+	@Override
 	public void run() {
 		try {
 			if (JamStatus.getSingletonInstance().isOnline()) {// which type of
@@ -426,7 +426,8 @@ public class SortDaemon extends GoodThread {
 	 * @throws Exception
 	 * @throws EventException
 	 */
-	private void sortEvent(final int[] eventData) throws Exception, EventException {//NOPMD
+	private void sortEvent(final int[] eventData) throws Exception,
+			EventException {// NOPMD
 		if (offlineSortingCanceled()) {
 			eventInputStatus = EventInputStatus.END_RUN;
 		} else if (eventInputStatus == EventInputStatus.EVENT) {
@@ -448,15 +449,15 @@ public class SortDaemon extends GoodThread {
 			eventInputStatus = eventInputStream.readEvent(eventData);
 		}
 	}
-	
+
 	/**
 	 * @param eventData
 	 * @return
 	 * @throws EventException
 	 * @throws Exception
 	 */
-	private void sortEventsInFile(final int[] eventData)//NOPMD
-			throws EventException, Exception {//NOPMD
+	private void sortEventsInFile(final int[] eventData)// NOPMD
+			throws EventException, Exception {// NOPMD
 		/* Zero the event container. */
 		Arrays.fill(eventData, 0);
 		/* Loop to read & sort one event at a time. */
@@ -475,9 +476,9 @@ public class SortDaemon extends GoodThread {
 	 * @exception Exception
 	 *                thrown if an unrecoverable error occurs during sorting
 	 */
-	public void sortOffline() throws Exception {//NOPMD
-	    assert(controller instanceof OfflineController);
-	    final OfflineController offlineController = (OfflineController)controller;
+	public void sortOffline() throws Exception {// NOPMD
+		assert (controller instanceof OfflineController);
+		final OfflineController offlineController = (OfflineController) controller;
 		final int[] eventData = new int[eventSize];
 		eventInputStatus = EventInputStatus.IGNORE;
 		/*
@@ -485,18 +486,25 @@ public class SortDaemon extends GoodThread {
 		 * thread.
 		 */
 		setState(GoodThread.State.SUSPEND);
-		while (checkState()) {// checkstate loop
+		while (checkState()) {
 			endSort = false;
 			/* suspends this thread when we're done sorting all files */
 			setState(GoodThread.State.SUSPEND);
 			resumeOfflineSorting();// after we come out of suspend
 			/* Loop for each new sort file. */
-			while (!offlineSortingCanceled() && offlineController.openNextFile()) {
+			while (!offlineSortingCanceled()
+					&& offlineController.openNextFile()) {
 				while (!offlineSortingCanceled() && !endSort) {// buffer loop
 					sortEventsInFile(eventData);
 					/* we get to this point if status was not EVENT */
 					handleStatusOffline();
-					yield();
+					/*
+					 * See
+					 * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6416721
+					 * for why I think it's OK to comment out the following call
+					 * to Thread.yield(). It's probably a no-op on most systems.
+					 */
+					// yield();
 				}// end buffer loop
 			}// end isSortNext loop
 			offlineController.atSortEnd();
@@ -510,7 +518,7 @@ public class SortDaemon extends GoodThread {
 	 * @exception Exception
 	 *                thrown if an unrecoverable error occurs during sorting
 	 */
-	public void sortOnline() throws Exception {//NOPMD
+	public void sortOnline() throws Exception {// NOPMD
 		final RingInputStream ringInputStream = new RingInputStream();
 		final int[] eventData = new int[eventSize];
 		final byte[] buffer = RingBuffer.freshBuffer();

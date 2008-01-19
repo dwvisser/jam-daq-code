@@ -1,5 +1,5 @@
 /*
- * Created on Dec 21, 2004
+ * Created on December 21, 2004
  */
 package jam.sort.control;
 
@@ -147,7 +147,7 @@ abstract class AbstractSetup {
 	protected transient final SortChooser sortChooser;
 
 	/**
-	 * path to base of sort routines' classpath
+	 * path to base of sort routines' class path.
 	 */
 	protected transient File specifiedClassPath;
 
@@ -275,10 +275,12 @@ abstract class AbstractSetup {
 	/**
 	 * Get list of classes implemented a interface
 	 */
-	private Set<Class<?>> getClasses(final String inPackage, final Class<?> inClass) {
-		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier.getSingletonInstance();
-		final Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(runtimeSubclassIdentifier
-				.find(inPackage, inClass, false));
+	private Set<Class<?>> getClasses(final String inPackage,
+			final Class<?> inClass) {
+		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier
+				.getSingletonInstance();
+		final Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(
+				runtimeSubclassIdentifier.find(inPackage, inClass, false));
 		lhs.remove(inClass);
 		return lhs;
 	}

@@ -165,7 +165,6 @@ public final class SortControl extends javax.swing.JDialog implements
 		});
 		pout.add(bbrowse);
 
-		// panel with begin and end bottoms
 		final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pbottom.add(pbutton);
 		final JPanel buttonGrid = new JPanel(new GridLayout(1, 0, 5, 5));
@@ -176,8 +175,6 @@ public final class SortControl extends javax.swing.JDialog implements
 		lastFile = new File(eventDefault); // default directory
 		writeEvents = false; // don't write out events
 		pack();
-		// Inital state
-		// cout is false
 		lockFields(false);
 		setWriteEvents(cout.isSelected());
 	}
@@ -479,5 +476,12 @@ public final class SortControl extends javax.swing.JDialog implements
 		textOutFile.setEnabled(state);
 		bbrowse.setEnabled(state);
 		writeEvents = state;
+	}
+
+	/**
+	 * Remove all files from the event file list.
+	 */
+	public void removeAllFiles() {
+		this.multiFile.removeAllFiles();
 	}
 }

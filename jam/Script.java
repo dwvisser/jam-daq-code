@@ -1,5 +1,6 @@
 package jam;
 
+import jam.data.Group;
 import jam.data.control.HistogramZero;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -68,7 +69,7 @@ public final class Script implements Observer {
 	public Script() {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
-		jam = new JamMain(false);
+		jam = JamMain.getInstance(false);
 		initFields();
 		base = new File(System.getProperty("user.dir"));
 	}
@@ -98,9 +99,9 @@ public final class Script implements Observer {
 	 * Completes the task equivalent of specifying the settings in Jam's dialog
 	 * for setting up offline sorting. That is, calling this defines the
 	 * classpath to sort routines, the fully qualified name of the
-	 * <code>AbstractSortRoutine</code> to use for sorting, and references to the
-	 * <code>EventInputStream</code> and <code>EventOutputStream</code> to
-	 * use.
+	 * <code>AbstractSortRoutine</code> to use for sorting, and references to
+	 * the <code>EventInputStream</code> and <code>EventOutputStream</code>
+	 * to use.
 	 * 
 	 * @param classPath
 	 *            the path that sort routines get loaded from
@@ -118,11 +119,54 @@ public final class Script implements Observer {
 	 * @see jam.sort.stream.AbstractEventOutputStream
 	 */
 	public void setupOffline(final File classPath, final String sortName,
-			final Class<? extends AbstractEventInputStream> inStream, 
+			final Class<? extends AbstractEventInputStream> inStream,
 			final Class<? extends AbstractEventOutputStream> outStream) {
 		sso.setupSort(classPath, sortName, inStream, outStream);
 		LOGGER.log(Level.INFO, "Setup online sorting:");
 		LOGGER.log(Level.INFO, "\t" + classPath + ": " + sortName);
+		LOGGER.log(Level.INFO, "\tin: " + inStream);
+		LOGGER.log(Level.INFO, "\tout: " + outStream);
+		isSetup = true;
+	}
+
+	/**
+	 * Used to unload the offline sort setup, including emptying the list of
+	 * files to sort.
+	 */
+	public void resetOfflineSorting() {
+		sso.resetSort();
+		this.sortControl.removeAllFiles();
+	}
+
+	/**
+	 * Completes the task equivalent of specifying the settings in Jam's dialog
+	 * for setting up offline sorting. That is, calling this defines the
+	 * classpath to sort routines, the fully qualified name of the
+	 * <code>AbstractSortRoutine</code> to use for sorting, and references to
+	 * the <code>EventInputStream</code> and <code>EventOutputStream</code>
+	 * to use.
+	 * 
+	 * @param classPath
+	 *            the path that sort routines get loaded from
+	 * @param sortName
+	 *            fully qualified with all package names in the standard java
+	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for
+	 *            the file <code>sort/Calorimeter.class</code> relative to
+	 *            <code>classPath</code>
+	 * @param inStream
+	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
+	 * @param outStream
+	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
+	 * @see jam.sort.SortRoutine
+	 * @see jam.sort.stream.AbstractEventInputStream
+	 * @see jam.sort.stream.AbstractEventOutputStream
+	 */
+	public void setupOffline(final String sortName,
+			final Class<? extends AbstractEventInputStream> inStream,
+			final Class<? extends AbstractEventOutputStream> outStream) {
+		sso.setupSort(sortName, inStream, outStream);
+		LOGGER.log(Level.INFO, "Setup online sorting:");
+		LOGGER.log(Level.INFO, "\t" + sortName);
 		LOGGER.log(Level.INFO, "\tin: " + inStream);
 		LOGGER.log(Level.INFO, "\tout: " + outStream);
 		isSetup = true;
@@ -241,10 +285,13 @@ public final class Script implements Observer {
 		try {
 			sortControl.beginSort();
 			LOGGER.log(Level.INFO, "Began sort. Waiting for finish...");
-			final Object lock = new Object();
-			synchronized (lock) {
+			synchronized (lockObject) {
 				while (state != RunState.ACQ_OFF) {
-					lock.wait(2500); // 2.5 seconds
+					/*
+					 * Relinquish the lock for 2.5 seconds or until a notify()
+					 * is received
+					 */
+					lockObject.wait(2500);
 				}
 			}
 			LOGGER.log(Level.INFO, "Reached end of sort.");
@@ -258,19 +305,22 @@ public final class Script implements Observer {
 
 	private transient RunState state = RunState.NO_ACQ;
 
+	private transient final Object lockObject = new Object();
+
 	public void update(final Observable event, final Object param) {
 		final BroadcastEvent bEvent = (BroadcastEvent) param;
 		final BroadcastEvent.Command command = bEvent.getCommand();
 		if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
-			synchronized (state) {
-				state = (RunState) param;
+			synchronized (lockObject) {
+				state = (RunState) bEvent.getContent();
+				lockObject.notifyAll();
 			}
 		}
 	}
 
 	/**
 	 * Load the given HDF file into memory. You must have already invoked
-	 * <code>setupSort()</code>.
+	 * <code>setupOffline()</code>.
 	 * 
 	 * @param hdf
 	 *            an HDF file
@@ -282,7 +332,7 @@ public final class Script implements Observer {
 			throw new IllegalStateException(
 					"You may not call loadHDF() before calling setupOffline().");
 		}
-		hdfio.readFile(FileOpenMode.RELOAD, hdf);
+		hdfio.readFile(FileOpenMode.RELOAD, hdf, Group.getSortGroup());
 		LOGGER.log(Level.INFO, "Loaded HDF file: " + hdf);
 	}
 
@@ -334,7 +384,6 @@ public final class Script implements Observer {
 	 */
 	public void showJam() {
 		jam.setVisible(true);
-		STATUS.setShowGUI(true);
 	}
 
 	/**

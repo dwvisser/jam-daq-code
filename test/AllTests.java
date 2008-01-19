@@ -12,16 +12,18 @@ import test.io.ImpExpASCIITest;
 import test.sort.GainCalibrationTest;
 import test.sort.NetDaemonTest;
 import test.sort.RingBufferTest;
+import test.sort.SortOfflineTest;
 
 /**
  * JUnit test suit for all of jam.
+ * 
  * @author Dale Visser
- *
+ * 
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({GateTest.class, HistogramTest.class, PeakTest.class,
-		ImpExpASCIITest.class, GainCalibrationTest.class, 
-		RingBufferTest.class, NetDaemonTest.class, 
-		CubicFunctionTest.class, JamPropertiesTest.class})
-public class AllTests {//NOPMD	
+@Suite.SuiteClasses( { GateTest.class, HistogramTest.class, PeakTest.class,
+		ImpExpASCIITest.class, GainCalibrationTest.class, RingBufferTest.class,
+		NetDaemonTest.class, CubicFunctionTest.class, JamPropertiesTest.class,
+		SortOfflineTest.class })
+public class AllTests {// NOPMD
 }

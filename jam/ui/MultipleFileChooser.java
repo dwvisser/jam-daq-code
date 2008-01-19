@@ -1,6 +1,5 @@
 package jam.ui;
 
-
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -219,7 +218,7 @@ public final class MultipleFileChooser extends JPanel {
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fileChooser.getSelectedFile() != null) {
 			lastFile = fileChooser.getSelectedFile(); // save current
-														// directory
+			// directory
 			FileWriter saveStream = null;
 			try {
 				saveStream = new FileWriter(lastFile);
@@ -265,13 +264,12 @@ public final class MultipleFileChooser extends JPanel {
 		lastFile = file;
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new FileReader(
-					lastFile));
+			reader = new BufferedReader(new FileReader(lastFile));
 			String listItem;
 			do {
 				listItem = reader.readLine();
 				if (listItem != null) {
-					final File fEvn = new File(listItem);//NOPMD
+					final File fEvn = new File(listItem);// NOPMD
 					listFilesModel.addElement(fEvn);
 					numFiles++;
 				}
@@ -287,7 +285,7 @@ public final class MultipleFileChooser extends JPanel {
 					LOGGER.log(Level.SEVERE, "Unable to close file " + file,
 							ioe);
 				}
-			} 
+			}
 		}
 		return numFiles;
 	}
@@ -324,7 +322,7 @@ public final class MultipleFileChooser extends JPanel {
 				}
 			} else {
 				lastFile = fileChooser.getSelectedFile(); // save current
-															// directory
+				// directory
 				addDirFiles(lastFile);
 			}
 			listFiles.setSelectedIndex(0);
@@ -372,7 +370,7 @@ public final class MultipleFileChooser extends JPanel {
 	 * remove all file from the list
 	 * 
 	 */
-	private void removeAllFiles() {
+	public void removeAllFiles() {
 		listFilesModel.removeAllElements();
 	}
 
