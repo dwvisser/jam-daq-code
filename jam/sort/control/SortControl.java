@@ -484,4 +484,8 @@ public final class SortControl extends javax.swing.JDialog implements
 	public void removeAllFiles() {
 		this.multiFile.removeAllFiles();
 	}
+
+	public int getEventsSorted() {
+		return this.sortDaemon.getSortedCount();
+	}
 }

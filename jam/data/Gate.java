@@ -220,14 +220,17 @@ public final class Gate implements DimensionalData {
 		final Histogram.Type htype = histogram.getType();
 		double rval = 0.0;
 		if (htype == Histogram.Type.TWO_DIM_INT) {
+			int intSum = 0;
 			final int[][] counts2d = ((HistInt2D) histogram).getCounts();
 			for (int i = 0; i < sizeX; i++) {
 				for (int j = 0; j < sizeY; j++) {
 					if (insideGate[i][j]) {
-						rval += counts2d[i][j];
+						intSum += counts2d[i][j];
 					}
 				}
 			}
+
+			rval = intSum;
 		} else { // 2d double
 			final double[][] counts2d = ((HistDouble2D) histogram).getCounts();
 			for (int i = 0; i < sizeX; i++) {
@@ -530,6 +533,7 @@ public final class Gate implements DimensionalData {
 	 * 
 	 * @return its name
 	 */
+	@Override
 	public String toString() {
 		return name;
 	}

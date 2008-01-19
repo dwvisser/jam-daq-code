@@ -393,4 +393,7 @@ public final class Script implements Observer {
 		jam.setVisible(false);
 	}
 
+	public int getEventsSorted() {
+		return this.sortControl.getEventsSorted();
+	}
 }

@@ -349,11 +349,6 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		pcchNaI2_15 = createParameter("cchNaI2_15");
 	}
 
-	// ********************************************************
-	// DATA HANDLING
-	// ********************************************************
-
-	// Actually read in the data, increment histograms and apply gates
 	@Override
 	public void sort(final int[] data) throws Exception {
 
@@ -486,7 +481,7 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		// Sum NaI energies only if they are within individual NaI gates
 		for (int i = 0; i < 16; i++) {
 			if (gNaIADC[i].inGate(cNaIADC[i])) {
-				eNaISum = eNaISum + eNaIADC[i];
+				eNaISum += eNaIADC[i];
 			}
 		}
 		// scale NaI sum
@@ -586,9 +581,5 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		if (goodTimeNaITDCa && gNaIsum.inGate(calibNaIsum1d)) {
 			hnE_NaIE.inc(cnE);
 		}
-
-		// ***************************************************
-		// End of sorting
-		// ***************************************************
 	}
 }
