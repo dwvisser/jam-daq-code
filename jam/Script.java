@@ -9,7 +9,9 @@ import jam.global.RunState;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
+import jam.sort.control.RunControl;
 import jam.sort.control.SetupSortOff;
+import jam.sort.control.SetupSortOn;
 import jam.sort.control.SortControl;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
@@ -51,9 +53,13 @@ public final class Script implements Observer {
 
 	private transient final File base;
 
-	private transient SetupSortOff sso;
+	private transient SetupSortOff setupSortOffline;
+
+	private transient SetupSortOn setupSortOnline;
 
 	private transient SortControl sortControl;
+
+	private transient RunControl runControl;
 
 	private transient HDFIO hdfio;
 
@@ -121,9 +127,31 @@ public final class Script implements Observer {
 	public void setupOffline(final File classPath, final String sortName,
 			final Class<? extends AbstractEventInputStream> inStream,
 			final Class<? extends AbstractEventOutputStream> outStream) {
-		sso.setupSort(classPath, sortName, inStream, outStream);
+		setupSortOffline.setupSort(classPath, sortName, inStream, outStream);
+		LOGGER.log(Level.INFO, "Setup offline sorting:");
+		LOGGER.log(Level.INFO, "\t" + classPath + ": " + sortName);
+		LOGGER.log(Level.INFO, "\tin: " + inStream);
+		LOGGER.log(Level.INFO, "\tout: " + outStream);
+		isSetup = true;
+	}
+
+	public void setupOnline(final File classPath, final String sortName,
+			final Class<? extends AbstractEventInputStream> inStream,
+			final Class<? extends AbstractEventOutputStream> outStream) {
+		setupSortOnline.setupSort(classPath, sortName, inStream, outStream);
 		LOGGER.log(Level.INFO, "Setup online sorting:");
 		LOGGER.log(Level.INFO, "\t" + classPath + ": " + sortName);
+		LOGGER.log(Level.INFO, "\tin: " + inStream);
+		LOGGER.log(Level.INFO, "\tout: " + outStream);
+		isSetup = true;
+	}
+
+	public void setupOnline(final String sortName,
+			final Class<? extends AbstractEventInputStream> inStream,
+			final Class<? extends AbstractEventOutputStream> outStream) {
+		setupSortOnline.setupSort(sortName, inStream, outStream);
+		LOGGER.log(Level.INFO, "Setup online sorting:");
+		LOGGER.log(Level.INFO, "\t" + sortName);
 		LOGGER.log(Level.INFO, "\tin: " + inStream);
 		LOGGER.log(Level.INFO, "\tout: " + outStream);
 		isSetup = true;
@@ -134,7 +162,7 @@ public final class Script implements Observer {
 	 * files to sort.
 	 */
 	public void resetOfflineSorting() {
-		sso.resetSort();
+		setupSortOffline.resetSort();
 		this.sortControl.removeAllFiles();
 	}
 
@@ -164,7 +192,7 @@ public final class Script implements Observer {
 	public void setupOffline(final String sortName,
 			final Class<? extends AbstractEventInputStream> inStream,
 			final Class<? extends AbstractEventOutputStream> outStream) {
-		sso.setupSort(sortName, inStream, outStream);
+		setupSortOffline.setupSort(sortName, inStream, outStream);
 		LOGGER.log(Level.INFO, "Setup online sorting:");
 		LOGGER.log(Level.INFO, "\t" + sortName);
 		LOGGER.log(Level.INFO, "\tin: " + inStream);
@@ -261,8 +289,10 @@ public final class Script implements Observer {
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	private void initFields() {
-		sso = SetupSortOff.getInstance();
+		setupSortOffline = SetupSortOff.getInstance();
+		setupSortOnline = SetupSortOn.getInstance();
 		sortControl = SortControl.getInstance();
+		runControl = RunControl.getInstance();
 		hdfio = new HDFIO(STATUS.getFrame());
 	}
 
@@ -395,5 +425,13 @@ public final class Script implements Observer {
 
 	public int getEventsSorted() {
 		return this.sortControl.getEventsSorted();
+	}
+
+	public void startAcquisition() {
+		this.runControl.startAcq();
+	}
+
+	public void stopAcquisition() {
+		this.runControl.stopAcq();
 	}
 }

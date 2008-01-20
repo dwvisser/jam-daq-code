@@ -84,7 +84,7 @@ public class RunControl extends JDialog implements Controller, RunController {
 	/**
 	 * @return the only instance of this class
 	 */
-	static public RunControl getSingletonInstance() {
+	static public RunControl getInstance() {
 		synchronized (instanceMonitor) {
 			if (instance == null) {
 				instance = new RunControl(STATUS.getFrame());
@@ -199,6 +199,7 @@ public class RunControl extends JDialog implements Controller, RunController {
 	 * 
 	 * @deprecated
 	 */
+	@Deprecated
 	public void atSortEnd() {
 		/* Nothing needed here at the moment. */
 	}

@@ -25,7 +25,7 @@ final class FlushAcquisition extends AbstractCommand implements Observer {
 	FlushAcquisition(){
 		super("Flush");
 		putValue(SHORT_DESCRIPTION, "Flush the current data acquisition buffer.");
-		control=RunControl.getSingletonInstance();
+		control=RunControl.getInstance();
 		setEnabled(false);
 	}
 	

@@ -284,48 +284,4 @@ public final class SetupSortOff extends AbstractSetup {
 		/* lock setup */
 		lockMode(true);
 	}
-
-	/**
-	 * Provided so setup offline sort can be scriptable.
-	 * 
-	 * @param classPath
-	 *            path to sort routine classpath base
-	 * @param sortName
-	 *            name of sort routine class
-	 * @param inStream
-	 *            event input stream class
-	 * @param outStream
-	 *            event output stream class
-	 */
-	public void setupSort(final java.io.File classPath, final String sortName,
-			final Class<? extends AbstractEventInputStream> inStream,
-			final Class<? extends AbstractEventOutputStream> outStream) {
-		sortChooser.loadChooserClassPath(classPath);
-		sortChooser.selectSortClass(sortName);
-		inChooser.setSelectedItem(inStream);
-		outChooser.setSelectedItem(outStream);
-		doApply(false);
-	}
-
-	/**
-	 * Provided so setup offline sort can be scriptable.
-	 * 
-	 * @param classPath
-	 *            path to sort routine classpath base
-	 * @param sortName
-	 *            name of sort routine class
-	 * @param inStream
-	 *            event input stream class
-	 * @param outStream
-	 *            event output stream class
-	 */
-	public void setupSort(final String sortName,
-			final Class<? extends AbstractEventInputStream> inStream,
-			final Class<? extends AbstractEventOutputStream> outStream) {
-		sortChooser.loadChooserDefault();
-		sortChooser.selectSortClass(sortName);
-		inChooser.setSelectedItem(inStream);
-		outChooser.setSelectedItem(outStream);
-		doApply(false);
-	}
 }

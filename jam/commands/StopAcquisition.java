@@ -30,7 +30,7 @@ final class StopAcquisition extends AbstractCommand implements Observer {
 	}
 	
 	protected void execute(final Object[] cmdParams) {
-		RunControl.getSingletonInstance().stopAcq();
+		RunControl.getInstance().stopAcq();
 	}
 
 	protected void executeParse(final String[] cmdTokens) {

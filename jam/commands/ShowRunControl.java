@@ -29,7 +29,7 @@ final class ShowRunControl extends AbstractShowDialog implements Observer {
 	    putValue(Action.SMALL_ICON, iRun);
 		putValue(Action.SHORT_DESCRIPTION, "Run Control.");	    
 		
-		dialog=RunControl.getSingletonInstance();
+		dialog=RunControl.getInstance();
 		enable();
 	}
 

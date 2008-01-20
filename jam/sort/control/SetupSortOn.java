@@ -143,7 +143,7 @@ public final class SetupSortOn extends AbstractSetup {
 		hostDataIP = JamProperties.getPropString(PropertyKeys.HOST_DATA_IP);
 		hostDataPort = JamProperties.getPropInt(PropertyKeys.HOST_DATA_P_RECV);
 
-		runControl = RunControl.getSingletonInstance();
+		runControl = RunControl.getInstance();
 		consoleLog = console;
 		dialog.setResizable(false);
 		dialog.setLocation(20, 50);

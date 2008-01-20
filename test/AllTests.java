@@ -12,6 +12,7 @@ import test.io.ImpExpASCIITest;
 import test.sort.GainCalibrationTest;
 import test.sort.RingBufferTest;
 import test.sort.SortOfflineTest;
+import test.sort.SortOnlineTest;
 
 /**
  * JUnit test suit for all of jam.
@@ -21,6 +22,7 @@ import test.sort.SortOfflineTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses( { GateTest.class, HistogramTest.class, PeakTest.class,
 		ImpExpASCIITest.class, GainCalibrationTest.class, RingBufferTest.class,
-		CubicFunctionTest.class, JamPropertiesTest.class, SortOfflineTest.class })
+		CubicFunctionTest.class, JamPropertiesTest.class,
+		SortOfflineTest.class, SortOnlineTest.class })
 public class AllTests {// NOPMD
 }
