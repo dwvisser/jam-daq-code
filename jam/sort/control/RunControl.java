@@ -196,19 +196,9 @@ public class RunControl extends JDialog implements Controller, RunController {
 
 	/**
 	 * Only here for the controller interface.
-	 * 
-	 * @deprecated
 	 */
-	@Deprecated
 	public void atSortEnd() {
 		/* Nothing needed here at the moment. */
-	}
-
-	/**
-	 * Called by sorter when it starts up. Nnot used for online data taking.
-	 */
-	public void atSortStart() {
-		/* does nothing for on line */
 	}
 
 	/**
@@ -314,14 +304,14 @@ public class RunControl extends JDialog implements Controller, RunController {
 	/**
 	 * End a data taking run tell VME to end, which flushes buffer with a end of
 	 * run marker When the storageDaemon gets end of run character, it will turn
-	 * the netDaemon's eventWriter off which flushs and close event file.
+	 * the netDaemon's eventWriter off which flushes and close event file.
 	 * 
 	 * sort calls back isEndRun when it sees the end of run marker and write out
 	 * histogram, gates and scalers if requested
 	 */
 	public void endRun() {
 		RunInfo.getInstance().runEndTime = new Date();
-		vmeComm.end(); // stop Acq. flush buffer
+		vmeComm.end(); // stop acquisition, flush buffer
 		vmeComm.readScalers(); // read scalers
 
 		STATUS.setRunState(RunState.ACQ_OFF);

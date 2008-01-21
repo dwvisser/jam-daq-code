@@ -33,7 +33,7 @@ public class SortDaemon extends GoodThread {
 
 	private int bufferCount;
 
-	private boolean callSort = true;
+	private transient boolean callSort = true;
 
 	private transient final Controller controller;
 
@@ -76,7 +76,9 @@ public class SortDaemon extends GoodThread {
 	public SortDaemon(Controller con) {
 		super();
 		controller = con;
-		setName("Event Sorter");
+		this.setName("Sort Daemon");
+		this.setPriority(ThreadPriorities.SORT);
+		this.setDaemon(true);
 	}
 
 	/**
@@ -106,7 +108,7 @@ public class SortDaemon extends GoodThread {
 	private void checkIntervalAndSortEvent(final int[] eventData)
 			throws Exception {// NOPMD
 		/* Sort only the sortInterval'th events. */
-		if (getCallSort() && getEventCount() % getSortInterval() == 0) {
+		if (isCallingSortRoutine() && getEventCount() % getSortInterval() == 0) {
 			sorter.sort(eventData);
 			incrementSortedCount();
 		}
@@ -134,7 +136,7 @@ public class SortDaemon extends GoodThread {
 		}
 	}
 
-	private boolean getCallSort() {
+	private boolean isCallingSortRoutine() {
 		synchronized (this) {
 			return callSort;
 		}
@@ -292,6 +294,7 @@ public class SortDaemon extends GoodThread {
 	 */
 	@Override
 	public void run() {
+		LOGGER.info("Sort daemon started.");
 		try {
 			if (JamStatus.getSingletonInstance().isOnline()) {// which type of
 				// sort to do
@@ -316,7 +319,7 @@ public class SortDaemon extends GoodThread {
 		}
 	}
 
-	private void setCallSort(final boolean state) {
+	private void setIsCallingSort(final boolean state) {
 		synchronized (this) {
 			callSort = state;
 		}
@@ -405,8 +408,7 @@ public class SortDaemon extends GoodThread {
 		/* Set the event size for the stream. */
 		eventInputStream.setEventSize(eventSize);
 		setEventCount(0);
-		setPriority(ThreadPriorities.SORT);
-		setDaemon(true);
+		setState(GoodThread.State.SUSPEND);
 	}
 
 	/**
@@ -421,12 +423,11 @@ public class SortDaemon extends GoodThread {
 
 	/**
 	 * @param eventData
-	 * @param status
-	 * @return
+	 *            data to sort
 	 * @throws Exception
 	 * @throws EventException
 	 */
-	private void sortEvent(final int[] eventData) throws Exception,
+	private void sortEvent(final int[] eventData) throws Exception, // NOPMD
 			EventException {// NOPMD
 		if (offlineSortingCanceled()) {
 			eventInputStatus = EventInputStatus.END_RUN;
@@ -452,7 +453,6 @@ public class SortDaemon extends GoodThread {
 
 	/**
 	 * @param eventData
-	 * @return
 	 * @throws EventException
 	 * @throws Exception
 	 */
@@ -476,16 +476,11 @@ public class SortDaemon extends GoodThread {
 	 * @exception Exception
 	 *                thrown if an unrecoverable error occurs during sorting
 	 */
-	public void sortOffline() throws Exception {// NOPMD
+	private void sortOffline() throws Exception {// NOPMD
 		assert (controller instanceof OfflineController);
 		final OfflineController offlineController = (OfflineController) controller;
 		final int[] eventData = new int[eventSize];
 		eventInputStatus = EventInputStatus.IGNORE;
-		/*
-		 * Next statement causes checkState() to immediately suspend this
-		 * thread.
-		 */
-		setState(GoodThread.State.SUSPEND);
 		while (checkState()) {
 			endSort = false;
 			/* suspends this thread when we're done sorting all files */
@@ -526,9 +521,9 @@ public class SortDaemon extends GoodThread {
 			/* Get a new buffer and make an input stream out of it. */
 			if (ringBuffer.isCloseToFull()) {
 				increaseSortInterval();
-				setCallSort(false);
+				setIsCallingSort(false);
 			} else {
-				setCallSort(true);
+				setIsCallingSort(true);
 				if (ringBuffer.isEmpty()) {
 					decreaseSortInterval();
 				}

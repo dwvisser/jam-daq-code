@@ -45,13 +45,13 @@ import javax.swing.filechooser.FileFilter;
 public final class SortControl extends javax.swing.JDialog implements
 		OfflineController {
 
+	private static final Object CLASS_MONITOR = new Object();
+
 	private static SortControl instance = null;
 
 	private static final Logger LOGGER = Logger.getLogger("jam");
 
 	private final static JamStatus STATUS = JamStatus.getSingletonInstance();
-
-	private static final Object CLASS_MONITOR = new Object();
 
 	/**
 	 * 
@@ -66,29 +66,10 @@ public final class SortControl extends javax.swing.JDialog implements
 		}
 	}
 
-	/** check box for writing out events */
-	private transient final JCheckBox cout;
-
-	/** Text field for output file */
-	private transient final JTextField textOutFile;
-
 	/**
 	 * button to get file brower
 	 */
 	private transient final JButton bbrowse;
-
-	private transient File fileOut, lastFile, outDirectory;
-
-	/* daemon threads */
-	private transient AbstractStorageDaemon inputDaemon;
-
-	private transient final MultipleFileChooser multiFile;
-
-	private transient AbstractStorageDaemon outputDaemon;
-
-	private transient SortDaemon sortDaemon;
-
-	private transient boolean writeEvents;
 
 	private transient final Action beginAction = new AbstractAction() {
 		{// NOPMD
@@ -104,6 +85,11 @@ public final class SortControl extends javax.swing.JDialog implements
 		}
 	};
 
+	/** check box for writing out events */
+	private transient final JCheckBox cout;
+
+	private transient File fileOut, lastFile, outDirectory;
+
 	private transient final Action haltAction = new AbstractAction() {
 		{// NOPMD
 			putValue(Action.NAME, "Halt");
@@ -116,6 +102,20 @@ public final class SortControl extends javax.swing.JDialog implements
 			endSort();
 		}
 	};
+
+	/* daemon threads */
+	private transient AbstractStorageDaemon inputDaemon;
+
+	private transient final MultipleFileChooser multiFile;
+
+	private transient AbstractStorageDaemon outputDaemon;
+
+	private transient SortDaemon sortDaemon;
+
+	/** Text field for output file */
+	private transient final JTextField textOutFile;
+
+	private transient boolean writeEvents;
 
 	private SortControl() {
 		super(STATUS.getFrame(), "Sorting", false);
@@ -202,29 +202,6 @@ public final class SortControl extends javax.swing.JDialog implements
 		return numFiles;
 	}
 
-	private int addFile(final String fileName) {
-		final int rval;
-		if (fileName == null) {
-			rval = 0;
-		} else {
-			final File fEvn = new File(fileName);
-			multiFile.addFile(fEvn);
-			rval = 1;
-		}
-		return rval;
-	}
-
-	private int addFiles(final FileFilter fileFilter, final File[] files) {
-		int rval = 0;
-		for (int i = 0; i < files.length; i++) {
-			if (fileFilter.accept(files[i])) {
-				multiFile.addFile(files[i]);
-			}
-			rval++;
-		}
-		return rval;
-	}
-
 	/**
 	 * Called back by sorter when sort encounters a end-run-marker. Tell
 	 * StorageDaemon to close file. Tells user sorting is done and unlocks
@@ -249,16 +226,6 @@ public final class SortControl extends javax.swing.JDialog implements
 		} catch (SortException se) {
 			LOGGER.log(SEVERE, "Unable to close event output file.", se);
 		}
-	}
-
-	/**
-	 * Called at the start of a new sort thread by the sort thread. All it does
-	 * is suspend the <code>SortDaemon</code> thread, to make the offline
-	 * sorting loop wait at its beginning for the thread to be resumed when the
-	 * user requests the sort to begin.
-	 */
-	public void atSortStart() {
-		sortDaemon.setState(GoodThread.State.SUSPEND);
 	}
 
 	/**
@@ -313,83 +280,11 @@ public final class SortControl extends javax.swing.JDialog implements
 	}
 
 	/**
-	 * stop offline sorting
 	 * 
+	 * @return the number of events that have been sorted
 	 */
-	private void endSort() {
-		sortDaemon.cancelOfflineSorting();
-		if (!inputDaemon.closeEventInputListFile()) {
-			LOGGER.severe("Closing sort input event file: "
-					+ inputDaemon.getEventInputFileName());
-		}
-		if (writeEvents) {
-			try {
-				outputDaemon.closeEventOutputFile();
-			} catch (SortException e) {
-				LOGGER
-						.log(
-								SEVERE,
-								"Sort|Control...: couldn't close event output file.",
-								e);
-			}
-			LOGGER.info("Closed pre-sorted file: " + fileOut.getPath());
-		}
-		STATUS.setRunState(RunState.ACQ_OFF);
-		LOGGER.warning("Ended offline sorting before reading all events.");
-		beginAction.setEnabled(false);
-	}
-
-	/*
-	 * non-javadoc: Is the Browse for the output file.
-	 * 
-	 * @return oubput file
-	 */
-	private File getOutFile() {
-		File rval = new File(textOutFile.getText().trim()); // default return
-		// value
-		final JFileChooser fileChooser = new JFileChooser(outDirectory);
-		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fileChooser.setFileFilter(new ExtensionFileFilter(
-				new String[] { "evn" }, "Event Files (*.evn)"));
-		final int option = fileChooser.showOpenDialog(STATUS.getFrame());
-		/* save current values */
-		if (option == JFileChooser.APPROVE_OPTION
-				&& fileChooser.getSelectedFile() != null) {
-			outDirectory = fileChooser.getSelectedFile(); // save current
-			// directory
-			rval = outDirectory;
-		}
-		return rval;
-	}
-
-	/**
-	 * Load the name of objects entered in dialog box give the list to storage
-	 * deamon
-	 */
-	private void loadNames() {
-		final java.util.List<File> fileList = multiFile.getFileList();
-		/* tell storage daemon list of files */
-		inputDaemon.setEventInputList(fileList);
-		/* save output file */
-		fileOut = new File(textOutFile.getText().trim());
-		LOGGER.info("Loaded list of sort files");
-	}
-
-	/*
-	 * non-javadoc: Lock the file and record input list while sorting This
-	 * method is called when sorting is actived to lock fields again when done
-	 * to unlock fields
-	 */
-	private void lockFields(final boolean lock) {
-		final boolean notLock = !lock;
-		multiFile.setLocked(lock);
-
-		// textOutFile.setEditable(notLock);
-		if (cout.isSelected()) {
-			textOutFile.setEnabled(notLock);
-			bbrowse.setEnabled(notLock);
-		}
-		cout.setEnabled(notLock);
+	public int getEventsSorted() {
+		return this.sortDaemon.getSortedCount();
 	}
 
 	public boolean openNextFile() {
@@ -441,6 +336,13 @@ public final class SortControl extends javax.swing.JDialog implements
 	}
 
 	/**
+	 * Remove all files from the event file list.
+	 */
+	public void removeAllFiles() {
+		this.multiFile.removeAllFiles();
+	}
+
+	/**
 	 * For scripting, sets an event output file for pre-sorting.
 	 * 
 	 * @param file
@@ -471,21 +373,113 @@ public final class SortControl extends javax.swing.JDialog implements
 		beginAction.setEnabled(true);
 	}
 
-	void setWriteEvents(final boolean state) {
+	private int addFile(final String fileName) {
+		final int rval;
+		if (fileName == null) {
+			rval = 0;
+		} else {
+			final File fEvn = new File(fileName);
+			multiFile.addFile(fEvn);
+			rval = 1;
+		}
+		return rval;
+	}
+
+	private int addFiles(final FileFilter fileFilter, final File[] files) {
+		int rval = 0;
+		for (int i = 0; i < files.length; i++) {
+			if (fileFilter.accept(files[i])) {
+				multiFile.addFile(files[i]);
+			}
+			rval++;
+		}
+		return rval;
+	}
+
+	/**
+	 * stop offline sorting
+	 * 
+	 */
+	private void endSort() {
+		sortDaemon.cancelOfflineSorting();
+		if (!inputDaemon.closeEventInputListFile()) {
+			LOGGER.severe("Closing sort input event file: "
+					+ inputDaemon.getEventInputFileName());
+		}
+		if (writeEvents) {
+			try {
+				outputDaemon.closeEventOutputFile();
+			} catch (SortException e) {
+				LOGGER
+						.log(
+								SEVERE,
+								"Sort|Control...: couldn't close event output file.",
+								e);
+			}
+			LOGGER.info("Closed pre-sorted file: " + fileOut.getPath());
+		}
+		STATUS.setRunState(RunState.ACQ_OFF);
+		LOGGER.warning("Ended offline sorting before reading all events.");
+		beginAction.setEnabled(false);
+	}
+
+	/*
+	 * non-javadoc: Is the Browse for the output file.
+	 * 
+	 * @return output file
+	 */
+	private File getOutFile() {
+		File rval = new File(textOutFile.getText().trim()); // default return
+		// value
+		final JFileChooser fileChooser = new JFileChooser(outDirectory);
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fileChooser.setFileFilter(new ExtensionFileFilter(
+				new String[] { "evn" }, "Event Files (*.evn)"));
+		final int option = fileChooser.showOpenDialog(STATUS.getFrame());
+		/* save current values */
+		if (option == JFileChooser.APPROVE_OPTION
+				&& fileChooser.getSelectedFile() != null) {
+			outDirectory = fileChooser.getSelectedFile(); // save current
+			// directory
+			rval = outDirectory;
+		}
+		return rval;
+	}
+
+	/**
+	 * Load the name of objects entered in dialog box give the list to storage
+	 * deamon
+	 */
+	private void loadNames() {
+		final java.util.List<File> fileList = multiFile.getFileList();
+		/* tell storage daemon list of files */
+		inputDaemon.setEventInputList(fileList);
+		/* save output file */
+		fileOut = new File(textOutFile.getText().trim());
+		LOGGER.info("Loaded list of sort files");
+	}
+
+	/*
+	 * non-javadoc: Lock the file and record input list while sorting This
+	 * method is called when sorting is actived to lock fields again when done
+	 * to unlock fields
+	 */
+	private void lockFields(final boolean lock) {
+		final boolean notLock = !lock;
+		multiFile.setLocked(lock);
+
+		// textOutFile.setEditable(notLock);
+		if (cout.isSelected()) {
+			textOutFile.setEnabled(notLock);
+			bbrowse.setEnabled(notLock);
+		}
+		cout.setEnabled(notLock);
+	}
+
+	private void setWriteEvents(final boolean state) {
 		textOutFile.setEditable(state);
 		textOutFile.setEnabled(state);
 		bbrowse.setEnabled(state);
 		writeEvents = state;
-	}
-
-	/**
-	 * Remove all files from the event file list.
-	 */
-	public void removeAllFiles() {
-		this.multiFile.removeAllFiles();
-	}
-
-	public int getEventsSorted() {
-		return this.sortDaemon.getSortedCount();
 	}
 }

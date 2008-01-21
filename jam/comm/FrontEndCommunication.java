@@ -128,4 +128,9 @@ public interface FrontEndCommunication extends Observer,
 	 * ERROR
 	 */
 	void zeroCounters();
+
+	/**
+	 * Closes any bound communications channels that are open.
+	 */
+	void close();
 }

@@ -1,10 +1,7 @@
 package test.sort.mockfrontend;
 
-import jam.global.JamException;
 import jam.sort.RingBuffer;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -26,9 +23,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageSender {
 
-	private transient final DatagramSocket socket;
-	private transient final Console console;
-
 	/**
 	 * Creates a new message sender.
 	 * 
@@ -49,83 +43,15 @@ public class MessageSender {
 	 */
 	MessageSender(final Counter events, final Counter buffers,
 			final Console console, final DatagramSocket localSocket,
-			final SocketAddress jamData) throws SocketException,
-			UnknownHostException {
+			final SocketAddress jamData) {
 		super();
-		this.console = console;
-		this.socket = localSocket;
 		this.eventGenerator = new EventGenerator(events, buffers, console,
 				localSocket, jamData);
 	}
 
-	/**
-	 * Method which is used to send all packets containing a string to the VME
-	 * crate.
-	 * 
-	 * @param status
-	 *            one of OK, SCALER, ERROR, CNAF, COUNTER, VME_ADDRESSES or
-	 *            SCALER_INTERVAL
-	 * @param message
-	 *            string to send
-	 * @throws JamException
-	 *             if there's a problem
-	 */
-	private void send(final int status, final byte[] message,
-			final boolean terminate) throws IOException {
-		final ByteArrayOutputStream output = new ByteArrayOutputStream(
-				message.length + 5);
-		final DataOutputStream dos = new DataOutputStream(output);
-		dos.writeInt(status);// 4-byte int
-		dos.write(message);
-		if (terminate) {
-			dos.write(0);// 8-bit null termination
-		}
-		final byte[] byteMessage = output.toByteArray();
-		dos.close();
-		try {// create and send packet
-			final DatagramPacket packetMessage = new DatagramPacket(
-					byteMessage, byteMessage.length, socket
-							.getRemoteSocketAddress());
-			socket.send(packetMessage);
-		} catch (final IOException e) {
-			console
-					.errorOutln(getClass().getName()
-							+ ".send(): "
-							+ "Jam encountered a network communication error attempting to send a packet.");
-		}
-	}
+	private transient final EventGenerator eventGenerator;
 
-	public void sendMessage(final String message) throws IOException {
-		// send(FrontEndCommunication.OK,message.getBytes(US_ASCII),true);
-	}
-
-	public void sendError(final String message) throws IOException {
-		// send(FrontEndCommunication.ERROR,message.getBytes(US_ASCII),true);
-	}
-
-	public void sendCounters(final int[] values) throws IOException {
-		// sendIntegers(FrontEndCommunication.COUNTER,values);
-	}
-
-	public void sendScalers(final int[] values) throws IOException {
-		// sendIntegers(FrontEndCommunication.SCALER,values);
-	}
-
-	public void sendIntegers(final int status, final int[] values)
-			throws IOException {
-		final ByteArrayOutputStream bytes = new ByteArrayOutputStream(
-				4 * (values.length + 1));
-		final DataOutputStream dos = new DataOutputStream(bytes);
-		for (int i = 0; i < values.length; i++) {
-			dos.writeInt(values[i]);
-		}
-		dos.close();
-		send(status, bytes.toByteArray(), false);
-	}
-
-	private final EventGenerator eventGenerator;
-
-	public Future<?> startSendingEventData() {
+	Future<?> startSendingEventData() {// NOPMD
 		final BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(
 				1);
 		final ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 200L,
@@ -143,16 +69,16 @@ public class MessageSender {
 		private transient final DatagramSocket socket;
 		private transient final Console console;
 		private transient final Counter eventCounter, bufferCounter;
-		private transient final SocketAddress jamData;
+		private transient final SocketAddress jamDataSocketAddress;
 
 		EventGenerator(final Counter eventCounter, final Counter bufferCounter,
 				final Console console, final DatagramSocket localSocket,
-				final SocketAddress address) throws SocketException {
+				final SocketAddress address) {
 			this.eventCounter = eventCounter;
 			this.bufferCounter = bufferCounter;
 			this.console = console;
 			this.socket = localSocket;
-			this.jamData = address;
+			this.jamDataSocketAddress = address;
 		}
 
 		private void fillBuffer() {
@@ -188,12 +114,19 @@ public class MessageSender {
 		}
 
 		public void run() {
-			boolean keepRunning = true;
+			DatagramPacket packetMessage = null;
+			try {
+				/* Associates this.buffer with packetMessage. */
+				packetMessage = new DatagramPacket(buffer, buffer.length,
+						this.jamDataSocketAddress);
+			} catch (SocketException se) {
+				console.errorOutln("Problem setting up packet: "
+						+ se.getMessage());
+			}
+			boolean keepRunning = packetMessage != null;
 			while (keepRunning) {
-				fillBuffer();
+				fillBuffer(); // change contents of packetMessage's buffer
 				try {// create and send packet
-					final DatagramPacket packetMessage = new DatagramPacket(
-							buffer, buffer.length, this.jamData);
 					socket.send(packetMessage);
 					bufferCounter.increment();
 					Thread.sleep(100);

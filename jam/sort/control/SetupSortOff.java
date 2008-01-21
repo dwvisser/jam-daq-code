@@ -180,7 +180,7 @@ public final class SetupSortOff extends AbstractSetup {
 	private void loadEventInput() throws JamException {
 		try {// create new event input stream class
 			synchronized (this) {
-				Class<? extends AbstractEventInputStream> class1 = (Class<? extends AbstractEventInputStream>) inChooser
+				final Class<? extends AbstractEventInputStream> class1 = (Class<? extends AbstractEventInputStream>) inChooser
 						.getSelectedItem();
 				inStream = class1.newInstance();
 			}
@@ -280,6 +280,7 @@ public final class SetupSortOff extends AbstractSetup {
 		 * start sortDaemon which is then suspended by Sort control until files
 		 * entered
 		 */
+		LOGGER.info("Starting sort daemon.");
 		sortDaemon.start();
 		/* lock setup */
 		lockMode(true);

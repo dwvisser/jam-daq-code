@@ -8,6 +8,7 @@ import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import javax.swing.Action;
@@ -72,7 +73,8 @@ public final class NetDaemon extends GoodThread {
 		super();
 		sortingRing = sortRing;
 		storageRing = storeRing;
-		try {// ceate a port listener
+		try {
+			/* Create a port listener. */
 			final InetAddress dataAddress = InetAddress.getByName(host);
 			dataSocket = new DatagramSocket(port, dataAddress);
 		} catch (UnknownHostException e) {
@@ -97,11 +99,15 @@ public final class NetDaemon extends GoodThread {
 	 */
 	@Override
 	public void run() {
-		final StringBuffer message = new StringBuffer(getClass().getName())
-				.append("--communication with acquisition halted, because of ");
 		try {
 			receiveLoop();
+		} catch (SocketException se) {
+			LOGGER
+					.info("Communication with acquisition halted, because the socket was closed.");
 		} catch (Exception e) {
+			final StringBuffer message = new StringBuffer(200);
+			message
+					.append("Communication with acquisition halted, because of ");
 			message.append(e.getClass().getName()).append(':').append(
 					e.getMessage());
 			LOGGER.warning(message.toString());
@@ -134,6 +140,10 @@ public final class NetDaemon extends GoodThread {
 		}
 	}
 
+	/**
+	 * 
+	 * @return whether a buffer has been lost due to the ring buffer being full
+	 */
 	public boolean isEmptyBefore() {
 		synchronized (this) {
 			return emptyBefore;
@@ -149,7 +159,7 @@ public final class NetDaemon extends GoodThread {
 	 * @exception SortException
 	 *                if there's a problem sorting the data
 	 */
-	public void receiveLoop() throws IOException, SortException {
+	public void receiveLoop() throws SortException, IOException {
 		if (dataSocket == null) {
 			throw new SortException(
 					"Could not start netDeamon, socket null {NetDaemon]");

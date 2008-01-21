@@ -49,9 +49,28 @@ import java.util.logging.Logger;
  */
 public final class Script implements Observer {
 
-	private transient final JamMain jam;
+	private static final String INSTREAM = "\tin: ";
+
+	private static final Logger LOGGER = Logger.getLogger(Script.class
+			.getPackage().getName());
+
+	private static final String OUTSTREAM = "\tout: ";
+
+	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	private transient final File base;
+
+	private transient boolean filesGiven = false;
+
+	private transient HDFIO hdfio;
+
+	private transient boolean isSetup = false;
+
+	private transient final JamMain jam;
+
+	private transient final Object lockObject = new Object();
+
+	private transient RunControl runControl;
 
 	private transient SetupSortOff setupSortOffline;
 
@@ -59,13 +78,7 @@ public final class Script implements Observer {
 
 	private transient SortControl sortControl;
 
-	private transient RunControl runControl;
-
-	private transient HDFIO hdfio;
-
-	private transient boolean isSetup = false;
-
-	private transient boolean filesGiven = false;
+	private transient RunState state = RunState.NO_ACQ;
 
 	/**
 	 * Creates an instance, of which the user then invokes the methods to script
@@ -78,126 +91,6 @@ public final class Script implements Observer {
 		jam = JamMain.getInstance(false);
 		initFields();
 		base = new File(System.getProperty("user.dir"));
-	}
-
-	/**
-	 * Utility method for defining a file reference relative to the directory
-	 * that java was launched from. Here's an example for Linux and MacOS X
-	 * systems: If the JVM was launched from <code>/home/user/sortscript</code>,
-	 * and this method is called with the argument
-	 * <code>"../thesisRuns/run34.evn"</code>, then a File object
-	 * representing <code>/home/user/thesisRuns/run34.evn</code> is returned,
-	 * <em>whether or not that file really exists yet</em>.
-	 * 
-	 * @param fname
-	 *            relative path reference to the file of interest
-	 * @return File object resolving <code>fname</code> against the base path
-	 *         given by the system property <code>user.dir</code> at startup
-	 */
-	public File defineFile(final String fname) {
-		return new File(base, fname);
-	}
-
-	private static final Logger LOGGER = Logger.getLogger(Script.class
-			.getPackage().getName());
-
-	/**
-	 * Completes the task equivalent of specifying the settings in Jam's dialog
-	 * for setting up offline sorting. That is, calling this defines the
-	 * classpath to sort routines, the fully qualified name of the
-	 * <code>AbstractSortRoutine</code> to use for sorting, and references to
-	 * the <code>EventInputStream</code> and <code>EventOutputStream</code>
-	 * to use.
-	 * 
-	 * @param classPath
-	 *            the path that sort routines get loaded from
-	 * @param sortName
-	 *            fully qualified with all package names in the standard java
-	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for
-	 *            the file <code>sort/Calorimeter.class</code> relative to
-	 *            <code>classPath</code>
-	 * @param inStream
-	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
-	 * @param outStream
-	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
-	 * @see jam.sort.SortRoutine
-	 * @see jam.sort.stream.AbstractEventInputStream
-	 * @see jam.sort.stream.AbstractEventOutputStream
-	 */
-	public void setupOffline(final File classPath, final String sortName,
-			final Class<? extends AbstractEventInputStream> inStream,
-			final Class<? extends AbstractEventOutputStream> outStream) {
-		setupSortOffline.setupSort(classPath, sortName, inStream, outStream);
-		LOGGER.log(Level.INFO, "Setup offline sorting:");
-		LOGGER.log(Level.INFO, "\t" + classPath + ": " + sortName);
-		LOGGER.log(Level.INFO, "\tin: " + inStream);
-		LOGGER.log(Level.INFO, "\tout: " + outStream);
-		isSetup = true;
-	}
-
-	public void setupOnline(final File classPath, final String sortName,
-			final Class<? extends AbstractEventInputStream> inStream,
-			final Class<? extends AbstractEventOutputStream> outStream) {
-		setupSortOnline.setupSort(classPath, sortName, inStream, outStream);
-		LOGGER.log(Level.INFO, "Setup online sorting:");
-		LOGGER.log(Level.INFO, "\t" + classPath + ": " + sortName);
-		LOGGER.log(Level.INFO, "\tin: " + inStream);
-		LOGGER.log(Level.INFO, "\tout: " + outStream);
-		isSetup = true;
-	}
-
-	public void setupOnline(final String sortName,
-			final Class<? extends AbstractEventInputStream> inStream,
-			final Class<? extends AbstractEventOutputStream> outStream) {
-		setupSortOnline.setupSort(sortName, inStream, outStream);
-		LOGGER.log(Level.INFO, "Setup online sorting:");
-		LOGGER.log(Level.INFO, "\t" + sortName);
-		LOGGER.log(Level.INFO, "\tin: " + inStream);
-		LOGGER.log(Level.INFO, "\tout: " + outStream);
-		isSetup = true;
-	}
-
-	/**
-	 * Used to unload the offline sort setup, including emptying the list of
-	 * files to sort.
-	 */
-	public void resetOfflineSorting() {
-		setupSortOffline.resetSort();
-		this.sortControl.removeAllFiles();
-	}
-
-	/**
-	 * Completes the task equivalent of specifying the settings in Jam's dialog
-	 * for setting up offline sorting. That is, calling this defines the
-	 * classpath to sort routines, the fully qualified name of the
-	 * <code>AbstractSortRoutine</code> to use for sorting, and references to
-	 * the <code>EventInputStream</code> and <code>EventOutputStream</code>
-	 * to use.
-	 * 
-	 * @param classPath
-	 *            the path that sort routines get loaded from
-	 * @param sortName
-	 *            fully qualified with all package names in the standard java
-	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for
-	 *            the file <code>sort/Calorimeter.class</code> relative to
-	 *            <code>classPath</code>
-	 * @param inStream
-	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
-	 * @param outStream
-	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
-	 * @see jam.sort.SortRoutine
-	 * @see jam.sort.stream.AbstractEventInputStream
-	 * @see jam.sort.stream.AbstractEventOutputStream
-	 */
-	public void setupOffline(final String sortName,
-			final Class<? extends AbstractEventInputStream> inStream,
-			final Class<? extends AbstractEventOutputStream> outStream) {
-		setupSortOffline.setupSort(sortName, inStream, outStream);
-		LOGGER.log(Level.INFO, "Setup online sorting:");
-		LOGGER.log(Level.INFO, "\t" + sortName);
-		LOGGER.log(Level.INFO, "\tin: " + inStream);
-		LOGGER.log(Level.INFO, "\tout: " + outStream);
-		isSetup = true;
 	}
 
 	/**
@@ -235,65 +128,33 @@ public final class Script implements Observer {
 	}
 
 	/**
-	 * Reads in the given text file, interpreting each line as a filename, which
-	 * gets added to the list of event files to sort. Such files are typically
-	 * created using the <code>Save List</code> button in the
-	 * <code>Control|Sort...</code> dialog in Jam.
+	 * Add the hisgogram counts in the given HDF file, or all HDF files in the
+	 * given directory, into the histograms in memory. You must have already
+	 * invoked <code>setupSort()</code>.
 	 * 
-	 * @param list
-	 *            text file listing event files
+	 * @param hdf
+	 *            an HDF file or folder containing HDF files
 	 * @throws IllegalStateException
 	 *             if <code>setupOffline()</code> hasn't been called yet
 	 */
-	public void loadFileList(final File list) {
+	public void addHDF(final File hdf) {
+		final FileFilter filter = new HDFileFilter(false);
 		if (!isSetup) {
 			throw new IllegalStateException(
-					"You may not call loadFileList() before calling setupOffline().");
+					"You may not call loadHDF() before calling setupOffline().");
 		}
-		final int numFiles = sortControl.readList(list);
-		if (numFiles > 0) {
-			filesGiven = true;
+		if (hdf.isDirectory()) {
+			final File[] files = hdf.listFiles(filter);
+			for (int i = 0; i < files.length; i++) {
+				hdfio.readFile(FileOpenMode.ADD, files[i]);
+				LOGGER.log(Level.INFO, "Added HDF file: " + files[i]);
+			}
+		} else if (filter.accept(hdf)) {
+			hdfio.readFile(FileOpenMode.ADD, hdf);
+			LOGGER.log(Level.INFO, "Added HDF file: " + hdf);
 		} else {
-			LOGGER.log(Level.WARNING, list.getName()
-					+ " didn't contain any usable filenames.");
+			LOGGER.log(Level.INFO, hdf + " isn't an HDF file, not added.");
 		}
-	}
-
-	/**
-	 * Set the file to output events to when the user's sort routine invokes
-	 * <code>writeEvent()</code>
-	 * 
-	 * @param eventsOut
-	 *            where to write "pre-sort" events
-	 * @see jam.sort.SortRoutine#writeEvent(int [])
-	 * @throws IllegalStateException
-	 *             if <code>setupOffline()</code> hasn't been called yet
-	 */
-	public void setEventOutput(final File eventsOut) {
-		if (!isSetup) {
-			throw new IllegalStateException(
-					"You may not call setEventOutput() before calling setupOffline().");
-		}
-		sortControl.setEventOutput(eventsOut);
-		LOGGER.log(Level.INFO, "Set file for pre-sorted events"
-				+ eventsOut.getAbsolutePath());
-	}
-
-	/**
-	 * Zero all histograms in memory.
-	 */
-	public void zeroHistograms() {
-		(new HistogramZero()).zeroAll();
-	}
-
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
-
-	private void initFields() {
-		setupSortOffline = SetupSortOff.getInstance();
-		setupSortOnline = SetupSortOn.getInstance();
-		sortControl = SortControl.getInstance();
-		runControl = RunControl.getInstance();
-		hdfio = new HDFIO(STATUS.getFrame());
 	}
 
 	/**
@@ -333,18 +194,68 @@ public final class Script implements Observer {
 		}
 	}
 
-	private transient RunState state = RunState.NO_ACQ;
+	/**
+	 * Cancel online setup.
+	 */
+	public void cancelOnline() {
+		this.setupSortOnline.cancelOnlineSetup();
+	}
 
-	private transient final Object lockObject = new Object();
+	/**
+	 * Utility method for defining a file reference relative to the directory
+	 * that java was launched from. Here's an example for Linux and MacOS X
+	 * systems: If the JVM was launched from <code>/home/user/sortscript</code>,
+	 * and this method is called with the argument
+	 * <code>"../thesisRuns/run34.evn"</code>, then a File object
+	 * representing <code>/home/user/thesisRuns/run34.evn</code> is returned,
+	 * <em>whether or not that file really exists yet</em>.
+	 * 
+	 * @param fname
+	 *            relative path reference to the file of interest
+	 * @return File object resolving <code>fname</code> against the base path
+	 *         given by the system property <code>user.dir</code> at startup
+	 */
+	public File defineFile(final String fname) {
+		return new File(base, fname);
+	}
 
-	public void update(final Observable event, final Object param) {
-		final BroadcastEvent bEvent = (BroadcastEvent) param;
-		final BroadcastEvent.Command command = bEvent.getCommand();
-		if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
-			synchronized (lockObject) {
-				state = (RunState) bEvent.getContent();
-				lockObject.notifyAll();
-			}
+	/**
+	 * 
+	 * @return the number of events that were sorted offline
+	 */
+	public int getEventsSorted() {
+		return this.sortControl.getEventsSorted();
+	}
+
+	/**
+	 * Hide Jam's graphical interface.
+	 */
+	public void hideJam() {
+		jam.setVisible(false);
+	}
+
+	/**
+	 * Reads in the given text file, interpreting each line as a filename, which
+	 * gets added to the list of event files to sort. Such files are typically
+	 * created using the <code>Save List</code> button in the
+	 * <code>Control|Sort...</code> dialog in Jam.
+	 * 
+	 * @param list
+	 *            text file listing event files
+	 * @throws IllegalStateException
+	 *             if <code>setupOffline()</code> hasn't been called yet
+	 */
+	public void loadFileList(final File list) {
+		if (!isSetup) {
+			throw new IllegalStateException(
+					"You may not call loadFileList() before calling setupOffline().");
+		}
+		final int numFiles = sortControl.readList(list);
+		if (numFiles > 0) {
+			filesGiven = true;
+		} else {
+			LOGGER.log(Level.WARNING, list.getName()
+					+ " didn't contain any usable filenames.");
 		}
 	}
 
@@ -367,33 +278,12 @@ public final class Script implements Observer {
 	}
 
 	/**
-	 * Add the hisgogram counts in the given HDF file, or all HDF files in the
-	 * given directory, into the histograms in memory. You must have already
-	 * invoked <code>setupSort()</code>.
-	 * 
-	 * @param hdf
-	 *            an HDF file or folder containing HDF files
-	 * @throws IllegalStateException
-	 *             if <code>setupOffline()</code> hasn't been called yet
+	 * Used to unload the offline sort setup, including emptying the list of
+	 * files to sort.
 	 */
-	public void addHDF(final File hdf) {
-		final FileFilter filter = new HDFileFilter(false);
-		if (!isSetup) {
-			throw new IllegalStateException(
-					"You may not call loadHDF() before calling setupOffline().");
-		}
-		if (hdf.isDirectory()) {
-			final File[] files = hdf.listFiles(filter);
-			for (int i = 0; i < files.length; i++) {
-				hdfio.readFile(FileOpenMode.ADD, files[i]);
-				LOGGER.log(Level.INFO, "Added HDF file: " + files[i]);
-			}
-		} else if (filter.accept(hdf)) {
-			hdfio.readFile(FileOpenMode.ADD, hdf);
-			LOGGER.log(Level.INFO, "Added HDF file: " + hdf);
-		} else {
-			LOGGER.log(Level.INFO, hdf + " isn't an HDF file, not added.");
-		}
+	public void resetOfflineSorting() {
+		setupSortOffline.resetSort();
+		this.sortControl.removeAllFiles();
 	}
 
 	/**
@@ -408,6 +298,142 @@ public final class Script implements Observer {
 	}
 
 	/**
+	 * Set the file to output events to when the user's sort routine invokes
+	 * <code>writeEvent()</code>
+	 * 
+	 * @param eventsOut
+	 *            where to write "pre-sort" events
+	 * @see jam.sort.SortRoutine#writeEvent(int [])
+	 * @throws IllegalStateException
+	 *             if <code>setupOffline()</code> hasn't been called yet
+	 */
+	public void setEventOutput(final File eventsOut) {
+		if (!isSetup) {
+			throw new IllegalStateException(
+					"You may not call setEventOutput() before calling setupOffline().");
+		}
+		sortControl.setEventOutput(eventsOut);
+		LOGGER.log(Level.INFO, "Set file for pre-sorted events"
+				+ eventsOut.getAbsolutePath());
+	}
+
+	/**
+	 * Completes the task equivalent of specifying the settings in Jam's dialog
+	 * for setting up offline sorting. That is, calling this defines the
+	 * classpath to sort routines, the fully qualified name of the
+	 * <code>AbstractSortRoutine</code> to use for sorting, and references to
+	 * the <code>EventInputStream</code> and <code>EventOutputStream</code>
+	 * to use.
+	 * 
+	 * @param classPath
+	 *            the path that sort routines get loaded from
+	 * @param sortName
+	 *            fully qualified with all package names in the standard java
+	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for
+	 *            the file <code>sort/Calorimeter.class</code> relative to
+	 *            <code>classPath</code>
+	 * @param inStream
+	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
+	 * @param outStream
+	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
+	 * @see jam.sort.SortRoutine
+	 * @see jam.sort.stream.AbstractEventInputStream
+	 * @see jam.sort.stream.AbstractEventOutputStream
+	 */
+	public void setupOffline(final File classPath, final String sortName,
+			final Class<? extends AbstractEventInputStream> inStream,
+			final Class<? extends AbstractEventOutputStream> outStream) {
+		setupSortOffline.setupSort(classPath, sortName, inStream, outStream);
+		LOGGER.log(Level.INFO, "Setup offline sorting:");
+		LOGGER.log(Level.INFO, "\t" + classPath + ": " + sortName);
+		LOGGER.log(Level.INFO, INSTREAM + inStream);
+		LOGGER.log(Level.INFO, OUTSTREAM + outStream);
+		isSetup = true;
+	}
+
+	/**
+	 * Completes the task equivalent of specifying the settings in Jam's dialog
+	 * for setting up offline sorting. That is, calling this defines the
+	 * classpath to sort routines, the fully qualified name of the
+	 * <code>AbstractSortRoutine</code> to use for sorting, and references to
+	 * the <code>EventInputStream</code> and <code>EventOutputStream</code>
+	 * to use.
+	 * 
+	 * @param classPath
+	 *            the path that sort routines get loaded from
+	 * @param sortName
+	 *            fully qualified with all package names in the standard java
+	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for
+	 *            the file <code>sort/Calorimeter.class</code> relative to
+	 *            <code>classPath</code>
+	 * @param inStream
+	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
+	 * @param outStream
+	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
+	 * @see jam.sort.SortRoutine
+	 * @see jam.sort.stream.AbstractEventInputStream
+	 * @see jam.sort.stream.AbstractEventOutputStream
+	 */
+	public void setupOffline(final String sortName,
+			final Class<? extends AbstractEventInputStream> inStream,
+			final Class<? extends AbstractEventOutputStream> outStream) {
+		setupSortOffline.setupSort(sortName, inStream, outStream);
+		LOGGER.log(Level.INFO, "Setup online sorting:");
+		LOGGER.log(Level.INFO, "\t" + sortName);
+		LOGGER.log(Level.INFO, INSTREAM + inStream);
+		LOGGER.log(Level.INFO, OUTSTREAM + outStream);
+		isSetup = true;
+	}
+
+	/**
+	 * 
+	 * @param classPath
+	 *            the path that sort routines get loaded from
+	 * @param sortName
+	 *            fully qualified with all package names in the standard java
+	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for
+	 *            the file <code>sort/Calorimeter.class</code> relative to
+	 *            <code>classPath</code>
+	 * @param inStream
+	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
+	 * @param outStream
+	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
+	 */
+	public void setupOnline(final File classPath, final String sortName,
+			final Class<? extends AbstractEventInputStream> inStream,
+			final Class<? extends AbstractEventOutputStream> outStream) {
+		setupSortOnline.setupSort(classPath, sortName, inStream, outStream);
+		LOGGER.log(Level.INFO, "Setup online sorting:");
+		LOGGER.log(Level.INFO, "\t" + classPath + ": " + sortName);
+		LOGGER.log(Level.INFO, INSTREAM + inStream);
+		LOGGER.log(Level.INFO, OUTSTREAM + outStream);
+		isSetup = true;
+	}
+
+	/**
+	 * 
+	 * @param sortName
+	 *            fully qualified with all package names in the standard java
+	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for
+	 *            the file <code>sort/Calorimeter.class</code> relative to
+	 *            <code>classPath</code>
+	 * @param inStream
+	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
+	 * @param outStream
+	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
+	 */
+	public void setupOnline(final String sortName,
+			final Class<? extends AbstractEventInputStream> inStream,
+			final Class<? extends AbstractEventOutputStream> outStream) {
+		setupSortOnline.setupSort(sortName, inStream, outStream);
+		LOGGER.log(Level.INFO, "Setup online sorting:");
+		LOGGER.log(Level.INFO, "\t" + sortName);
+		LOGGER.log(Level.INFO, INSTREAM + inStream);
+		LOGGER.log(Level.INFO, OUTSTREAM + outStream);
+		isSetup = true;
+	}
+
+	/**
 	 * Show Jam's graphical interface. Once shown, the user may interact with
 	 * Jam like normal, including interrupting the scripted process.
 	 * 
@@ -417,21 +443,42 @@ public final class Script implements Observer {
 	}
 
 	/**
-	 * Hide Jam's graphical interface.
+	 * Start online acquisition.
 	 */
-	public void hideJam() {
-		jam.setVisible(false);
-	}
-
-	public int getEventsSorted() {
-		return this.sortControl.getEventsSorted();
-	}
-
 	public void startAcquisition() {
 		this.runControl.startAcq();
 	}
 
+	/**
+	 * Stop online acquisition.
+	 */
 	public void stopAcquisition() {
 		this.runControl.stopAcq();
+	}
+
+	public void update(final Observable event, final Object param) {
+		final BroadcastEvent bEvent = (BroadcastEvent) param;
+		final BroadcastEvent.Command command = bEvent.getCommand();
+		if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
+			synchronized (lockObject) {
+				state = (RunState) bEvent.getContent();
+				lockObject.notifyAll();
+			}
+		}
+	}
+
+	/**
+	 * Zero all histograms in memory.
+	 */
+	public void zeroHistograms() {
+		(new HistogramZero()).zeroAll();
+	}
+
+	private void initFields() {
+		setupSortOffline = SetupSortOff.getInstance();
+		setupSortOnline = SetupSortOn.getInstance();
+		sortControl = SortControl.getInstance();
+		runControl = RunControl.getInstance();
+		hdfio = new HDFIO(STATUS.getFrame());
 	}
 }

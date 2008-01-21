@@ -79,8 +79,12 @@ public final class VMECommunication extends GoodThread implements
 	 */
 	private VMECommunication() {
 		super();
-		setName("Network Messenger");
 		BROADCASTER.addObserver(this);
+		this.setName("Front End Communication");
+		this.setDaemon(true);
+		this.setPriority(jam.sort.ThreadPriorities.MESSAGING);
+		this.setState(State.SUSPEND);
+		this.start();
 	}
 
 	/**
@@ -128,9 +132,7 @@ public final class VMECommunication extends GoodThread implements
 					"Problem creating receive socket.", se);
 		}
 		// Setup and start receiving daemon.
-		setDaemon(true);
-		setPriority(jam.sort.ThreadPriorities.MESSAGING);
-		start();
+		this.setState(State.RUN);
 		active = true;
 		final Preferences prefs = CommunicationPreferences.PREFS;
 		debug(prefs.getBoolean(CommunicationPreferences.DEBUG, false));
@@ -244,30 +246,35 @@ public final class VMECommunication extends GoodThread implements
 		try {
 			final DatagramPacket packetIn = new DatagramPacket(bufferIn,
 					bufferIn.length);
-			while (true) {// loop forever receiving packets
-				synchronized (LOCK) {
-					socketReceive.receive(packetIn);
-				}
-				final ByteBuffer byteBuffer = ByteBuffer.wrap(packetIn
-						.getData());
-				final int status = byteBuffer.getInt();// .readInt();
-				if (status == PacketTypes.OK_MESSAGE.intValue()) {
-					LOGGER.info(getClass().getName() + ": "
-							+ unPackMessage(byteBuffer));
-				} else if (status == PacketTypes.SCALER.intValue()) {
-					unPackScalers(byteBuffer);
-					Scaler.update(scalerValues);
-				} else if (status == PacketTypes.COUNTER.intValue()) {
-					unPackCounters(byteBuffer);
-					BROADCASTER.broadcast(
-							BroadcastEvent.Command.COUNTERS_UPDATE,
-							counterValues);
-				} else if (status == PacketTypes.ERROR.intValue()) {
-					LOGGER.severe(getClass().getName() + ": "
-							+ unPackMessage(byteBuffer));
-				} else {
-					LOGGER.severe(getClass().getName()
-							+ ": packet with unknown message type received");
+			while (checkState()) {// loop forever receiving packets
+				try {
+					synchronized (LOCK) {
+						socketReceive.receive(packetIn);
+					}
+					final ByteBuffer byteBuffer = ByteBuffer.wrap(packetIn
+							.getData());
+					final int status = byteBuffer.getInt();// .readInt();
+					if (status == PacketTypes.OK_MESSAGE.intValue()) {
+						LOGGER.info(getClass().getName() + ": "
+								+ unPackMessage(byteBuffer));
+					} else if (status == PacketTypes.SCALER.intValue()) {
+						unPackScalers(byteBuffer);
+						Scaler.update(scalerValues);
+					} else if (status == PacketTypes.COUNTER.intValue()) {
+						unPackCounters(byteBuffer);
+						BROADCASTER.broadcast(
+								BroadcastEvent.Command.COUNTERS_UPDATE,
+								counterValues);
+					} else if (status == PacketTypes.ERROR.intValue()) {
+						LOGGER.severe(getClass().getName() + ": "
+								+ unPackMessage(byteBuffer));
+					} else {
+						LOGGER
+								.severe(getClass().getName()
+										+ ": packet with unknown message type received");
+					}
+				} catch (SocketException se) {
+					LOGGER.info("Receive socket was closed.");
 				}
 			}// end of receive message forever loop
 		} catch (IOException ioe) {
@@ -620,5 +627,19 @@ public final class VMECommunication extends GoodThread implements
 	public void zeroCounters() {
 		final String COUNT_ZERO = "count zero";
 		sendToVME(COUNT_ZERO);
+	}
+
+	public void close() {
+		this.setState(State.SUSPEND);
+
+		if (null != this.socketReceive) {
+			socketReceive.close();
+		}
+
+		if (null != this.socketSend) {
+			this.socketSend.close();
+		}
+
+		active = false;
 	}
 }

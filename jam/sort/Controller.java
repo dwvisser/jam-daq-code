@@ -12,17 +12,6 @@ package jam.sort;
 public interface Controller {
 
 	/**
-	 * Called back by <code>SortDaemon</code> thread when starting a new sort.
-	 * <dl>
-	 * <dt>OFFLINE</dt>
-	 * <dd>begins a new sort</dd>
-	 * <dt>ONLINE</dt>
-	 * <dd>does nothing</dd>
-	 * </dl>
-	 */
-	void atSortStart();
-
-	/**
 	 * Called back by sortDaemon thread when sort encounters a end-run-marker or
 	 * a end of file marker.
 	 */
@@ -32,5 +21,5 @@ public interface Controller {
 	 * Method called back by <code>StorageDaemon</code> when it encouters a
 	 * end-run-marker and has closed the data event file it was writing data to.
 	 */
-	void atWriteEnd();	
+	void atWriteEnd();
 }

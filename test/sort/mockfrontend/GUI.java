@@ -4,10 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -16,6 +14,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 /**
+ * Mock front end for testing Jam online acquisition.
  * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Feb 15, 2004
@@ -24,6 +23,9 @@ public class GUI extends JFrame {
 
 	private transient MessageReceiver receiver;// NOPMD
 
+	/**
+	 * Creates a new test front end app instance.
+	 */
 	public GUI() {
 		super("Test Front End for Jam");
 		final Container contents = getContentPane();
@@ -60,8 +62,6 @@ public class GUI extends JFrame {
 					buffersSent, console, frontEndSocket, jamData);
 			receiver = new MessageReceiver(this, console, frontEndSocket,
 					sender);
-		} catch (final UnknownHostException uhe) {
-			Console.LOGGER.throwing(GUI.class.getName(), "ctor", uhe);
 		} catch (final SocketException se) {
 			Console.LOGGER.throwing(GUI.class.getName(), "ctor", se);
 		}
@@ -78,6 +78,12 @@ public class GUI extends JFrame {
 		SwingUtilities.invokeLater(showWindow);
 	}
 
+	/**
+	 * Launches the GUI.
+	 * 
+	 * @param args
+	 *            ignored
+	 */
 	public static void main(final String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

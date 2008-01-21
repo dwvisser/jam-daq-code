@@ -92,7 +92,6 @@ public class ConsoleLog implements MessageHandler {
 	 */
 	public void closeLogFile() throws JamException {
 		try {
-			logWriter.flush();
 			logWriter.close();
 		} catch (IOException ioe) {
 			throw new JamException("Could not close log file.", ioe);
@@ -112,6 +111,7 @@ public class ConsoleLog implements MessageHandler {
 	/**
 	 * @see Object#finalize()
 	 */
+	@Override
 	protected void finalize() throws Throwable {
 		if (logFileOn) {
 			closeLogFile();
@@ -221,8 +221,8 @@ public class ConsoleLog implements MessageHandler {
 			doc.insertString(doc.getLength(), mbuff.toString(),
 					SimpleAttributeSet.EMPTY);
 		} catch (BadLocationException e) {
-			JOptionPane.showMessageDialog(textLog, e.getMessage(),
-					getClass().getName(), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(textLog, e.getMessage(), getClass()
+					.getName(), JOptionPane.ERROR_MESSAGE);
 		}
 		trimLog();
 		textLog.setCaretPosition(doc.getLength());

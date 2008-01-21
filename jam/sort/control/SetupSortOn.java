@@ -326,15 +326,7 @@ public final class SetupSortOn extends AbstractSetup {
 		checkLock.addItemListener(new ItemListener() {
 			public void itemStateChanged(final ItemEvent itemEvent) {
 				if (!checkLock.isSelected()) {
-					try {
-						/* kill daemons, clear data areas */
-						resetAcq(true);
-						/* unlock sort mode */
-						lockMode(false);
-						consoleLog.closeLogFile();
-					} catch (Exception e) {
-						LOGGER.log(SEVERE, e.getMessage(), e);
-					}
+					cancelOnlineSetup();
 				}
 			}
 		});
@@ -435,6 +427,11 @@ public final class SetupSortOn extends AbstractSetup {
 			netDaemon.setState(STOP);
 			netDaemon.closeNet();
 		}
+
+		if (null != frontEnd) {
+			frontEnd.close();
+		}
+
 		if (killSort) {
 			sortChooser.forgetSortRoutine();
 		}
@@ -499,10 +496,6 @@ public final class SetupSortOn extends AbstractSetup {
 	@Override
 	protected void setupSort() throws jam.sort.SortException, JamException {
 		initializeSorter();
-		/* interprocess buffering between daemons */
-		final RingBuffer sortingRing = new RingBuffer();
-		// if disk not selected than storage ring is made in "null/empty" state
-		final RingBuffer storageRing = new RingBuffer(!cdisk.isSelected());
 		/* typical setup of event streams */
 		try { // create new event input stream class
 			inStream = ((Class<? extends AbstractEventInputStream>) inChooser
@@ -541,8 +534,12 @@ public final class SetupSortOn extends AbstractSetup {
 		sortDaemon = new SortDaemon(runControl);
 		final boolean useDisk = cdisk.isSelected();
 		sortDaemon.setup(inStream, sortRoutine.getEventSize());
+		/* interprocess buffering between daemons */
+		final RingBuffer sortingRing = new RingBuffer();
 		sortDaemon.setRingBuffer(sortingRing);
 		sortDaemon.setSorter(sortRoutine);
+		// if disk not selected than storage ring is made in "null/empty" state
+		final RingBuffer storageRing = new RingBuffer(!cdisk.isSelected());
 		// create storage daemon
 		if (cdisk.isSelected()) { // don't create storage daemon otherwise
 			diskDaemon = new DiskDaemon(runControl);
@@ -563,6 +560,7 @@ public final class SetupSortOn extends AbstractSetup {
 		if (useDisk) {
 			diskDaemon.start();
 		}
+		LOGGER.info("Starting sort and net daemons.");
 		sortDaemon.start();
 		netDaemon.start();
 	}
@@ -572,5 +570,20 @@ public final class SetupSortOn extends AbstractSetup {
 		final jam.sort.VME_Map map = sortChooser.getSortRoutine().getVMEmap();
 		frontEnd.setupVMEmap(map);
 		frontEnd.sendScalerInterval(map.getScalerInterval());
+	}
+
+	/**
+	 * Cancels online setup.
+	 */
+	public void cancelOnlineSetup() {
+		try {
+			/* kill daemons, clear data areas */
+			resetAcq(true);
+			/* unlock sort mode */
+			lockMode(false);
+			consoleLog.closeLogFile();
+		} catch (Exception e) {
+			LOGGER.log(SEVERE, e.getMessage(), e);
+		}
 	}
 }

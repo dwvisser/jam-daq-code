@@ -149,7 +149,7 @@ abstract class AbstractSetup {
 	/**
 	 * path to base of sort routines' class path.
 	 */
-	protected transient File specifiedClassPath;
+	protected transient File userClassPath;
 
 	/**
 	 * Text field showing the sort class path.
@@ -170,7 +170,7 @@ abstract class AbstractSetup {
 		final String defSortRoutine = JamProperties
 				.getPropString(PropertyKeys.SORT_ROUTINE);
 
-		specifiedClassPath = new File(defSortPath);
+		userClassPath = new File(defSortPath);
 
 		// Create GUI widgets
 		bok = new JButton(new ApplyAction(true));
@@ -179,8 +179,8 @@ abstract class AbstractSetup {
 		textSortPath = new JTextField(defSortPath);
 		textSortPath.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				specifiedClassPath = new File(textSortPath.getText());
-				sortChooser.loadChooserClassPath(specifiedClassPath);
+				userClassPath = new File(textSortPath.getText());
+				sortChooser.loadChooserClassPath(userClassPath);
 			}
 		});
 		// Radio buttons
@@ -212,9 +212,9 @@ abstract class AbstractSetup {
 
 		bbrowsef.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				specifiedClassPath = browseSortPath();
-				textSortPath.setText(specifiedClassPath.getPath());
-				sortChooser.loadChooserClassPath(specifiedClassPath);
+				userClassPath = browseSortPath();
+				textSortPath.setText(userClassPath.getPath());
+				sortChooser.loadChooserClassPath(userClassPath);
 			}
 		});
 		bbrowsef.setEnabled(false);
@@ -250,8 +250,8 @@ abstract class AbstractSetup {
 	 * @return the directory to look in for event files
 	 */
 	protected final File browseSortPath() {
-		File rval = specifiedClassPath;
-		final JFileChooser chooser = new JFileChooser(specifiedClassPath);
+		File rval = userClassPath;
+		final JFileChooser chooser = new JFileChooser(userClassPath);
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		final int option = chooser.showOpenDialog(STATUS.getFrame());
 		/* save current values */
@@ -277,10 +277,10 @@ abstract class AbstractSetup {
 	 */
 	private Set<Class<?>> getClasses(final String inPackage,
 			final Class<?> inClass) {
-		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier
+		final RuntimeSubclassIdentifier classFinder = RuntimeSubclassIdentifier
 				.getSingletonInstance();
 		final Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(
-				runtimeSubclassIdentifier.find(inPackage, inClass, false));
+				classFinder.find(inPackage, inClass, false));
 		lhs.remove(inClass);
 		return lhs;
 	}
@@ -391,8 +391,8 @@ abstract class AbstractSetup {
 			bbrowsef.setEnabled(true);
 			textSortPath.setEnabled(true);
 			textSortPath.setEditable(true);
-			textSortPath.setText(specifiedClassPath.getPath());
-			sortChooser.loadChooserClassPath(specifiedClassPath);
+			textSortPath.setText(userClassPath.getPath());
+			sortChooser.loadChooserClassPath(userClassPath);
 		}
 
 	}
@@ -404,8 +404,8 @@ abstract class AbstractSetup {
 	 *            path to sort routine classpath base
 	 * @param sortName
 	 *            name of sort routine class
-	 * @param inStreamstream
-	 *            class
+	 * @param inStream
+	 *            stream class
 	 * @param outStream
 	 *            event input event output stream class
 	 */
