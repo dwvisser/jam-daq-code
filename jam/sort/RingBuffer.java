@@ -49,6 +49,12 @@ public final class RingBuffer {
 		this(false);
 	}
 
+	/**
+	 * Creates a new ring buffer with or without a backing deque.
+	 * 
+	 * @param empty
+	 *            whether this is a no-capacity ring buffer
+	 */
 	public RingBuffer(boolean empty) {
 		super();
 		hasRing = !empty; // NOPMD
@@ -120,6 +126,8 @@ public final class RingBuffer {
 	 * 
 	 * @param out
 	 *            array to copy the next buffer into
+	 * @throws InterruptedException
+	 *             if the thread is interrupted
 	 */
 	public void getBuffer(final byte[] out) throws InterruptedException {
 		assert !isNull() : "Attempted getBuffer() on 'null' ring buffer.";

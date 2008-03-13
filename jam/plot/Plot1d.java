@@ -2,7 +2,6 @@ package jam.plot;
 
 import static jam.plot.common.Constants.BOTTOM;
 import static jam.plot.common.Constants.LEFT;
-import static jam.plot.common.Constants.TOP;
 import jam.data.AbstractHist1D;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
@@ -130,6 +129,7 @@ final class Plot1d extends AbstractPlot {
 		}
 	}
 
+	@Override
 	protected void copyCounts(final Histogram hist) {
 		final Histogram.Type type = hist.getType();
 		size = new Size(hist.getSizeX(), hist.getSizeY());
@@ -144,6 +144,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Displays a fit, starting
 	 */
+	@Override
 	void displayFit(final double[][] signals, final double[] background,
 			final double[] residuals, final int lowerLimit) {
 		this.fitBackground = new double[0];
@@ -178,6 +179,7 @@ final class Plot1d extends AbstractPlot {
 		panel.repaint();
 	}
 
+	@Override
 	void displayHistogram(final Histogram hist) {
 		synchronized (LOCK) {
 			if (hist == null) {
@@ -187,6 +189,7 @@ final class Plot1d extends AbstractPlot {
 		}
 	}
 
+	@Override
 	void displaySetGate(final GateSetMode mode, final Bin pChannel,
 			final Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
@@ -215,6 +218,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Find the maximum counts in the part of the histogram displayed
 	 */
+	@Override
 	protected int findMaximumCounts() {
 		int chmax = limits.getMaximumX();
 		int chmin = limits.getMinimumX();
@@ -237,6 +241,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Find the minimum counts in the part of the histogram displayed
 	 */
+	@Override
 	protected int findMinimumCounts() {
 		int chmax = limits.getMaximumX();
 		int chmin = limits.getMinimumX();
@@ -265,6 +270,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Caller should have checked 'isCalibrated' first.
 	 */
+	@Override
 	int getChannel(final double energy) {
 		final AbstractHist1D plotHist = (AbstractHist1D) getHistogram();
 		return (int) Math.round(plotHist.getCalibration().getChannel(energy));
@@ -312,6 +318,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Get the counts in a X channel, Y channel ignored.
 	 */
+	@Override
 	protected double getCount(final Bin bin) {
 		return counts[bin.getX()];
 	}
@@ -330,6 +337,7 @@ final class Plot1d extends AbstractPlot {
 	/*
 	 * non-javadoc: Caller should have checked 'isCalibrated' first.
 	 */
+	@Override
 	double getEnergy(final double channel) {
 		final AbstractHist1D plotHist = (AbstractHist1D) getHistogram();
 		return plotHist.getCalibration().getValue(channel);
@@ -368,6 +376,7 @@ final class Plot1d extends AbstractPlot {
 	 * @param bin2
 	 *            the other limit
 	 */
+	@Override
 	public void markArea(final Bin bin1, final Bin bin2) {
 		// While storing the boolean condition could make the code a
 		// few lines more compact, this form makes the code analysis
@@ -392,6 +401,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Called when the mouse has moved
 	 */
+	@Override
 	public void mouseMoved(final MouseEvent event) {
 		panel.setMouseMoved(true);
 		if (panel.isSelectingArea()) {
@@ -435,6 +445,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Overlay histograms.
 	 */
+	@Override
 	void overlayHistograms(final List<AbstractHist1D> overlayHists) {
 		panel.setDisplayingOverlay(true);
 		/* retain any items in list in the map Performance improvement */
@@ -451,6 +462,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * paints a fit to a given graphics
 	 */
+	@Override
 	public void paintFit(final Graphics graphics) {
 		if (fitChannels != null && fitChannels.length > 0) {
 			if (fitBackground != null) {
@@ -484,6 +496,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Paint a gate on the give graphics object
 	 */
+	@Override
 	public void paintGate(final Graphics graphics) {
 		final Graphics2D graphics2D = (Graphics2D) graphics;
 		final Composite prev = graphics2D.getComposite();
@@ -503,6 +516,7 @@ final class Plot1d extends AbstractPlot {
 	 * Draw the current histogram including title, border, tickmarks, tickmark
 	 * labels and last but not least update the scrollbars
 	 */
+	@Override
 	public void paintHistogram(final Graphics graphics) {
 		final Histogram plotHist = getHistogram();
 		if (plotHist.getDimensionality() != 1) {
@@ -520,26 +534,16 @@ final class Plot1d extends AbstractPlot {
 		}
 		/* draw ticks after histogram so they are on top */
 		graphics.setColor(colorMap.getForeground());
-		painter.drawTitle(plotHist.getTitle(), TOP);
-
-		painter.drawTicks(BOTTOM);
-		painter.drawLabels(BOTTOM);
-		painter.drawTicks(LEFT);
-		painter.drawLabels(LEFT);
+		paintTextAndTicks(plotHist);
 		final String axisLabelX = plotHist.getLabelX();
-		if (axisLabelX == null) {
-			painter.drawAxisLabel(X_LABEL_1D, BOTTOM);
-		} else {
-			painter.drawAxisLabel(axisLabelX, BOTTOM);
-		}
+		painter.drawAxisLabel(axisLabelX == null ? X_LABEL_1D : axisLabelX,
+				BOTTOM);
 		final String axisLabelY = plotHist.getLabelY();
-		if (axisLabelY == null) {
-			painter.drawAxisLabel(Y_LABEL_1D, LEFT);
-		} else {
-			painter.drawAxisLabel(axisLabelY, LEFT);
-		}
+		painter.drawAxisLabel(axisLabelY == null ? Y_LABEL_1D : axisLabelY,
+				LEFT);
 	}
 
+	@Override
 	public void paintMarkArea(final Graphics graphics) {
 		final Graphics2D graphics2D = (Graphics2D) graphics;
 		final Composite prev = graphics2D.getComposite();
@@ -551,6 +555,7 @@ final class Plot1d extends AbstractPlot {
 		graphics2D.setComposite(prev);
 	}
 
+	@Override
 	public void paintMarkedChannels(final Graphics graphics) {
 		graphics.setColor(colorMap.getMark());
 		for (Bin bin : markedChannels) {
@@ -562,6 +567,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Draw a overlay of another data set
 	 */
+	@Override
 	public void paintOverlay(final Graphics graphics) {
 		final Graphics2D graphics2d = (Graphics2D) graphics;
 		int index = 0;
@@ -584,6 +590,7 @@ final class Plot1d extends AbstractPlot {
 
 	}
 
+	@Override
 	protected void paintSelectingArea(final Graphics graphics) {
 		final Graphics2D graphics2D = (Graphics2D) graphics;
 		graphics2D.setColor(colorMap.getArea());
@@ -592,11 +599,13 @@ final class Plot1d extends AbstractPlot {
 		clearSelectingAreaClip();
 	}
 
+	@Override
 	public void paintSetGatePoints(final Graphics graphics) {
 		graphics.setColor(colorMap.getGateShow());
 		painter.settingGate1d(painter.toView(pointsGate));
 	}
 
+	@Override
 	protected void paintSettingGate(final Graphics graphics) {
 		graphics.setColor(colorMap.getGateDraw());
 		final int xValue1 = pointsGate.xpoints[pointsGate.npoints - 1];
@@ -609,6 +618,7 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * @see java.util.prefs.PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
 	 */
+	@Override
 	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		if (key.equals(PlotPrefs.AUTO_PEAK_FIND)) {
@@ -623,11 +633,13 @@ final class Plot1d extends AbstractPlot {
 		});
 	}
 
+	@Override
 	void removeOverlays() {
 		overlayCounts.clear();
 		overlayNumber.clear();
 	}
 
+	@Override
 	void reset() {
 		super.reset();
 		setBinWidth(1.0);

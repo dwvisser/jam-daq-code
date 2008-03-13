@@ -5,6 +5,9 @@ import static jam.plot.PlotPrefs.AUTO_IGNORE_ZERO;
 import static jam.plot.PlotPrefs.BLACK_BACKGROUND;
 import static jam.plot.PlotPrefs.HIGHLIGHT_GATE;
 import static jam.plot.PlotPrefs.PREFS;
+import static jam.plot.common.Constants.BOTTOM;
+import static jam.plot.common.Constants.LEFT;
+import static jam.plot.common.Constants.TOP;
 import jam.data.AbstractHist1D;
 import jam.data.Dimensional;
 import jam.data.Gate;
@@ -150,6 +153,21 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 		synchronized (plotSelection.areaClip) {
 			plotSelection.areaClip.setSize(0, 0);
 		}
+	}
+
+	/**
+	 * Paints titles, labels and tick marks.
+	 * 
+	 * @param plotHistogram
+	 *            for which to paint
+	 */
+	protected void paintTextAndTicks(final Histogram plotHistogram) {
+		painter.drawTitle(plotHistogram.getTitle(), TOP);
+		painter.drawNumber(plotHistogram.getNumber(), new int[0]);
+		painter.drawTicks(BOTTOM);
+		painter.drawLabels(BOTTOM);
+		painter.drawTicks(LEFT);
+		painter.drawLabels(LEFT);
 	}
 
 	protected abstract void copyCounts(Histogram hist);

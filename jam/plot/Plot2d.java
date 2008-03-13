@@ -3,8 +3,8 @@ package jam.plot;
 import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 import static jam.plot.common.Constants.BOTTOM;
 import static jam.plot.common.Constants.LEFT;
-import static jam.plot.common.Constants.TOP;
 import jam.data.AbstractHist1D;
+import jam.data.DataException;
 import jam.data.HistDouble2D;
 import jam.data.HistInt2D;
 import jam.data.Histogram;
@@ -89,6 +89,7 @@ final class Plot2d extends AbstractPlot {
 		}
 	}
 
+	@Override
 	protected void copyCounts(final Histogram hist) {
 		final Histogram.Type type = hist.getType();
 		size = new Size(hist.getSizeX(), hist.getSizeY());
@@ -113,11 +114,13 @@ final class Plot2d extends AbstractPlot {
 		}
 	}
 
+	@Override
 	void displayFit(final double[][] signals, final double[] background,
 			final double[] residuals, final int lowerLimit) {
 		// NOP
 	}
 
+	@Override
 	void displayHistogram(final Histogram hist) {
 		synchronized (this) {
 			if (hist == null) {
@@ -138,6 +141,7 @@ final class Plot2d extends AbstractPlot {
 	 * @param pPixel
 	 *            the plot coordinates of the point
 	 */
+	@Override
 	void displaySetGate(final GateSetMode mode, final Bin pChannel,
 			final Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
@@ -190,6 +194,7 @@ final class Plot2d extends AbstractPlot {
 	 * @return the maximum counts in the region of currently displayed 2d
 	 *         Histogram
 	 */
+	@Override
 	protected int findMaximumCounts() {
 		int chminX = limits.getMinimumX();
 		int chmaxX = limits.getMaximumX();
@@ -216,6 +221,7 @@ final class Plot2d extends AbstractPlot {
 	 * @return the minimum counts in the region of currently displayed 2d
 	 *         Histogram
 	 */
+	@Override
 	protected int findMinimumCounts() {
 		int chminX = limits.getMinimumX();
 		int chmaxX = limits.getMaximumX();
@@ -236,6 +242,7 @@ final class Plot2d extends AbstractPlot {
 		return minCounts;
 	}
 
+	@Override
 	int getChannel(final double energy) {
 		return 0;
 	}
@@ -306,6 +313,7 @@ final class Plot2d extends AbstractPlot {
 	 *            the channel to get counts for
 	 * @return the counts at channel <code>p</code>
 	 */
+	@Override
 	protected double getCount(final Bin point) {
 		return counts2d[point.getX()][point.getY()];
 	}
@@ -326,6 +334,7 @@ final class Plot2d extends AbstractPlot {
 	/**
 	 * Caller should have checked 'isCalibrated' first.
 	 */
+	@Override
 	double getEnergy(final double channel) {
 		return 0.0;
 	}
@@ -344,6 +353,7 @@ final class Plot2d extends AbstractPlot {
 	 * @param bin2
 	 *            a corner of the rectangle in plot coordinates
 	 */
+	@Override
 	void markArea(final Bin bin1, final Bin bin2) {
 		// While storing the boolean condition could make the code a
 		// few lines more compact, this form makes the code analysis
@@ -372,6 +382,7 @@ final class Plot2d extends AbstractPlot {
 	 * @param event
 	 *            created when the mouse pointer moves while in the plot
 	 */
+	@Override
 	public void mouseMoved(final MouseEvent event) {
 		if (panel.isSettingGate()) {
 			/* only if we have 1 or more */
@@ -407,6 +418,7 @@ final class Plot2d extends AbstractPlot {
 		}
 	}
 
+	@Override
 	void overlayHistograms(final List<AbstractHist1D> overlayHists) {
 		// NOP
 	}
@@ -417,6 +429,7 @@ final class Plot2d extends AbstractPlot {
 	 * @param context
 	 *            the graphics context to paint on
 	 */
+	@Override
 	public void paintFit(final Graphics context) {
 		error("Cannot plot fits with 2D histograms.");
 	}
@@ -427,6 +440,7 @@ final class Plot2d extends AbstractPlot {
 	 * @param graphics
 	 *            the graphics context to paint to
 	 */
+	@Override
 	public void paintGate(final Graphics graphics) {
 		final Graphics2D graphics2d = (Graphics2D) graphics;
 		graphics2d.setComposite(AlphaComposite.getInstance(
@@ -446,6 +460,7 @@ final class Plot2d extends AbstractPlot {
 	 * @param context
 	 *            the graphics context to paint to
 	 */
+	@Override
 	public void paintHistogram(final Graphics context) {
 		final Histogram plotHist = getHistogram();
 		final Scale scale = limits.getScale();
@@ -469,28 +484,18 @@ final class Plot2d extends AbstractPlot {
 		}
 		/* draw labels/ticks after histogram so they are on top */
 		context.setColor(plotColorMap.getForeground());
-		painter.drawTitle(plotHist.getTitle(), TOP);
-		painter.drawNumber(plotHist.getNumber(), new int[0]);
-		painter.drawTicks(BOTTOM);
-		painter.drawLabels(BOTTOM);
-		painter.drawTicks(LEFT);
-		painter.drawLabels(LEFT);
+		paintTextAndTicks(plotHist);
 		final String axisLabelX = plotHist.getLabelX();
-		if (axisLabelX == null) {
-			painter.drawAxisLabel(X_LABEL_2D, BOTTOM);
-		} else {
-			painter.drawAxisLabel(axisLabelX, BOTTOM);
-		}
+		painter.drawAxisLabel(axisLabelX == null ? X_LABEL_2D : axisLabelX,
+				BOTTOM);
 		final String axisLabelY = plotHist.getLabelY();
-		if (axisLabelY == null) {
-			painter.drawAxisLabel(Y_LABEL_2D, LEFT);
-		} else {
-			painter.drawAxisLabel(axisLabelY, LEFT);
-		}
+		painter.drawAxisLabel(axisLabelY == null ? Y_LABEL_2D : axisLabelY,
+				LEFT);
 		context.setPaintMode();
 		context.setColor(plotColorMap.getForeground());
 	}
 
+	@Override
 	public void paintMarkArea(final Graphics context) {
 		final Graphics2D context2d = (Graphics2D) context;
 		context2d.setComposite(AlphaComposite.getInstance(
@@ -502,6 +507,7 @@ final class Plot2d extends AbstractPlot {
 		}
 	}
 
+	@Override
 	public void paintMarkedChannels(final Graphics graphics) {
 		graphics.setColor(plotColorMap.getMark());
 		for (Bin bin : markedChannels) {
@@ -515,6 +521,7 @@ final class Plot2d extends AbstractPlot {
 	 * @param context
 	 *            the graphics context to paint with
 	 */
+	@Override
 	public void paintOverlay(final Graphics context) {
 		error("Cannot plot overlays with 2D histograms.");
 	}
@@ -557,6 +564,7 @@ final class Plot2d extends AbstractPlot {
 	/**
 	 * Paint call while selecting an area.
 	 */
+	@Override
 	protected void paintSelectingArea(final Graphics context) {
 		final Graphics2D context2d = (Graphics2D) context;
 		context2d.setColor(plotColorMap.getArea());
@@ -568,6 +576,7 @@ final class Plot2d extends AbstractPlot {
 		clearSelectingAreaClip();
 	}
 
+	@Override
 	public void paintSetGatePoints(final Graphics context) {
 		context.setColor(plotColorMap.getGateDraw());
 		painter.settingGate2d(pointsGate);
@@ -579,6 +588,7 @@ final class Plot2d extends AbstractPlot {
 	 * @param context
 	 *            graphics context
 	 */
+	@Override
 	protected void paintSettingGate(final Graphics context) {
 		final Graphics2D context2d = (Graphics2D) context;
 		context2d.setColor(plotColorMap.getGateDraw());
@@ -592,6 +602,7 @@ final class Plot2d extends AbstractPlot {
 		mouseMoveClip.reset();
 	}
 
+	@Override
 	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		if (key.equals(ColorPrefs.SMOOTH_SCALE)) {
@@ -607,6 +618,7 @@ final class Plot2d extends AbstractPlot {
 		});
 	}
 
+	@Override
 	void removeOverlays() {
 		// NOP
 	}
