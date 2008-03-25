@@ -89,26 +89,27 @@ public final class VMECommunication extends GoodThread implements
 
 	/**
 	 * @param addressLocal
-	 * @param LOCAL_IP
+	 * @param localInternetAddress
 	 * @param portSend
 	 * @param portRecv
-	 * @param VME_IP
+	 * @param vmeInternetAddress
 	 * @throws CommunicationsException
 	 */
-	private void bindSocketsAndSetActive(final String LOCAL_IP,
-			final int portSend, final int portRecv, final String VME_IP)
-			throws CommunicationsException {
+	private void bindSocketsAndSetActive(final String localInternetAddress,
+			final int portSend, final int portRecv,
+			final String vmeInternetAddress) throws CommunicationsException {
 		InetAddress addressLocal;
-		try {// ceate a ports to send and receive
-			addressLocal = InetAddress.getByName(LOCAL_IP);
+		try {// create a ports to send and receive
+			addressLocal = InetAddress.getByName(localInternetAddress);
 		} catch (UnknownHostException ue) {
-			throw new CommunicationsException(
-					"Unknown local host: " + LOCAL_IP, ue);
+			throw new CommunicationsException("Unknown local host: "
+					+ localInternetAddress, ue);
 		}
 		try {
-			addressVME = InetAddress.getByName(VME_IP);
+			addressVME = InetAddress.getByName(vmeInternetAddress);
 		} catch (UnknownHostException ue) {
-			throw new CommunicationsException("Unknown VME host: " + VME_IP, ue);
+			throw new CommunicationsException("Unknown VME host: "
+					+ vmeInternetAddress, ue);
 		}
 		try {
 			socketSend = new DatagramSocket(portSend, addressLocal);
@@ -236,7 +237,7 @@ public final class VMECommunication extends GoodThread implements
 	}
 
 	/**
-	 * Thread method: is a deamon for receiving packets from the VME crate. The
+	 * Thread method: is a daemon for receiving packets from the VME crate. The
 	 * first int of the packet is the status word. It determines how the packet
 	 * is to be handled.
 	 */

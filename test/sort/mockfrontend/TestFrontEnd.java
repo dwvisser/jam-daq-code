@@ -19,18 +19,18 @@ import javax.swing.UIManager;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Feb 15, 2004
  */
-public class GUI extends JFrame {
+public class TestFrontEnd extends JFrame {
 
 	private transient MessageReceiver receiver;// NOPMD
 
 	/**
 	 * Creates a new test front end app instance.
 	 */
-	public GUI() {
+	public TestFrontEnd() {
 		super("Test Front End for Jam");
 		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
-		final JPanel center = new JPanel(new GridLayout(3, 2));
+		final JPanel center = new JPanel(new GridLayout(4, 2));
 		contents.add(center, BorderLayout.CENTER);
 		final Status status = new Status(Status.Value.BOOTED);
 		center.add(status);
@@ -43,27 +43,39 @@ public class GUI extends JFrame {
 		final NamedTextPanel fAddress = new NamedTextPanel("Front End Address",
 				"");
 		center.add(fAddress);
-		final NamedTextPanel jAddress = new NamedTextPanel("Jam Address", "");
+		final NamedTextPanel jAddress = new NamedTextPanel(
+				"Jam Message Send Address", "");
 		center.add(jAddress);
+		final NamedTextPanel jdAddress = new NamedTextPanel(
+				"Jam Data Receive Address", "");
+		center.add(jdAddress);
+		final NamedTextPanel jmrAddress = new NamedTextPanel(
+				"Jam Message Receive Address", "");
+		center.add(jmrAddress);
 		final Console console = new Console();
 		contents.add(console, BorderLayout.SOUTH);
 		try {
-			final InetSocketAddress frontEnd = new InetSocketAddress(
-					"localhost", 5003);
+			final String localhost = "localhost";
+			final InetSocketAddress frontEnd = new InetSocketAddress(localhost,
+					5003);
 			fAddress.setText(frontEnd.toString());
 			final DatagramSocket frontEndSocket = new DatagramSocket(frontEnd);
-			final InetSocketAddress jamSend = new InetSocketAddress(
-					"localhost", 5002);
+			final InetSocketAddress jamSend = new InetSocketAddress(localhost,
+					5002);
 			jAddress.setText(jamSend.toString());
-			final InetSocketAddress jamData = new InetSocketAddress(
-					"localhost", 10205);
-			console.messageOutln("Jam Data Address: " + jamData);
+			final InetSocketAddress jamData = new InetSocketAddress(localhost,
+					10205);
+			jdAddress.setText(jamData.toString());
+			final InetSocketAddress jamMessageReceive = new InetSocketAddress(
+					localhost, 5005);
+			jmrAddress.setText(jamMessageReceive.toString());
 			final MessageSender sender = new MessageSender(eventsSent,
-					buffersSent, console, frontEndSocket, jamData);
+					buffersSent, console, frontEndSocket, jamData,
+					jamMessageReceive);
 			receiver = new MessageReceiver(this, console, frontEndSocket,
 					sender);
 		} catch (final SocketException se) {
-			Console.LOGGER.throwing(GUI.class.getName(), "ctor", se);
+			Console.LOGGER.throwing(TestFrontEnd.class.getName(), "ctor", se);
 		}
 
 		receiver.start();
@@ -71,7 +83,6 @@ public class GUI extends JFrame {
 		final Runnable showWindow = new Runnable() {
 			public void run() {
 				pack();
-				// setSize(300, getHeight());
 				setVisible(true);
 			}
 		};
@@ -92,6 +103,14 @@ public class GUI extends JFrame {
 			JOptionPane.showMessageDialog(null, e.getMessage(), title,
 					JOptionPane.WARNING_MESSAGE);
 		}
-		new GUI();
+		new TestFrontEnd();
+	}
+
+	/**
+	 * 
+	 * @return the receiver instance
+	 */
+	public MessageReceiver getMessageReceiver() {
+		return this.receiver;
 	}
 }

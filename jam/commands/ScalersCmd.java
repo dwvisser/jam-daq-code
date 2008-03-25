@@ -24,8 +24,13 @@ public final class ScalersCmd extends AbstractCommand {
 				"Read or zero scalers, depending on parameter.");
 	}
 
+	@Override
+	/**
+	 * If gets used as an Action, i.e., gets passed null, defaults to READ.
+	 */
 	protected void execute(final Object[] cmdParams) {
-		final int param = ((Integer) cmdParams[0]).intValue();
+		final int param = (null == cmdParams) ? READ : ((Integer) cmdParams[0])
+				.intValue();
 		if (param == READ) {
 			readScalers();
 		} else if (param == ZERO) {
@@ -36,6 +41,7 @@ public final class ScalersCmd extends AbstractCommand {
 		}
 	}
 
+	@Override
 	protected void executeParse(final String[] cmdTokens) {
 		final Object[] params = new Object[1];
 		if (cmdTokens[0].equals("read")) {

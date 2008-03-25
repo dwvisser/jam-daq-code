@@ -1,5 +1,7 @@
 package jam;
 
+import jam.commands.CommandManager;
+import jam.commands.CommandNames;
 import jam.data.Group;
 import jam.data.control.HistogramZero;
 import jam.global.BroadcastEvent;
@@ -472,6 +474,15 @@ public final class Script implements Observer {
 	 */
 	public void zeroHistograms() {
 		(new HistogramZero()).zeroAll();
+	}
+
+	/**
+	 * Send the command to the front end to read the scalers.
+	 */
+	public void readScalers() {
+		final String[] read = { "read" };
+		CommandManager.getInstance().performParseCommand(CommandNames.SCALERS,
+				read);
 	}
 
 	private void initFields() {

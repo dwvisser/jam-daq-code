@@ -15,17 +15,19 @@ import jam.sort.SortRoutine;
 public final class CamacSortTemplate extends SortRoutine {
 
 	/** variables declarations */
-	private static final int PARAM_ID = 0; //id number for event word from cnaf
+	private static final int PARAM_ID = 0; // id number for event word from
+	// cnaf
 
-	private transient final HistInt1D myHist; //declare histogram myHist
+	private transient final HistInt1D myHist; // declare histogram myHist
 
-	private transient final HistInt1D myHistGated; //declare histogram myHistGated
+	private transient final HistInt1D myHistGated; // declare histogram
+	// myHistGated
 
-	private transient final Gate myGate; //declare gate myGate;
-	
+	private transient final Gate myGate; // declare gate myGate;
+
 	/**
-	 * Constructor, not usually used. 
-	 *
+	 * Constructor, not usually used.
+	 * 
 	 * @see #initialize()
 	 */
 	public CamacSortTemplate() {
@@ -36,6 +38,7 @@ public final class CamacSortTemplate extends SortRoutine {
 		myHist = createHist1D(hist1d, "detector1", "my detector");
 		myHistGated = createHist1D(hist1d, "detecGated", "my detector gated");
 		myGate = new Gate("detector1", myHist);
+		createScaler("Scaler 0", 0);
 		new DataParameter("ParamAdjust");
 	}
 
@@ -45,6 +48,7 @@ public final class CamacSortTemplate extends SortRoutine {
 	 * 
 	 * @see SortRoutine#initialize()
 	 */
+	@Override
 	public void initialize() throws SortException {
 		/*
 		 * uncomment to setup camac commands here
@@ -54,20 +58,24 @@ public final class CamacSortTemplate extends SortRoutine {
 		 * idScal=cnafCommands.scaler(c,n,a,f);//scaler read cnafs
 		 * cnafCommands.clear(c,n,a,f);//scaler clear cnaf
 		 */
-
+		cnafCommands.scaler(0, 2, 3, 4);// scaler read cnafs
+		cnafCommands.eventRead(0, 1, 3, 4, 5);
 		/*
 		 * comment out setEventSize() if you actually put in the CAMAC stuff
 		 */
-		setEventSize(2);
+		// setEventSize(2);
 	}
 
 	/**
 	 * @see SortRoutine#sort(int[])
 	 */
+	@Override
 	public void sort(final int[] eventData) {
-		myHist.inc(eventData[PARAM_ID]); //increment myHist with word idHist;
-		if (myGate.inGate(eventData[PARAM_ID])) { //if event word is in myGate
-			myHistGated.inc(eventData[PARAM_ID]); //increment myHistGate
+		myHist.inc(eventData[PARAM_ID]); // increment myHist with word
+		// idHist;
+		if (myGate.inGate(eventData[PARAM_ID])) { // if event word is in
+			// myGate
+			myHistGated.inc(eventData[PARAM_ID]); // increment myHistGate
 		}
 	}
 }

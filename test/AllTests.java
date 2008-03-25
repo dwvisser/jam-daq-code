@@ -10,6 +10,7 @@ import test.data.peaks.PeakTest;
 import test.global.JamPropertiesTest;
 import test.io.ImpExpASCIITest;
 import test.sort.GainCalibrationTest;
+import test.sort.OnlineScalerTest;
 import test.sort.RingBufferTest;
 import test.sort.SortOfflineTest;
 import test.sort.SortOnlineTest;
@@ -23,6 +24,6 @@ import test.sort.SortOnlineTest;
 @Suite.SuiteClasses( { GateTest.class, HistogramTest.class, PeakTest.class,
 		ImpExpASCIITest.class, GainCalibrationTest.class, RingBufferTest.class,
 		CubicFunctionTest.class, JamPropertiesTest.class,
-		SortOfflineTest.class, SortOnlineTest.class })
+		SortOfflineTest.class, SortOnlineTest.class, OnlineScalerTest.class })
 public class AllTests {// NOPMD
 }

@@ -24,6 +24,8 @@ public class MessageReceiver extends GoodThread {
 	private transient final MessageSender sender;
 	private transient final Console console;
 
+	private transient boolean receivedListScaler = false;
+
 	/**
 	 * Creates a new message receiver.
 	 * 
@@ -78,6 +80,9 @@ public class MessageReceiver extends GoodThread {
 							this.console.errorOutln(error);
 						}
 						eventGenerator = null;
+					} else if ("list scaler".equalsIgnoreCase(message)) {
+						this.receivedListScaler = true;
+						this.sender.sendScalerValues();
 					}
 				} else if (status == PacketTypes.VME_ADDRESS.intValue()) {
 					this.console.messageOutln("VME Conguration Info:\n"
@@ -107,6 +112,14 @@ public class MessageReceiver extends GoodThread {
 		} while (next != '\0');
 		final int len = rval.length() - 1;
 		return rval.substring(0, len);
+	}
+
+	/**
+	 * 
+	 * @return whether a "list scaler" message has been received
+	 */
+	public boolean hasReceivedListScaler() {
+		return this.receivedListScaler;
 	}
 
 }

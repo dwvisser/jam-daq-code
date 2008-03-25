@@ -7,7 +7,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -22,6 +21,14 @@ import java.util.concurrent.TimeUnit;
  * @version Feb 16, 2004
  */
 public class MessageSender {
+
+	/**
+	 * Value sent for scaler.
+	 */
+	public static final int SCALER_VALUE = 137;
+	private transient final SocketAddress jamMessageReceive;
+	private transient final Console console;
+	private transient final DatagramSocket localSocket;
 
 	/**
 	 * Creates a new message sender.
@@ -43,10 +50,12 @@ public class MessageSender {
 	 */
 	MessageSender(final Counter events, final Counter buffers,
 			final Console console, final DatagramSocket localSocket,
-			final SocketAddress jamData) {
+			final SocketAddress jamData, final SocketAddress jamMessageReceive) {
 		super();
-		this.eventGenerator = new EventGenerator(events, buffers, console,
-				localSocket, jamData);
+		this.localSocket = localSocket;
+		this.console = console;
+		this.jamMessageReceive = jamMessageReceive;
+		this.eventGenerator = new EventGenerator(events, buffers, jamData);
 	}
 
 	private transient final EventGenerator eventGenerator;
@@ -59,25 +68,20 @@ public class MessageSender {
 		return executor.submit(eventGenerator);
 	}
 
-	static class EventGenerator implements Runnable {
-		private static final byte[] buffer = RingBuffer.freshBuffer();
-		private static final byte[] parameter0 = { (byte) 0x80, 0x00 };
-		private static final byte[] parameter1 = { (byte) 0x80, 0x01 };
-		private static final byte[] eventEnd = { (byte) 0xff, (byte) 0xff };
-		private static final byte[] bufferPad = { (byte) 0xff, (byte) 0xf0 };
+	class EventGenerator implements Runnable {
+		private transient final byte[] buffer = RingBuffer.freshBuffer();
+		private transient final byte[] parameter0 = { (byte) 0x80, 0x00 };
+		private transient final byte[] parameter1 = { (byte) 0x80, 0x01 };
+		private transient final byte[] eventEnd = { (byte) 0xff, (byte) 0xff };
+		private transient final byte[] bufferPad = { (byte) 0xff, (byte) 0xf0 };
 		private transient final Random random = new Random();
-		private transient final DatagramSocket socket;
-		private transient final Console console;
 		private transient final Counter eventCounter, bufferCounter;
-		private transient final SocketAddress jamDataSocketAddress;
+		private transient final SocketAddress jamDataSocketAddress;// NOPMD
 
 		EventGenerator(final Counter eventCounter, final Counter bufferCounter,
-				final Console console, final DatagramSocket localSocket,
 				final SocketAddress address) {
 			this.eventCounter = eventCounter;
 			this.bufferCounter = bufferCounter;
-			this.console = console;
-			this.socket = localSocket;
 			this.jamDataSocketAddress = address;
 		}
 
@@ -114,27 +118,15 @@ public class MessageSender {
 		}
 
 		public void run() {
-			DatagramPacket packetMessage = null;
-			try {
-				/* Associates this.buffer with packetMessage. */
-				packetMessage = new DatagramPacket(buffer, buffer.length,
-						this.jamDataSocketAddress);
-			} catch (SocketException se) {
-				console.errorOutln("Problem setting up packet: "
-						+ se.getMessage());
-			}
+			final DatagramPacket packetMessage = constructPacket(
+					this.jamDataSocketAddress, buffer);
 			boolean keepRunning = packetMessage != null;
 			while (keepRunning) {
 				fillBuffer(); // change contents of packetMessage's buffer
 				try {// create and send packet
-					socket.send(packetMessage);
+					sendPacket(packetMessage);
 					bufferCounter.increment();
 					Thread.sleep(100);
-				} catch (final IOException e) {
-					console
-							.errorOutln(getClass().getName()
-									+ ".send(): "
-									+ "Jam encountered a network communication error attempting to send a packet.");
 				} catch (final InterruptedException ie) {
 					console.messageOutln("Event generator interrupted.");
 					keepRunning = false;
@@ -146,4 +138,44 @@ public class MessageSender {
 		}
 	}
 
+	private DatagramPacket constructPacket(final SocketAddress socketAddress,
+			final byte[] msgBuffer) {
+		DatagramPacket packetMessage = null;
+
+		try {
+			/* Associates this.buffer with packetMessage. */
+			packetMessage = new DatagramPacket(msgBuffer, msgBuffer.length,
+					socketAddress);
+		} catch (SocketException se) {
+			console.errorOutln("Problem setting up packet: " + se.getMessage());
+		}
+		return packetMessage;
+	}
+
+	/**
+	 * Called by MessageReceiver when it gets "list scaler".
+	 */
+	public void sendScalerValues() {
+		/*
+		 * 3 4-byte integers: 2, which means scaler packet; 1, which is the
+		 * number of scaler values; SCALER_VALUE (137), which is the 1 scaler
+		 * value.
+		 */
+		final byte[] message = { 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
+				0x01, 0x00, 0x00, 0x00, (byte) SCALER_VALUE };
+		final DatagramPacket packet = this.constructPacket(
+				this.jamMessageReceive, message);
+		sendPacket(packet);
+	}
+
+	private void sendPacket(final DatagramPacket packet) {
+		try {
+			this.localSocket.send(packet);
+		} catch (IOException e) {
+			console
+					.errorOutln(getClass().getName()
+							+ ".send(): "
+							+ "Jam encountered a network communication error attempting to send a packet.");
+		}
+	}
 }

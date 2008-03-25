@@ -54,7 +54,8 @@ public final class ScalerDisplay extends AbstractControl {
 
 	private transient final JButton bzero = new JButton("Zero");
 
-	private transient final JCheckBox checkDisabled = new JCheckBox("Disable Zero", true);
+	private transient final JCheckBox checkDisabled = new JCheckBox(
+			"Disable Zero", true);
 
 	private transient final Object monitor = new Object();
 
@@ -63,7 +64,7 @@ public final class ScalerDisplay extends AbstractControl {
 	private transient final JamStatus status = JamStatus.getSingletonInstance();
 
 	private transient final List<JTextField> textScaler = new ArrayList<JTextField>();
-	
+
 	/**
 	 * Creates the dialog box for reading and zeroing scalers.
 	 */
@@ -85,10 +86,12 @@ public final class ScalerDisplay extends AbstractControl {
 		cddisp.add(scrollPane, BorderLayout.CENTER);
 		addScalerControlPanel(cddisp);
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowActivated(final WindowEvent event) {
 				displayScalers();
 			}
 
+			@Override
 			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
@@ -103,7 +106,7 @@ public final class ScalerDisplay extends AbstractControl {
 		final JPanel plower = new JPanel(new FlowLayout(FlowLayout.CENTER, 10,
 				10));
 		final JPanel buttonPanel = new JPanel(); // buttons for display
-													// dialog
+		// dialog
 		buttonPanel.setLayout(new GridLayout(1, 0, 10, 10));
 		cddisp.add(plower, BorderLayout.SOUTH);
 		bupdate.addActionListener(new ActionListener() {
@@ -193,6 +196,7 @@ public final class ScalerDisplay extends AbstractControl {
 	 * <code>Scaler</code> objects changes, such as after opening a file, or
 	 * initializing a sort routine.
 	 */
+	@Override
 	public void doSetup() {
 		synchronized (monitor) {
 			final Group currentGroup = (Group) status.getCurrentGroup();
@@ -203,11 +207,9 @@ public final class ScalerDisplay extends AbstractControl {
 				final int numberScalers = scalerList.size();
 				pScalers.removeAll();
 				textScaler.clear();
-				if (numberScalers != 0) { // we have some elements in the
-					// scaler
-					// list
+				if (numberScalers != 0) {
+					/* We have some elements in the scaler list. */
 					for (DataElement currentScaler : scalerList) {
-						/* right justified, hgap, vgap */
 						panelS = createScalerPanel();
 						final JLabel labelScaler = createScalerLabel(currentScaler);
 						final JTextField text = createScalerTextField(currentScaler);
@@ -232,10 +234,10 @@ public final class ScalerDisplay extends AbstractControl {
 	}
 
 	/**
-	 * Read the scaler values send out command to read scalers which sould be
-	 * received by VMECommunication VME should then send a command to CAMAC to
-	 * read the scalers, when VME recieves back the scaler values it calls
-	 * Distribute event which will call our update method.
+	 * Read the scaler values send out command to read scalers, which should be
+	 * received by VMECommunication. VME should then send a command to CAMAC to
+	 * read the scalers, when VME receives back the scaler values it calls
+	 * distribute event which will call our update method.
 	 */
 	public void read() {
 		if (STATUS.isOnline()) {
@@ -253,6 +255,7 @@ public final class ScalerDisplay extends AbstractControl {
 	 * @param event
 	 *            not sure
 	 */
+	@Override
 	public void update(final Observable observable, final Object event) {
 		final BroadcastEvent jamEvent = (BroadcastEvent) event;
 		if ((jamEvent.getCommand() == BroadcastEvent.Command.HISTOGRAM_NEW)
