@@ -20,7 +20,7 @@ public final class Help {
 			.getPackage().getName());
 
 	private Help() {
-		final String helpsetName = "help/jam.hs";
+		final String helpsetName = "help/HelpSet.xml";
 		final URL hsURL = Thread.currentThread().getContextClassLoader()
 				.getResource(helpsetName);
 		try {

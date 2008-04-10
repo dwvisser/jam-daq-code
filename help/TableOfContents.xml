@@ -37,6 +37,6 @@
    	<tocitem text="L002 Event Format" target="l002" />
    	<tocitem text="Yale-CAEN Event Format" target="caen" />
    	<tocitem text="Front End Communication" target="protocol" />
-   </tocitem>
+   	<tocitem text="Log Files" target="logfiles"></tocitem></tocitem>
 </tocitem>
 </toc>

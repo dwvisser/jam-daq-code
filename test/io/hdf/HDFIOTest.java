@@ -12,36 +12,39 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+/**
+ * Tests reading HDF files.
+ * 
+ * @author Dale Visser
+ */
 public class HDFIOTest extends TestCase {
-	
-	private static final String SAMPLEDATA_EXAMPLE_GATES_HDF = "sampledata/exampleGates.hdf";
 
+	private static final String SAMPLE_HDF = "sampledata/exampleGates.hdf";
 
-	public HDFIOTest(){//NOPMD
+	/**
+	 * Default public constructor needed in JUnit suites.
+	 */
+	public HDFIOTest() {// NOPMD
 		super();
 	}
-	
 
+	/**
+	 * Tests opening an existing file.
+	 */
 	@Test
 	public void testReadFileFileOpenModeFile() {
-		final ClassLoader loader = this.getClass().getClassLoader();
-		final URL url = loader.getResource(SAMPLEDATA_EXAMPLE_GATES_HDF);
+		final ClassLoader loader = Thread.currentThread()
+				.getContextClassLoader();
+		final URL url = loader.getResource(SAMPLE_HDF);
 		URI uri = null;
 		try {
 			uri = url.toURI();
 			final File file = new File(uri);
-			final HDFIO hdfio=new HDFIO(null);
-			hdfio.readFile(FileOpenMode.OPEN, file );
-		} catch (URISyntaxException e) {//NOPMD
-			//TODO something here
+			final HDFIO hdfio = new HDFIO(null);
+			hdfio.readFile(FileOpenMode.OPEN, file);
+		} catch (URISyntaxException e) {
+			fail(e.getMessage());
 		}
-		//TODO actual test completion
-		fail();//test not completed
 	}
 
 }
-
-
-
-
-

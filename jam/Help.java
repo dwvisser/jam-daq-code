@@ -55,7 +55,7 @@ public class Help extends JDialog {
 	 *            ignored
 	 */
 	public static void main(final String[] args) {
-		final String helpsetName = "help/jam.hs";
+		final String helpsetName = "help/HelpSet.xml";
 		setLookAndFeel();
 		try {
 			final URL hsURL = ClassLoader.getSystemClassLoader().getResource(

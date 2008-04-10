@@ -95,9 +95,10 @@ public final class VMECommunication extends GoodThread implements
 	 * @param vmeInternetAddress
 	 * @throws CommunicationsException
 	 */
-	private void bindSocketsAndSetActive(final String localInternetAddress,
+	private void bindSocketsAndSetActive(
+			final String localInternetAddress,// NOPMD
 			final int portSend, final int portRecv,
-			final String vmeInternetAddress) throws CommunicationsException {
+			final String vmeInternetAddress) throws CommunicationsException {// NOPMD
 		InetAddress addressLocal;
 		try {// create a ports to send and receive
 			addressLocal = InetAddress.getByName(localInternetAddress);
@@ -301,6 +302,8 @@ public final class VMECommunication extends GoodThread implements
 	 */
 	private void sendCNAFList(final String listName, final List<CNAF> cnafList)
 			throws IOException {
+		LOGGER.entering(VMECommunication.class.getName(), "sendCNAFList",
+				listName);
 		final int COMMAND_SIZE = 16;
 		final int CNAF_SIZE = 9;
 		if (listName.length() > (COMMAND_SIZE - 1)) {
@@ -331,6 +334,7 @@ public final class VMECommunication extends GoodThread implements
 		// add a null character
 		byteBuff.put(Constants.STRING_NULL);
 		sendPacket(byteMessage);// send it
+		LOGGER.exiting(VMECommunication.class.getName(), "sendCNAFList");
 	}
 
 	/**
@@ -376,6 +380,8 @@ public final class VMECommunication extends GoodThread implements
 	 *             if we haven't established a connection yet
 	 */
 	private void sendToVME(final PacketTypes status, final String message) {
+		final Object[] params = { status, message };
+		LOGGER.entering(VMECommunication.class.getName(), "sendToVME", params);
 		if (socketSend == null) {
 			throw new IllegalStateException(
 					"Attempted to send a message without a connection.");

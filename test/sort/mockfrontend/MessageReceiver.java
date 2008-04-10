@@ -87,6 +87,8 @@ public class MessageReceiver extends GoodThread {
 				} else if (status == PacketTypes.VME_ADDRESS.intValue()) {
 					this.console.messageOutln("VME Conguration Info:\n"
 							+ this.unPackMessage(byteBuffer));
+				} else if (status == PacketTypes.CNAF.intValue()) {
+					this.console.messageOutln("CNAF packet received.");
 				}
 			} catch (final IOException e) {
 				JOptionPane.showMessageDialog(frame, e.getMessage(), getClass()

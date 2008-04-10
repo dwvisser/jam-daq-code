@@ -197,7 +197,8 @@ public final class JamMain extends JFrame implements Observer {
 	 * Load the application icon
 	 */
 	private void loadIcon() {
-		final ClassLoader loader = getClass().getClassLoader();
+		final ClassLoader loader = Thread.currentThread()
+				.getContextClassLoader();
 		setIconImage((new ImageIcon(loader.getResource("jam/nukeicon.png"))
 				.getImage()));
 
