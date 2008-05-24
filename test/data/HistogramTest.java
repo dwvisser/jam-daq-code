@@ -11,6 +11,7 @@ import jam.data.HistDouble2D;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
 import jam.data.Histogram;
+import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -35,15 +36,15 @@ public final class HistogramTest {// NOPMD
 	private transient final HistInt2D hist2;
 
 	private transient final HistDouble2D hist2f;
-	
-	public HistogramTest(){
+
+	public HistogramTest() {
 		final Group group = Group.createGroup(TEST_HISTOGRAM_GROUP,
 				Group.Type.FILE);
 		hist1 = (HistInt1D) group.createHistogram(new int[100], "h1");
 		hist1f = (HistDouble1D) group.createHistogram(new double[100], "h1f");
 		hist2 = (HistInt2D) group.createHistogram(new int[100][100], "h2");
 		hist2f = (HistDouble2D) group.createHistogram(new double[100][100],
-				"h2f");		
+				"h2f");
 	}
 
 	/**
@@ -79,6 +80,9 @@ public final class HistogramTest {// NOPMD
 	@Test
 	public void testAddCounts() {
 		final double area1before = hist1.getArea();
+		assertEquals(
+				"Expected getArea() and getCount() to yield the same result.",
+				area1before, hist1.getCount());
 		hist1.addCounts(hist1.getCounts());
 		assertAreaDoubled(hist1, area1before);
 		final double area2before = hist2.getArea();

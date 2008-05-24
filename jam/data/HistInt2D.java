@@ -17,28 +17,6 @@ public final class HistInt2D extends AbstractHist2D {
 	private static final int[][] EMPTY = new int[0][0];
 
 	/**
-	 * Create a new 2-d histogram with counts known and automatically give it a
-	 * number
-	 * 
-	 * @param group
-	 *            for this histogram to belong to
-	 * @param name
-	 *            unique name of histogram, should be limited to
-	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
-	 *            .hdf files as the unique identifier for reloading the
-	 *            histogram
-	 * @param title
-	 *            lengthier title of histogram, displayed on plot
-	 * @param countsIn
-	 *            array of counts to initialize with, must be square
-	 */
-	HistInt2D(String title, int[][] countsIn) {
-		super(Type.TWO_DIM_INT, countsIn.length,
-				countsIn[0].length, title);
-		initCounts(countsIn);
-	}
-
-	/**
 	 * Create a new 2-d histogram with counts known (must be square histogram)
 	 * and with the axis label given.
 	 * 
@@ -58,10 +36,10 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @param countsIn
 	 *            array of counts to initialize with
 	 */
-	HistInt2D(String title, String axisLabelX,
-			String axisLabelY, int[][] countsIn) {
-		super(Type.TWO_DIM_INT, countsIn.length,
-				countsIn[0].length, title, axisLabelX, axisLabelY);
+	HistInt2D(String title, String axisLabelX, String axisLabelY,
+			int[][] countsIn) {
+		super(Type.TWO_DIM_INT, countsIn.length, countsIn[0].length, title,
+				axisLabelX, axisLabelY);
 		initCounts(countsIn);
 	}
 
@@ -83,6 +61,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 *            y-channel that we are interested in
 	 * @return number of counts
 	 */
+	@Override
 	public double getCounts(final int chX, final int chY) {
 		return counts2d[chX][chY];
 	}
@@ -98,6 +77,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 *            to be in the channel, rounded to <code>int</code>, if
 	 *            necessary
 	 */
+	@Override
 	public void setCounts(final int chX, final int chY, final double counts) {
 		counts2d[chX][chY] = (int) Math.round(counts);
 	}
@@ -107,6 +87,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 * 
 	 * @see jam.data.Histogram#clearCounts()
 	 */
+	@Override
 	void clearCounts() {
 		synchronized (this) {
 			counts2d = EMPTY;
@@ -131,6 +112,7 @@ public final class HistInt2D extends AbstractHist2D {
 		}
 	}
 
+	@Override
 	public double getCount() {
 		return getArea();
 	}
@@ -138,6 +120,7 @@ public final class HistInt2D extends AbstractHist2D {
 	/**
 	 * Zeroes all the counts in this histogram.
 	 */
+	@Override
 	public void setZero() {
 		final int size = getSizeX();
 		for (int i = 0; i < size; i++) {
@@ -153,6 +136,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @throws IllegalArgumentException
 	 *             if countsIn is the wrong type.
 	 */
+	@Override
 	public void setCounts(final Object countsIn) {
 		final Type givenType = Type.getArrayType(countsIn);
 		final Type expectedType = getType();
@@ -172,6 +156,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @throws IllegalArgumentException
 	 *             if the parameter is the wrong type
 	 */
+	@Override
 	public void addCounts(final Object countsIn) {
 		if (Type.getArrayType(countsIn) != getType()) {
 			throw new IllegalArgumentException("Expected array for type "
@@ -185,6 +170,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 * 
 	 * @return area under the counts in the histogram
 	 */
+	@Override
 	public double getArea() {
 		final int size = getSizeX();
 		double sum = 0.0;

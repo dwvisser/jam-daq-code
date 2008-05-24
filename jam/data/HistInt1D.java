@@ -18,27 +18,6 @@ public final class HistInt1D extends AbstractHist1D {
 	private int counts[]; // array to hold counts for 1d int
 
 	/**
-	 * Given an array of counts, create a new 1-d <code>Histogram</code> and
-	 * give it a number.
-	 * 
-	 * @param name
-	 *            unique name of histogram, should be limited to
-	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
-	 *            .hdf files as the unique identifier for reloading the
-	 *            histogram
-	 * @param title
-	 *            lengthier title of histogram, displayed on plot
-	 * @param countsIn
-	 *            array of counts to initialize with
-	 * @param group
-	 *            that this histogram belongs to
-	 */
-	HistInt1D(String title, int[] countsIn) {
-		super(Type.ONE_DIM_INT, countsIn.length, title);
-		initCounts(countsIn);
-	}
-
-	/**
 	 * Create a new 1-d <code>Histogram</code> with the counts known and with
 	 * axes labeled.
 	 * 
@@ -58,7 +37,8 @@ public final class HistInt1D extends AbstractHist1D {
 	 * @param group
 	 *            that this histogram belongs to
 	 */
-	HistInt1D(String title, String axisLabelX, String axisLabelY, int[] countsIn) {
+	HistInt1D(final String title, final String axisLabelX,
+			final String axisLabelY, final int[] countsIn) {
 		super(Type.ONE_DIM_INT, countsIn.length, title, axisLabelX, axisLabelY);
 		initCounts(countsIn);
 	}
@@ -71,6 +51,7 @@ public final class HistInt1D extends AbstractHist1D {
 	 * @throws IllegalArgumentException
 	 *             if the parameter is the wrong type
 	 */
+	@Override
 	public void addCounts(final Object add) {
 		if (Type.getArrayType(add) != getType()) {
 			throw new IllegalArgumentException("Expected array for type "
@@ -89,6 +70,7 @@ public final class HistInt1D extends AbstractHist1D {
 		}
 	}
 
+	@Override
 	void clearCounts() {
 		synchronized (this) {
 			counts = EMPTY_INT;
@@ -104,6 +86,7 @@ public final class HistInt1D extends AbstractHist1D {
 	 * 
 	 * @return area under the counts in the histogram
 	 */
+	@Override
 	public double getArea() {
 		synchronized (this) {
 			final int size = getSizeX();
@@ -115,6 +98,7 @@ public final class HistInt1D extends AbstractHist1D {
 		}
 	}
 
+	@Override
 	public double getCount() {
 		return getArea();
 	}
@@ -131,6 +115,7 @@ public final class HistInt1D extends AbstractHist1D {
 		}
 	}
 
+	@Override
 	protected void getCounts(final double[] array) {
 		synchronized (this) {
 			final int max = Math.min(array.length, counts.length);
@@ -147,6 +132,7 @@ public final class HistInt1D extends AbstractHist1D {
 	 *            that we are interested in
 	 * @return number of counts
 	 */
+	@Override
 	public double getCounts(final int channel) {
 		synchronized (this) {
 			return counts[channel];
@@ -158,6 +144,7 @@ public final class HistInt1D extends AbstractHist1D {
 	 * 
 	 * @return 1-sigma error bars
 	 */
+	@Override
 	public double[] getErrors() {
 		synchronized (this) {
 			final int length = counts.length;
@@ -214,6 +201,7 @@ public final class HistInt1D extends AbstractHist1D {
 	 *            to be in the channel, rounded to <code>int</code>, if
 	 *            necessary
 	 */
+	@Override
 	public void setCounts(final int channel, final double count) {
 		synchronized (this) {
 			counts[channel] = (int) Math.round(count);
@@ -228,6 +216,7 @@ public final class HistInt1D extends AbstractHist1D {
 	 * @throws IllegalArgumentException
 	 *             if countsIn is the wrong type.
 	 */
+	@Override
 	public void setCounts(final Object countsIn) {
 		if (Type.getArrayType(countsIn) != getType()) {
 			throw new IllegalArgumentException("Expected array for type "
@@ -243,6 +232,7 @@ public final class HistInt1D extends AbstractHist1D {
 	/**
 	 * Zeroes all the counts in this histogram.
 	 */
+	@Override
 	public void setZero() {
 		synchronized (this) {
 			Arrays.fill(counts, 0);

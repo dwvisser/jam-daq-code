@@ -17,6 +17,17 @@ public final class Peak extends Object implements Comparable<Peak>, Cloneable {
 
 	private static final String PLUSMINUS = " +/- ";
 
+	/**
+	 * Peak factory method.
+	 * 
+	 * @param position
+	 *            of centroid
+	 * @param area
+	 *            of peak
+	 * @param width
+	 *            FWHM of peak
+	 * @return a new Peak object
+	 */
 	public static Peak createPeak(final double position, final double area,
 			final double width) {
 		return new Peak(position, area, width);
@@ -64,6 +75,7 @@ public final class Peak extends Object implements Comparable<Peak>, Cloneable {
 		setWidth(wid, widErr);
 	}
 
+	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		final Peak rval = (Peak) super.clone();
 		rval.setPosition(position, perr);
@@ -76,6 +88,7 @@ public final class Peak extends Object implements Comparable<Peak>, Cloneable {
 		return (int) Math.signum(getPosition() - other.getPosition());
 	}
 
+	@Override
 	public boolean equals(final Object object) {
 		boolean rval = false;
 		if (object instanceof Peak) {
@@ -85,30 +98,31 @@ public final class Peak extends Object implements Comparable<Peak>, Cloneable {
 		return rval;
 	}
 
-	double getArea() {
+	double getArea() {// NOPMD
 		return area;
 	}
 
 	/**
 	 * @return centroid of peak
 	 */
-	double getPosition() {
+	double getPosition() {// NOPMD
 		return position;
 	}
 
-	double getWidth() {
+	double getWidth() {// NOPMD
 		return width;
 	}
 
+	@Override
 	public int hashCode() {
 		return Double.valueOf(getPosition()).hashCode();
 	}
 
-	Peak offset(final double correction) {
+	Peak offset(final double correction) {// NOPMD
 		return new Peak(position + correction, perr, area, aerr, width, werr);
 	}
 
-	void setArea(final double... intensity) {
+	void setArea(final double... intensity) {// NOPMD
 		final int len = intensity.length;
 		if (len > 0) {
 			area = intensity[0];
@@ -128,6 +142,7 @@ public final class Peak extends Object implements Comparable<Peak>, Cloneable {
 		werr = widErr;
 	}
 
+	@Override
 	public String toString() {
 		final StringBuilder rval = new StringBuilder(58);
 		rval.append(PEAK_POSITION);

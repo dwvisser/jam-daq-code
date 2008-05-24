@@ -10,35 +10,13 @@ import java.util.Arrays;
  */
 public final class HistDouble2D extends AbstractHist2D {
 
-	/* array to hold counds for 2d double */
+	/* array to hold counts for 2d double */
 	private transient double[][] counts2dD;
 
-	/**
-	 * Create a new 2-d histogram with counts known and automatically give it a
-	 * number
-	 * 
-	 * @param name
-	 *            unique name of histogram, should be limited to
-	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
-	 *            .hdf files as the unique identifier for reloading the
-	 *            histogram
-	 * @param title
-	 *            lengthier title of histogram, displayed on plot
-	 * @param countsIn
-	 *            array of counts to initialize with, must be square
-	 * @param group
-	 *            that this histogram belongs to
-	 */
-	HistDouble2D(String title, double[][] countsIn) {
-		super(Type.TWO_D_DOUBLE, countsIn.length,
-				countsIn[0].length, title);
-		initCounts(countsIn);
-	}
-
-	HistDouble2D(String title, String axisLabelX,
-			String axisLabelY, double[][] countsIn) {
-		super(Type.TWO_D_DOUBLE, countsIn.length,
-				countsIn[0].length, title, axisLabelX, axisLabelY);
+	HistDouble2D(final String title, final String axisLabelX,
+			final String axisLabelY, final double[][] countsIn) {
+		super(Type.TWO_D_DOUBLE, countsIn.length, countsIn[0].length, title,
+				axisLabelX, axisLabelY);
 		initCounts(countsIn);
 	}
 
@@ -47,6 +25,7 @@ public final class HistDouble2D extends AbstractHist2D {
 	 * 
 	 * @see jam.data.Histogram#addCounts(java.lang.Object)
 	 */
+	@Override
 	public void addCounts(final Object countsIn) {
 		if (Type.getArrayType(countsIn) != getType()) {
 			throw new IllegalArgumentException("Expected array for type "
@@ -79,6 +58,7 @@ public final class HistDouble2D extends AbstractHist2D {
 	 * 
 	 * @see jam.data.Histogram#clearCounts()
 	 */
+	@Override
 	void clearCounts() {
 		synchronized (this) {
 			counts2dD = EMPTY;
@@ -91,6 +71,7 @@ public final class HistDouble2D extends AbstractHist2D {
 	 * 
 	 * @see jam.data.Histogram#getArea()
 	 */
+	@Override
 	public double getArea() {
 		final int size = getSizeX();
 		double sum = 0.0;
@@ -103,6 +84,7 @@ public final class HistDouble2D extends AbstractHist2D {
 		return sum;
 	}
 
+	@Override
 	public double getCount() {
 		return getArea();
 	}
@@ -126,6 +108,7 @@ public final class HistDouble2D extends AbstractHist2D {
 	 * 
 	 * @see jam.data.AbstractHist2D#getCounts(int, int)
 	 */
+	@Override
 	public double getCounts(final int chX, final int chY) {
 		return counts2dD[chX][chY];
 	}
@@ -143,6 +126,7 @@ public final class HistDouble2D extends AbstractHist2D {
 	 * 
 	 * @see jam.data.AbstractHist2D#setCounts(int, int, double)
 	 */
+	@Override
 	public void setCounts(final int chX, final int chY, final double counts) {
 		counts2dD[chX][chY] = counts;
 	}
@@ -152,6 +136,7 @@ public final class HistDouble2D extends AbstractHist2D {
 	 * 
 	 * @see jam.data.Histogram#setCounts(java.lang.Object)
 	 */
+	@Override
 	public void setCounts(final Object countsIn) {
 		if (Type.getArrayType(countsIn) != getType()) {
 			throw new IllegalArgumentException("Expected array for type "
@@ -175,6 +160,7 @@ public final class HistDouble2D extends AbstractHist2D {
 	 * 
 	 * @see jam.data.Histogram#setZero()
 	 */
+	@Override
 	public void setZero() {
 		final int size = getSizeX();
 		for (int i = 0; i < size; i++) {

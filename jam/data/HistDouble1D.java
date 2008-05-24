@@ -14,29 +14,8 @@ public final class HistDouble1D extends AbstractHist1D {
 
 	private transient double[] countsDouble;
 
-	/**
-	 * Given an array of counts, create a new 1-d <code>Histogram</code> and
-	 * give it a number.
-	 * 
-	 * @param group
-	 *            for this histogram to belong to
-	 * @param name
-	 *            unique name of histogram, should be limited to
-	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
-	 *            .hdf files as the unique identifier for reloading the
-	 *            histogram
-	 * @param title
-	 *            lengthier title of histogram, displayed on plot
-	 * @param countsIn
-	 *            array of counts to initialize with
-	 */
-	HistDouble1D(String title, double[] countsIn) {
-		super(Type.ONE_D_DOUBLE, countsIn.length, title);
-		initCounts(countsIn);
-	}
-
-	HistDouble1D(String title, String axisLabelX, String axisLabelY,
-			double[] countsIn) {
+	HistDouble1D(final String title, final String axisLabelX,
+			final String axisLabelY, final double[] countsIn) {
 		super(Type.ONE_D_DOUBLE, countsIn.length, title, axisLabelX, axisLabelY);
 		initCounts(countsIn);
 	}
@@ -51,6 +30,7 @@ public final class HistDouble1D extends AbstractHist1D {
 	 * 
 	 * @see jam.data.AbstractHist1D#getCounts(int)
 	 */
+	@Override
 	public double getCounts(final int channel) {
 		synchronized (this) {
 			return countsDouble[channel];
@@ -62,6 +42,7 @@ public final class HistDouble1D extends AbstractHist1D {
 	 * 
 	 * @see jam.data.AbstractHist1D#setCounts(int, double)
 	 */
+	@Override
 	public void setCounts(final int channel, final double counts) {
 		synchronized (this) {
 			countsDouble[channel] = counts;
@@ -73,6 +54,7 @@ public final class HistDouble1D extends AbstractHist1D {
 	 * 
 	 * @see jam.data.AbstractHist1D#getErrors()
 	 */
+	@Override
 	public double[] getErrors() {
 		synchronized (this) {
 			final int length = countsDouble.length;
@@ -98,6 +80,7 @@ public final class HistDouble1D extends AbstractHist1D {
 	 * 
 	 * @see jam.data.Histogram#clearCounts()
 	 */
+	@Override
 	void clearCounts() {
 		synchronized (this) {
 			countsDouble = EMPTY;
@@ -117,6 +100,7 @@ public final class HistDouble1D extends AbstractHist1D {
 		}
 	}
 
+	@Override
 	protected void getCounts(final double[] array) {
 		synchronized (this) {
 			final int max = Math.min(countsDouble.length, array.length);
@@ -124,6 +108,7 @@ public final class HistDouble1D extends AbstractHist1D {
 		}
 	}
 
+	@Override
 	public double getCount() {
 		return getArea();
 	}
@@ -133,6 +118,7 @@ public final class HistDouble1D extends AbstractHist1D {
 	 * 
 	 * @see jam.data.Histogram#setZero()
 	 */
+	@Override
 	public void setZero() {
 		Arrays.fill(countsDouble, 0);
 		unsetErrors();
@@ -143,6 +129,7 @@ public final class HistDouble1D extends AbstractHist1D {
 	 * 
 	 * @see jam.data.Histogram#setCounts(java.lang.Object)
 	 */
+	@Override
 	public void setCounts(final Object countsIn) {
 		if (Type.getArrayType(countsIn) != getType()) {
 			throw new IllegalArgumentException("Expected array for type "
@@ -158,6 +145,7 @@ public final class HistDouble1D extends AbstractHist1D {
 	 * 
 	 * @see jam.data.Histogram#addCounts(java.lang.Object)
 	 */
+	@Override
 	public void addCounts(final Object countsIn) {
 		if (Type.getArrayType(countsIn) != getType()) {
 			throw new IllegalArgumentException("Expected array for type "
@@ -181,6 +169,7 @@ public final class HistDouble1D extends AbstractHist1D {
 	 * 
 	 * @see jam.data.Histogram#getArea()
 	 */
+	@Override
 	public double getArea() {
 		final int size = getSizeX();
 		double sum = 0.0;
