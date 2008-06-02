@@ -1,8 +1,10 @@
 package test.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import jam.data.DataBase;
 import jam.data.Gate;
 import jam.data.Group;
@@ -11,6 +13,7 @@ import jam.data.HistDouble2D;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
 import jam.data.Histogram;
+import jam.data.func.LinearFunction;
 import junit.framework.TestCase;
 
 import org.junit.After;
@@ -25,7 +28,7 @@ import org.junit.Test;
  */
 public final class HistogramTest {// NOPMD
 
-	private static final String TEST_HISTOGRAM_GROUP = "TestHistogramGroup";
+	private static final String GROUP_NAME = "TestHistogramGroup";
 
 	private transient Gate gate1, gate2;
 
@@ -37,9 +40,11 @@ public final class HistogramTest {// NOPMD
 
 	private transient final HistDouble2D hist2f;
 
+	/**
+	 * Create a new instance of this test class.
+	 */
 	public HistogramTest() {
-		final Group group = Group.createGroup(TEST_HISTOGRAM_GROUP,
-				Group.Type.FILE);
+		final Group group = Group.createGroup(GROUP_NAME, Group.Type.FILE);
 		hist1 = (HistInt1D) group.createHistogram(new int[100], "h1");
 		hist1f = (HistDouble1D) group.createHistogram(new double[100], "h1f");
 		hist2 = (HistInt2D) group.createHistogram(new int[100][100], "h2");
@@ -53,7 +58,7 @@ public final class HistogramTest {// NOPMD
 	 * @see TestCase#setUp()
 	 */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		for (int i = 0; i < hist1.getSizeX(); i++) {
 			hist1.setCounts(i, i);
 			hist1f.setCounts(i, i);
@@ -68,6 +73,9 @@ public final class HistogramTest {// NOPMD
 		gate2 = new Gate("g2", hist2);
 	}
 
+	/**
+	 * Clean up after tests.
+	 */
 	@After
 	public void tearDown() {
 		DataBase.getInstance().clearAllLists();
@@ -94,6 +102,12 @@ public final class HistogramTest {// NOPMD
 		final double area2fbefore = hist2f.getArea();
 		hist2f.addCounts(hist2f.getCounts());
 		assertAreaDoubled(hist2f, area2fbefore);
+		assertFalse("Expected no errors to be set.", hist1.hasErrorsSet());
+		hist1.setErrors(new double[100]);
+		assertTrue("Expected errors to be set.", hist1.hasErrorsSet());
+		assertFalse("Expected no calibration.", hist1.isCalibrated());
+		hist1.setCalibration(new LinearFunction());
+		assertTrue("Expected calibration.", hist1.isCalibrated());
 	}
 
 	/**
@@ -151,13 +165,15 @@ public final class HistogramTest {// NOPMD
 
 	private void assertHasGate(final boolean hasGate,
 			final Histogram histogram, final Gate gate) {
-		String message = "Expected " + histogram.getName() + " to ";
+		final StringBuilder message = new StringBuilder(52);
+		message.append("Expected ");
+		message.append(histogram.getName()).append(" to ");
 		if (!hasGate) {
-			message = message + "not ";
+			message.append("not ");
 		}
-		message = message + "have gate " + gate.getName();
-		assertEquals(message, hasGate, histogram.getGateCollection().hasGate(
-				gate));
+		message.append("have gate ").append(gate.getName());
+		assertEquals(message.toString(), hasGate, histogram.getGateCollection()
+				.hasGate(gate));
 	}
 
 }
