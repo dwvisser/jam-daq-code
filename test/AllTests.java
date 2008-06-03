@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 
 import test.data.GateTest;
 import test.data.HistogramTest;
+import test.data.ParameterTest;
 import test.data.func.CubicFunctionTest;
 import test.data.peaks.PeakTest;
 import test.global.JamPropertiesTest;
@@ -21,8 +22,9 @@ import test.sort.SortOnlineTest;
  * @author Dale Visser
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( { GateTest.class, HistogramTest.class, PeakTest.class,
-		ImpExpASCIITest.class, GainCalibrationTest.class, RingBufferTest.class,
+@Suite.SuiteClasses( { GateTest.class, HistogramTest.class,
+		ParameterTest.class, PeakTest.class, ImpExpASCIITest.class,
+		GainCalibrationTest.class, RingBufferTest.class,
 		CubicFunctionTest.class, JamPropertiesTest.class,
 		SortOfflineTest.class, SortOnlineTest.class, OnlineScalerTest.class })
 public class AllTests {// NOPMD

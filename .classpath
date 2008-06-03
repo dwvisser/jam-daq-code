@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="lib" path="jh.jar"/>
 	<classpathentry kind="lib" path="junit-4.3.1.jar"/>
-	<classpathentry kind="lib" path="C:/Documents and Settings/Dale/My Documents/infinitest-3.0/infinitest.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/jre1.6.0_05/lib/rt.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
