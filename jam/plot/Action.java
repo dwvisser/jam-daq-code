@@ -22,7 +22,7 @@ import static jam.plot.PlotCommands.ZOOMIN;
 import static jam.plot.PlotCommands.ZOOMOUT;
 import static jam.plot.PlotCommands.ZOOMVERT;
 import jam.data.AbstractHist1D;
-import jam.data.Group;
+import jam.data.DataUtility;
 import jam.data.Histogram;
 import jam.data.peaks.GaussianConstants;
 import jam.global.BroadcastEvent;
@@ -304,9 +304,11 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 		synchronized (cursorBin) {
 			xch = cursorBin.getX();
 			ych = cursorBin.getY();
-			// Bins can be made by keyboard input too, so checking for good values
+			// Bins can be made by keyboard input too, so checking for good
+			// values
 			// here.
-			if (xch<0 || xch >= hist.getSizeX() || ych<0 || ych>= hist.getSizeY()){
+			if (xch < 0 || xch >= hist.getSizeX() || ych < 0
+					|| ych >= hist.getSizeY()) {
 				return;
 			}
 			count = getCounts(cursorBin);
@@ -350,7 +352,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			} else {
 				final JamStatus status = JamStatus.getSingletonInstance();
 				SelectionTree.setCurrentHistogram(histogram);
-				status.setCurrentGroup(Group.getGroup(histogram));
+				status.setCurrentGroup(DataUtility.getGroup(histogram));
 				textOut.messageOut(Integer.toString(num) + " ",
 						MessageHandler.END);
 				plotAccessor.getPlotContainer().removeOverlays();

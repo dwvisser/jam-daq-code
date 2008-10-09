@@ -28,8 +28,11 @@ public final class GainCalibration {
 	private transient final Map<Integer, Double> offsets = new HashMap<Integer, Double>();
 
 	private transient boolean suppress = false;
-	
-	public GainCalibration(){//NOPMD
+
+	/**
+	 * Creates a new gain calibration.
+	 */
+	public GainCalibration() {// NOPMD
 		super();
 	}
 
@@ -134,7 +137,7 @@ public final class GainCalibration {
 	private int getNumberOfRows(final InputStream input) throws IOException {
 		final LineNumberReader lnr = new LineNumberReader(
 				new InputStreamReader(input));
-		lnr.setLineNumber(1);//start counting at 1
+		lnr.setLineNumber(1);// start counting at 1
 		// read in header lines, header are lines that start with a non-number
 		// token
 		final CharBuffer buffer = CharBuffer.allocate(input.available());

@@ -222,24 +222,6 @@ public abstract class Histogram implements DataElement {
 	}
 
 	/**
-	 * Remove the histogram with the given name from memory.
-	 * 
-	 * @param histName
-	 *            name of histogram to remove
-	 */
-	static void deleteHistogram(final Histogram histogram) {
-		if (histogram != null) {
-			histogram.clearInfo();
-			LIST.remove(histogram);
-			NAME_MAP.remove(histogram.getFullName());
-			NUMBER_MAP.remove(histogram.getNumber());
-			for (List<Histogram> list : DIM_LIST) {
-				list.clear();
-			}
-		}
-	}
-
-	/**
 	 * Get the histogram with the given number.
 	 * 
 	 * @param num
@@ -523,7 +505,7 @@ public abstract class Histogram implements DataElement {
 	 * Adds the given counts to this histogram.
 	 * 
 	 * @param countsIn
-	 *            1d or 2d array of <code>int</code>'s or <code>double</code>
+	 *            1d or 2d array of <code>int</code>'s or <code>double</code> 
 	 *            's, according to this histogram's type
 	 * @throws IllegalArgumentException
 	 *             if the parameter is the wrong type
@@ -562,10 +544,8 @@ public abstract class Histogram implements DataElement {
 	 * <ul>
 	 * <li><code>ONE_DIM_INT</code> cast with <code>(int [])</code></li>
 	 * <li><code>TWO_DIM_INT</code> cast with <code>(int [][])</code></li>
-	 * <li><code>ONE_DIM_DOUBLE</code> cast with <code>(double [])</code>
-	 * </li>
-	 * <li><code>TWO_DIM_DOUBLE</code> cast with <code>(double [][])</code>
-	 * </li>
+	 * <li><code>ONE_DIM_DOUBLE</code> cast with <code>(double [])</code></li>
+	 * <li><code>TWO_DIM_DOUBLE</code> cast with <code>(double [][])</code></li>
 	 * </ul>
 	 * 
 	 * @return <code>Object</code> which must be cast as indicated above
@@ -696,6 +676,9 @@ public abstract class Histogram implements DataElement {
 		}
 	}
 
+	/**
+	 * @return the gates associated with this histogram
+	 */
 	public GateCollection getGateCollection() {
 		return this.gates;
 	}
@@ -705,8 +688,7 @@ public abstract class Histogram implements DataElement {
 	 * <code>double</code> array.
 	 * 
 	 * @param countsIn
-	 *            1d or 2d array of <code>int</code>'s or <code>double</code>
-	 *            's
+	 *            1d or 2d array of <code>int</code>'s or <code>double</code> 's
 	 * @throws IllegalArgumentException
 	 *             if countsIn is the wrong type.
 	 */
@@ -785,5 +767,18 @@ public abstract class Histogram implements DataElement {
 		NAME_MAP.remove(uniqueName);
 		uniqueName = stringUtil.makeFullName(groupName, name);
 		NAME_MAP.put(uniqueName, this);
+	}
+
+	/**
+	 * Clear this histogram's data and delete it from all lists that refer to
+	 * it.
+	 */
+	public void delete() {
+		clearInfo();
+		LIST.remove(this);
+		NAME_MAP.remove(getFullName());
+		NUMBER_MAP.remove(getNumber());
+		final List<Histogram> dimList = DIM_LIST.get(getDimensionality() - 1);
+		dimList.remove(this);
 	}
 }

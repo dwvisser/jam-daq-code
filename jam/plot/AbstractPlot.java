@@ -5,9 +5,9 @@ import static jam.plot.PlotPrefs.AUTO_IGNORE_ZERO;
 import static jam.plot.PlotPrefs.BLACK_BACKGROUND;
 import static jam.plot.PlotPrefs.HIGHLIGHT_GATE;
 import static jam.plot.PlotPrefs.PREFS;
-import static jam.plot.common.Constants.BOTTOM;
-import static jam.plot.common.Constants.LEFT;
-import static jam.plot.common.Constants.TOP;
+import static javax.swing.SwingConstants.BOTTOM;
+import static javax.swing.SwingConstants.LEFT;
+import static javax.swing.SwingConstants.TOP;
 import jam.data.AbstractHist1D;
 import jam.data.Dimensional;
 import jam.data.Gate;
@@ -351,7 +351,6 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 
 	/*
 	 * non-javadoc: Plot has a valid histogram
-	 * 
 	 */
 	boolean hasHistogram() {
 		return plotHistNum >= 0;

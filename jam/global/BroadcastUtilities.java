@@ -2,12 +2,20 @@ package jam.global;
 
 import java.util.logging.Logger;
 
+/**
+ * Global utility methods for broadcasting messages.
+ * 
+ * @author Dale Visser
+ * 
+ */
 public class BroadcastUtilities {
-	
-	private static final Broadcaster INSTANCE = Broadcaster.getSingletonInstance();
-	
-	private static final Logger LOGGER = Logger.getLogger(BroadcastUtilities.class
-			.getPackage().getName());
+
+	private static final Broadcaster INSTANCE = Broadcaster
+			.getSingletonInstance();
+
+	private static final Logger LOGGER = Logger
+			.getLogger(BroadcastUtilities.class.getPackage().getName());
+
 	/**
 	 * Does the scaler zeroing.
 	 */
@@ -20,7 +28,7 @@ public class BroadcastUtilities {
 		}
 	}
 
-	private BroadcastUtilities(){
+	private BroadcastUtilities() {
 		// Only static methods, so suppress creation of instances.
 	}
 

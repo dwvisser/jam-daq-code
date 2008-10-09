@@ -239,12 +239,13 @@ public final class ScalerScan {
 	 * @param firstRun
 	 * @param index
 	 * @param infile
-	 * @return
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws HDFException
 	 */
-	private void processFile(final char carriage, final StringBuffer outText, final int firstRun, final int index, final File infile) throws FileNotFoundException, IOException, HDFException {
+	private void processFile(final char carriage, final StringBuffer outText,
+			final int firstRun, final int index, final File infile)
+			throws FileNotFoundException, IOException, HDFException {
 		updateProgressBar("Processing " + infile.getName(), index);
 		final HDFile inHDF = new HDFile(infile, "r");// NOPMD
 		inHDF.seek(0);

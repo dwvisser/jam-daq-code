@@ -29,6 +29,9 @@ public class OnlineTestCommon {
 	 */
 	public static Script script = new Script();
 
+	/**
+	 * GUI mock front end application.
+	 */
 	public static TestFrontEnd testFrontEnd = new TestFrontEnd();
 
 	private static Future<?> createSetupOnlineFuture(final String sortName,

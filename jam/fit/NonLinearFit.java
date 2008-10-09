@@ -1,5 +1,11 @@
 package jam.fit;
 
+/**
+ * Interface for non-linear fit algorithms.
+ * 
+ * @author Dale Visser
+ * 
+ */
 public interface NonLinearFit extends Fit {
 
 	/**
@@ -18,9 +24,16 @@ public interface NonLinearFit extends Fit {
 	 * @param parameterName
 	 *            the name of the parameter to differentiate with respect to
 	 * @param xValue
-	 *            value to evalueate at
+	 *            value to evaluate at
 	 * @return df(<code>x</code>)/d(<code>parameterName</code>) at x
 	 */
 	double derivative(double xValue, String parameterName);
+
+	/**
+	 * @param which
+	 *            parameter to set
+	 * @param value
+	 *            value to set
+	 */
 	void setParameter(final String which, final double value);
 }

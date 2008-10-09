@@ -4,8 +4,8 @@ import static jam.plot.PlotPrefs.DISPLAY_LABELS;
 import static jam.plot.PlotPrefs.ENABLE_SCROLLING;
 import static jam.plot.PlotPrefs.PREFS;
 import jam.data.AbstractHist1D;
+import jam.data.DataUtility;
 import jam.data.Gate;
-import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -78,6 +78,8 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * 
 	 * @param console
 	 *            the class to call to print out messages
+	 * @param finder
+	 *            finds commands
 	 */
 	public PlotDisplay(final Console console, final CommandFinder finder) {
 		super();
@@ -92,7 +94,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		/* Initial view only 1 plot */
 		setView(View.SINGLE);
 	}
-	
+
 	private static final Object DISPLAY_LOCK = new Object();
 
 	private static PlotDisplay display;
@@ -253,7 +255,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			/* Tell the framework the current hist */
 			SelectionTree.setCurrentHistogram(hist);
 			if (hist != null) {
-				status.setCurrentGroup(Group.getGroup(hist));
+				status.setCurrentGroup(DataUtility.getGroup(hist));
 			}
 			SelectionTree.setCurrentGate(null);
 			status.clearOverlays();
@@ -359,7 +361,8 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	/**
 	 * Prepare to print to a page.
 	 * 
-	 * @param rfp ??
+	 * @param rfp
+	 *            ??
 	 * @param format
 	 *            page layout
 	 */
@@ -398,7 +401,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		}
 		updateLayout();
 		// Default set to first plot
-		currentPlot = null;//NOPMD
+		currentPlot = null;// NOPMD
 		plotContainer = plotContainers.get(0);
 		plotSelected(plotContainer);
 	}
@@ -416,7 +419,8 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	/**
 	 * Implementation of Observable interface to receive broadcast events.
 	 * 
-	 * @param observable ??
+	 * @param observable
+	 *            ??
 	 * @param object
 	 *            the message
 	 */
@@ -445,7 +449,8 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 				final Histogram hist = (Histogram) named;
 				displayHistogram(hist);
 				final List<AbstractHist1D> overHists = Histogram
-						.getHistogramList(status.getOverlayHistograms(), AbstractHist1D.class);
+						.getHistogramList(status.getOverlayHistograms(),
+								AbstractHist1D.class);
 				overlayHistogram(overHists);
 			}
 		} else if (command == Command.GATE_SET_ON) {

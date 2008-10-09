@@ -81,7 +81,6 @@ public final class RingBufferTest {// NOPMD
 	}
 
 	/**
-	 * @throws InterruptedException
 	 * @returns last buffer inserted
 	 */
 	private byte[] fillEmptyRingBuffer(final RingBuffer ringbuffer,
@@ -110,12 +109,18 @@ public final class RingBufferTest {// NOPMD
 		}
 	}
 
+	/**
+	 * Set up the test.
+	 */
 	@Before
 	public void setUp() {
 		ring = new RingBuffer();
 		emptyRing = new RingBuffer(true);
 	}
 
+	/**
+	 * Test bringing the buffer close to full.
+	 */
 	@Test
 	public void testCloseToFull() {
 		this.clear(ring);
@@ -124,6 +129,9 @@ public final class RingBufferTest {// NOPMD
 		assertTrue("Expected buffer to be close to full.", ring.isCloseToFull());
 	}
 
+	/**
+	 * Test getting the number of available buffers.
+	 */
 	@Test
 	public void testGetAvailableBuffers() {
 		assertEquals("Expected all buffers to be available.",
@@ -157,6 +165,9 @@ public final class RingBufferTest {// NOPMD
 	/**
 	 * Test for <code>putBuffer()</code>.
 	 * 
+	 * @throws InterruptedException
+	 *             if a get buffer operation fails
+	 * 
 	 * @see RingBuffer#tryPutBuffer(byte [])
 	 */
 	@Test
@@ -184,6 +195,9 @@ public final class RingBufferTest {// NOPMD
 		putBuffer(ring, buffer, false);
 	}
 
+	/**
+	 * Tests that get waits on put successfully.
+	 */
 	@Test
 	public void testGetWaitingOnPut() {
 		ring.clear();

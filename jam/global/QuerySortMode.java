@@ -1,5 +1,11 @@
 package jam.global;
 
+/**
+ * Interface to determine if and what type of sort mode the application is in.
+ * 
+ * @author Dale Visser
+ * 
+ */
 public interface QuerySortMode {
 
 	/**
@@ -14,5 +20,5 @@ public interface QuerySortMode {
 	 * 
 	 * @return whether this mode represents online data acquisition
 	 */
-	 boolean isOnline();
+	boolean isOnline();
 }

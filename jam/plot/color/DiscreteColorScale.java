@@ -1,7 +1,7 @@
 package jam.plot.color;
 
-import jam.plot.common.Constants;
 import jam.plot.common.Scale;
+import jam.plot.common.ScaleCalculator;
 
 import java.awt.Color;
 
@@ -170,25 +170,11 @@ public class DiscreteColorScale implements ColorScale {
 	 * non-javadoc: The step in threshold for colors for 2d plot
 	 */
 	private int thresholdStep(final int lowerLimit, final int upperLimit) {
-		final int numberColors = colors.length;
 		/* make display range 10% less than total range */
 		final int range = 100 * (upperLimit - lowerLimit) / 120;
-		int colorStep = 1;
-		for (int i = 1; i < Constants.MAXIMUM_COUNTS; i *= 10) {
-			colorStep = i;
-			if ((colorStep * numberColors) >= range) {
-				break;
-			}
-			colorStep = i * 2;
-			if ((colorStep * numberColors) >= range) {
-				break;
-			}
-			colorStep = i * 5;
-			if ((colorStep * numberColors) >= range) {
-				break;
-			}
-		}
-		return colorStep;
+		final ScaleCalculator calculator = new ScaleCalculator(range,
+				colors.length);
+		return calculator.compute(lowerLimit, upperLimit);
 	}
 
 	/*

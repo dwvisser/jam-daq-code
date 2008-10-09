@@ -1,5 +1,6 @@
 package jam.data;
 
+import jam.global.Nameable;
 import jam.util.StringUtilities;
 
 import java.awt.Polygon;
@@ -20,7 +21,7 @@ import java.util.TreeSet;
  * @version 0.5
  * @since JDK 1.1
  */
-public final class Gate implements DimensionalData {
+public final class Gate implements DataElement {
 
 	private static final List<List<Gate>> DIM_LIST = new ArrayList<List<Gate>>();
 
@@ -153,8 +154,8 @@ public final class Gate implements DimensionalData {
 
 	/**
 	 * Constructs a new gate with the given name, and belonging to the given
-	 * <code>Histogram</code>. Names will be adjusted to 12 characters if
-	 * they aren't that length already.
+	 * <code>Histogram</code>. Names will be adjusted to 12 characters if they
+	 * aren't that length already.
 	 * 
 	 * @param nameIn
 	 *            name of the gate which will be put on the chooser in the
@@ -168,7 +169,7 @@ public final class Gate implements DimensionalData {
 		histUniqueName = hist.getFullName();
 		// Set of names of gates for histogram this gate belongs to
 		final Set<String> gateNames = new TreeSet<String>();
-		for (DimensionalData gate : hist.getGateCollection().getGates()) {
+		for (Nameable gate : hist.getGateCollection().getGates()) {
 			gateNames.add(gate.getName());
 		}
 		this.name = stringUtil.makeUniqueName(nameIn, gateNames, NAME_LENGTH);
@@ -309,8 +310,8 @@ public final class Gate implements DimensionalData {
 	}
 
 	/**
-	 * Returns the dimensionality of this <code>Gate</code>, which is the
-	 * same as its associated <code>Histogram</code>.
+	 * Returns the dimensionality of this <code>Gate</code>, which is the same
+	 * as its associated <code>Histogram</code>.
 	 * 
 	 * @return either 1 or 2
 	 * @see Histogram#getDimensionality()
@@ -366,11 +367,11 @@ public final class Gate implements DimensionalData {
 
 	/**
 	 * Returns the limits for the <code>Gate</code> of type
-	 * <code>TWO_DIMENSION</code>, actually a boolean array to quickly mask
-	 * when sorting.
+	 * <code>TWO_DIMENSION</code>, actually a boolean array to quickly mask when
+	 * sorting.
 	 * 
-	 * @return a 2-d array of <code>boolean</code>'s which are true for
-	 *         channels inside the gate
+	 * @return a 2-d array of <code>boolean</code>'s which are true for channels
+	 *         inside the gate
 	 * @throws UnsupportedOperationException
 	 *             thrown if called for 1d gate
 	 */
@@ -444,8 +445,8 @@ public final class Gate implements DimensionalData {
 	/**
 	 * Returns whether a gate has been set.
 	 * 
-	 * @return <code>true</code> if gate is currently set, <code>false</code>
-	 *         if not.
+	 * @return <code>true</code> if gate is currently set, <code>false</code> if
+	 *         not.
 	 */
 	public boolean isDefined() {
 		return isSet;
@@ -509,8 +510,7 @@ public final class Gate implements DimensionalData {
 	/**
 	 * Gets number of individual points in gate. For 1-d, this is always 2. For
 	 * 2-d banana gates the number is variable. This is part of the class for
-	 * <code>HistogramIO</code> to be able to write HDF files more
-	 * efficiently.
+	 * <code>HistogramIO</code> to be able to write HDF files more efficiently.
 	 * 
 	 * @return number of points to define gate
 	 */

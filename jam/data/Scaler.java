@@ -157,4 +157,7 @@ public final class Scaler implements DataElement {
 		}
 	}
 
+	public int getDimensionality() {
+		return 1;
+	}
 }

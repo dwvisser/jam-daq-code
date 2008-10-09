@@ -61,7 +61,12 @@ public class Console extends JPanel {
 
 	/**
 	 * Create a JamConsole which has an text area for output a text field for
-	 * intput.
+	 * input.
+	 * 
+	 * @param finder
+	 *            finds commands
+	 * @param listener
+	 *            listens to commands
 	 */
 	public Console(CommandFinder finder, CommandListener listener) {
 		this(NUM_LINES, finder, listener);
@@ -72,7 +77,11 @@ public class Console extends JPanel {
 	 * for intput.
 	 * 
 	 * @param linesLog
-	 *            number of lines to retain in onscreen display
+	 *            number of lines to retain in on-screen display
+	 * @param finder
+	 *            finds commands
+	 * @param listener
+	 *            listens to commands
 	 */
 	public Console(int linesLog, CommandFinder finder, CommandListener listener) {
 		super(new BorderLayout());
@@ -92,6 +101,7 @@ public class Console extends JPanel {
 		});
 		/* Handle up and down arrows */
 		textIn.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(final KeyEvent evt) {
 				final int keyCode = evt.getKeyCode();
 				if (keyCode == KeyEvent.VK_UP) {

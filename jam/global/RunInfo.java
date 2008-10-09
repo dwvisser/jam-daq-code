@@ -10,17 +10,20 @@ import java.util.Date;
  * @author Ken Swartz
  */
 public class RunInfo {
-	
-	private RunInfo(){
+
+	private RunInfo() {
 		super();
 	}
-	
+
 	private static final RunInfo INSTANCE = new RunInfo();
-	
-	public static RunInfo getInstance(){
+
+	/**
+	 * @return the singleton instance
+	 */
+	public static RunInfo getInstance() {
 		return INSTANCE;
 	}
-	
+
 	/**
 	 * Experiment name.
 	 */

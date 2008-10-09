@@ -16,7 +16,6 @@ import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-
 /**
  * Shows a dialog with the given text.
  * 
@@ -25,27 +24,39 @@ import javax.swing.JTextArea;
  */
 public class TextDisplayDialog extends JDialog {
 
-	public TextDisplayDialog(Frame frame, String title, boolean modal, String text){
-		super(frame,title,modal);
-		final Container contents=getContentPane();
+	/**
+	 * @param frame
+	 *            parent frame
+	 * @param title
+	 *            title for dialog
+	 * @param modal
+	 *            whether the dialog is modal
+	 * @param text
+	 *            text to display in dialog
+	 */
+	public TextDisplayDialog(Frame frame, String title, boolean modal,
+			String text) {
+		super(frame, title, modal);
+		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
-		final JTextArea textArea=new JTextArea(text);
+		final JTextArea textArea = new JTextArea(text);
 		final JScrollPane jsp = new JScrollPane(textArea);
-		textArea.setToolTipText("Use select, cut and paste to export the text.");
+		textArea
+				.setToolTipText("Use select, cut and paste to export the text.");
 		contents.add(jsp, BorderLayout.CENTER);
 		pack();
-		final Dimension screenSize = 
-		Toolkit.getDefaultToolkit().getScreenSize();
-		final int del=25;
-		final int xcoord=frame.getX()+del;
-		final int ycoord=frame.getY()+del;
-		final Dimension initSize=getSize();
-		final int sizex=Math.min(initSize.width,
-		screenSize.width-del-xcoord);	
-		final int sizey=Math.min(initSize.height,
-		screenSize.height-del-ycoord);	
-		setLocation(xcoord,ycoord);
-		setSize(sizex,sizey);
+		final Dimension screenSize = Toolkit.getDefaultToolkit()
+				.getScreenSize();
+		final int del = 25;
+		final int xcoord = frame.getX() + del;
+		final int ycoord = frame.getY() + del;
+		final Dimension initSize = getSize();
+		final int sizex = Math.min(initSize.width, screenSize.width - del
+				- xcoord);
+		final int sizey = Math.min(initSize.height, screenSize.height - del
+				- ycoord);
+		setLocation(xcoord, ycoord);
+		setSize(sizex, sizey);
 		setVisible(true);
 	}
 }

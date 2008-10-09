@@ -26,6 +26,11 @@ public final class NumberUtilities {
 		return instance;
 	}
 
+	/**
+	 * @param value
+	 *            to take log of
+	 * @return base 10 logarithm
+	 */
 	public double log10(final double value) {
 		return Math.log(value) / Math.log(10.0);
 	}
@@ -76,7 +81,7 @@ public final class NumberUtilities {
 	public double[] intToDoubleArray(final int[] intArray) {
 		final int len = intArray.length;
 		final double[] out = new double[len];
-		for (int i = 0; i < len; i++) {//NOPMD
+		for (int i = 0; i < len; i++) {// NOPMD
 			out[i] = intArray[i];
 		}
 		return out;

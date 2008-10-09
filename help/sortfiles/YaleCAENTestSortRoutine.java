@@ -6,16 +6,12 @@ import jam.data.HistInt1D;
 import jam.data.HistInt2D;
 import jam.sort.SortRoutine;
 
-/*
- * AUTHOR 
- * R. Longland
-
- * Sort routine for neutron counting with the aid of 
- * an anti-coincidence cosmic muon shield and a 
- * NaI Annulus.
-
+/**
+ * Sort routine for neutron counting with the aid of an anti-coincidence cosmic
+ * muon shield and a NaI Annulus.
+ * 
+ * @author R. Longland
  */
-
 public class YaleCAENTestSortRoutine extends SortRoutine {
 
 	// -----------------------------------------------

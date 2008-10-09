@@ -2,6 +2,12 @@ package jam.sort.stream;
 
 import java.io.IOException;
 
+/**
+ * Writes events out to a stream.
+ * 
+ * @author Dale Visser
+ * 
+ */
 public interface EventWriter {
 
 	/**
@@ -9,7 +15,7 @@ public interface EventWriter {
 	 * 
 	 * @param input
 	 *            event data
-	 * @exception EventException
+	 * @exception IOException
 	 *                thrown if there's an unrecoverable error writing the event
 	 */
 	void writeEvent(short[] input) throws IOException;
@@ -19,7 +25,7 @@ public interface EventWriter {
 	 * 
 	 * @param input
 	 *            event data
-	 * @exception EventException
+	 * @exception IOException
 	 *                thrown if there's an unrecoverable error writing the event
 	 */
 	void writeEvent(int[] input) throws IOException;

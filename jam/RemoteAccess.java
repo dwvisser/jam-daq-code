@@ -2,12 +2,13 @@
  */
 package jam;
 
-import jam.data.DimensionalData;
+import jam.data.DataElement;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.Monitor;
 import jam.data.RemoteData;
 import jam.data.Scaler;
+import jam.global.Nameable;
 import jam.global.RunInfo;
 
 import java.rmi.Naming;
@@ -105,9 +106,9 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	public List<String> getGateNames(final String histName)
 			throws RemoteException {
 		final Histogram hist = Histogram.getHistogram(histName);
-		final List<DimensionalData> gates = hist.getGateCollection().getGates();
+		final List<DataElement> gates = hist.getGateCollection().getGates();
 		final List<String> names = new ArrayList<String>();
-		for (DimensionalData gate : gates) {
+		for (Nameable gate : gates) {
 			names.add(gate.getName());
 		}
 		return Collections.unmodifiableList(names);

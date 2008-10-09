@@ -10,8 +10,8 @@ import java.util.List;
 /**
  * This uses the Levenberg-Marquadt prescription for finding the local minimum
  * of chi-squared given seed parameter values for the function to fit. The
- * <code>NonLinearFit</code> class which creates and calls this must supply
- * the function evaluation and differentiation.
+ * <code>NonLinearFit</code> class which creates and calls this must supply the
+ * function evaluation and differentiation.
  * 
  * @author Dale Visser
  * @version 0.5, 8/28/98
@@ -29,8 +29,7 @@ final class LevenbergMarquadt {
 		FIRST_ITERATION,
 
 		/**
-		 * <code>int</code> used when calling to calculate subsequent
-		 * iterations
+		 * <code>int</code> used when calling to calculate subsequent iterations
 		 */
 		NEXT_ITERATION,
 
@@ -197,6 +196,8 @@ final class LevenbergMarquadt {
 	 * 
 	 * @param iteration
 	 *            indicates first, middle, or final iteration
+	 * @throws ArithmeticException
+	 *             if a math error occurs
 	 * @exception Exception
 	 *                trying to diagonalize singular matrices
 	 * @see #FIRST_ITERATION
@@ -487,8 +488,7 @@ final class LevenbergMarquadt {
 	 *            value to round
 	 * @param fraction
 	 *            number of digits to show in fractional part
-	 * @return a <code>String</code> with the specified appearance of the
-	 *         number
+	 * @return a <code>String</code> with the specified appearance of the number
 	 */
 	private String round(final double value, final int fraction) {
 		String out;

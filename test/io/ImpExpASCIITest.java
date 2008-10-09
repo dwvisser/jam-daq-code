@@ -17,6 +17,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Tests for importing and exporting ASCII feature.
+ * 
+ * @author Dale Visser
+ * 
+ */
 public final class ImpExpASCIITest {// NOPMD
 
 	private static final String ASCIITEST = "ASCIItest";
@@ -49,12 +55,15 @@ public final class ImpExpASCIITest {// NOPMD
 	 */
 	private void assertCorrectHistogramProperties(final Histogram hist) {
 		assertNotNull("Expected to read a histogram.", hist);
-		assertEquals("Expecting a certain number of channels.", HIST_SIZE, hist.getSizeX());
-		assertEquals("Expected one dimension.", HIST_DIMENSION, hist.getDimensionality());
-		assertEquals("Expected a certain sum.", HIST_SUM, Math.round(hist.getArea()));
+		assertEquals("Expecting a certain number of channels.", HIST_SIZE, hist
+				.getSizeX());
+		assertEquals("Expected one dimension.", HIST_DIMENSION, hist
+				.getDimensionality());
+		assertEquals("Expected a certain sum.", HIST_SUM, Math.round(hist
+				.getArea()));
 	}
 
-	private void readHistDataAndCheck(final File file) throws ImpExpException{
+	private void readHistDataAndCheck(final File file) throws ImpExpException {
 		impExp.openFile(file);
 		final String groupName = FileUtilities.getInstance()
 				.removeExtensionFileName(file.getName());
@@ -63,6 +72,9 @@ public final class ImpExpASCIITest {// NOPMD
 		this.assertCorrectHistogramProperties(hist);
 	}
 
+	/**
+	 * Setup for tests.
+	 */
 	@Before
 	public void setUp() {
 		Histogram.clearList();
@@ -79,12 +91,18 @@ public final class ImpExpASCIITest {// NOPMD
 		}
 		impExp = new ImpExpASCII();
 	}
-	
+
+	/**
+	 * Tear down for tests.
+	 */
 	@After
 	public void tearDown() {
 		Histogram.clearList();
 	}
 
+	/**
+	 * Test reading data from files.
+	 */
 	@Test
 	public void testReadData() {
 		try {

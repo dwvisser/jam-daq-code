@@ -354,6 +354,7 @@ public final class Group implements Nameable {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return fullName;
 	}
@@ -361,6 +362,15 @@ public final class Group implements Nameable {
 	private static final StringUtilities stringUtil = StringUtilities
 			.getInstance();
 
+	/**
+	 * Create a scaler object and add it to this group.
+	 * 
+	 * @param nameIn
+	 *            desired name
+	 * @param idNum
+	 *            desired id number
+	 * @return the scaler object
+	 */
 	public Scaler createScaler(final String nameIn, final int idNum) {
 		// Set of names of gates for histogram this gate belongs to
 		final Set<String> scalerNames = new TreeSet<String>();
@@ -484,24 +494,5 @@ public final class Group implements Nameable {
 		/* Add to group */
 		this.addHistogram(hist);
 		/* Make a unique name in the group */
-	}
-	
-	public void deleteHistogram(final String histName) {
-		final Histogram histogram = Histogram.getHistogram(histName);
-		deleteHistogram(histogram);
-	}
-
-	/**
-	 * @param histogram
-	 */
-	public static void deleteHistogram(final Histogram histogram) {
-		if (histogram != null){
-			Histogram.deleteHistogram(histogram);
-			Group.getGroup(histogram.getGroupName()).removeHistogram(histogram);
-		}
-	}
-	
-	public static Group getGroup(Histogram histogram){
-		return Group.getGroup(histogram.getGroupName());
 	}
 }

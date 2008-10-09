@@ -13,6 +13,12 @@ import java.io.File;
 import org.junit.After;
 import org.junit.Test;
 
+/**
+ * Test offline sorting.
+ * 
+ * @author Dale Visser
+ * 
+ */
 public class SortOfflineTest {// NOPMD
 
 	private static final Script script = new Script();
@@ -28,16 +34,23 @@ public class SortOfflineTest {// NOPMD
 		script.beginSort();
 	}
 
+	/**
+	 * Tear down after test.
+	 */
 	@After
 	public void tearDown() {
 		script.resetOfflineSorting();
 	}
 
+	/**
+	 * Test YaleCAEN stream offline sorting.
+	 */
 	@Test
 	public void testYaleCAENOfflineSort() {
 		script.setupOffline("help.sortfiles.YaleCAENTestSortRoutine",
 				YaleCAEN_InputStream.class, YaleOutputStream.class);
-		final HistInt1D neutronE = Utility.getOneDHistogramFromSortGroup("Neutron E");
+		final HistInt1D neutronE = Utility
+				.getOneDHistogramFromSortGroup("Neutron E");
 		assertHistogramZeroed(neutronE);
 		sortEventFile("test/sort/YaleCAENTestData.evn");
 		final int expectedEvents = 302;
@@ -47,12 +60,16 @@ public class SortOfflineTest {// NOPMD
 				expectedEvents, neutronE.getArea());
 	}
 
+	/**
+	 * Test Yale stream offline sorting.
+	 */
 	@Test
 	public void testYaleOfflineSort() {
 		final String sortRoutineName = "SpectrographExample";
 		script.setupOffline("help.sortfiles." + sortRoutineName,
 				YaleInputStream.class, YaleOutputStream.class);
-		final HistInt1D cathode = Utility.getOneDHistogramFromSortGroup("Cathode");
+		final HistInt1D cathode = Utility
+				.getOneDHistogramFromSortGroup("Cathode");
 		assertHistogramZeroed(cathode);
 		sortEventFile("sampledata/example.evn");
 		final double expectedArea = 789.0;

@@ -49,8 +49,7 @@ public class CalibrationFit extends AbstractControl {
 
 	private final static String BLANK_LABEL = "    --     ";
 
-	private transient AbstractCalibrationFunction calibFunc = AbstractCalibrationFunctionCollection
-			.getNoCalibration();
+	private transient AbstractCalibrationFunction calibFunc = AbstractCalibrationFunctionCollection.NO_CALIBRATION;
 
 	/* GUI stuff */
 	private transient final JTabbedPane tabPane;// Tabbed for fit type
@@ -154,6 +153,7 @@ public class CalibrationFit extends AbstractControl {
 						}
 					}
 
+					@Override
 					public void cancel() {
 						doCancelCalib();
 					}
@@ -296,6 +296,7 @@ public class CalibrationFit extends AbstractControl {
 		updateFields(calibFunc, isCalPts);
 	}
 
+	@Override
 	public void doSetup() {
 		calibFunc = getCurrentCalibrationFunction();
 		final boolean isCalPts = calibFunc.isFitPoints();
@@ -383,14 +384,12 @@ public class CalibrationFit extends AbstractControl {
 				LOGGER.severe("Need at least 2 points");
 			}
 		} catch (NumberFormatException nfe) {
-			currentHist.setCalibration(AbstractCalibrationFunctionCollection
-					.getNoCalibration()); // Make sure hisogram no longer
-			// has calibration
+			currentHist
+					.setCalibration(AbstractCalibrationFunctionCollection.NO_CALIBRATION);
 			LOGGER.severe("Invalid input, not a number");
 		} catch (CalibrationFitException de) {
-			currentHist.setCalibration(AbstractCalibrationFunctionCollection
-					.getNoCalibration()); // Make sure hisogram no longer
-			// has calibration
+			currentHist
+					.setCalibration(AbstractCalibrationFunctionCollection.NO_CALIBRATION);
 			LOGGER.severe(de.getMessage());
 		}
 	}
@@ -544,16 +543,15 @@ public class CalibrationFit extends AbstractControl {
 
 	private AbstractCalibrationFunction getCurrentCalibrationFunction() {
 		final AbstractHist1D currentHist = getCurrentHistogram();
-		final AbstractCalibrationFunction rval = currentHist == null ? AbstractCalibrationFunctionCollection
-				.getNoCalibration()
+		final AbstractCalibrationFunction rval = currentHist == null ? AbstractCalibrationFunctionCollection.NO_CALIBRATION
 				: currentHist.getCalibration();
-
 		return rval;
 	}
 
 	/**
 	 * Update selection then show dialog
 	 */
+	@Override
 	public void setVisible(final boolean show) {
 		if (show) {
 			updateSelection();
@@ -561,6 +559,7 @@ public class CalibrationFit extends AbstractControl {
 		super.setVisible(show);
 	}
 
+	@Override
 	public void update(final Observable observable, final Object object) {
 		final BroadcastEvent event = (BroadcastEvent) object;
 		final BroadcastEvent.Command com = event.getCommand();

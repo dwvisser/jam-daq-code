@@ -1,7 +1,7 @@
 package jam.plot;
 
-import jam.plot.common.Constants;
 import jam.plot.common.Scale;
+import jam.plot.common.ScaleCalculator;
 
 /**
  * Class to calculate tickmarks and scale. Need to clean up especially log part
@@ -11,7 +11,7 @@ import jam.plot.common.Scale;
  * @author Ken Swartz
  */
 final class Tickmarks {
-	
+
 	Tickmarks() {
 		super();
 	}
@@ -78,23 +78,9 @@ final class Tickmarks {
 	 */
 	private int tickSpace(final int lowerLimit, final int upperLimit) {
 		final int range = upperLimit - lowerLimit + 1;
-		int tickSpace = 1;
-		// loop trying succesively bigger tick spacing
-		for (int i = 1; i < Constants.MAXIMUM_COUNTS; i *= 10) {
-			tickSpace = i;
-			if ((tickSpace * MIN_NUMBER_TICKS) >= range) {
-				break;
-			}
-			tickSpace = i * 2;
-			if ((tickSpace * MIN_NUMBER_TICKS) >= range) {
-				break;
-			}
-			tickSpace = i * 5;
-			if ((tickSpace * MIN_NUMBER_TICKS) >= range) {
-				break;
-			}
-		}
-		return tickSpace;
+		final ScaleCalculator calculator = new ScaleCalculator(range,
+				MIN_NUMBER_TICKS);
+		return calculator.compute(lowerLimit, upperLimit);
 	}
 
 	/*
@@ -173,10 +159,10 @@ final class Tickmarks {
 	/*
 	 * non-javadoc: Get tick placement for Log Scaler lower limit upperLimit
 	 * 
-	 * <table> <tr> <th> value</th><th>decade</th><th>countIn</th> </tr>
-	 * <tr> <td>1 </td> <td> 0 </td> <td>1</td> </tr> <tr> <td>2 </td> <td>
-	 * 0 </td> <td>1</td> </tr> <tr> <td>3 </td> <td> 0 </td> <td>1</td>
-	 * </tr> <tr> ...</tr> <tr> <td>10</td> <td> 1 </td> <td>10</td> </tr>
+	 * <table> <tr> <th> value</th><th>decade</th><th>countIn</th> </tr> <tr>
+	 * <td>1 </td> <td> 0 </td> <td>1</td> </tr> <tr> <td>2 </td> <td> 0 </td>
+	 * <td>1</td> </tr> <tr> <td>3 </td> <td> 0 </td> <td>1</td> </tr> <tr>
+	 * ...</tr> <tr> <td>10</td> <td> 1 </td> <td>10</td> </tr>
 	 * 
 	 * </table>
 	 */
@@ -237,7 +223,7 @@ final class Tickmarks {
 
 	private int getDecade(final double val) {
 		final double logten = Math.log(10.0);
-		return (int)(Math.log(val) / logten);
+		return (int) (Math.log(val) / logten);
 	}
 
 }

@@ -1,9 +1,8 @@
 package jam.plot;
 
-import static jam.plot.common.Constants.BOTTOM;
-import static jam.plot.common.Constants.LEFT;
-import static jam.plot.common.Constants.LOG_FAKE_ZERO;
-import static jam.plot.common.Constants.TOP;
+import static javax.swing.SwingConstants.BOTTOM;
+import static javax.swing.SwingConstants.LEFT;
+import static javax.swing.SwingConstants.TOP;
 import jam.data.Dimensional;
 import jam.plot.color.ColorScale;
 import jam.plot.color.DiscreteColorScale;
@@ -44,8 +43,8 @@ import javax.swing.JOptionPane;
  * zero counts will therefore draw along the lower border, and the left and
  * right border will be part of a channel.
  * 
- * The method getSize() for <code>Component</code> returns the number of
- * pixels which are labeled starting with 0, to getSize()-1
+ * The method getSize() for <code>Component</code> returns the number of pixels
+ * which are labeled starting with 0, to getSize()-1
  * 
  * @version 0.5 April 98, May 99
  * @author Ken Swartz
@@ -205,7 +204,7 @@ final class Painter {
 				if (pageformat == null) {
 					this.viewSize = newViewSize;
 				}
-				/* plot* are the borders and are part of the plot */
+				/* plot are the borders and are part of the plot */
 				view.setRight(viewSize.width - border.right - 1);
 				/* subtract 1 as last pixel size-1 */
 				view.setBottom(viewSize.height - border.bottom - 1);
@@ -1230,7 +1229,6 @@ final class Painter {
 	 * non-javadoc: Mark an area in a 1 d plot
 	 * 
 	 * @lowChan lower channel @highChan upper channel
-	 * 
 	 */
 	void markArea1d(final int lowChan, final int highChan, final double[] counts) {
 		int minChan = 0;
@@ -1434,6 +1432,8 @@ final class Painter {
 	 * @param point point to take log of
 	 */
 	private double takeLog(final double point) {
+		// fake zero for Log scale 1/2 a count
+		final double LOG_FAKE_ZERO = 0.5;
 		return Math.log(point > 0.0 ? point : LOG_FAKE_ZERO);
 	}
 }

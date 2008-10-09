@@ -11,6 +11,12 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Tests for property file parsing.
+ * 
+ * @author Dale Visser
+ * 
+ */
 public final class JamPropertiesTest {// NOPMD
 
 	private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
@@ -21,6 +27,9 @@ public final class JamPropertiesTest {// NOPMD
 
 	private static final String testValue = "testing";
 
+	/**
+	 * Setup for tests.
+	 */
 	@Before
 	public void setUp() {
 		final String tmpDir = System.getProperty(JAVA_IO_TMPDIR);
@@ -38,6 +47,9 @@ public final class JamPropertiesTest {// NOPMD
 		}
 	}
 
+	/**
+	 * The actual test.
+	 */
 	@Test
 	public void test() {
 		new JamProperties();

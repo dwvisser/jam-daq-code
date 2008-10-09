@@ -1,5 +1,7 @@
 package jam.data.func;
 
+import jam.data.DataException;
+
 import java.text.NumberFormat;
 import java.util.Arrays;
 
@@ -13,6 +15,9 @@ import java.util.Arrays;
  */
 public abstract class AbstractCalibrationFunction implements Function {
 
+	/**
+	 * @return whether this function implements an actual calibration
+	 */
 	public boolean isCalibrated() {
 		return true;
 	}
@@ -75,7 +80,6 @@ public abstract class AbstractCalibrationFunction implements Function {
 	protected AbstractCalibrationFunction() {
 		super();
 	}
-
 
 	/**
 	 * Creates a new <code>CalibrationFunction</code> object.
@@ -171,6 +175,8 @@ public abstract class AbstractCalibrationFunction implements Function {
 
 	/**
 	 * 
+	 * @param numFormat
+	 *            the number format to use
 	 * @return the function formula
 	 */
 	public String getFormula(final NumberFormat numFormat) {
@@ -180,6 +186,9 @@ public abstract class AbstractCalibrationFunction implements Function {
 
 	/**
 	 * Set histogram size, used to convert from energy to channel
+	 * 
+	 * @param size
+	 *            the new histogram size
 	 */
 	public void setSizeHistogram(final int size) {
 		sizeHistogram = size;
@@ -234,8 +243,8 @@ public abstract class AbstractCalibrationFunction implements Function {
 
 	/**
 	 * Set the coefficients of the calibration function using the contents of
-	 * the passed <code>Array</code>. If passed a larger than necessary
-	 * array, the first elements of the array will be used.
+	 * the passed <code>Array</code>. If passed a larger than necessary array,
+	 * the first elements of the array will be used.
 	 * 
 	 * @param aIn
 	 *            array of coefficients which should be at least as large as the
@@ -401,7 +410,6 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 *            y values
 	 * @param order
 	 *            order of polynomial
-	 * @return matrixA the matrix to do gaussj on.
 	 */
 	protected void buildPolyMatrix(final double xVal[], final double yVal[],
 			final int order, double[][] matrixA, double[] vectorB) {
@@ -434,13 +442,12 @@ public abstract class AbstractCalibrationFunction implements Function {
 	// TODO can this call jam.fit.GaussJordanElimination instead?
 
 	/**
-	 * gauss jordon reduction from numerical recipes
+	 * Gauss-Jordan reduction from numerical recipes
 	 * 
 	 * @param alpha
 	 *            alpha matrix
 	 * @param beta
 	 *            beta matrix
-	 * @return fit coeffients
 	 */
 	protected void gaussj(final double[][] alpha, final double[][] beta)
 			throws CalibrationFitException {

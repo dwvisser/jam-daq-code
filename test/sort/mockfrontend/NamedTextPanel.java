@@ -11,7 +11,9 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
 /**
- * @author Administrator
+ * GUI widget for a text panel with a label.
+ * 
+ * @author Dale Visser
  * 
  */
 public class NamedTextPanel extends JPanel {
@@ -20,6 +22,12 @@ public class NamedTextPanel extends JPanel {
 
 	private transient String text;
 
+	/**
+	 * @param sname
+	 *            label
+	 * @param init
+	 *            initial text in field
+	 */
 	public NamedTextPanel(final String sname, final String init) {
 		super();
 		final Border border = BorderFactory
@@ -29,6 +37,10 @@ public class NamedTextPanel extends JPanel {
 		this.add(this.label);
 	}
 
+	/**
+	 * @param text
+	 *            new value for text in field
+	 */
 	public final void setText(final String text) {
 		synchronized (label) {
 			this.text = text;

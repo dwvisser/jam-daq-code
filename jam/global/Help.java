@@ -8,6 +8,12 @@ import javax.help.HelpBroker;
 import javax.help.HelpSet;
 import javax.help.HelpSetException;
 
+/**
+ * Utility class for JavaHelp usage.
+ * 
+ * @author Dale Visser
+ * 
+ */
 public final class Help {
 
 	private transient HelpSet helpset = null;
@@ -32,14 +38,23 @@ public final class Help {
 		}
 	}
 
+	/**
+	 * @return the singleton instance of this type
+	 */
 	public static Help getInstance() {
 		return instance;
 	}
 
+	/**
+	 * @return the help set
+	 */
 	public HelpSet getHelpSet() {
 		return helpset;
 	}
 
+	/**
+	 * @return the help broker
+	 */
 	public HelpBroker getHelpBroker() {
 		return broker;
 	}

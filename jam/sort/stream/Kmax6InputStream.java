@@ -69,6 +69,7 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 *            most recently read word
 	 * @return whether end-of-file
 	 */
+	@Override
 	public boolean isEndRun(final short dataWord) {
 		return false;
 	}
@@ -110,6 +111,7 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 *                thrown for errors in the event stream
 	 * @return status resulting after read attempt
 	 */
+	@Override
 	public EventInputStatus readEvent(final int[] input) throws EventException {
 		synchronized (this) {
 			eventInputStatus = EventInputStatus.NONE;
@@ -163,8 +165,6 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	}
 
 	/**
-	 * @param rval
-	 * @return
 	 * @throws EventException
 	 */
 	private void readAndCheckBlockHeader() throws EventException {
@@ -181,6 +181,7 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 *                thrown for unrecoverable errors
 	 * @return whether read is successful or not
 	 */
+	@Override
 	public boolean readHeader() throws EventException {
 		try {
 			final byte[] headerStart = new byte[354]; // KMax Header

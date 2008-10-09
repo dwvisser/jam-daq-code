@@ -1,7 +1,5 @@
 package jam.plot;
 
-import static jam.plot.common.Constants.BOTTOM;
-import static jam.plot.common.Constants.LEFT;
 import jam.data.AbstractHist1D;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
@@ -537,10 +535,10 @@ final class Plot1d extends AbstractPlot {
 		paintTextAndTicks(plotHist);
 		final String axisLabelX = plotHist.getLabelX();
 		painter.drawAxisLabel(axisLabelX == null ? X_LABEL_1D : axisLabelX,
-				BOTTOM);
+				javax.swing.SwingConstants.BOTTOM);
 		final String axisLabelY = plotHist.getLabelY();
 		painter.drawAxisLabel(axisLabelY == null ? Y_LABEL_1D : axisLabelY,
-				LEFT);
+				javax.swing.SwingConstants.LEFT);
 	}
 
 	@Override

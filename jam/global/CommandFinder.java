@@ -2,6 +2,12 @@ package jam.global;
 
 import java.util.Collection;
 
+/**
+ * Interface for looking up console commands.
+ * 
+ * @author Dale Visser
+ * 
+ */
 public interface CommandFinder {
 
 	/**
@@ -15,7 +21,7 @@ public interface CommandFinder {
 	 */
 	Collection<String> getSimilarCommnands(final String string,
 			final boolean onlyEnabled);
-	
+
 	/**
 	 * @return all commands in the map in alphabetical order
 	 */

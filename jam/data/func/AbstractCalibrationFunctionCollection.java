@@ -11,17 +11,27 @@ import java.util.TreeMap;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+//TODO Make this dynamically load from classpath.
+//TODO Make this load a class only when needed, i.e., make it a factory.
+/**
+ * Class for obtaining specific instances of calibration functions.
+ * 
+ * @author Dale Visser
+ */
 public class AbstractCalibrationFunctionCollection {
 
 	private static final Map<String, Class<? extends AbstractCalibrationFunction>> FUNCTIONS = new TreeMap<String, Class<? extends AbstractCalibrationFunction>>();
 
 	private static final Map<String, ImageIcon> ICONS = new HashMap<String, ImageIcon>();
 
-	private static final AbstractCalibrationFunction noFunc = new NoFunction();
+	/**
+	 * Calibration function representing no calibration at all.
+	 */
+	public static final AbstractCalibrationFunction NO_CALIBRATION = new NoFunction();
 
 	static {
 		clearAll();
-		FUNCTIONS.put(noFunc.getName(), noFunc.getClass());
+		FUNCTIONS.put(NO_CALIBRATION.getName(), NO_CALIBRATION.getClass());
 		final AbstractCalibrationFunction linearFunc = new LinearFunction();
 		FUNCTIONS.put(linearFunc.getName(), linearFunc.getClass());
 		final AbstractCalibrationFunction quadFunc = new QuadraticFunction();
@@ -32,11 +42,10 @@ public class AbstractCalibrationFunctionCollection {
 		FUNCTIONS.put(sqrtEFunc.getName(), sqrtEFunc.getClass());
 	}
 
-	private AbstractCalibrationFunctionCollection()
-	{
+	private AbstractCalibrationFunctionCollection() {
 		// Static-only class.
 	}
-	
+
 	/**
 	 * Clear the collections.
 	 */
@@ -45,6 +54,12 @@ public class AbstractCalibrationFunctionCollection {
 		ICONS.clear();
 	}
 
+	// TODO Make the icons the responsibility of the calibration function.
+	/**
+	 * @param name
+	 *            the name of the calibration function
+	 * @return the icon for the calibration function
+	 */
 	public static ImageIcon getIcon(final String name) {
 		return ICONS.get(name);
 	}
@@ -66,10 +81,6 @@ public class AbstractCalibrationFunctionCollection {
 	 */
 	public static Map<String, Class<? extends AbstractCalibrationFunction>> getMapFunctions() {
 		return Collections.unmodifiableMap(FUNCTIONS);
-	}
-
-	static public AbstractCalibrationFunction getNoCalibration() {
-		return noFunc;
 	}
 
 	static void loadIcon(final AbstractCalibrationFunction calFunc,

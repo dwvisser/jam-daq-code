@@ -6,10 +6,19 @@ import jam.data.func.CubicFunction;
 
 import org.junit.Test;
 
+/**
+ * Test cubic fits.
+ * 
+ * @author Dale Visser
+ * 
+ */
 public final class CubicFunctionTest {// NOPMD
 
 	private static final int EXPECTED_CUBIC_TERMS = 4;
 
+	/**
+	 * Test cubic fits.
+	 */
 	@Test
 	public void testFit() {
 		final double[] channels = { 0.0, 10.0, 20.0, 30.0, 40.0 };

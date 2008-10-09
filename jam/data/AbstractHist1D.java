@@ -19,8 +19,7 @@ public abstract class AbstractHist1D extends Histogram {
 	/**
 	 * The calibration function. Set to <code>null</code> if there is none.
 	 */
-	protected transient AbstractCalibrationFunction calibFunc = AbstractCalibrationFunctionCollection
-			.getNoCalibration();
+	protected transient AbstractCalibrationFunction calibFunc = AbstractCalibrationFunctionCollection.NO_CALIBRATION;
 
 	/**
 	 * Array which contains the errors in the channel counts.

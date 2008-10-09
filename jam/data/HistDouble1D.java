@@ -85,8 +85,7 @@ public final class HistDouble1D extends AbstractHist1D {
 		synchronized (this) {
 			countsDouble = EMPTY;
 			unsetErrors();
-			setCalibration(AbstractCalibrationFunctionCollection
-					.getNoCalibration());
+			setCalibration(AbstractCalibrationFunctionCollection.NO_CALIBRATION);
 			clear = true;
 		}
 	}

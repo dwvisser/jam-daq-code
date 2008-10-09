@@ -1,7 +1,6 @@
 package jam.ui;
 
 import jam.data.DataElement;
-import jam.data.DimensionalData;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
@@ -87,7 +86,9 @@ final class SummaryTableModel implements TableModel {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see javax.swing.table.TableModel#addTableModelListener(javax.swing.event.TableModelListener)
+	 * @see
+	 * javax.swing.table.TableModel#addTableModelListener(javax.swing.event.
+	 * TableModelListener)
 	 */
 	public void addTableModelListener(final TableModelListener listener) {
 		listeners.add(listener);
@@ -103,16 +104,16 @@ final class SummaryTableModel implements TableModel {
 			final String gname = group.getName();
 			if (showScalers) {
 				for (Scaler scaler : group.getScalerList()) {
-					dataList.add(new RowDataElement(gname, scaler));//NOPMD
+					dataList.add(new RowDataElement(gname, scaler));// NOPMD
 				}
 			}
 			for (Histogram hist : group.getHistogramList()) {
 				if (showHistograms) {
-					dataList.add(new RowDataElement(gname, hist));//NOPMD
+					dataList.add(new RowDataElement(gname, hist));// NOPMD
 				}
 				if (showGates) {
-					for (DimensionalData gate : hist.getGateCollection().getGates()) {
-						dataList.add(new RowDataElement(gname, gate));//NOPMD
+					for (DataElement gate : hist.getGateCollection().getGates()) {
+						dataList.add(new RowDataElement(gname, gate));// NOPMD
 					}
 				}
 			}
@@ -188,7 +189,7 @@ final class SummaryTableModel implements TableModel {
 		}
 		if (col == offsetCol) {// Type
 			final String stype = dataElement.getElementType().toString();
-			retValue = stype.substring(0,1)+stype.substring(1).toLowerCase();
+			retValue = stype.substring(0, 1) + stype.substring(1).toLowerCase();
 		} else if (col == offsetCol + 1) {// Name
 			retValue = dataElement.getName();
 		} else if (col == offsetCol + 2) {// Value
@@ -226,7 +227,9 @@ final class SummaryTableModel implements TableModel {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see javax.swing.table.TableModel#removeTableModelListener(javax.swing.event.TableModelListener)
+	 * @see
+	 * javax.swing.table.TableModel#removeTableModelListener(javax.swing.event
+	 * .TableModelListener)
 	 */
 	public void removeTableModelListener(final TableModelListener listenerRemove) {
 		listeners.remove(listenerRemove);

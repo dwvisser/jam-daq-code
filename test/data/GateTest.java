@@ -1,7 +1,7 @@
 package test.data;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import jam.data.DataBase;
 import jam.data.Gate;
 import jam.data.Group;
@@ -100,6 +100,9 @@ public class GateTest {// NOPMD
 
 	}
 
+	/**
+	 * Clear all data.
+	 */
 	@After
 	public void tearDown() {
 		DataBase.getInstance().clearAllLists();

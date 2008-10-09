@@ -2,7 +2,8 @@ package jam.ui;
 
 import jam.data.AbstractHist1D;
 import jam.data.DataBase;
-import jam.data.DimensionalData;
+import jam.data.DataElement;
+import jam.data.DataUtility;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
@@ -36,8 +37,8 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 /**
- * Implements a <code>JTree</code> for selecting <code>Histogram</code>'s
- * and <code>Gate</code>'s to display.
+ * Implements a <code>JTree</code> for selecting <code>Histogram</code>'s and
+ * <code>Gate</code>'s to display.
  * 
  * @author Ken Swartz
  */
@@ -166,7 +167,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		final DefaultMutableTreeNode histNode = new DefaultMutableTreeNode(hist);
 		groupNode.add(histNode);
 		// Loop through gates and load them
-		for (DimensionalData gate : hist.getGateCollection().getGates()) {
+		for (DataElement gate : hist.getGateCollection().getGates()) {
 			histNode.add(new DefaultMutableTreeNode(gate));// NOPMD
 		}
 	}
@@ -337,7 +338,7 @@ public final class SelectionTree extends JPanel implements Observer {
 				} else if (firstNodeObject instanceof Histogram) {
 					/* Histogram selected */
 					final Histogram hist = (Histogram) firstNodeObject;
-					STATUS.setCurrentGroup(Group.getGroup(hist));
+					STATUS.setCurrentGroup(DataUtility.getGroup(hist));
 					setCurrentHistogram(hist);
 					setCurrentGate(null);
 					/* Do we have overlays ? */
@@ -357,7 +358,7 @@ public final class SelectionTree extends JPanel implements Observer {
 					final Gate gate = (Gate) firstNodeObject;
 					final Histogram hist = getAssociatedHist(prime);
 					tree.addSelectionPath(pathForDataObject(hist));
-					STATUS.setCurrentGroup(Group.getGroup(hist));
+					STATUS.setCurrentGroup(DataUtility.getGroup(hist));
 					setCurrentHistogram(hist);
 					setCurrentGate(gate);
 					STATUS.clearOverlays();

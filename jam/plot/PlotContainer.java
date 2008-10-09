@@ -213,7 +213,7 @@ public final class PlotContainer implements PlotSelectListener {
 			throw new IllegalArgumentException(
 					"You may only overlay 1D histograms.");
 		}
-		overlayHistograms(Collections.singletonList((AbstractHist1D)hist));
+		overlayHistograms(Collections.singletonList((AbstractHist1D) hist));
 	}
 
 	/**
@@ -290,6 +290,15 @@ public final class PlotContainer implements PlotSelectListener {
 		}
 	}
 
+	/**
+	 * @param signals
+	 *            the fit curve, minus background
+	 * @param background
+	 *            the fit background
+	 * @param residuals
+	 *            the fit residuals
+	 * @param lowerLimit
+	 */
 	public void displayFit(final double[][] signals, final double[] background,
 			final double[] residuals, final int lowerLimit) {
 		getPlot().displayFit(signals, background, residuals, lowerLimit);
@@ -437,16 +446,16 @@ public final class PlotContainer implements PlotSelectListener {
 
 	void setBinWidth(final double width) {
 		final AbstractPlot plot = getPlot();
-		if (plot instanceof Plot1d){
-			((Plot1d)plot).setBinWidth(width);
+		if (plot instanceof Plot1d) {
+			((Plot1d) plot).setBinWidth(width);
 		}
 	}
 
 	double getBinWidth() {
 		final AbstractPlot plot = getPlot();
 		double rval = 1.0;
-		if (plot instanceof Plot1d){
-			rval = ((Plot1d)plot).getBinWidth();
+		if (plot instanceof Plot1d) {
+			rval = ((Plot1d) plot).getBinWidth();
 		}
 		return rval;
 	}

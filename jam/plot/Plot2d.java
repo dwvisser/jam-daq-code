@@ -1,8 +1,6 @@
 package jam.plot;
 
 import static jam.plot.color.ColorPrefs.COLOR_PREFS;
-import static jam.plot.common.Constants.BOTTOM;
-import static jam.plot.common.Constants.LEFT;
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.HistDouble2D;
@@ -487,10 +485,10 @@ final class Plot2d extends AbstractPlot {
 		paintTextAndTicks(plotHist);
 		final String axisLabelX = plotHist.getLabelX();
 		painter.drawAxisLabel(axisLabelX == null ? X_LABEL_2D : axisLabelX,
-				BOTTOM);
+				javax.swing.SwingConstants.BOTTOM);
 		final String axisLabelY = plotHist.getLabelY();
 		painter.drawAxisLabel(axisLabelY == null ? Y_LABEL_2D : axisLabelY,
-				LEFT);
+				javax.swing.SwingConstants.LEFT);
 		context.setPaintMode();
 		context.setColor(plotColorMap.getForeground());
 	}

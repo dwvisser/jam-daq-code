@@ -1,8 +1,9 @@
 package jam.io.hdf;
 
 import jam.data.AbstractHist1D;
+import jam.data.DataElement;
 import jam.data.DataParameter;
-import jam.data.DimensionalData;
+import jam.data.DataUtility;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
@@ -168,8 +169,8 @@ public final class HDFIO implements DataIO {
 	 * non-javadoc: Read in an HDF file
 	 * 
 	 * @param infile file to load @param mode whether to open or reload @param
-	 * histNames names of histograms to read, null if all @return <code>true</code>
-	 * if successful
+	 * histNames names of histograms to read, null if all @return
+	 * <code>true</code> if successful
 	 */
 	private boolean asyncReadFileGroup(final File infile,
 			final FileOpenMode mode, final List<Group> existingGrps,
@@ -275,11 +276,13 @@ public final class HDFIO implements DataIO {
 
 	/*
 	 * non-javadoc: Given separate vectors of the writeable objects, constructs
-	 * and writes out an HDF file containing the contents. Null or empty <code>Vector</code>
-	 * arguments are skipped.
+	 * and writes out an HDF file containing the contents. Null or empty
+	 * <code>Vector</code> arguments are skipped.
 	 * 
-	 * @param file disk file to write to @param histograms list of <code>Histogram</code>
-	 * objects to write @param groups list of <code>Group</code>'s to write
+	 * @param file disk file to write to @param histograms list of
+	 * <code>Histogram</code> objects to write @param groups list of
+	 * <code>Group</code>'s to write
+	 * 
 	 * @param writeScalers whether to write out histograms scalers @param
 	 * writeParams whether to write out gates, calibration and parameters
 	 */
@@ -651,8 +654,8 @@ public final class HDFIO implements DataIO {
 			final VirtualGroup globalGates, final Histogram hist,
 			final VirtualGroup histVGroup) {
 		/* Loop for all gates */
-		for (DimensionalData gate : hist.getGateCollection().getGates()) {
-			addGates(wrtSettings, globalGates, histVGroup, (Gate)gate);
+		for (DataElement gate : hist.getGateCollection().getGates()) {
+			addGates(wrtSettings, globalGates, histVGroup, (Gate) gate);
 		} // end loop gates
 	}
 
@@ -972,6 +975,7 @@ public final class HDFIO implements DataIO {
 		uiMessage = "";
 		uiErrorMsg = "";
 		final AbstractSwingWorker worker = new AbstractSwingWorker() {
+			@Override
 			public Object construct() {
 				// FIXME KBS Test change thread priority to make monitor pop up
 				// sooner
@@ -1014,6 +1018,7 @@ public final class HDFIO implements DataIO {
 			}
 
 			/* Runs on the event-dispatching thread. */
+			@Override
 			public void finished() {
 				if (uiErrorMsg.length() > 0) {
 					LOGGER.severe(uiErrorMsg);
@@ -1035,11 +1040,13 @@ public final class HDFIO implements DataIO {
 		uiMessage = "";
 		uiErrorMsg = "";
 		final AbstractSwingWorker worker = new AbstractSwingWorker() {
+			@Override
 			public Object construct() {
 				asyncWriteFile(file, groups, histograms, writeData, wrtSettings);
 				return null;
 			}
 
+			@Override
 			public void finished() {
 				if (uiErrorMsg.length() == 0) {
 					LOGGER.info(uiMessage);
@@ -1122,7 +1129,7 @@ public final class HDFIO implements DataIO {
 			groupsToUse = new ArrayList<Group>();
 			histsToUse = histograms;
 			for (Histogram hist : histsToUse) {
-				final Group group = Group.getGroup(hist);
+				final Group group = DataUtility.getGroup(hist);
 				if (!groupsToUse.contains(group)) {
 					groupsToUse.add(group);
 				}

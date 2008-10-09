@@ -180,6 +180,9 @@ public class RuntimeSubclassIdentifier {
 	 * package and any sub-packages. WARNING: a jar file as classpath hasn't
 	 * been implemented.
 	 * 
+	 * @param <T>
+	 *            type to find implementors of
+	 * 
 	 * @param classpath
 	 *            folder containing the classpath to search
 	 * @param superclass
@@ -253,6 +256,8 @@ public class RuntimeSubclassIdentifier {
 	}
 
 	/**
+	 * @param <T>
+	 *            class to find implememtors of
 	 * @return a set of unique classes that can have instances and are
 	 *         assignable as <code>tosubclass</code>.
 	 * 

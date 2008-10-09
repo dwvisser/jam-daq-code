@@ -50,6 +50,9 @@ public class ParameterTest {// NOPMD
 				.getName());
 	}
 
+	/**
+	 * Test the getting and setting of values to parameters.
+	 */
 	@Test
 	public void testGetSetValue() {
 		final DataParameter testParameter = new DataParameter("testValue");

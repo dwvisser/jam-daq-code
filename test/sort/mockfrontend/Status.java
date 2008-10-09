@@ -34,10 +34,18 @@ public class Status extends NamedTextPanel {
 		}
 	}
 
+	/**
+	 * @param init
+	 *            initial value
+	 */
 	public Status(final Value init) {
 		super("Status", init.toString());
 	}
 
+	/**
+	 * @param value
+	 *            new value
+	 */
 	public final void setValue(final Value value) {
 		this.setText(value.toString());
 	}

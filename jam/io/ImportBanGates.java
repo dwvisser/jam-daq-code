@@ -22,14 +22,18 @@ import javax.swing.filechooser.FileFilter;
  * @version Feb 13, 2004
  */
 public final class ImportBanGates extends AbstractImpExp {
-	
-	public ImportBanGates(){//NOPMD
+
+	/**
+	 * Constructor.
+	 */
+	public ImportBanGates() {// NOPMD
 		super();
 	}
 
 	/**
 	 * @see jam.io.AbstractImpExp#openFile(File, String)
 	 */
+	@Override
 	public boolean openFile(final File file) throws ImpExpException {
 		return openFile(file, "Open BAN file");
 	}
@@ -37,6 +41,7 @@ public final class ImportBanGates extends AbstractImpExp {
 	/**
 	 * @see jam.io.AbstractImpExp#saveFile(jam.data.Histogram)
 	 */
+	@Override
 	public void saveFile(final Histogram hist) throws ImpExpException {
 		LOGGER.warning("Save BAN not implemented.");
 	}
@@ -44,10 +49,12 @@ public final class ImportBanGates extends AbstractImpExp {
 	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
 			"ban", "ORNL Banana Gates");
 
+	@Override
 	protected FileFilter getFileFilter() {
 		return FILTER;
 	}
 
+	@Override
 	protected String getDefaultExtension() {
 		return FILTER.getExtension(0);
 	}
@@ -55,6 +62,7 @@ public final class ImportBanGates extends AbstractImpExp {
 	/**
 	 * @see jam.io.AbstractImpExp#getFormatDescription()
 	 */
+	@Override
 	public String getFormatDescription() {
 		return FILTER.getDescription();
 	}
@@ -62,6 +70,7 @@ public final class ImportBanGates extends AbstractImpExp {
 	/**
 	 * @see jam.io.AbstractImpExp#readData(java.io.InputStream)
 	 */
+	@Override
 	protected void readData(final InputStream inStream) throws ImpExpException {
 		final int[] gates;
 		final Reader reader = new InputStreamReader(inStream);
@@ -139,15 +148,18 @@ public final class ImportBanGates extends AbstractImpExp {
 	 * @see jam.io.AbstractImpExp#writeHist(java.io.OutputStream,
 	 *      jam.data.Histogram)
 	 */
+	@Override
 	protected void writeHist(final OutputStream outStream, final Histogram hist)
 			throws ImpExpException {
 		// not implementing
 	}
 
+	@Override
 	public boolean canExport() {
 		return false;
 	}
 
+	@Override
 	boolean batchExportAllowed() {
 		return false;
 	}

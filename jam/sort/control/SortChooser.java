@@ -94,7 +94,6 @@ final class SortChooser extends JComboBox {
 	 * 
 	 * @param isDefault
 	 *            <code>true</code> to use the default classpath
-	 * @return a list of the available sort routines
 	 */
 	private void loadChooser(final boolean isDefaultPath) {
 		listClasses.clear();

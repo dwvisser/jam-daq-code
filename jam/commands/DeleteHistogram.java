@@ -1,5 +1,6 @@
 package jam.commands;
 
+import jam.data.DataUtility;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -33,11 +34,12 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		final JFrame frame = STATUS.getFrame();
 		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
 		final String name = hist.getFullName().trim();
-		final Group.Type type = Group.getGroup(hist).getType();
+		final Group.Type type = DataUtility.getGroup(hist).getType();
 		/* Cannot delete sort histograms */
 		if (type == Group.Type.SORT) {
 			LOGGER
@@ -47,12 +49,13 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 			if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(frame,
 					"Delete " + name + "?", "Delete histogram",
 					JOptionPane.YES_NO_OPTION)) {
-				Group.deleteHistogram(hist);
+				hist.delete();
 				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			}
 		}
 	}
 
+	@Override
 	protected void executeParse(final String[] cmdTokens) {
 		execute(null);
 	}

@@ -2,7 +2,7 @@ package jam.data.control;
 
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
-import jam.data.Group;
+import jam.data.DataUtility;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.ui.SelectionTree;
@@ -85,10 +85,12 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 		cdgain.setLayout(new BorderLayout(hgap, vgap));
 		setLocation(20, 50);
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
 
+			@Override
 			public void windowOpened(final WindowEvent event) {
 				doSetup();
 			}
@@ -170,7 +172,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 							BROADCASTER
 									.broadcast(BroadcastEvent.Command.REFRESH);
 							SelectionTree.setCurrentHistogram(hto);
-							STATUS.setCurrentGroup(Group.getGroup(hto));
+							STATUS.setCurrentGroup(DataUtility.getGroup(hto));
 							BROADCASTER.broadcast(
 									BroadcastEvent.Command.HISTOGRAM_SELECT,
 									hto);
@@ -335,6 +337,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 	 * if 1 d
 	 * 
 	 */
+	@Override
 	public void doSetup() {
 		final String lto = (String) cto.getSelectedItem();
 		cto.removeAllItems();
@@ -371,7 +374,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 			final double interceptOut, final double slopeOut, final int npts2)
 			throws DataException {
 		double[] countsOut = new double[npts2];// lang spec says elements init
-												// to zero
+		// to zero
 		for (int n = 0; n < countsIn.length; n++) {
 			calculateIntermediateValues(interceptIn, slopeIn, interceptOut,
 					slopeOut, npts2, n);
@@ -583,6 +586,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 	 * Implementation of Observable interface to receive broad cast events.
 	 * Listen for histograms new, histogram added
 	 */
+	@Override
 	public void update(final Observable observable, final Object event) {
 		final BroadcastEvent jamEvent = (BroadcastEvent) event;
 		final BroadcastEvent.Command com = jamEvent.getCommand();

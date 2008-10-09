@@ -2,7 +2,7 @@ package jam.applet;//NOPMD
 
 import jam.InitialHistograms;
 import jam.commands.CommandManager;
-import jam.data.DimensionalData;
+import jam.data.DataElement;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
@@ -155,6 +155,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	 * Initializes the applet. You never need to call this directly; it is
 	 * called automatically by the system once the applet is created.
 	 */
+	@Override
 	public void init() {
 		int sizeX = 500;
 		int sizeY = 300;
@@ -317,13 +318,14 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	 * @param gates
 	 *            the list of gates
 	 */
-	public void setGateList(final List<DimensionalData> gates) {
+	public void setGateList(final List<DataElement> gates) {
 		/* if we have gates load gates of current histogram into chooser */
 		if (gateChooser != null) {
 			gateChooser.removeAll();
 			/* set proper model */
-			gateChooser.setModel(new DefaultComboBoxModel(new Vector<DimensionalData>(// NOPMD
-					gates)));
+			gateChooser.setModel(new DefaultComboBoxModel(
+					new Vector<DataElement>(// NOPMD
+							gates)));
 		}
 	}
 

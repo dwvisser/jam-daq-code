@@ -75,8 +75,7 @@ public final class HistInt1D extends AbstractHist1D {
 		synchronized (this) {
 			counts = EMPTY_INT;
 			unsetErrors();
-			setCalibration(AbstractCalibrationFunctionCollection
-					.getNoCalibration());
+			setCalibration(AbstractCalibrationFunctionCollection.NO_CALIBRATION);
 			clear = true;
 		}
 	}

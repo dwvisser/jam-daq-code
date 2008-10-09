@@ -1,15 +1,11 @@
 package test.sort.mockfrontend;
 
-import jam.global.JamException;
 import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
@@ -33,19 +29,16 @@ import javax.swing.text.StyleConstants;
  * 
  * @author Ken Swartz
  * @author Dale Visser
- * @version 1.2 alpha last edit 15 Feb 2000
- * @version 0.5 last edit 11-98
- * @version 0.5 last edit 1-99
  */
 public class Console extends JPanel implements MessageHandler {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private final static int DISPLAY_LINES = 25;
 	private final static int NUMBER_LINES_LOG = 1000;
 
+	/**
+	 * Logs to a log file.
+	 */
 	public static final Logger LOGGER = Logger.getLogger(Console.class
 			.getPackage().getName());
 
@@ -60,12 +53,12 @@ public class Console extends JPanel implements MessageHandler {
 	/**
 	 * End of line character(s).
 	 */
-	private static final String END_LINE = System
-			.getProperty("line.separator");
+	private static final String END_LINE = System.getProperty("line.separator");
 
 	private transient final JTextPane textLog; // output text area
 	private transient final Document doc;
-	private transient final SimpleAttributeSet attr_normal, attr_warning, attr_error;
+	private transient final SimpleAttributeSet attr_normal, attr_warning,
+			attr_error;
 	// Is the message a new one or a continuation of one
 	private transient boolean msgLock;
 	// a lock for message output so message don't overlap
@@ -84,23 +77,11 @@ public class Console extends JPanel implements MessageHandler {
 	 * 
 	 * @serial
 	 */
-	private transient BufferedWriter logFileWriter; // output stream
-	/**
-	 * Private.
-	 * 
-	 * @serial
-	 */
-	private transient boolean logFileOn; // are we logging to a file
-	/**
-	 * Private.
-	 * 
-	 * @serial
-	 */
 	private transient String messageFile; // message for file
 
 	/**
 	 * Create a JamConsole which has an text area for output a text field for
-	 * intput.
+	 * input.
 	 */
 	public Console() {
 		this(NUMBER_LINES_LOG);
@@ -109,6 +90,9 @@ public class Console extends JPanel implements MessageHandler {
 	/**
 	 * Constructor: Create a JamConsole which has an text area for output a text
 	 * field for input.
+	 * 
+	 * @param linesLog
+	 *            maximum number of lines in the log
 	 */
 	public Console(final int linesLog) {
 		super(new BorderLayout(5, 5));
@@ -127,7 +111,6 @@ public class Console extends JPanel implements MessageHandler {
 		this.add(jsp, BorderLayout.CENTER);
 		msgLock = false;
 		numberLines = 1;
-		logFileOn = false;
 		this.setPreferredSize(new Dimension(800, 28 + 16 * DISPLAY_LINES));
 
 	}
@@ -169,17 +152,6 @@ public class Console extends JPanel implements MessageHandler {
 				}
 				trimLog();
 				textLog.setCaretPosition(doc.getLength());
-				// if file logging on write to file
-				if (logFileOn) {
-					try {
-						logFileWriter.write(messageFile, 0, messageFile
-								.length());
-						logFileWriter.flush();
-					} catch (final IOException ioe) {
-						logFileOn = false;
-						errorOutln("Unable to write to log file, logging turned off [JamConsole]");
-					}
-				}
 				// unlock text area and notify others they can use it
 				msgLock = false;
 				notifyAll();
@@ -219,16 +191,6 @@ public class Console extends JPanel implements MessageHandler {
 			}
 			trimLog();
 			textLog.setCaretPosition(doc.getLength());
-			// if file logging on write to file
-			if (logFileOn) {
-				try {
-					logFileWriter.write(messageFile, 0, messageFile.length());
-					logFileWriter.flush();
-				} catch (final IOException ioe) {
-					logFileOn = false;
-					errorOutln("Unable to write to log file, logging turned off [JamConsole]");
-				}
-			}
 			// unlock text area and notify others they can use it
 			msgLock = false;
 		}
@@ -271,78 +233,6 @@ public class Console extends JPanel implements MessageHandler {
 			textLog.setCaretPosition(doc.getLength());
 			/* beep */
 			Toolkit.getDefaultToolkit().beep();
-			if (logFileOn) { // if file logging on write to file
-				try {
-					logFileWriter.write(messageFile, 0, messageFile.length());
-					logFileWriter.flush();
-				} catch (final IOException ioe) {
-					logFileOn = false;
-					errorOutln("Unable to write to log file, logging turned off [JamConsole]");
-				}
-			}
-		}
-	}
-
-	public static final String INTS_ONLY = "int";
-
-	/**
-	 * Create a file for the log to be saved to. The method appends a number
-	 * (starting at 1) to the file name if the file already exists.
-	 * 
-	 * @exception JamException
-	 *                exceptions that go to the console
-	 */
-	public String setLogFileName(final String name) {
-		File file;
-		String newName;
-		int fileIndex;
-
-		newName = name + ".log";
-		file = new File(newName);
-		// create a unique file, append a number if a log already exits.
-		fileIndex = 1;
-		while (file.exists()) {
-			newName = name + fileIndex + ".log";
-			file = new File(newName);// NOPMD
-			fileIndex++;
-		}
-		// create a new logFileWriter
-		try {
-			logFileWriter = new BufferedWriter(new FileWriter(file));
-
-		} catch (final IOException ioe) {
-			errorOutln("Not able to create log file " + newName);
-		}
-		return newName;
-	}
-
-	/**
-	 * Close the log file
-	 * 
-	 * @exception JamException
-	 *                exceptions that go to the console
-	 */
-	public void closeLogFile() {
-		try {
-			logFileWriter.flush();
-			logFileWriter.close();
-		} catch (final IOException ioe) {
-			errorOutln("Could not close log file  [JamConsole]");
-		}
-	}
-
-	/**
-	 * Turn on the logging to a file
-	 * 
-	 * @exception JamException
-	 *                exceptions that go to the console
-	 */
-	public void setLogFileOn(final boolean state) {
-		if (null == logFileWriter) {
-			logFileOn = false;
-			errorOutln("Cannot turn on logging to file, log file does not exits  [JamConsole]");
-		} else {
-			logFileOn = state;
 		}
 	}
 
@@ -391,20 +281,6 @@ public class Console extends JPanel implements MessageHandler {
 		datef.setTimeZone(TimeZone.getDefault()); // set time zone
 		stime = datef.format(date); // format time
 		return stime;
-	}
-
-	/**
-	 * On a class destruction close log file
-	 */
-	@Override
-	protected void finalize() throws Throwable {
-		try {
-			if (logFileOn) {
-				closeLogFile();
-			}
-		} finally {
-			super.finalize();
-		}
 	}
 
 	public void messageOutln() {

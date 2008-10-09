@@ -1,10 +1,10 @@
 package jam.data.control;
 
 import static javax.swing.SwingConstants.RIGHT;
+import jam.data.DataElement;
 import jam.data.DataException;
-import jam.data.DimensionalData;
+import jam.data.DataUtility;
 import jam.data.Gate;
-import jam.data.Group;
 import jam.data.HistDouble2D;
 import jam.data.HistInt2D;
 import jam.data.Histogram;
@@ -155,7 +155,7 @@ public final class Projections extends AbstractManipulation implements
 					project();
 					BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
 					SelectionTree.setCurrentHistogram(hto);
-					STATUS.setCurrentGroup(Group.getGroup(hto));
+					STATUS.setCurrentGroup(DataUtility.getGroup(hto));
 					BROADCASTER.broadcast(
 							BroadcastEvent.Command.HISTOGRAM_SELECT, hto);
 				} catch (DataException de) {
@@ -201,6 +201,7 @@ public final class Projections extends AbstractManipulation implements
 	 */
 	private void addWindowOpenListener() {
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowOpened(final WindowEvent windowEvent) {
 				doSetup();
 			}
@@ -211,6 +212,7 @@ public final class Projections extends AbstractManipulation implements
 	 * Implementation of Observable interface Listners for broadcast events.
 	 * Broadcast events: histograms new and histogram added
 	 */
+	@Override
 	public void update(final java.util.Observable observable,
 			final Object object) {
 		final BroadcastEvent event = (BroadcastEvent) object;
@@ -231,6 +233,7 @@ public final class Projections extends AbstractManipulation implements
 	 * upper if 1 d
 	 * 
 	 */
+	@Override
 	public void doSetup() {
 		cfrom.setSelectedIndex(0);
 		setUseHist(NEW_HIST); // default use new histogram
@@ -241,7 +244,6 @@ public final class Projections extends AbstractManipulation implements
 
 	/*
 	 * non-javadoc: Setups up the channel and gate selector.
-	 * 
 	 */
 	private void setupCuts(final String newSelect) {
 		cchan.removeAllItems();
@@ -251,8 +253,8 @@ public final class Projections extends AbstractManipulation implements
 		/* add gates to chooser */
 		final Histogram hfrom = Histogram.getHistogram(hfromname);
 		if (hfrom != null) {
-			for (DimensionalData gate : hfrom.getGateCollection().getGates()) {
-				if (((Gate)gate).isDefined()) {
+			for (DataElement gate : hfrom.getGateCollection().getGates()) {
+				if (((Gate) gate).isDefined()) {
 					cchan.addItem(gate);
 				}
 			}
