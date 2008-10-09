@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * @author Dale Visser
  * @version 6 August 2002
  */
-public class FullCheckEventFiles {
+public final class FullCheckEventFiles {
 
 	private static final String packageName = FullCheckEventFiles.class
 			.getPackage().getName();

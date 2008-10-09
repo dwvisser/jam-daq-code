@@ -4,7 +4,7 @@
 package jam.data;
 
 import jam.data.func.AbstractCalibrationFunction;
-import jam.data.func.AbstractCalibrationFunctionCollection;
+import jam.data.func.CalibrationFunctionCollection;
 import jam.data.peaks.PeakFinder;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public abstract class AbstractHist1D extends Histogram {
 	/**
 	 * The calibration function. Set to <code>null</code> if there is none.
 	 */
-	protected transient AbstractCalibrationFunction calibFunc = AbstractCalibrationFunctionCollection.NO_CALIBRATION;
+	protected transient AbstractCalibrationFunction calibFunc = CalibrationFunctionCollection.NO_CALIBRATION;
 
 	/**
 	 * Array which contains the errors in the channel counts.

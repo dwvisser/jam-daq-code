@@ -1,7 +1,7 @@
 package jam.data.control;
 
 import jam.data.func.AbstractCalibrationFunction;
-import jam.data.func.AbstractCalibrationFunctionCollection;
+import jam.data.func.CalibrationFunctionCollection;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +39,7 @@ final class CalibrationComboBoxModel implements ComboBoxModel {
 	 */
 	public Object getElementAt(final int index) {
 		synchronized (selectSync) {
-			return AbstractCalibrationFunctionCollection.getListNames().get(
+			return CalibrationFunctionCollection.getListNames().get(
 					index);
 		}
 	}
@@ -49,7 +49,7 @@ final class CalibrationComboBoxModel implements ComboBoxModel {
 	 */
 	public int getSize() {
 		synchronized (selectSync) {
-			return AbstractCalibrationFunctionCollection.getListNames().size();
+			return CalibrationFunctionCollection.getListNames().size();
 		}
 	}
 
@@ -66,7 +66,7 @@ final class CalibrationComboBoxModel implements ComboBoxModel {
 		synchronized (selectSync) {
 			String selectionNew;
 			if (anItem == null) {
-				selectionNew = AbstractCalibrationFunctionCollection
+				selectionNew = CalibrationFunctionCollection
 						.getListNames().get(0);
 			} else if (anItem instanceof String) {
 				selectionNew = (String) anItem;

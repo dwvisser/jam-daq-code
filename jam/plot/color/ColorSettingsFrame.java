@@ -33,14 +33,14 @@ import javax.swing.event.ChangeListener;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  * @version 2004-11-08
  */
-public class ColorSettingsFrame extends JDialog implements ChangeListener {
+public final class ColorSettingsFrame extends JDialog implements ChangeListener {
 
 	static private final ColorSettingsFrame CSF = new ColorSettingsFrame();
 
 	/**
 	 * Returns the only instance of this class.
 	 * 
-	 * @return the only insstance of this class
+	 * @return the only instance of this class
 	 */
 	static public ColorSettingsFrame getInstance() {
 		return CSF;

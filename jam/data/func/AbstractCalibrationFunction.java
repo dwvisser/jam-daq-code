@@ -2,8 +2,12 @@ package jam.data.func;
 
 import jam.data.DataException;
 
+import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Arrays;
+
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /**
  * A function that can be use to calibrate a histogram. Most often used to
@@ -551,5 +555,20 @@ public abstract class AbstractCalibrationFunction implements Function {
 			array[row1][i] = array[row2][i];
 			array[row2][i] = temp;
 		}
+	}
+
+	protected void loadIcon(final String iconFile) {
+		final ClassLoader loader = ClassLoader.getSystemClassLoader();
+
+		final URL urlIcon = loader.getResource(iconFile);
+		if (urlIcon == null) {
+			JOptionPane.showMessageDialog(null,
+					"Can't load resource for calibration function icon "
+							+ iconFile);
+		} else {
+			CalibrationFunctionCollection.setIcon(this.getName(),
+					new ImageIcon(urlIcon));
+		}
+
 	}
 }

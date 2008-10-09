@@ -9,7 +9,7 @@ import java.util.Date;
  * 
  * @author Ken Swartz
  */
-public class RunInfo {
+public final class RunInfo {
 
 	private RunInfo() {
 		super();

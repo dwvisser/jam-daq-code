@@ -8,7 +8,7 @@ import java.util.logging.Logger;
  * @author Dale Visser
  * 
  */
-public class BroadcastUtilities {
+public final class BroadcastUtilities {
 
 	private static final Broadcaster INSTANCE = Broadcaster
 			.getSingletonInstance();

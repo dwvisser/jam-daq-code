@@ -58,7 +58,8 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  */
-public class RunControl extends JDialog implements Controller, RunController {
+public final class RunControl extends JDialog implements Controller,
+		RunController {
 
 	private static enum Device {
 		/**

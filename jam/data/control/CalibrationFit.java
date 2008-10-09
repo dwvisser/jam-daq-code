@@ -2,7 +2,7 @@ package jam.data.control;
 
 import jam.data.AbstractHist1D;
 import jam.data.func.AbstractCalibrationFunction;
-import jam.data.func.AbstractCalibrationFunctionCollection;
+import jam.data.func.CalibrationFunctionCollection;
 import jam.data.func.CalibrationFitException;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
@@ -49,7 +49,7 @@ public class CalibrationFit extends AbstractControl {
 
 	private final static String BLANK_LABEL = "    --     ";
 
-	private transient AbstractCalibrationFunction calibFunc = AbstractCalibrationFunctionCollection.NO_CALIBRATION;
+	private transient AbstractCalibrationFunction calibFunc = CalibrationFunctionCollection.NO_CALIBRATION;
 
 	/* GUI stuff */
 	private transient final JTabbedPane tabPane;// Tabbed for fit type
@@ -245,7 +245,7 @@ public class CalibrationFit extends AbstractControl {
 	private void selectFunction(final String funcName) {
 		try {
 			calibFunc = getCurrentCalibrationFunction();
-			final Class<? extends AbstractCalibrationFunction> calClass = AbstractCalibrationFunctionCollection
+			final Class<? extends AbstractCalibrationFunction> calClass = CalibrationFunctionCollection
 					.getMapFunctions().get(funcName);
 			final boolean change = calClass.isInstance(calibFunc);
 			final AbstractHist1D currentHistogram = getCurrentHistogram();
@@ -385,11 +385,11 @@ public class CalibrationFit extends AbstractControl {
 			}
 		} catch (NumberFormatException nfe) {
 			currentHist
-					.setCalibration(AbstractCalibrationFunctionCollection.NO_CALIBRATION);
+					.setCalibration(CalibrationFunctionCollection.NO_CALIBRATION);
 			LOGGER.severe("Invalid input, not a number");
 		} catch (CalibrationFitException de) {
 			currentHist
-					.setCalibration(AbstractCalibrationFunctionCollection.NO_CALIBRATION);
+					.setCalibration(CalibrationFunctionCollection.NO_CALIBRATION);
 			LOGGER.severe(de.getMessage());
 		}
 	}
@@ -543,7 +543,7 @@ public class CalibrationFit extends AbstractControl {
 
 	private AbstractCalibrationFunction getCurrentCalibrationFunction() {
 		final AbstractHist1D currentHist = getCurrentHistogram();
-		final AbstractCalibrationFunction rval = currentHist == null ? AbstractCalibrationFunctionCollection.NO_CALIBRATION
+		final AbstractCalibrationFunction rval = currentHist == null ? CalibrationFunctionCollection.NO_CALIBRATION
 				: currentHist.getCalibration();
 		return rval;
 	}

@@ -27,7 +27,7 @@ import javax.swing.Action;
  * 
  * @author Ken Swartz
  */
-public class CommandManager implements CommandListener, CommandFinder {
+public final class CommandManager implements CommandListener, CommandFinder {
 
 	private static final Object classMonitor = new Object();
 
@@ -174,8 +174,8 @@ public class CommandManager implements CommandListener, CommandFinder {
 	 * 
 	 * @param strCmd
 	 *            name of the command
-	 * @return <code>true</code> if successful, <code>false</code> if the
-	 *         given command doesn't exist
+	 * @return <code>true</code> if successful, <code>false</code> if the given
+	 *         command doesn't exist
 	 */
 	private boolean createCmd(final String strCmd) {
 		final boolean exists = CMD_MAP.containsKey(strCmd);
@@ -230,8 +230,11 @@ public class CommandManager implements CommandListener, CommandFinder {
 		return new TreeSet<String>(CMD_MAP.keySet());
 	}
 
-	/* (non-Javadoc)
-	 * @see jam.commands.CommandFinder#getSimilarCommnands(java.lang.String, boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jam.commands.CommandFinder#getSimilarCommnands(java.lang.String,
+	 * boolean)
 	 */
 	public Collection<String> getSimilarCommnands(final String string,
 			final boolean onlyEnabled) {

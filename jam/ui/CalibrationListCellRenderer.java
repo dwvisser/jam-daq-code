@@ -1,6 +1,6 @@
 package jam.ui;
 
-import jam.data.func.AbstractCalibrationFunctionCollection;
+import jam.data.func.CalibrationFunctionCollection;
 
 import java.awt.Component;
 
@@ -41,7 +41,7 @@ public class CalibrationListCellRenderer extends DefaultListCellRenderer {// NOP
 			setIcon(null);
 		} else {
 			setText(value.toString());
-			final ImageIcon icon = AbstractCalibrationFunctionCollection
+			final ImageIcon icon = CalibrationFunctionCollection
 					.getIcon(value.toString());
 			setIcon(icon);
 		}

@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
  * 
  * @author <a href=mailto:dale@visser.name>Dale Visser </a>
  */
-public class FileUtilities {
+public final class FileUtilities {
 
 	/**
 	 * Take any existing extension and replace it with the given one.
@@ -162,12 +162,12 @@ public class FileUtilities {
 
 		return writeConfirm;
 	}
-	
+
 	/**
 	 * 
 	 * @param dir
-	 * @return given file if a directory, parent directory otherwise, null if given file
-	 * doesn't exist
+	 * @return given file if a directory, parent directory otherwise, null if
+	 *         given file doesn't exist
 	 */
 	public File getDir(final String dir) {
 		File rval = new File(dir);
@@ -176,7 +176,7 @@ public class FileUtilities {
 				rval = rval.getParentFile();
 			}
 		} else {
-			rval = null;//NOPMD
+			rval = null;// NOPMD
 		}
 		return rval;
 	}

@@ -20,8 +20,7 @@ public class CubicFunction extends AbstractCalibrationFunction {
 		labels[1] = "a1";
 		labels[2] = "a2";
 		labels[3] = "a3";
-		AbstractCalibrationFunctionCollection.loadIcon(this,
-				"jam/data/func/cubic.png");
+		this.loadIcon("jam/data/func/cubic.png");
 	}
 
 	/**
@@ -31,6 +30,7 @@ public class CubicFunction extends AbstractCalibrationFunction {
 	 *            value at which to get calibration
 	 * @return calibration value of the channel
 	 */
+	@Override
 	public double getValue(final double channel) {
 		return coeff[0] + coeff[1] * channel + coeff[2] * channel * channel
 				+ coeff[3] * channel * channel * channel;
@@ -39,11 +39,13 @@ public class CubicFunction extends AbstractCalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
+	@Override
 	public void fit() throws CalibrationFitException {
 		final double[] coeffCubic = polynomialFit(ptsEnergy, ptsChannel, 2);
 		System.arraycopy(coeffCubic, 0, coeff, 0, coeffCubic.length);
 	}
 
+	@Override
 	public void updateFormula(final NumberFormat numFormat) {
 		formula.setLength(0);
 		formula.append("E = ").append(numFormat.format(coeff[0])).append(" + ")

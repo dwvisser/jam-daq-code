@@ -29,7 +29,7 @@ import javax.swing.JOptionPane;
  * @author <a href="mailto:daniel@satlive.org">Daniel Le Berre</a>
  * @version 1.0
  */
-public class RuntimeSubclassIdentifier {
+public final class RuntimeSubclassIdentifier {
 
 	private static final String CLASS_EXT = ".class";
 

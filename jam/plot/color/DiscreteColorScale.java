@@ -13,7 +13,7 @@ import java.awt.Color;
  * @version 2004-11-09
  * @since 1.6.0
  */
-public class DiscreteColorScale implements ColorScale {
+public final class DiscreteColorScale implements ColorScale {
 	private static final Color[] B_ON_W = { new Color(0, 0, 127), // 0
 			new Color(0, 0, 255), // 1
 			new Color(128, 0, 255), // 2

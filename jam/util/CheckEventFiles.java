@@ -48,7 +48,7 @@ import java.util.logging.Logger;
  * @author Dale Visser
  * @version 6 August 2002
  */
-public class CheckEventFiles {
+public final class CheckEventFiles {
 
 	private static final String packageName = CheckEventFiles.class
 			.getPackage().getName();
@@ -84,7 +84,7 @@ public class CheckEventFiles {
 		}
 	}
 
-	private CheckEventFiles(File dir, File outDir) {
+	private CheckEventFiles(final File dir, final File outDir) {
 		super();
 		final File[] eventFiles = getEventFiles(dir);
 		if (eventFiles.length > 0) {
@@ -131,7 +131,7 @@ public class CheckEventFiles {
 
 	private File[] getEventFiles(final File path) {
 		return path.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
+			public boolean accept(final File dir, final String name) {
 				return name.endsWith("evn");
 			}
 		});

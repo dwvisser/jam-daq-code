@@ -4,10 +4,10 @@ import jam.global.Nameable;
 import jam.global.Validator;
 
 /**
- * Class that contains a <code>static</code>method to clear the lists of all
- * the data classes.
+ * Class that contains a <code>static</code>method to clear the lists of all the
+ * data classes.
  */
-public class DataBase implements Validator {
+public final class DataBase implements Validator {
 
 	private static final DataBase INSTANCE = new DataBase();
 

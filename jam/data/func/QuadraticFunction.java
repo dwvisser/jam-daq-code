@@ -20,8 +20,7 @@ public class QuadraticFunction extends AbstractCalibrationFunction {
 		labels[0] = "a0";
 		labels[1] = "a1";
 		labels[2] = "a2";
-		AbstractCalibrationFunctionCollection.loadIcon(this,
-				"jam/data/func/quad.png");
+		this.loadIcon("jam/data/func/quad.png");
 	}
 
 	/**
@@ -31,6 +30,7 @@ public class QuadraticFunction extends AbstractCalibrationFunction {
 	 *            value at which to get calibration
 	 * @return calibration value of the channel
 	 */
+	@Override
 	public double getValue(final double channel) {
 		return coeff[0] + coeff[1] * channel + coeff[2] * channel * channel;
 	}
@@ -38,11 +38,13 @@ public class QuadraticFunction extends AbstractCalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
+	@Override
 	public void fit() throws CalibrationFitException {
 		final double[] coeffQuad = polynomialFit(ptsEnergy, ptsChannel, 2);
 		System.arraycopy(coeffQuad, 0, coeff, 0, coeffQuad.length);
 	}
 
+	@Override
 	public void updateFormula(final NumberFormat numFormat) {
 		formula.setLength(0);
 		formula.append("E = ").append(numFormat.format(coeff[0])).append(" + ")

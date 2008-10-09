@@ -1,6 +1,5 @@
 package jam.data.func;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
 //TODO Make this dynamically load from classpath.
 //TODO Make this load a class only when needed, i.e., make it a factory.
@@ -18,7 +16,7 @@ import javax.swing.JOptionPane;
  * 
  * @author Dale Visser
  */
-public class AbstractCalibrationFunctionCollection {
+public final class CalibrationFunctionCollection {
 
 	private static final Map<String, Class<? extends AbstractCalibrationFunction>> FUNCTIONS = new TreeMap<String, Class<? extends AbstractCalibrationFunction>>();
 
@@ -42,7 +40,7 @@ public class AbstractCalibrationFunctionCollection {
 		FUNCTIONS.put(sqrtEFunc.getName(), sqrtEFunc.getClass());
 	}
 
-	private AbstractCalibrationFunctionCollection() {
+	private CalibrationFunctionCollection() {
 		// Static-only class.
 	}
 
@@ -81,21 +79,6 @@ public class AbstractCalibrationFunctionCollection {
 	 */
 	public static Map<String, Class<? extends AbstractCalibrationFunction>> getMapFunctions() {
 		return Collections.unmodifiableMap(FUNCTIONS);
-	}
-
-	static void loadIcon(final AbstractCalibrationFunction calFunc,
-			final String iconFile) {
-		final ClassLoader loader = ClassLoader.getSystemClassLoader();
-
-		final URL urlIcon = loader.getResource(iconFile);
-		if (urlIcon == null) {
-			JOptionPane.showMessageDialog(null,
-					"Can't load resource for calibration function icon "
-							+ iconFile);
-		} else {
-			setIcon(calFunc.getName(), new ImageIcon(urlIcon));
-		}
-
 	}
 
 	/**

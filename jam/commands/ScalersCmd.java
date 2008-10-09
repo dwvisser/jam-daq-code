@@ -25,7 +25,7 @@ public final class ScalersCmd extends AbstractCommand {
 	}
 
 	@Override
-	/**
+	/*
 	 * If gets used as an Action, i.e., gets passed null, defaults to READ.
 	 */
 	protected void execute(final Object[] cmdParams) {

@@ -8,7 +8,7 @@ import java.awt.Color;
  * @author Ken Swartz
  * @author Dale Visser
  */
-public class PlotColorMap {
+public final class PlotColorMap {
 
 	private static final Color DARK_RED = new Color(192, 0, 0);
 

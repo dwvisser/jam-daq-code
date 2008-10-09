@@ -17,8 +17,7 @@ public class LinearFunction extends AbstractCalibrationFunction {
 		title = "E = a0 + a1\u2219ch";
 		labels[0] = "a0";
 		labels[1] = "a1";
-		AbstractCalibrationFunctionCollection.loadIcon(this,
-				"jam/data/func/line.png");
+		this.loadIcon("jam/data/func/line.png");
 	}
 
 	/**
@@ -28,6 +27,7 @@ public class LinearFunction extends AbstractCalibrationFunction {
 	 *            value at which to get calibration
 	 * @return calibration value of the channel
 	 */
+	@Override
 	public double getValue(final double channel) {
 		return coeff[0] + coeff[1] * channel;
 	}
@@ -39,6 +39,7 @@ public class LinearFunction extends AbstractCalibrationFunction {
 	 *            physical value
 	 * @return channel corresponding to <code>energy</code>
 	 */
+	@Override
 	public double getChannel(final double energy) {
 		return ((energy - coeff[0]) / coeff[1]);
 	}
@@ -46,11 +47,13 @@ public class LinearFunction extends AbstractCalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
+	@Override
 	public void fit() throws CalibrationFitException {
 		final double[] coeffLinRegress = linearRegression(ptsChannel, ptsEnergy);
 		System.arraycopy(coeffLinRegress, 0, coeff, 0, coeffLinRegress.length);
 	}
 
+	@Override
 	public void updateFormula(final NumberFormat numFormat) {
 		formula.setLength(0);
 		formula.append("E = ").append(numFormat.format(coeff[0])).append(" + ")

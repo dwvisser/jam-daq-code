@@ -20,8 +20,7 @@ public class SqrtEnergyFunction extends AbstractCalibrationFunction {
 		title = "\u221aE = a0 + a1\u2219ch";
 		labels[0] = "a0";
 		labels[1] = "a1";
-		AbstractCalibrationFunctionCollection.loadIcon(this,
-				"jam/data/func/sqrt.png");
+		this.loadIcon("jam/data/func/sqrt.png");
 	}
 
 	/**
@@ -31,11 +30,13 @@ public class SqrtEnergyFunction extends AbstractCalibrationFunction {
 	 *            value at which to get calibration
 	 * @return calibration value of the channel
 	 */
+	@Override
 	public double getValue(final double channel) {
 		return (coeff[0] + coeff[1] * channel)
 				* (coeff[0] + coeff[1] * channel);
 	}
 
+	@Override
 	public double getChannel(final double energy) {
 		return ((Math.sqrt(energy) - coeff[0]) / coeff[1]);
 	}
@@ -43,6 +44,7 @@ public class SqrtEnergyFunction extends AbstractCalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
+	@Override
 	public void fit() throws CalibrationFitException {
 		final double[] sqrtE = new double[ptsEnergy.length];
 		for (int i = 0; i < ptsEnergy.length; i++) {
@@ -51,6 +53,7 @@ public class SqrtEnergyFunction extends AbstractCalibrationFunction {
 		setCoeff(linearRegression(ptsChannel, sqrtE));
 	}
 
+	@Override
 	protected void updateFormula(final NumberFormat numFormat) {
 		formula.setLength(0);
 		formula.append("\u221aE = ").append(numFormat.format(coeff[0])).append(
