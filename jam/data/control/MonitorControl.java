@@ -267,7 +267,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 					.getComponent(base + 3);
 			textThreshold.setText(String.valueOf(monitor.getThreshold()));
 			textMaximum.setText(String.valueOf(monitor.getMaximum()));
-			checkAlarm.setSelected(monitor.getAlarm());
+			checkAlarm.setSelected(monitor.isAlarmActivated());
 		}
 	}
 

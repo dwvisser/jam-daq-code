@@ -337,7 +337,7 @@ final class Plot2d extends AbstractPlot {
 		return 0.0;
 	}
 
-	private boolean getSmoothColorScale() {
+	private boolean isSmoothColorScale() {
 		synchronized (monitor) {
 			return smoothScale;
 		}
@@ -469,7 +469,7 @@ final class Plot2d extends AbstractPlot {
 		final int minY = painter.toDataVert((int) clipBounds.getMaxY());
 		final int maxY = painter.toDataVert((int) clipBounds.getMinY());
 		final DiscreteColorScale dcs = DiscreteColorScale.getScale(scale);
-		if (getSmoothColorScale()) {
+		if (isSmoothColorScale()) {
 			painter.drawHist2d(counts2d, minX, minY, maxX, maxY);
 			context.setPaintMode();
 			context.setColor(plotColorMap.getForeground());
@@ -604,8 +604,7 @@ final class Plot2d extends AbstractPlot {
 	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		if (key.equals(ColorPrefs.SMOOTH_SCALE)) {
-			setSmoothColorScale(Boolean.valueOf(pce.getNewValue())
-					.booleanValue());
+			setSmoothColorScale(Boolean.parseBoolean(pce.getNewValue()));
 		} else {
 			super.preferenceChange(pce);
 		}

@@ -317,7 +317,7 @@ public class MonitorApplet extends JApplet implements ActionListener,// NOPMD
 				// is the alarm for this monitor set set
 				for (int i = 0; i < numberMonitors; i++) {
 					LOGGER.info("mon value " + i + " " + monitorValues.get(i));
-					if (((monitorList.get(i).getAlarm()) && (monitorValues
+					if (((monitorList.get(i).isAlarmActivated()) && (monitorValues
 							.get(i)) < monitorList.get(i).getThreshold())
 							&& audioOn) {
 						LOGGER.info("beep for " + i);

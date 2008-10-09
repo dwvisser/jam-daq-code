@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 /**
  * A function that can be use to calibrate a histogram. Most often used to
  * define energy calibrations of spectra. But could also do time of flight an
- * rho for a magnetic spectometer.
+ * rho for a magnetic spectrometer.
  * 
  * @author Ken Swartz
  * @version 1.0
@@ -93,7 +93,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @param numberTerms
 	 *            number of terms in function
 	 */
-	AbstractCalibrationFunction(String name, int numberTerms) {
+	AbstractCalibrationFunction(final String name, final int numberTerms) {
 		super();
 		this.name = name;
 		if (numberTerms < MAX_TERMS) {

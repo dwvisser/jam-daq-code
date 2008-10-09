@@ -53,7 +53,7 @@ import java.util.prefs.PreferenceChangeListener;
 /**
  * Class the does the actions on plots. Receives commands from buttons and
  * command line. Performs action by performing command on plot, plot1d and
- * plot2d. Commands avaliable:
+ * plot2d. Commands available:
  * <dl>
  * <dt>update</dt>
  * <dd>update a plot with current data</dd>
@@ -61,7 +61,7 @@ import java.util.prefs.PreferenceChangeListener;
  * <dd>expand channels to view</dd>
  * <dt>zoomin, zoomout</dt>
  * <dt>full</dt>
- * <dd>view all channles</dd>
+ * <dd>view all channels</dd>
  * <dt>linear, log</dt>
  * <dt>range</dt>
  * <dd>change the count range</dd>
@@ -76,7 +76,7 @@ import java.util.prefs.PreferenceChangeListener;
  * @version 0.5
  */
 
-class Action implements PlotMouseListener, PreferenceChangeListener,
+final class Action implements PlotMouseListener, PreferenceChangeListener,
 		Commandable {
 
 	/** Broadcaster for event and gate change */
@@ -151,10 +151,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	private transient final PlotFit inquire;
 
 	/** Command requires a cursor input */
-	private transient boolean isCursorCommand;
-
-	/** Variable to indicate mouse was pressed */
-	private transient boolean mousePressed;
+	private transient boolean cursorCommand;
 
 	private transient final NumberFormat numFormat;
 
@@ -177,7 +174,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 * @param console
 	 *            Jam's console component
 	 */
-	Action(CurrentPlotAccessor disp, Console console, CommandFinder finder) {
+	Action(final CurrentPlotAccessor disp, final Console console,
+			final CommandFinder finder) {
 		super();
 		this.commandFinder = finder;
 		plotAccessor = disp;
@@ -212,7 +210,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 		if (commandPresent) {
 			areaCommandPresent();
 		} else {
-			isCursorCommand = true;
+			cursorCommand = true;
 			init();
 			final String name = ((Histogram) SelectionTree
 					.getCurrentHistogram()).getFullName().trim();
@@ -226,7 +224,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 */
 	private void areaCommandPresent() {
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
-		if (clicks.size() == 0) {
+		if (clicks.isEmpty()) {
 			synchronized (cursorBin) {
 				cloneClickAndAdd(cursorBin);
 				currentPlot.initializeSelectingArea(cursorBin);
@@ -274,7 +272,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 * Auto scale the plot.
 	 */
 	private void auto() {
-		isCursorCommand = false;
+		cursorCommand = false;
 		plotAccessor.getPlotContainer().autoCounts();
 		done();
 	}
@@ -285,7 +283,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 */
 	@SuppressWarnings(UNUSED)
 	private void cancel() {// NOPMD
-		isCursorCommand = false;
+		cursorCommand = false;
 		textOut.messageOutln();
 		done();
 	}
@@ -314,18 +312,20 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			count = getCounts(cursorBin);
 		}
 		currentPlot.markChannel(cursorBin);
-		String binText;
+		final StringBuffer binText = new StringBuffer();
 		if (currentPlot.getDimensionality() == 1) {
-			binText = "Bin " + xch + ":  Counts = " + numFormat.format(count);
+			binText.append("Bin ").append(xch).append(":  Counts = ").append(
+					numFormat.format(count));
 			if (existsAndIsCalibrated(hist)) {
 				final double chEnergy = currentPlot.getEnergy(xch);
-				binText = binText + "  Energy = " + numFormat.format(chEnergy);
+				binText.append("  Energy = ")
+						.append(numFormat.format(chEnergy));
 			}
 		} else {// 2 Dim plot
-			binText = "Bin " + xch + "," + ych + ":  Counts = "
-					+ numFormat.format(count);
+			binText.append("Bin ").append(xch).append(',').append(ych).append(
+					":  Counts = ").append(numFormat.format(count));
 		}
-		textOut.messageOutln(binText);
+		textOut.messageOutln(binText.toString());
 		done();
 	}
 
@@ -336,7 +336,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 */
 	void display(final List<Double> hist) {
 		if (!commandPresent) {
-			isCursorCommand = false;
+			cursorCommand = false;
 			init();
 			textOut
 					.messageOut("Display histogram number: ",
@@ -445,9 +445,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 */
 	private void done() {
 		synchronized (this) {
-			isCursorCommand = true;
+			cursorCommand = true;
 			commandPresent = false;
-			mousePressed = false;
 			currentCommand = "";
 			clicks.clear();
 			plotAccessor.getPlotContainer().setSelectingArea(false);
@@ -463,7 +462,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 		if (commandPresent) {
 			updateSelectedAreaForClick(currentPlot);
 		} else {
-			isCursorCommand = true;
+			cursorCommand = true;
 			init();
 			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
 		}
@@ -473,7 +472,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 * @param currentPlot
 	 */
 	private void updateSelectedAreaForClick(final PlotContainer currentPlot) {
-		if (clicks.size() == 0) {
+		if (clicks.isEmpty()) {
 			synchronized (cursorBin) {
 				currentPlot.initializeSelectingArea(cursorBin);
 				cloneClickAndAdd(cursorBin);
@@ -498,7 +497,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 */
 	@SuppressWarnings(UNUSED)
 	private void full() {// NOPMD
-		isCursorCommand = false;
+		cursorCommand = false;
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
 		currentPlot.setFull();
 		if (autoOnExpand) {
@@ -538,9 +537,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 		}
 	}
 
-	public boolean getIsCursorCommand() {
+	public boolean isCursorCommand() {
 		synchronized (this) {
-			return isCursorCommand;
+			return cursorCommand;
 		}
 	}
 
@@ -621,11 +620,11 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
 		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
 		if (commandPresent) {
-			if (clicks.size() == 0) {
+			if (clicks.isEmpty()) {
 				goNoClicks(currentPlot, hist);
 			}
 		} else {
-			isCursorCommand = true;
+			cursorCommand = true;
 			init();
 			if (currentPlot.getDimensionality() == 1
 					&& existsAndIsCalibrated(hist)) {
@@ -658,7 +657,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			} else {
 				output.append(chan).append(equal).append(xCoord);
 			}
-			if (currentPlot.getDimensionality() == 1 && !mousePressed
+			if (currentPlot.getDimensionality() == 1
 					&& existsAndIsCalibrated(hist)) {
 				output = new StringBuffer(energy).append(equal).append(xCoord);
 				synchronized (this) {
@@ -767,7 +766,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 * Set the counts to linear scale.
 	 */
 	private void linear() {
-		isCursorCommand = false;
+		cursorCommand = false;
 		plotAccessor.getPlotContainer().setLinear();
 		done();
 	}
@@ -776,7 +775,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 * Set the counts to log scale.
 	 */
 	private void log() {
-		isCursorCommand = false;
+		cursorCommand = false;
 		plotAccessor.getPlotContainer().setLog();
 		done();
 	}
@@ -879,7 +878,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
 		final int nclicks = clicks.size();
 		if (!commandPresent) {// NOPMD
-			isCursorCommand = true;
+			cursorCommand = true;
 			init();
 			final String name = hist.getFullName().trim();
 			textOut
@@ -941,9 +940,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 * 
 	 * @param hist
 	 */
-	void overlay(final List<Double> hist) {
+	private void overlay(final List<Double> hist) {
 		if (!commandPresent) {
-			isCursorCommand = false;
+			cursorCommand = false;
 			init();
 			textOut.messageOut("Overlay histogram numbers: ",
 					MessageHandler.NEW);
@@ -980,11 +979,11 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 * Set the current plot, i.e., the one we will do actions on. Reset the
 	 * current state.
 	 */
-	void plotChanged() {
+	protected void plotChanged() {
 		synchronized (this) {
 			/* Clear command if in middle of a command */
 			/* Command present at more and 1 or more clicks */
-			if (commandPresent && clicks.size() > 0) {
+			if (commandPresent && !clicks.isEmpty()) {
 				done();
 			}
 			settingGate = false;
@@ -1037,10 +1036,10 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 			final boolean useCounts = twoD && !console;
 			final double cts = useCounts ? getCounts(cursorBin) : cursorBin
 					.getY();
-			if (clicks.size() == 0) {
+			if (clicks.isEmpty()) {
 				countLow = (int) cts;
 				clicks.add(cursorBin);
-				textOut.messageOut("" + countLow + S_TO);
+				textOut.messageOut(Integer.toString(countLow) + S_TO);
 			} else {
 				countHigh = (int) cts;
 				clicks.add(cursorBin);
@@ -1050,7 +1049,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 				done();
 			}
 		} else {
-			isCursorCommand = true;
+			cursorCommand = true;
 			init();
 			textOut.messageOut("Range from ", MessageHandler.NEW);
 		}
@@ -1061,7 +1060,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 */
 	private void rebin(final List<Double> parameters) {
 		if (!commandPresent) {
-			isCursorCommand = false;
+			cursorCommand = false;
 			init();
 			textOut.messageOut("Rebin ", MessageHandler.NEW);
 		}
@@ -1092,7 +1091,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 */
 	@SuppressWarnings(UNUSED)
 	private void scale() {// NOPMD
-		isCursorCommand = false;
+		cursorCommand = false;
 		if (plotAccessor.getPlotContainer().getLimits().getScale() == Scale.LINEAR) {
 			log();
 		} else {
@@ -1118,15 +1117,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 		}
 	}
 
-	void setDefiningGate(final boolean whether) {
+	protected void setDefiningGate(final boolean whether) {
 		synchronized (this) {
 			settingGate = whether;
-		}
-	}
-
-	void setMousePressed(final boolean whether) {
-		synchronized (this) {
-			mousePressed = whether;
 		}
 	}
 
@@ -1139,7 +1132,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 */
 	@SuppressWarnings(UNUSED)
 	private void update() {// NOPMD
-		isCursorCommand = false;
+		cursorCommand = false;
 		BROADCASTER.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
 		plotAccessor.update();
 		// Reset rebin to 1
@@ -1160,7 +1153,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
 		final boolean noCommand = !commandPresent;
 		if (noCommand) {
-			isCursorCommand = true;
+			cursorCommand = true;
 			init();
 			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
 		} else {
@@ -1173,7 +1166,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 */
 	@SuppressWarnings(UNUSED)
 	private void zoomin() {// NOPMD
-		isCursorCommand = false;
+		cursorCommand = false;
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
 		currentPlot.zoom(PlotContainer.Zoom.IN);
 		if (autoOnExpand) {
@@ -1187,7 +1180,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 */
 	@SuppressWarnings(UNUSED)
 	private void zoomout() {// NOPMD
-		isCursorCommand = false;
+		cursorCommand = false;
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
 		currentPlot.zoom(PlotContainer.Zoom.OUT);
 		if (autoOnExpand) {

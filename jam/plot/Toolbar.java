@@ -125,8 +125,6 @@ final class Toolbar extends JToolBar implements ActionListener {
 		final Icon iFullScale = loadToolbarIcon("jam/plot/FullScale.png");
 		final Icon iZoomIn = loadToolbarIcon("jam/plot/ZoomIn.png");
 		final Icon iZoomOut = loadToolbarIcon("jam/plot/ZoomOut.png");
-		// final Icon iZoomVert = loadToolbarIcon("jam/plot/ZoomVert.png");
-		// final Icon iZoomHorz = loadToolbarIcon("jam/plot/ZoomHorz.png");
 		final Icon iGoto = loadToolbarIcon("jam/plot/Goto.png");
 		final Icon iArea = loadToolbarIcon("jam/plot/Area.png");
 		final Icon iNetArea = loadToolbarIcon("jam/plot/NetArea.png");
@@ -203,15 +201,17 @@ final class Toolbar extends JToolBar implements ActionListener {
 			bzoomout.addActionListener(this);
 			add(bzoomout);
 			/*
-			 * TODO KBS still to add final JButton bzoomvert = iZoomVert == null ?
-			 * new JButton(getHTML("<u>Z</u>oom<u>H</u>orizontal")) : new
-			 * JButton(iZoomVert); bzoomvert.setToolTipText(getHTML("<u>Z</u>oom<u>H</u>orizontal
+			 * TODO KBS still to add final JButton bzoomvert = iZoomVert == null
+			 * ? new JButton(getHTML("<u>Z</u>oom<u>H</u>orizontal")) : new
+			 * JButton(iZoomVert);
+			 * bzoomvert.setToolTipText(getHTML("<u>Z</u>oom<u>H</u>orizontal
 			 * plot.")); bzoomvert.setActionCommand(Action.ZOOMVERT);
 			 * bzoomvert.addActionListener(this); add(bzoomvert);
 			 * 
 			 * final JButton bzoomhorz = iZoomHorz == null ? new
 			 * JButton(getHTML("<u>Z</u>oom<u>v</u>ertical")) : new
-			 * JButton(iZoomHorz); bzoomhorz.setToolTipText(getHTML("<u>Z</u>oom<u>v</u>ertical
+			 * JButton(iZoomHorz);
+			 * bzoomhorz.setToolTipText(getHTML("<u>Z</u>oom<u>v</u>ertical
 			 * plot.")); bzoomhorz.setActionCommand(Action.ZOOMHORZ);
 			 * bzoomhorz.addActionListener(this); add(bzoomhorz);
 			 */

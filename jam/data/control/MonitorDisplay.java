@@ -92,7 +92,7 @@ public class MonitorDisplay extends AbstractControl {
 			// If the audio on and are we taking data
 			if (checkAudio.isSelected()
 					&& JamStatus.getSingletonInstance().isAcqOn()
-					&& monitor.getAlarm() && (!monitor.isAcceptable())) {
+					&& monitor.isAlarmActivated() && (!monitor.isAcceptable())) {
 				Toolkit.getDefaultToolkit().beep();
 				break;
 			}

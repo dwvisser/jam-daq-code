@@ -34,12 +34,13 @@ public class CamacCommands {
 
 	private transient final List<CNAF> clearCmds = new ArrayList<CNAF>();
 
-	private transient final EventSizeModeClient eventSizeModeClient;
+	private transient final EventSizeModeClient client;
 
 	private transient int eventSize = 0;
 
 	/**
 	 * Container for CNAF data structure.
+	 * 
 	 * @author Dale Visser
 	 */
 	public static class CNAF {
@@ -48,10 +49,10 @@ public class CamacCommands {
 
 		private final transient int data;
 
-		CNAF(int paramID, int crate, int number, int address, int function,
-				int data) {
+		CNAF(final int paramID, final int crate, final int number,
+				final int address, final int function, final int data) {
 			super();
-			this.paramID = (byte)paramID;
+			this.paramID = (byte) paramID;
 			this.crate = (byte) crate;
 			this.number = (byte) number;
 			this.address = (byte) address;
@@ -119,9 +120,9 @@ public class CamacCommands {
 	 *            <code>AbstractSortRoutine</code> to which this object belongs
 	 * @see jam.sort.SortRoutine#cnafCommands
 	 */
-	public CamacCommands(EventSizeModeClient client) {
+	public CamacCommands(final EventSizeModeClient client) {
 		super();
-		eventSizeModeClient = client;
+		this.client = client;
 	}
 
 	/**
@@ -140,8 +141,8 @@ public class CamacCommands {
 	 *            any data to be passed to the module
 	 * @throws SortException
 	 *             if invalid CNAF
-	 * @return index in eventData array that the <CODE>AbstractSortRoutine</CODE>
-	 *         processes
+	 * @return index in eventData array that the
+	 *         <CODE>AbstractSortRoutine</CODE> processes
 	 */
 	public int eventRead(final int crate, final int number, final int address,
 			final int function, final int data) throws SortException {
@@ -150,7 +151,7 @@ public class CamacCommands {
 		eventSize++;
 		eventCmds
 				.add(new CNAF(paramId, crate, number, address, function, data));
-		eventSizeModeClient.setEventSizeMode(EventSizeMode.CNAF);
+		client.setEventSizeMode(EventSizeMode.CNAF);
 		return (paramId - 1);
 	}
 
@@ -168,7 +169,8 @@ public class CamacCommands {
 	 *            code indicating the action to be taken
 	 * @throws SortException
 	 *             if invalid CNAF
-	 * @return index in event data array proccesed by the <CODE>AbstractSortRoutine</CODE>
+	 * @return index in event data array proccesed by the
+	 *         <CODE>AbstractSortRoutine</CODE>
 	 */
 	public int eventRead(final int crate, final int number, final int address,
 			final int function) throws SortException {

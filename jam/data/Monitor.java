@@ -1,6 +1,5 @@
 package jam.data;
 
-
 import java.applet.AudioClip;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -90,7 +89,7 @@ public final class Monitor {
 		}
 	}
 
-	private boolean alarm;
+	private transient boolean alarm;
 
 	private java.applet.AudioClip audioClip;
 
@@ -118,7 +117,7 @@ public final class Monitor {
 	 * @param gate
 	 *            the gate whose area is monitored
 	 */
-	public Monitor(String monitorName, Gate gate) {
+	public Monitor(final String monitorName, final Gate gate) {
 		super();
 		name = monitorName;
 		source = gate;
@@ -138,7 +137,7 @@ public final class Monitor {
 	 * @param scaler
 	 *            the scaler which is monitored
 	 */
-	public Monitor(String monitorName, Scaler scaler) {
+	public Monitor(final String monitorName, final Scaler scaler) {
 		super();
 		name = monitorName;
 		source = scaler;
@@ -158,7 +157,7 @@ public final class Monitor {
 	 * @param sort
 	 *            the sort routine which produces the monitor values
 	 */
-	public Monitor(String monitorName, Sorter sort) {
+	public Monitor(final String monitorName, final Sorter sort) {
 		super();
 		name = monitorName;
 		source = sort;
@@ -180,15 +179,15 @@ public final class Monitor {
 	 * @return <code>true</code> if an audible alarm is desired,
 	 *         <code>false</code> if not
 	 */
-	public boolean getAlarm() {
+	public boolean isAlarmActivated() {
 		synchronized (this) {
 			return alarm;
 		}
 	}
 
 	/**
-	 * NOT YET IMPLEMENTED, Gets the current <code>AudioClip</code> object to
-	 * be played for alarms if the alarm is enabled. Currently, the plan is to
+	 * NOT YET IMPLEMENTED, Gets the current <code>AudioClip</code> object to be
+	 * played for alarms if the alarm is enabled. Currently, the plan is to
 	 * fully implement this when the JDK 1.2 <code>javax.media</code> packeage
 	 * is available.
 	 * 

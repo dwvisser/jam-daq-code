@@ -5,6 +5,7 @@ import jam.data.HistInt1D;
 import jam.data.HistInt2D;
 import jam.data.Monitor;
 import jam.data.Scaler;
+import jam.sort.SortException;
 import jam.sort.SortRoutine;
 
 /**
@@ -52,7 +53,7 @@ public class CamacScalerTest extends SortRoutine {
 	 * 
 	 */
 	@Override
-	public void initialize() throws Exception {
+	public void initialize() throws SortException {
 		/* Slot 40 is virtual CAMAC device in CC32 process. */
 		cnafCommands.init(1, 40, 9, 16, 2); // CMC203 in slot 9, mode - 2
 		cnafCommands.init(1, 40, 0, 17, 50); // check buffer every 50ms
@@ -187,7 +188,7 @@ public class CamacScalerTest extends SortRoutine {
 	}
 
 	@Override
-	public void sort(final int[] dataEvent) throws Exception {
+	public void sort(final int[] dataEvent) {
 
 		// put event data into easy to remember names
 		final int eCh0 = dataEvent[idCh0];// Ge #1
