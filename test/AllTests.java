@@ -15,6 +15,7 @@ import test.sort.OnlineScalerTest;
 import test.sort.RingBufferTest;
 import test.sort.SortOfflineTest;
 import test.sort.SortOnlineTest;
+import test.util.StringUtilitiesTest;
 
 /**
  * JUnit test suit for all of jam.
@@ -26,6 +27,7 @@ import test.sort.SortOnlineTest;
 		ParameterTest.class, PeakTest.class, ImpExpASCIITest.class,
 		GainCalibrationTest.class, RingBufferTest.class,
 		CubicFunctionTest.class, JamPropertiesTest.class,
-		SortOfflineTest.class, SortOnlineTest.class, OnlineScalerTest.class })
+		SortOfflineTest.class, SortOnlineTest.class, OnlineScalerTest.class,
+		StringUtilitiesTest.class })
 public class AllTests {// NOPMD
 }

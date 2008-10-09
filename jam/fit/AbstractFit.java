@@ -44,8 +44,8 @@ import javax.swing.border.LineBorder;
 
 /**
  * This defines the necessary methods that need to be defined in order for a fit
- * routine to work with <code>FitControl</code>. It also contains the dialog
- * box that serves as the user interface.
+ * routine to work with <code>FitControl</code>. It also contains the dialog box
+ * that serves as the user interface.
  * 
  * @author Dale Visser
  * @author Ken Swartz
@@ -383,10 +383,12 @@ public abstract class AbstractFit implements PlotMouseListener, Fit {
 			addParameterGUI(parameter, west, center, east);
 		} // loop for all parameters
 		dfit.addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowActivated(WindowEvent event) {
 				updateHist();
 			}
 
+			@Override
 			public void windowClosing(WindowEvent event) {
 				setMouseActive(false);
 				dfit.dispose();
@@ -498,7 +500,8 @@ public abstract class AbstractFit implements PlotMouseListener, Fit {
 				background[i] = this.calculateBackground(i + lowerLimit);
 			}
 		}
-		display.getPlotContainer().displayFit(signals, background, residuals, lowerLimit);
+		display.getPlotContainer().displayFit(signals, background, residuals,
+				lowerLimit);
 	}
 
 	/**
@@ -640,7 +643,7 @@ public abstract class AbstractFit implements PlotMouseListener, Fit {
 			if (parameter.isMouseClickable() && (!parameter.isFixed())) {
 				final JTextField data = textData.get(parameter);
 				data.setForeground(Color.BLACK);
-				data.setText("" + bin.getX());
+				data.setText(Integer.toString(bin.getX()));
 				break;
 			}
 		}

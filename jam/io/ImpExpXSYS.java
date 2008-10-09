@@ -1,6 +1,7 @@
 package jam.io;//NOPMD
 
 import static jam.io.XsysHeader.CALIB_ENERGY;
+import static jam.io.XsysHeader.HEADER;
 import static jam.io.XsysHeader.L_AREA_CALIB_COEF;
 import static jam.io.XsysHeader.L_AREA_NAME;
 import static jam.io.XsysHeader.L_BUFFER;
@@ -25,7 +26,6 @@ import static jam.io.XsysHeader.XSYS1DI4;
 import static jam.io.XsysHeader.XSYS1DR4;
 import static jam.io.XsysHeader.XSYS2DI4;
 import static jam.io.XsysHeader.XSYSEVAL;
-import static jam.io.XsysHeader.HEADER;
 import static jam.io.XsysHeader.XSYS_BUFFER_SIZE;
 import jam.data.AbstractHist1D;
 import jam.data.DataBase;
@@ -73,7 +73,7 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 
 	private transient int calibFlag;
 
-	private transient int[] calibCoef = new int[3];
+	private transient final int[] calibCoef = new int[3];
 
 	// arrays for counts of spectra
 
@@ -82,14 +82,17 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
 			"dat", "TUNL's XSYS");
 
+	@Override
 	protected FileFilter getFileFilter() {
 		return FILTER;
 	}
 
+	@Override
 	protected String getDefaultExtension() {
 		return FILTER.getExtension(0);
 	}
 
+	@Override
 	public String getFormatDescription() {
 		return FILTER.getDescription();
 	}
@@ -101,6 +104,7 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the MessageHandler
 	 */
+	@Override
 	public boolean openFile(final File file) throws ImpExpException {
 		return openFile(file, "Import XSYS file ");
 	}
@@ -111,6 +115,7 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	 * @throws UnsupportedOperationException
 	 *             always
 	 */
+	@Override
 	public void saveFile(final Histogram hist) {
 		throw new UnsupportedOperationException("Still not implemented.");
 	}
@@ -121,6 +126,7 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	 * @exception ImpExpException
 	 *                thrown for general problems importing this format
 	 */
+	@Override
 	public void readData(final InputStream buffin) throws ImpExpException {
 		final DataInputStream dis = new DataInputStream(buffin);
 		firstHeader = true;
@@ -135,8 +141,8 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 			while (unPackHeaderXSYS(buffin)) {
 				// histogram 1d int 4 words
 				if (areaDataType == XSYS1DI4) {
-					final String areaTitle = "" + areaNumber + "  " + areaName
-							+ " ";
+					final String areaTitle = Integer.toString(areaNumber)
+							+ "  " + areaName + " ";
 					final int[] counts = unPackData1d(dis, areaSizeX,
 							areaLengthPage);
 					final AbstractHist1D hist = (AbstractHist1D) importGroup
@@ -189,6 +195,7 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the MessageHandler
 	 */
+	@Override
 	protected void writeHist(final OutputStream outStream, final Histogram hist)
 			throws ImpExpException {
 		/* someday maybe if someone asks */
@@ -408,10 +415,12 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	 * 
 	 * @return false
 	 */
+	@Override
 	public boolean canExport() {
 		return false;
 	}
 
+	@Override
 	boolean batchExportAllowed() {
 		return false;
 	}

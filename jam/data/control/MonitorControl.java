@@ -44,17 +44,15 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 
 	// widgets for configuration
 
-	private static class BroadcastMonitorUpdate implements Runnable
-	{
+	private static class BroadcastMonitorUpdate implements Runnable {
 		public static final BroadcastMonitorUpdate instance = new BroadcastMonitorUpdate();
-		
-		private BroadcastMonitorUpdate(){
+
+		private BroadcastMonitorUpdate() {
 			super();
 		}
-		
+
 		public void run() {
-			BROADCASTER
-					.broadcast(BroadcastEvent.Command.MONITORS_UPDATE);
+			BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_UPDATE);
 		}
 	}
 
@@ -77,7 +75,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	}
 
 	private transient boolean configured = false; // monitors have been
-													// configured
+	// configured
 
 	private transient int interval; // update interval
 
@@ -175,11 +173,8 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	/**
 	 * Configure the monitors, i.e. set the values their parameters according to
 	 * the input fields.
-	 * 
-	 * @throws DataException
-	 *             for invalid number input
 	 */
-	void configure() {
+	private void configure() {
 		try {
 			// set update interval
 			interval = ((Integer) spinnerUpdate.getValue()).intValue();
@@ -215,6 +210,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	/**
 	 * Setup all monitors.
 	 */
+	@Override
 	public void doSetup() {
 		int numberMonitors;
 		final int cols = 6;
@@ -242,7 +238,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	 * Stop monitors interval updating loop
 	 */
 	private void loopThreadStopped() {
-		loopThread = null; //NOPMD
+		loopThread = null; // NOPMD
 		for (Monitor monitor : Monitor.getMonitorList()) {
 			monitor.reset();
 		}
@@ -252,7 +248,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	/**
 	 * Recall the monitor's parameters and set the input fields.
 	 */
-	void recall() {
+	private void recall() {
 		/* update interval */
 		spinnerUpdate.setValue(Integer.valueOf(interval));
 		/* get the Monitor parameters */
@@ -325,21 +321,20 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		textThreshold.setColumns(index);
 		textThreshold.setEditable(true);
 		final int DEFAULT_THRESHOLD = 10;
-		textThreshold.setText("" + DEFAULT_THRESHOLD);
+		textThreshold.setText(Integer.toString(DEFAULT_THRESHOLD));
 		pRow.add(textThreshold);
 		final JTextField textMaximum = new JTextField();
 		textMaximum.setColumns(index);
 		textMaximum.setEditable(true);
 		final int DEFAULT_MAX = 100;
-		textMaximum.setText("" + DEFAULT_MAX);
+		textMaximum.setText(Integer.toString(DEFAULT_MAX));
 		pRow.add(textMaximum);
 		final JCheckBox checkAlarm = new JCheckBox();
 		checkAlarm.setSelected(false);
 		pRow.add(checkAlarm);
 		return pRow;
 	}
-	
-	
+
 	/**
 	 * @throws InterruptedException
 	 */

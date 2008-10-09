@@ -1,10 +1,12 @@
 package test.data;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import jam.data.DataBase;
 import jam.data.DataParameter;
+import junit.framework.Assert;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -17,20 +19,15 @@ public class ParameterTest {// NOPMD
 	/**
 	 * Make sure DataParameter constructor throws for too long name.
 	 */
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void createParameterFail() {
-		try {
-			final StringBuilder name = new StringBuilder();
-			// loop generates name with one character too many
-			for (int i = 0; i <= DataParameter.NAME_LENGTH; i++) {
-				name.append('x');
-			}
-
-			new DataParameter(name.toString());
-			Assert.fail("Expected IllegalArgumentException for name too long.");
-		} catch (IllegalArgumentException iae) {// NOPMD
-			// pass
+		final StringBuilder name = new StringBuilder();
+		// loop generates name with one character too many
+		for (int i = 0; i <= DataParameter.NAME_LENGTH; i++) {
+			name.append('x');
 		}
+
+		new DataParameter(name.toString());
 	}
 
 	/**
@@ -46,8 +43,7 @@ public class ParameterTest {// NOPMD
 				.getName());
 		final DataParameter parameter2 = new DataParameter(name);
 		final String compare2 = name + "        [1]";
-		Assert.assertEquals("Expected modified name.", compare2, parameter2
-				.getName());
+		assertEquals("Expected modified name.", compare2, parameter2.getName());
 	}
 
 	/**
@@ -60,7 +56,7 @@ public class ParameterTest {// NOPMD
 				testParameter.getValue());
 		final double value = 3.141592;
 		testParameter.setValue(value);
-		Assert.assertEquals("Expected the value we set.", value, testParameter
+		assertEquals("Expected the value we set.", value, testParameter
 				.getValue());
 	}
 
@@ -72,7 +68,7 @@ public class ParameterTest {// NOPMD
 		final String name = "testGet";
 		final DataParameter testParameter = new DataParameter(name);
 		final String paddedName = name + "         ";
-		Assert.assertSame("Expected to get parameter by name.", DataParameter
+		assertSame("Expected to get parameter by name.", DataParameter
 				.getParameter(paddedName), testParameter);
 	}
 

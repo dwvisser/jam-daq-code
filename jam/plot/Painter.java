@@ -93,12 +93,12 @@ final class Painter {
 	 * @param plot
 	 *            the plot this belongs to
 	 */
-	Painter(Dimensional plot) {
+	Painter(final Dimensional plot) {
 		graphLayout = GraphicsLayout.LABELS;
 		/* class that draws tick marks and makes color thresholds */
 		tickmarks = new Tickmarks();
 		/* margin for printing */
-		/* maybe should be avaliable in constructor, middle of plot */
+		/* maybe should be available in constructor, middle of plot */
 		middle = new Point();
 		plotDimensions = plot.getDimensionality();
 		setLayout(GraphicsLayout.Type.WITH_LABELS);
@@ -109,7 +109,7 @@ final class Painter {
 	 * 
 	 * @param type
 	 */
-	void setLayout(final GraphicsLayout.Type type) {
+	protected void setLayout(final GraphicsLayout.Type type) {
 		graphLayout = GraphicsLayout.getLayout(type);
 		/* some initial layout stuff */
 		border = new Insets(graphLayout.border.top, graphLayout.border.left,
@@ -122,7 +122,7 @@ final class Painter {
 	/*
 	 * non-javadoc: Set the font used on the plot.
 	 */
-	void setGraphicsFont(final Font newFont) {
+	private void setGraphicsFont(final Font newFont) {
 		synchronized (monitor) {
 			font = newFont;
 			if (graphics2d != null) {
@@ -136,7 +136,7 @@ final class Painter {
 
 	private transient final Object monitor = new Object();
 
-	void setView(final PageFormat format) {
+	protected void setView(final PageFormat format) {
 		synchronized (monitor) {
 			pageformat = format;
 			if (format != null) {
@@ -186,7 +186,7 @@ final class Painter {
 	 * 
 	 * @since Version 0.5
 	 */
-	void update(final Graphics graph, final Dimension newViewSize,
+	protected void update(final Graphics graph, final Dimension newViewSize,
 			final Limits limits) {
 		update(graph); // get graphics and copy to local variables
 		synchronized (limitsLock) {
@@ -256,7 +256,7 @@ final class Painter {
 	 *            the side on which to draw the title
 	 * @since Version 0.5
 	 */
-	void drawTitle(final String title, final int side) {
+	protected void drawTitle(final String title, final int side) {
 		int offset = 1;
 		int xPos;
 		int yPos;
@@ -1182,7 +1182,7 @@ final class Painter {
 		// are we inside the plot area
 		if (xValue1 >= border.left && xValue1 <= view.getRight()) {
 			graphics2d.drawLine(xValue1, yValue1, xValue2, yValue2);
-			final String label = "" + channel;
+			final String label = Integer.toString(channel);
 			graphics2d
 					.drawString(label, xValue2, yValue2 - Painter.MARK_OFFSET);
 		}
@@ -1219,7 +1219,7 @@ final class Painter {
 	 */
 	void markChannel2d(final Bin bin) {
 		final Rectangle rectangle = getRectangleOutline2d(bin, bin);
-		final String label = "" + bin.getX() + "," + bin.getY();
+		final String label = Integer.toString(bin.getX()) + "," + bin.getY();
 		graphics2d.draw(rectangle);
 		graphics2d.drawString(label, (int) rectangle.getMaxX()
 				+ Painter.MARK_OFFSET, rectangle.y - Painter.MARK_OFFSET);
