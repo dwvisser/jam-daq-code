@@ -4,6 +4,7 @@ import jam.data.DataParameter;
 import jam.data.Gate;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
+import jam.sort.SortException;
 import jam.sort.SortRoutine;
 
 /**
@@ -45,12 +46,12 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 	// energies
 
 	// The data channels. Raw data is assigned to these when it is read
-	private transient final int cNaITDC[] = new int[16];
-	private transient final int cNaIADC[] = new int[16];
-	private transient final int cSciADC[] = new int[5];
+	private transient final int cNaITDC[] = new int[16]; // NOPMD
+	private transient final int cNaIADC[] = new int[16]; // NOPMD
+	private transient final int cSciADC[] = new int[5]; // NOPMD
 
 	// Some floating point variables for energies
-	private transient final double eNaIADC[] = new double[16];
+	private transient final double eNaIADC[] = new double[16]; // NOPMD
 
 	private transient DataParameter pcenNaI1;
 	private transient DataParameter pcenNaI2;
@@ -167,95 +168,11 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 	// *****************************************************
 
 	@Override
-	public void initialize() throws Exception {
+	public void initialize() throws SortException {
 
-		vmeMap.setScalerInterval(3);
+		setupVmeMap();
 
-		// Set up time range of TDC
-		vmeMap.setV775Range(TDC_BASE, TIME_RANGE);
-
-		// --------------------------------------------------------------
-		// Set up the mapping for each used channel of the ADC and TDC
-		// to the appropriate id eventParameters,
-		// args = (slot, base address, channel, threshold channel)
-		// --------------------------------------------------------------
-
-		idnE = vmeMap.eventParameter(3, ADC_BASE_FIRST, 14, THRESHOLDS);
-		idnPSD = vmeMap.eventParameter(3, ADC_BASE_FIRST, 13, THRESHOLDS);
-		idnTDC = vmeMap.eventParameter(3, ADC_BASE_FIRST, 12, THRESHOLDS);
-
-		// Scintillators
-		idSciTAC = vmeMap.eventParameter(3, ADC_BASE_FIRST, 6, THRESHOLDS);
-		for (int i = 0; i < 5; i++) {
-			idSciADC[i] = vmeMap.eventParameter(3, ADC_BASE_FIRST, i + 16,
-					THRESHOLDS);
-		}
-
-		// NaI
-		for (int i = 0; i < 16; i++) {
-			idNaIADC[i] = vmeMap.eventParameter(5, ADC_BASE_SECOND, i,
-					THRESHOLDS);
-			idNaITDC[i] = vmeMap.eventParameter(7, TDC_BASE, i, THRESHOLDS);
-		}
-
-		// ------------------------------------------
-		// Set up the histograms in order they will be seen
-		// args = (spectrum name,1d/2d, no. of channels, title, x-label,
-		// y-label)
-		// -----------------------------------------
-
-		hnE = createHist1D(SPC_CHANNELS, "Neutron E", "Neutron E Singles");
-		hnPSD = createHist1D(SPC_CHANNELS, "Neutron PSD", "Neutron PSD");
-		hnTDC = createHist1D(SPC_CHANNELS, "Capture Times",
-				"Neutron Capture Peak");
-
-		h2dnEvsPSD = createHist2D(TWO_D_CHANNELS, "E vs PSD",
-				"Neutron E Singles vs PSD", "E", "PSD");
-		h2dnEvsTDC = createHist2D(TWO_D_CHANNELS, "E vs Cap Time",
-				"Neutron E Singles vs Capture Time", "E", "Time");
-		h2dnEvsTDC_PSD = createHist2D(TWO_D_CHANNELS, "E vs Cap Time, PSD",
-				"Neutron E Singles vs Capture Time, Gated on PSD Gate a", "E",
-				"Time");
-
-		hnE_NaIVeto = createHist1D(SPC_CHANNELS, "E NaI Veto",
-				"Neutron E Vetoed by NaI");
-		hnE_SciVetoE = createHist1D(SPC_CHANNELS, "E Sci Veto E",
-				"Neutron E Vetoed by Scintillator Energy");
-		hnE_SciVetoT = createHist1D(SPC_CHANNELS, "E Sci Veto T",
-				"Neutron E Vetoed by Scintillator Times");
-		hnE_SciNaIVeto = createHist1D(SPC_CHANNELS, "E NaI and Sci Veto",
-				"Neutron E Vetoed by NaI and Scintillators");
-
-		hnE_PSDGatea = createHist1D(SPC_CHANNELS, "E, PSD Gate a",
-				"Neutron E Gated on PSD Gate a");
-		hnE_PSDGateb = createHist1D(SPC_CHANNELS, "E, PSD Gate b",
-				"Neutron E Gated on PSD Gate b");
-
-		hnE_TDCGatea = createHist1D(SPC_CHANNELS, "E, Capture Gate a",
-				"Neutron E Gated on Capture Gate a");
-		hnE_TDCGateb = createHist1D(SPC_CHANNELS, "E, Capture Gate b",
-				"Neutron E Gated on Capture Gate b");
-		hnE_ETDCGate = createHist1D(SPC_CHANNELS, "E, 2D Capture Gate",
-				"Neutron E Gated on 2D Capture Gate");
-
-		hnE_NaIE = createHist1D(SPC_CHANNELS, "E, NaIE Gate",
-				"Neutron E Gated on Summed Neutron Energy");
-
-		hNaIsumE = createHist1D(SPC_CHANNELS, "NaI Summed Energy",
-				"NaI Summed Energy");
-
-		for (int i = 0; i < 16; i++) {
-			hNaIADC[i] = createHist1D(SPC_CHANNELS, "NaI " + i, "NaI " + i);
-		}
-		for (int i = 0; i < 16; i++) {
-			hNaITDC[i] = createHist1D(SPC_CHANNELS, NA_I_TDC + i, NA_I_TDC + i);
-		}
-
-		hSciTAC = createHist1D(SPC_CHANNELS, "Sci TAC", "Scintillators TAC");
-		for (int i = 0; i < 5; i++) {
-			hSciADC[i] = createHist1D(SPC_CHANNELS, "Sci " + i,
-					"Scintillator E " + i);
-		}
+		setupHistograms();
 
 		// ----------------------------------------------
 		// Set up Gates
@@ -345,8 +262,100 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		pcchNaI2_15 = createParameter("cchNaI2_15");
 	}
 
+	private void setupHistograms() {
+		// ------------------------------------------
+		// Set up the histograms in order they will be seen
+		// args = (spectrum name,1d/2d, no. of channels, title, x-label,
+		// y-label)
+		// -----------------------------------------
+
+		hnE = createHist1D(SPC_CHANNELS, "Neutron E", "Neutron E Singles");
+		hnPSD = createHist1D(SPC_CHANNELS, "Neutron PSD", "Neutron PSD");
+		hnTDC = createHist1D(SPC_CHANNELS, "Capture Times",
+				"Neutron Capture Peak");
+
+		h2dnEvsPSD = createHist2D(TWO_D_CHANNELS, "E vs PSD",
+				"Neutron E Singles vs PSD", "E", "PSD");
+		h2dnEvsTDC = createHist2D(TWO_D_CHANNELS, "E vs Cap Time",
+				"Neutron E Singles vs Capture Time", "E", "Time");
+		h2dnEvsTDC_PSD = createHist2D(TWO_D_CHANNELS, "E vs Cap Time, PSD",
+				"Neutron E Singles vs Capture Time, Gated on PSD Gate a", "E",
+				"Time");
+
+		hnE_NaIVeto = createHist1D(SPC_CHANNELS, "E NaI Veto",
+				"Neutron E Vetoed by NaI");
+		hnE_SciVetoE = createHist1D(SPC_CHANNELS, "E Sci Veto E",
+				"Neutron E Vetoed by Scintillator Energy");
+		hnE_SciVetoT = createHist1D(SPC_CHANNELS, "E Sci Veto T",
+				"Neutron E Vetoed by Scintillator Times");
+		hnE_SciNaIVeto = createHist1D(SPC_CHANNELS, "E NaI and Sci Veto",
+				"Neutron E Vetoed by NaI and Scintillators");
+
+		hnE_PSDGatea = createHist1D(SPC_CHANNELS, "E, PSD Gate a",
+				"Neutron E Gated on PSD Gate a");
+		hnE_PSDGateb = createHist1D(SPC_CHANNELS, "E, PSD Gate b",
+				"Neutron E Gated on PSD Gate b");
+
+		hnE_TDCGatea = createHist1D(SPC_CHANNELS, "E, Capture Gate a",
+				"Neutron E Gated on Capture Gate a");
+		hnE_TDCGateb = createHist1D(SPC_CHANNELS, "E, Capture Gate b",
+				"Neutron E Gated on Capture Gate b");
+		hnE_ETDCGate = createHist1D(SPC_CHANNELS, "E, 2D Capture Gate",
+				"Neutron E Gated on 2D Capture Gate");
+
+		hnE_NaIE = createHist1D(SPC_CHANNELS, "E, NaIE Gate",
+				"Neutron E Gated on Summed Neutron Energy");
+
+		hNaIsumE = createHist1D(SPC_CHANNELS, "NaI Summed Energy",
+				"NaI Summed Energy");
+
+		for (int i = 0; i < 16; i++) {
+			hNaIADC[i] = createHist1D(SPC_CHANNELS, "NaI " + i, "NaI " + i);
+		}
+		for (int i = 0; i < 16; i++) {
+			hNaITDC[i] = createHist1D(SPC_CHANNELS, NA_I_TDC + i, NA_I_TDC + i);
+		}
+
+		hSciTAC = createHist1D(SPC_CHANNELS, "Sci TAC", "Scintillators TAC");
+		for (int i = 0; i < 5; i++) {
+			hSciADC[i] = createHist1D(SPC_CHANNELS, "Sci " + i,
+					"Scintillator E " + i);
+		}
+	}
+
+	private void setupVmeMap() throws SortException {
+		vmeMap.setScalerInterval(3);
+
+		// Set up time range of TDC
+		vmeMap.setV775Range(TDC_BASE, TIME_RANGE);
+
+		// --------------------------------------------------------------
+		// Set up the mapping for each used channel of the ADC and TDC
+		// to the appropriate id eventParameters,
+		// args = (slot, base address, channel, threshold channel)
+		// --------------------------------------------------------------
+
+		idnE = vmeMap.eventParameter(3, ADC_BASE_FIRST, 14, THRESHOLDS);
+		idnPSD = vmeMap.eventParameter(3, ADC_BASE_FIRST, 13, THRESHOLDS);
+		idnTDC = vmeMap.eventParameter(3, ADC_BASE_FIRST, 12, THRESHOLDS);
+
+		// Scintillators
+		idSciTAC = vmeMap.eventParameter(3, ADC_BASE_FIRST, 6, THRESHOLDS);
+		for (int i = 0; i < 5; i++) {
+			idSciADC[i] = vmeMap.eventParameter(3, ADC_BASE_FIRST, i + 16,
+					THRESHOLDS);
+		}
+
+		// NaI
+		for (int i = 0; i < 16; i++) {
+			idNaIADC[i] = vmeMap.eventParameter(5, ADC_BASE_SECOND, i,
+					THRESHOLDS);
+			idNaITDC[i] = vmeMap.eventParameter(7, TDC_BASE, i, THRESHOLDS);
+		}
+	}
+
 	@Override
-	public void sort(final int[] data) throws Exception {
+	public void sort(final int[] data) {
 
 		// Read data and give appropriate assignment
 
@@ -472,14 +481,7 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 				+ (cenNaI1 - cchNaI1x15
 						* ((cenNaI2 - cenNaI1) / (cchNaI2x15 - cchNaI1x15)));
 
-		double eNaISum = 0.0;
-
-		// Sum NaI energies only if they are within individual NaI gates
-		for (int i = 0; i < 16; i++) {
-			if (gNaIADC[i].inGate(cNaIADC[i])) {
-				eNaISum += eNaIADC[i];
-			}
-		}
+		final double eNaISum = sumNaI();
 		// scale NaI sum
 		final int calibNaIsum1d = (int) Math.round(eNaISum * 0.1);
 
@@ -492,18 +494,9 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		hnPSD.inc(cnPSD);
 		hnTDC.inc(cnTDC);
 
-		for (int i = 0; i < 16; i++) {
-			hNaIADC[i].inc(cNaIADC[i]);
-			hNaITDC[i].inc(cNaITDC[i]);
-		}
+		incrementNaI(calibNaIsum1d);
 
-		hSciTAC.inc(cSciTAC);
-		for (int i = 0; i < 5; i++) {
-			hSciADC[i].inc(cSciADC[i]);
-		}
-
-		// Increment NaI sum energy
-		hNaIsumE.inc(calibNaIsum1d);
+		incrementScintillator(cSciTAC);
 
 		// Increment the 2D Neutron spectra
 		h2dnEvsPSD.inc(calibnE, calibnPSD);
@@ -538,30 +531,8 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		// Time
 		final boolean vetoSciT = gSciTAC.inGate(cSciTAC);
 
-		// Now increment the vetoed spectra if no veto flags
-		if (!goodTimeNaITDCa) {
-			hnE_NaIVeto.inc(cnE);
-		}
-
-		if (!vetoSciE) {
-			hnE_SciVetoE.inc(cnE);
-		}
-		if (!vetoSciT) {
-			hnE_SciVetoT.inc(cnE);
-		}
-		if (!vetoSciE && !goodTimeNaITDCa) {
-			hnE_SciNaIVeto.inc(cnE);
-		}
-		// Now increment spectra depending on 2D PSD gates
-		if (gnEvsPSDa.inGate(calibnE, calibnPSD)) {
-			hnE_PSDGatea.inc(cnE);
-		}
-		if (gnEvsPSDb.inGate(calibnE, calibnPSD)) {
-			hnE_PSDGateb.inc(cnE);
-		}
-		if (gnEvsPSDa.inGate(calibnE, calibnPSD)) {
-			h2dnEvsTDC_PSD.inc(calibnE, calibnTDC);
-		}
+		incrementVetoSpectra(cnE, goodTimeNaITDCa, vetoSciE, vetoSciT);
+		incrementWithin2Dgates(cnE, calibnE, calibnPSD, calibnTDC);
 		// Increment neutron spectra gated on capture peak TDC (a and b)
 		if (gnTDCa.inGate(cnTDC)) {
 			hnE_TDCGatea.inc(cnE);
@@ -577,5 +548,66 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		if (goodTimeNaITDCa && gNaIsum.inGate(calibNaIsum1d)) {
 			hnE_NaIE.inc(cnE);
 		}
+	}
+
+	private void incrementWithin2Dgates(final int cnE, final int calibnE,
+			final int calibnPSD, final int calibnTDC) {
+		// Now increment spectra depending on 2D PSD gates
+		if (gnEvsPSDa.inGate(calibnE, calibnPSD)) {
+			hnE_PSDGatea.inc(cnE);
+		}
+		if (gnEvsPSDb.inGate(calibnE, calibnPSD)) {
+			hnE_PSDGateb.inc(cnE);
+		}
+		if (gnEvsPSDa.inGate(calibnE, calibnPSD)) {
+			h2dnEvsTDC_PSD.inc(calibnE, calibnTDC);
+		}
+	}
+
+	private void incrementVetoSpectra(final int cnE,
+			final boolean goodTimeNaITDCa, final boolean vetoSciE,
+			final boolean vetoSciT) {
+		// Now increment the vetoed spectra if no veto flags
+		if (!goodTimeNaITDCa) {
+			hnE_NaIVeto.inc(cnE);
+		}
+
+		if (!vetoSciE) {
+			hnE_SciVetoE.inc(cnE);
+		}
+		if (!vetoSciT) {
+			hnE_SciVetoT.inc(cnE);
+		}
+		if (!vetoSciE && !goodTimeNaITDCa) {
+			hnE_SciNaIVeto.inc(cnE);
+		}
+	}
+
+	private void incrementScintillator(final int cSciTAC) {
+		hSciTAC.inc(cSciTAC);
+		for (int i = 0; i < 5; i++) {
+			hSciADC[i].inc(cSciADC[i]);
+		}
+	}
+
+	private void incrementNaI(final int calibNaIsum1d) {
+		for (int i = 0; i < 16; i++) {
+			hNaIADC[i].inc(cNaIADC[i]);
+			hNaITDC[i].inc(cNaITDC[i]);
+		}
+
+		// Increment NaI sum energy
+		hNaIsumE.inc(calibNaIsum1d);
+	}
+
+	private double sumNaI() {
+		double eNaISum = 0.0;
+		// Sum NaI energies only if they are within individual NaI gates
+		for (int i = 0; i < 16; i++) {
+			if (gNaIADC[i].inGate(cNaIADC[i])) {
+				eNaISum += eNaIADC[i];
+			}
+		}
+		return eNaISum;
 	}
 }

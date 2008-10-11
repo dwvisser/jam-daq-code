@@ -100,11 +100,11 @@ public class LoadFit {
 	private Object[] getFitClasses() {
 		final String package1 = "jam.fit";
 		final String package2 = "fit";
-		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier
+		final RuntimeSubclassIdentifier rtsi = RuntimeSubclassIdentifier
 				.getSingletonInstance();
-		final Set<Class<? extends AbstractFit>> set = runtimeSubclassIdentifier
+		final Set<Class<? extends AbstractFit>> set = rtsi
 				.find(package1, AbstractFit.class, false);
-		set.addAll(runtimeSubclassIdentifier.find(package2, AbstractFit.class,
+		set.addAll(rtsi.find(package2, AbstractFit.class,
 				false));
 		return set.toArray();
 	}
@@ -117,12 +117,11 @@ public class LoadFit {
 			final AbstractFit fit = fitClass.newInstance();
 			final int indexPeriod = fitName.lastIndexOf('.');
 			final String fitNameFront = fitName.substring(indexPeriod + 1);
-			fit.createDialog(jamMain, display);
-			fit.show();
+			final FitDialog dfit = fit.createDialog(jamMain, display);
 			// Create action for menu
 			final Action fitAction = new AbstractAction(fitNameFront) {
-				public void actionPerformed(ActionEvent ae) {
-					fit.show();
+				public void actionPerformed(final ActionEvent ae) {
+					dfit.show();
 				}
 			};
 			broadcaster.broadcast(BroadcastEvent.Command.FIT_NEW, fitAction);

@@ -17,7 +17,7 @@ public class FitException extends Exception {
 	 * @param thrown
 	 *            exception which caused this condition
 	 */
-	public FitException(String msg, Throwable thrown) {
+	public FitException(final String msg, final Throwable thrown) {
 		super(msg, thrown);
 	}
 
@@ -25,7 +25,7 @@ public class FitException extends Exception {
 	 * @param msg
 	 *            message
 	 */
-	public FitException(String msg) {
+	public FitException(final String msg) {
 		super(msg);
 	}
 

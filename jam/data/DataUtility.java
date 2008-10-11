@@ -7,11 +7,16 @@ package jam.data;
  * 
  */
 public final class DataUtility {
+
+	private DataUtility() {
+		// make no instances
+	}
+
 	/**
 	 * @param histogram
 	 *            histogram to delete
 	 */
-	public static void delete(Histogram histogram) {
+	public static void delete(final Histogram histogram) {
 		histogram.delete();
 		Group.getGroup(histogram.getGroupName()).removeHistogram(histogram);
 	}
@@ -21,7 +26,7 @@ public final class DataUtility {
 	 *            to get the group for
 	 * @return the group containing the given histogram
 	 */
-	public static Group getGroup(Histogram histogram) {
+	public static Group getGroup(final Histogram histogram) {
 		return Group.getGroup(histogram.getGroupName());
 	}
 

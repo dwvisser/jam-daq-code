@@ -16,49 +16,51 @@ public class PeakIntensity extends AbstractFit {
 	/**
 	 * input <code>Parameter</code>
 	 */
-	private transient final Parameter lowChannel = new Parameter("Low Channel",
-			Parameter.MOUSE, Parameter.NO_OUTPUT, Parameter.INT,
+	private transient final Parameter<Integer> lowChannel = new Parameter<Integer>(
+			"Low Channel", Parameter.MOUSE, Parameter.NO_OUTPUT, Parameter.INT,
 			Parameter.KNOWN);
 
-	private transient final Parameter highChannel = new Parameter(
+	private transient final Parameter<Integer> highChannel = new Parameter<Integer>(
 			"High Channel", Parameter.MOUSE, Parameter.NO_OUTPUT,
 			Parameter.INT, Parameter.KNOWN);
 
-	private transient final Parameter lowPeak = new Parameter("Low Peak",
-			Parameter.MOUSE, Parameter.NO_OUTPUT, Parameter.INT,
+	private transient final Parameter<Integer> lowPeak = new Parameter<Integer>(
+			"Low Peak", Parameter.MOUSE, Parameter.NO_OUTPUT, Parameter.INT,
 			Parameter.KNOWN);
 
-	private transient final Parameter highPeak = new Parameter("High Peak",
-			Parameter.MOUSE, Parameter.NO_OUTPUT, Parameter.INT,
+	private transient final Parameter<Integer> highPeak = new Parameter<Integer>(
+			"High Peak", Parameter.MOUSE, Parameter.NO_OUTPUT, Parameter.INT,
 			Parameter.KNOWN);
 
 	/**
 	 * function <code>Parameter</code>--constant background term
 	 */
-	private transient final Parameter paramA, paramB;
+	private transient final Parameter<Double> paramA, paramB;
 
-	private transient final Parameter paramPeakArea, paramPeakCentroid;
+	private transient final Parameter<Double> paramPeakArea, paramPeakCentroid;
 
 	/**
 	 * Class constructor.
 	 */
 	public PeakIntensity() {
 		super("Peak Intensity");
-		final Parameter comment = new Parameter("Comment", Parameter.TEXT);
+		final Parameter<String> comment = new Parameter<String>("Comment",
+				Parameter.TEXT);
 		comment.setValue("Checking \"Fixed\" on Slope fixes the value to 0.");
-		addParameter(lowChannel);
-		addParameter(highChannel);
-		addParameter(lowPeak);
-		addParameter(highPeak);
-		paramA = new Parameter("Constant", Parameter.DOUBLE);
-		addParameter(paramA);
-		paramB = new Parameter("Slope", Parameter.DOUBLE, Parameter.FIX);
-		addParameter(paramB);
-		addParameter(comment);
-		paramPeakArea = new Parameter("Peak Area", Parameter.DOUBLE);
-		addParameter(paramPeakArea);
-		paramPeakCentroid = new Parameter("Peak Centroid", Parameter.DOUBLE);
-		addParameter(paramPeakCentroid);
+		parameters.add(lowChannel);
+		parameters.add(highChannel);
+		parameters.add(lowPeak);
+		parameters.add(highPeak);
+		paramA = new Parameter<Double>("Constant", Parameter.DOUBLE);
+		parameters.add(paramA);
+		paramB = new Parameter<Double>("Slope", Parameter.DOUBLE, Parameter.FIX);
+		parameters.add(paramB);
+		parameters.add(comment);
+		paramPeakArea = new Parameter<Double>("Peak Area", Parameter.DOUBLE);
+		parameters.add(paramPeakArea);
+		paramPeakCentroid = new Parameter<Double>("Peak Centroid",
+				Parameter.DOUBLE);
+		parameters.add(paramPeakCentroid);
 	}
 
 	/**
@@ -77,10 +79,10 @@ public class PeakIntensity extends AbstractFit {
 	 */
 	public String doFit() throws FitException {
 		double peakArea, totalArea, bkgdArea;
-		int chLow = getParameter("Low Channel").getIntValue();
-		int chHigh = getParameter("High Channel").getIntValue();
-		int peakLow = getParameter("Low Peak").getIntValue();
-		int peakHigh = getParameter("High Peak").getIntValue();
+		int chLow = this.lowChannel.getValue();
+		int chHigh = this.highChannel.getValue();
+		int peakLow = this.lowPeak.getValue();
+		int peakHigh = this.highPeak.getValue();
 		final int[] before = { chLow, peakLow, peakHigh, chHigh };
 		java.util.Arrays.sort(before);
 		chLow = before[0];
@@ -204,22 +206,22 @@ public class PeakIntensity extends AbstractFit {
 	}
 
 	public double calculate(final int channel) {
-		return paramA.getDoubleValue() + paramB.getDoubleValue() * (channel);
+		return paramA.getValue() + paramB.getValue() * (channel);
 	}
 
-	double calculateBackground(final int channel) {
+	public double calculateBackground(final int channel) {
 		return calculate(channel);
 	}
 
-	boolean hasBackground() {
+	public boolean hasBackground() {
 		return true;
 	}
 
-	int getNumberOfSignals() {
+	public int getNumberOfSignals() {
 		return 0;
 	}
 
-	double calculateSignal(final int signal, final int channel) {
+	public double calculateSignal(final int signal, final int channel) {
 		return 0.0;
 	}
 

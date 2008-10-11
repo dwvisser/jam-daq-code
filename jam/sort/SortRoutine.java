@@ -394,7 +394,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 		return vmeMap;
 	}
 
-	private boolean getWriteEnabled() {
+	private boolean isWriteEnabled() {
 		synchronized (this) {
 			return writeOn;
 		}
@@ -406,8 +406,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	public abstract void initialize() throws Exception;// NOPMD
 
 	/**
-	 * Required by the <code>Sorter</code> interface. As written always
-	 * returns zero, and should be overwritten whenever using monitors.
+	 * Required by the <code>Sorter</code> interface. As written always returns
+	 * zero, and should be overwritten whenever using monitors.
 	 * 
 	 * @param name
 	 *            name of monitor value to calculate
@@ -518,7 +518,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	 * @see #sort(int[])
 	 */
 	public final void writeEvent(final int[] event) throws SortException {
-		if (getWriteEnabled()) {
+		if (isWriteEnabled()) {
 			try {
 				synchronized (eventOutput) {
 					eventOutput.writeEvent(event);

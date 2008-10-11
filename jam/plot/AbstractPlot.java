@@ -122,7 +122,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	/*
 	 * non-javadoc: add scrollbars
 	 */
-	void addScrollBars(final Limitable scroller) {
+	protected void addScrollBars(final Limitable scroller) {
 		scrollbars = scroller;
 	}
 
@@ -131,7 +131,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * number of counts in view. Can't call refresh because we need to use the
 	 * counts before refreshing.
 	 */
-	final void autoCounts() {
+	protected final void autoCounts() {
 		final Histogram plotHist = getHistogram();
 		copyCounts(plotHist);
 		limits.setMinimumCounts(110 * findMinimumCounts() / 100);
@@ -172,7 +172,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 
 	protected abstract void copyCounts(Histogram hist);
 
-	abstract void displayFit(double[][] signals, double[] background,
+	protected abstract void displayFit(double[][] signals, double[] background,
 			double[] residuals, int lowerLimit);
 
 	/**
@@ -181,7 +181,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param gate
 	 *            the gate to be displayed
 	 */
-	void displayGate(final Gate gate) {
+	protected void displayGate(final Gate gate) {
 		synchronized (this) {
 			final Histogram plotHist = getHistogram();
 			if (plotHist != null && plotHist.getGateCollection().hasGate(gate)) {
@@ -200,7 +200,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * one save all neccessary histogram parameters to local variables. Allows
 	 * general use of data set.
 	 */
-	void displayHistogram(final Histogram hist) {
+	protected void displayHistogram(final Histogram hist) {
 		synchronized (this) {
 			limits = Limits.getLimits(hist);
 			if (hist == null) {// we have a null histogram so fake it
@@ -228,9 +228,10 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param pPixel
 	 *            screen coordinates of click
 	 */
-	abstract void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel);
+	protected abstract void displaySetGate(GateSetMode mode, Bin pChannel,
+			Point pPixel);
 
-	void error(final String mess) {
+	protected void error(final String mess) {
 		final Runnable task = new Runnable() {
 			public void run() {
 				final String plotErrorTitle = "Plot Error";
@@ -244,7 +245,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	/*
 	 * non-javadoc: Expand the region viewed.
 	 */
-	void expand(final Bin bin1, final Bin bin2) {
+	protected void expand(final Bin bin1, final Bin bin2) {
 		final int xCoord1 = bin1.getX();
 		final int xCoord2 = bin2.getX();
 		final int yCoord1 = bin1.getY();
@@ -288,13 +289,13 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 */
 	protected abstract int findMinimumCounts();
 
-	abstract int getChannel(double energy);
+	protected abstract int getChannel(double energy);
 
-	final Component getComponent() {
+	protected final Component getComponent() {
 		return panel;
 	}
 
-	ComponentPrintable getComponentPrintable() {
+	protected ComponentPrintable getComponentPrintable() {
 		return new ComponentPrintable(panel);
 	}
 
@@ -326,7 +327,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 *            the channel
 	 * @return the energy for the channel
 	 */
-	abstract double getEnergy(double channel);
+	protected abstract double getEnergy(double channel);
 
 	public Histogram getHistogram() {
 		synchronized (this) {
@@ -337,22 +338,22 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	/**
 	 * @return limits are how the histogram is to be drawn
 	 */
-	Limits getLimits() {
+	protected Limits getLimits() {
 		return limits;
 	}
 
-	PlotMouse getPlotMouse() {
+	protected PlotMouse getPlotMouse() {
 		return plotMouse;
 	}
 
-	Size getSize() {
+	protected Size getSize() {
 		return size;
 	}
 
 	/*
 	 * non-javadoc: Plot has a valid histogram
 	 */
-	boolean hasHistogram() {
+	protected boolean hasHistogram() {
 		return plotHistNum >= 0;
 	}
 
@@ -396,7 +397,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param bin2
 	 *            a corner of the rectangle in plot coordinates
 	 */
-	abstract void markArea(Bin bin1, Bin bin2);
+	protected abstract void markArea(Bin bin1, Bin bin2);
 
 	/**
 	 * Mark a channel on the plot.
@@ -404,7 +405,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param bin
 	 *            graphics coordinates on the plot where the channel is
 	 */
-	final void markChannel(final Bin bin) {
+	protected final void markChannel(final Bin bin) {
 		setMarkingChannels(true);
 		markedChannels.add((Bin) bin.clone());
 		panel.repaint();
@@ -418,10 +419,10 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 */
 	abstract public void mouseMoved(MouseEvent mouseEvent);
 
-	abstract void overlayHistograms(List<AbstractHist1D> overlayHists);
+	protected abstract void overlayHistograms(List<AbstractHist1D> overlayHists);
 
 	/**
-	 * Method overriden for 1 and 2 d for painting fits.
+	 * Method overridden for 1 and 2 d for painting fits.
 	 * 
 	 * @param graphics
 	 *            the graphics context
@@ -429,7 +430,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	abstract public void paintFit(Graphics graphics);
 
 	/**
-	 * Method overriden for 1 and 2 d for painting the gate.
+	 * Method overridden for 1 and 2 d for painting the gate.
 	 * 
 	 * @param graphics
 	 *            the graphics context
@@ -531,28 +532,28 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 */
 	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
-		final String newValue = pce.getNewValue();
+		final boolean newValue = Boolean.parseBoolean(pce.getNewValue());
 		if (key.equals(PlotPrefs.AUTO_IGNORE_ZERO)) {
-			options.setIgnoreChZero(Boolean.valueOf(newValue).booleanValue());
+			options.setIgnoreChZero(newValue);
 			if (plotDataExists()) {
 				autoCounts();
 			}
 		} else if (key.equals(PlotPrefs.AUTO_IGNORE_FULL)) {
-			options.setIgnoreChFull(Boolean.valueOf(newValue).booleanValue());
+			options.setIgnoreChFull(newValue);
 			if (plotDataExists()) {
 				autoCounts();
 			}
 		} else if (key.equals(PlotPrefs.BLACK_BACKGROUND)) {
-			panel.setColorMode(Boolean.valueOf(newValue).booleanValue());
+			panel.setColorMode(newValue);
 		} else if (key.equals(PlotPrefs.HIGHLIGHT_GATE)) {
-			options.setNoFillMode(!Boolean.valueOf(newValue).booleanValue());
+			options.setNoFillMode(!newValue);
 		}
 	}
 
 	/**
 	 * Refresh the display.
 	 */
-	void refresh() {
+	protected void refresh() {
 		if (scrollbars != null) {
 			scrollbars.update();
 		}
@@ -561,13 +562,13 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 		panel.repaint();
 	}
 
-	abstract void removeOverlays();
+	protected abstract void removeOverlays();
 
 	/**
 	 * Reset state
 	 * 
 	 */
-	void reset() {
+	protected void reset() {
 		synchronized (this) {
 			panel.setDisplayingGate(false);
 			panel.setDisplayingFit(false);
@@ -587,7 +588,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	/**
 	 * set full range X
 	 */
-	void setFull() {
+	protected void setFull() {
 		limits.setMinimumX(0);
 		limits.setMaximumX(size.getSizeX() - 1);
 		limits.setMinimumY(0);
@@ -610,14 +611,14 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	/*
 	 * non-javadoc: Update layout.
 	 */
-	void setLayout(final GraphicsLayout.Type type) {
+	protected void setLayout(final GraphicsLayout.Type type) {
 		painter.setLayout(type);
 	}
 
 	/**
 	 * Set the scale to linear scale
 	 */
-	void setLinear() {
+	protected void setLinear() {
 		limits.setScale(Scale.LINEAR);
 		refresh();
 	}
@@ -625,16 +626,16 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	/**
 	 * Set the scale to log scale
 	 */
-	void setLog() {
+	protected void setLog() {
 		limits.setScale(Scale.LOG);
 		panel.repaint();
 	}
 
-	void setMarkArea(final boolean marked) {
+	protected void setMarkArea(final boolean marked) {
 		panel.setAreaMarked(marked);
 	}
 
-	void setMarkingChannels(final boolean marking) {
+	protected void setMarkingChannels(final boolean marking) {
 		panel.setMarkingChannels(marking);
 		if (!panel.isMarkingChannels()) {
 			markedChannels.clear();
@@ -647,8 +648,8 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param maxC
 	 *            maximum counts
 	 */
-	void setMaximumCountsConstrained(final int maxC) {
-		final int FS_MIN = 5; // minumum that Counts can be set to
+	protected void setMaximumCountsConstrained(final int maxC) {
+		final int FS_MIN = 5; // Minimum that Counts can be set to
 		int temp = Math.max(maxC, FS_MIN);
 		/** Maximum that counts can be set to. */
 		final int FS_MAX = 1000000;
@@ -661,7 +662,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	/*
 	 * non-javadoc: method to set Counts scale
 	 */
-	void setRange(final int limC1, final int limC2) {
+	protected void setRange(final int limC1, final int limC2) {
 		if (limC1 <= limC2) {
 			limits.setMinimumCounts(limC1);
 			limits.setMaximumCounts(limC2);
@@ -672,14 +673,14 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 		refresh();
 	}
 
-	void setRenderForPrinting(final boolean rfp, final PageFormat format) {
+	protected void setRenderForPrinting(final boolean rfp, final PageFormat format) {
 		synchronized (this) {
 			options.setPrinting(rfp);
 			panel.setPageFormat(format);
 		}
 	}
 
-	void setSelectingArea(final boolean selecting) {
+	protected void setSelectingArea(final boolean selecting) {
 		panel.setSelectingArea(selecting);
 	}
 
@@ -697,7 +698,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * Updated the display, resetting so that fits, gates and overlays are no
 	 * longer shown.
 	 */
-	void update() {
+	protected void update() {
 		reset();
 		if (getCounts() != null) {
 			refresh();

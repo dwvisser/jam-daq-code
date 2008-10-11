@@ -8,6 +8,7 @@ import java.awt.Frame;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Future;
 
@@ -74,11 +75,7 @@ public class MessageReceiver extends GoodThread {
 						eventGenerator = this.sender.startSendingEventData();
 					} else if ((null != eventGenerator)
 							&& "stop".equalsIgnoreCase(message)) {
-						if (!eventGenerator.cancel(true)) {
-							final String error = "Couldn't stop sending events.";
-							LOGGER.severe(error);
-							this.console.errorOutln(error);
-						}
+						stopEventGenerator(eventGenerator);
 						eventGenerator = null;
 					} else if ("list scaler".equalsIgnoreCase(message)) {
 						this.receivedListScaler = true;
@@ -94,6 +91,14 @@ public class MessageReceiver extends GoodThread {
 				JOptionPane.showMessageDialog(frame, e.getMessage(), getClass()
 						.getName(), JOptionPane.ERROR_MESSAGE);
 			}
+		}
+	}
+
+	private void stopEventGenerator(final Future<?> eventGenerator) {
+		if (!eventGenerator.cancel(true)) {
+			final String error = "Couldn't stop sending events.";
+			LOGGER.severe(error);
+			this.console.errorOutln(error);
 		}
 	}
 

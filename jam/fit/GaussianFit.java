@@ -3,12 +3,12 @@
  */
 package jam.fit;
 
-import java.util.Arrays;
-
 import static jam.data.peaks.GaussianConstants.MAGIC_2AB;
 import static jam.data.peaks.GaussianConstants.MAGIC_A;
 import static jam.data.peaks.GaussianConstants.MAGIC_B;
 import static jam.data.peaks.GaussianConstants.SIG_TO_FWHM;
+
+import java.util.Arrays;
 
 /**
  * This abstract class uses <code>NonLinearFit</code> to fit a single gaussian
@@ -41,72 +41,68 @@ public final class GaussianFit extends AbstractNonLinearFit {
 	/**
 	 * function <code>Parameter</code> --area of peak
 	 */
-	private transient final Parameter area;
-
+	private transient final Parameter<Double> area;
 
 	/**
 	 * function <code>Parameter</code> --wodth of peak
 	 */
-	private transient final Parameter width;
+	private transient final Parameter<Double> width;
 
+	private transient final Parameter<Double> centroid;
 
+	private transient final Parameter<Double> paramA;
 
-
-	/**
-	 * used for calculations
-	 */
-	// private double diff;
-	/**
-	 * used for calculations
-	 */
-	// private double exp;
 	/**
 	 * Class constructor.
 	 */
 	public GaussianFit() {
 		super("GaussianFit");
 
-		final Parameter background = new Parameter("Background: ", Parameter.TEXT);
+		final Parameter<String> background = new Parameter<String>(
+				"Background: ", Parameter.TEXT);
 		background.setValue("A+B(x-Centroid)+C(x-Centroid)\u00b2");
-		final Parameter equation = new Parameter("Peak: ", Parameter.TEXT);
+		final Parameter<String> equation = new Parameter<String>("Peak: ",
+				Parameter.TEXT);
 		equation
 				.setValue("2.354\u2219Area/(\u221a(2\u03c0)Width)\u2219exp[-2.354\u00b2(x-Centroid)\u00b2/(2 Width\u00b2)]");
-		area = new Parameter(AREA, Parameter.DOUBLE, Parameter.FIX,
+		area = new Parameter<Double>(AREA, Parameter.DOUBLE, Parameter.FIX,
 				Parameter.ESTIMATE);
 		area.setEstimate(true);
 		/**
 		 * function <code>Parameter</code> --centroid of peak
 		 */
-		final Parameter centroid = new Parameter(CENTROID, Parameter.DOUBLE, Parameter.FIX,
-				Parameter.MOUSE);
-		width = new Parameter(WIDTH, Parameter.DOUBLE, Parameter.FIX,
+		centroid = new Parameter<Double>(CENTROID, Parameter.DOUBLE,
+				Parameter.FIX, Parameter.MOUSE);
+		width = new Parameter<Double>(WIDTH, Parameter.DOUBLE, Parameter.FIX,
 				Parameter.ESTIMATE);
 		width.setEstimate(true);
 		/**
 		 * function <code>Parameter</code> --constant background term
 		 */
-		final Parameter paramA = new Parameter("A", Parameter.DOUBLE, Parameter.FIX,
+		paramA = new Parameter<Double>("A", Parameter.DOUBLE, Parameter.FIX,
 				Parameter.ESTIMATE);
 		paramA.setEstimate(true);
 		/**
 		 * function <code>Parameter</code> --linear background term
 		 */
-		final Parameter paramB = new Parameter("B", Parameter.FIX);
+		final Parameter<Double> paramB = new Parameter<Double>("B",
+				Parameter.FIX);
 		paramB.setFixed(true);
 		/**
 		 * function <code>Parameter</code> --quadratic background term
 		 */
-		final Parameter paramC = new Parameter("C", Parameter.FIX);
+		final Parameter<Double> paramC = new Parameter<Double>("C",
+				Parameter.FIX);
 		paramC.setFixed(true);
 
-		addParameter(equation);
-		addParameter(background);
-		addParameter(area);
-		addParameter(centroid);
-		addParameter(width);
-		addParameter(paramA);
-		addParameter(paramB);
-		addParameter(paramC);
+		parameters.add(equation);
+		parameters.add(background);
+		parameters.add(area);
+		parameters.add(centroid);
+		parameters.add(width);
+		parameters.add(paramA);
+		parameters.add(paramB);
+		parameters.add(paramC);
 
 	}
 
@@ -115,16 +111,16 @@ public final class GaussianFit extends AbstractNonLinearFit {
 	 */
 	public void estimate() {
 		orderParameters();
-		final int lowChan = getParameter(FIT_LOW).getIntValue();
-		final int highChan = getParameter(FIT_HIGH).getIntValue();
-		final double center = getParameter(CENTROID).getDoubleValue();
-		double peakWidth = getParameter(WIDTH).getDoubleValue();
-		double backLevel = getParameter("A").getDoubleValue();
-		double intensity = getParameter(AREA).getDoubleValue();
+		final int lowChan = lowChannel.getValue();
+		final int highChan = this.highChannel.getValue();
+		final double center = this.centroid.getValue();
+		double peakWidth = this.width.getValue();
+		double backLevel = this.paramA.getValue();
+		double intensity = this.area.getValue();
 		/* estimated level of background */
 		if (getParameter("A").isEstimate()) {
 			backLevel = (counts[lowChan] + counts[highChan]) * 0.5;
-			getParameter("A").setValue(backLevel);
+			this.paramA.setValue(backLevel);
 			textInfo.messageOutln("Estimated A = " + backLevel);
 		}
 		/* sum up counts */
@@ -133,7 +129,7 @@ public final class GaussianFit extends AbstractNonLinearFit {
 			for (int i = lowChan; i <= highChan; i++) {
 				intensity += counts[i] - backLevel;
 			}
-			getParameter(AREA).setValue(intensity);
+			this.area.setValue(intensity);
 			textInfo.messageOutln("Estimated area = " + intensity);
 		}
 		/* find width */
@@ -145,7 +141,7 @@ public final class GaussianFit extends AbstractNonLinearFit {
 			}
 			final double sigma = Math.sqrt(variance);
 			peakWidth = SIG_TO_FWHM * sigma;
-			getParameter(WIDTH).setValue(peakWidth);
+			this.width.setValue(peakWidth);
 			textInfo.messageOutln("Estimated width = " + peakWidth);
 		}
 	}
@@ -155,13 +151,12 @@ public final class GaussianFit extends AbstractNonLinearFit {
 	 * This Allows the fit limits and centroids to be clicked in any order.
 	 */
 	private void orderParameters() {
-		final double[] sortMe = { getParameter(FIT_LOW).getIntValue(),
-				getParameter(CENTROID).getDoubleValue(),
-				getParameter(FIT_HIGH).getIntValue() };
+		final double[] sortMe = { this.lowChannel.getValue(),
+				this.centroid.getValue(), this.highChannel.getValue() };
 		Arrays.sort(sortMe);
-		getParameter(FIT_LOW).setValue((int) sortMe[0]);
-		getParameter(CENTROID).setValue(sortMe[1]);
-		getParameter(FIT_HIGH).setValue((int) sortMe[2]);
+		this.lowChannel.setValue((int) sortMe[0]);
+		this.centroid.setValue(sortMe[1]);
+		this.highChannel.setValue((int) sortMe[2]);
 	}
 
 	/**
@@ -171,20 +166,22 @@ public final class GaussianFit extends AbstractNonLinearFit {
 	 *            value to calculate at
 	 * @return value of function at x
 	 */
+	@Override
 	public double valueAt(final double val) {
 		final double diff = diff(val);
-		final double temp = getValue("A") + getValue("B") * diff + getValue("C") * diff * diff
-				+ getValue(AREA) / getValue(WIDTH) * MAGIC_A * exp(diff);
+		final double temp = getValue("A") + getValue("B") * diff
+				+ getValue("C") * diff * diff + getValue(AREA)
+				/ getValue(WIDTH) * MAGIC_A * exp(diff);
 		return temp;
 	}
 
-	int getNumberOfSignals() {
+	public int getNumberOfSignals() {
 		return 1;
 	}
 
-	double calculateSignal(final int sig, final int channel) {
-		return sig == 0 ? area.getDoubleValue() / width.getDoubleValue()
-				* MAGIC_A * exp(diff(channel)) : 0.0;
+	public double calculateSignal(final int sig, final int channel) {
+		return sig == 0 ? area.getValue() / width.getValue() * MAGIC_A
+				* exp(diff(channel)) : 0.0;
 	}
 
 	private double diff(final double val) {
@@ -192,16 +189,18 @@ public final class GaussianFit extends AbstractNonLinearFit {
 	}
 
 	private double exp(final double diff) {
-		return Math.exp(-MAGIC_B * diff * diff / (getValue(WIDTH) * getValue(WIDTH)));
+		return Math.exp(-MAGIC_B * diff * diff
+				/ (getValue(WIDTH) * getValue(WIDTH)));
 	}
 
-	boolean hasBackground() {
+	public boolean hasBackground() {
 		return true;
 	}
 
-	double calculateBackground(final int channel) {
+	public double calculateBackground(final int channel) {
 		final double diff = diff(channel);
-		return getValue("A") + getValue("B") * diff + getValue("C") * diff * diff;
+		return getValue("A") + getValue("B") * diff + getValue("C") * diff
+				* diff;
 	}
 
 	/**
@@ -214,6 +213,7 @@ public final class GaussianFit extends AbstractNonLinearFit {
 	 *            value to evalueate at
 	 * @return df( <code>x</code> )/d( <code>parameterName</code>) at x
 	 */
+	@Override
 	public double derivative(final double val, final String parName) {
 		final double rval;
 		final double diff = diff(val);
@@ -222,12 +222,17 @@ public final class GaussianFit extends AbstractNonLinearFit {
 			rval = MAGIC_A / getValue(WIDTH) * exp;
 		} else if (parName.equals(CENTROID)) {
 			rval = MAGIC_2AB * getValue(AREA) * exp * diff
-					/ (getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH)) - getValue("B") - 2 * getValue("C")
-					* diff;
+					/ (getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH))
+					- getValue("B") - 2 * getValue("C") * diff;
 		} else if (parName.equals(WIDTH)) {
 			final double temp = -MAGIC_A * getValue(AREA) * exp
 					/ (getValue(WIDTH) * getValue(WIDTH));
-			rval = temp + MAGIC_2AB * getValue(AREA) * exp * diff * diff
+			rval = temp
+					+ MAGIC_2AB
+					* getValue(AREA)
+					* exp
+					* diff
+					* diff
 					/ (getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH));
 		} else if ("A".equals(parName)) {
 			rval = 1.0;

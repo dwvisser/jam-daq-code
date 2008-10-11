@@ -5,19 +5,19 @@ import jam.util.NumberUtilities;
 import java.text.NumberFormat;
 
 final class ValueAndUncertaintyFormatter {
-	
+
 	private static final ValueAndUncertaintyFormatter INSTANCE = new ValueAndUncertaintyFormatter();
-	
-	static ValueAndUncertaintyFormatter getSingletonInstance(){
+
+	protected static ValueAndUncertaintyFormatter getSingletonInstance() {
 		return INSTANCE;
 	}
-	
-	private ValueAndUncertaintyFormatter(){
+
+	private ValueAndUncertaintyFormatter() {
 		// nothing to do
 	}
-	
+
 	private static NumberUtilities util = NumberUtilities.getInstance();
-	
+
 	/*
 	 * non-javadoc: Given an error, determines the appropriat number of fraction
 	 * digits to show.
@@ -74,7 +74,7 @@ final class ValueAndUncertaintyFormatter {
 		return out;
 	}
 
-	String[] format(final double value, final double err) {
+	protected String[] format(final double value, final double err) {
 		String[] out;
 		NumberFormat fval, ferr;
 		int temp;
@@ -128,7 +128,7 @@ final class ValueAndUncertaintyFormatter {
 		return out;
 	}
 
-	String format(final double value, final int fraction) {
+	protected String format(final double value, final int fraction) {
 		NumberFormat fval;
 		fval = NumberFormat.getInstance();
 		fval.setGroupingUsed(false);

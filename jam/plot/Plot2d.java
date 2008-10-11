@@ -113,12 +113,14 @@ final class Plot2d extends AbstractPlot {
 	}
 
 	@Override
+	protected
 	void displayFit(final double[][] signals, final double[] background,
 			final double[] residuals, final int lowerLimit) {
 		// NOP
 	}
 
 	@Override
+	protected
 	void displayHistogram(final Histogram hist) {
 		synchronized (this) {
 			if (hist == null) {
@@ -140,6 +142,7 @@ final class Plot2d extends AbstractPlot {
 	 *            the plot coordinates of the point
 	 */
 	@Override
+	protected
 	void displaySetGate(final GateSetMode mode, final Bin pChannel,
 			final Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
@@ -241,6 +244,7 @@ final class Plot2d extends AbstractPlot {
 	}
 
 	@Override
+	protected
 	int getChannel(final double energy) {
 		return 0;
 	}
@@ -333,6 +337,7 @@ final class Plot2d extends AbstractPlot {
 	 * Caller should have checked 'isCalibrated' first.
 	 */
 	@Override
+	protected
 	double getEnergy(final double channel) {
 		return 0.0;
 	}
@@ -352,6 +357,7 @@ final class Plot2d extends AbstractPlot {
 	 *            a corner of the rectangle in plot coordinates
 	 */
 	@Override
+	protected
 	void markArea(final Bin bin1, final Bin bin2) {
 		// While storing the boolean condition could make the code a
 		// few lines more compact, this form makes the code analysis
@@ -417,6 +423,7 @@ final class Plot2d extends AbstractPlot {
 	}
 
 	@Override
+	protected
 	void overlayHistograms(final List<AbstractHist1D> overlayHists) {
 		// NOP
 	}
@@ -616,6 +623,7 @@ final class Plot2d extends AbstractPlot {
 	}
 
 	@Override
+	protected
 	void removeOverlays() {
 		// NOP
 	}

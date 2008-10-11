@@ -42,7 +42,7 @@ public class FitConsole extends JPanel implements MessageHandler {
 
 	private transient final Document doc;
 
-	private transient int maxLines;
+	private transient final int maxLines;
 
 	/** A lock for message output so messages dont overlap. */
 	private transient boolean msgLock;
@@ -63,12 +63,12 @@ public class FitConsole extends JPanel implements MessageHandler {
 
 	/**
 	 * Constructs a FitConsole which has an text area for output a text field
-	 * for intput.
+	 * for input.
 	 * 
 	 * @param linesLog
 	 *            number of lines to hold in text area
 	 */
-	public FitConsole(int linesLog) {
+	public FitConsole(final int linesLog) {
 		super(new BorderLayout());
 		maxLines = linesLog;
 		textLog = new JTextPane();
@@ -113,26 +113,29 @@ public class FitConsole extends JPanel implements MessageHandler {
 	 */
 	public void messageOut(final String _message, final int part) {
 		synchronized (this) {
-			String message = String.valueOf(_message);
+			final StringBuffer message = new StringBuffer(_message);
 			if (part == NEW) {
 				msgLock = true;
-				message = END_LINE + message;
+				message.insert(0, END_LINE);
 				try {
-					doc.insertString(doc.getLength(), message, attr_normal);
+					doc.insertString(doc.getLength(), message.toString(),
+							attr_normal);
 				} catch (BadLocationException e) {
 					JOptionPane.showMessageDialog(this, e.getMessage(),
 							getClass().getName(), JOptionPane.ERROR_MESSAGE);
 				}
 			} else if (part == CONTINUE) {
 				try {
-					doc.insertString(doc.getLength(), message, attr_normal);
+					doc.insertString(doc.getLength(), message.toString(),
+							attr_normal);
 				} catch (BadLocationException e) {
 					JOptionPane.showMessageDialog(this, e.getMessage(),
 							getClass().getName(), JOptionPane.ERROR_MESSAGE);
 				}
 			} else if (part == END) {
 				try {
-					doc.insertString(doc.getLength(), message, attr_normal);
+					doc.insertString(doc.getLength(), message.toString(),
+							attr_normal);
 				} catch (BadLocationException e) {
 					JOptionPane.showMessageDialog(this, e.getMessage(),
 							getClass().getName(), JOptionPane.ERROR_MESSAGE);
@@ -163,11 +166,12 @@ public class FitConsole extends JPanel implements MessageHandler {
 	 */
 	public void messageOutln(final String _message) {
 		synchronized (this) {
-			String message = String.valueOf(_message);
+			final StringBuffer message = new StringBuffer(_message);
 			msgLock = true;
-			message = END_LINE + message;
+			message.insert(0, END_LINE);
 			try {
-				doc.insertString(doc.getLength(), message, attr_normal);
+				doc.insertString(doc.getLength(), message.toString(),
+						attr_normal);
 			} catch (BadLocationException e) {
 				JOptionPane.showMessageDialog(this, e.getMessage(), getClass()
 						.getName(), JOptionPane.ERROR_MESSAGE);
@@ -182,17 +186,16 @@ public class FitConsole extends JPanel implements MessageHandler {
 
 	private void promptOutln(final String _message, final AttributeSet attr) {
 		synchronized (this) {
-			String message = String.valueOf(_message);
+			final StringBuffer message = new StringBuffer(_message);
 			/*
-			 * Dont wait for lock. Output message right away.
+			 * Don't wait for lock. Output message right away.
 			 */
+			message.insert(0, END_LINE);
 			if (msgLock) { // if locked add extra returns
-				message = END_LINE + message + END_LINE;
-			} else { // normal message
-				message = END_LINE + message;
+				message.append(END_LINE);
 			}
 			try {
-				doc.insertString(doc.getLength(), message, attr);
+				doc.insertString(doc.getLength(), message.toString(), attr);
 			} catch (BadLocationException e) {
 				JOptionPane.showMessageDialog(this, e.getMessage(), getClass()
 						.getName(), JOptionPane.ERROR_MESSAGE);

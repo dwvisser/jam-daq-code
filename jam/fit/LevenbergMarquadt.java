@@ -90,12 +90,12 @@ final class LevenbergMarquadt {
 	/**
 	 * array containing all parameters
 	 */
-	private transient final Parameter[] parameters;
+	private transient final Parameter<Double>[] parameters;
 
 	/**
 	 * contains trial values for calculation
 	 */
-	private transient Parameter[] tryParameters;
+	private transient Parameter<Double>[] tryParameters;
 
 	/**
 	 * the low channel limit for fitting
@@ -151,17 +151,18 @@ final class LevenbergMarquadt {
 	 * @param nlf
 	 *            the parent <code>NonLinearFit</code> object creating this
 	 */
-	public LevenbergMarquadt(NonLinearFit nlf) {
+	@SuppressWarnings("unchecked")
+	public LevenbergMarquadt(final NonLinearFit nlf) {
 		super();
 		nonLinFit = nlf;
 		messages = nlf.getTextInfo();
-		final List<Parameter> temp2 = new ArrayList<Parameter>();
-		for (Parameter param : nonLinFit.getParameters()) {
+		final List<Parameter<Double>> temp2 = new ArrayList<Parameter<Double>>();
+		for (Parameter<?> param : nonLinFit.getParameters()) {
 			if (param.isDouble()) {
 				final boolean variableParameter = !(param.isOutputOnly() || param
 						.isKnown());
 				if (variableParameter) {
-					temp2.add(param);
+					temp2.add((Parameter<Double>) param);
 				}
 			}
 		}
@@ -181,7 +182,7 @@ final class LevenbergMarquadt {
 	 * @param maxChannel
 	 *            the upper limit of the fit
 	 */
-	void setup(final double[] counts, final double[] errors,
+	protected void setup(final double[] counts, final double[] errors,
 			final int minChannel, final int maxChannel) {
 		this.data = new double[counts.length];
 		System.arraycopy(counts, 0, data, 0, counts.length);
@@ -256,7 +257,7 @@ final class LevenbergMarquadt {
 			index = 0;
 			for (int l = 0; l < nPar; l++) {
 				if (!tryParameters[l].isFixed()) {
-					tryParameters[l].setValue(tryParameters[l].getDoubleValue()
+					tryParameters[l].setValue(tryParameters[l].getValue()
 							+ deltaA.element[index][0]);
 					index++;
 				}
@@ -287,6 +288,7 @@ final class LevenbergMarquadt {
 	/**
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	private void initializeIterations() {
 		deltaA = new Matrix(nPar, 1, 0.0);
 		beta = new Matrix(nPar, 1, 0.0);
@@ -296,7 +298,6 @@ final class LevenbergMarquadt {
 		vec = new Matrix(nVar, 1, 0.0);
 		space = new Matrix(nVar, nVar, 0.0);
 		alpha = new Matrix(nVar, nVar, 0.0);
-		// mfit x 1 matrix filled w/ zeroes
 		lambda = 0.001;
 		// call calculate w/ parameters, retrieve results into
 		// alpha,beta,chiSq is updated
@@ -329,7 +330,7 @@ final class LevenbergMarquadt {
 	 * @param params
 	 *            array of parameters to calculate from
 	 */
-	private void calculate(final Parameter[] params) {
+	private void calculate(final Parameter<Double>[] params) {
 		double sig2i; // 1 over sigma squared
 		double weight;
 		double yFit, deltaY;
@@ -337,8 +338,8 @@ final class LevenbergMarquadt {
 		setParameters(params);
 		outputParameters(params);
 		/*
-		 * initialize space and vec (matrix and vector in Numerical Recipes in C
-		 * 15.5)
+		 * initialize space and vector (matrix and vector in Numerical Recipes
+		 * in C 15.5)
 		 */
 		for (int j = 0; j < nVar; j++) {
 			Arrays.fill(space.element[j], 0.0);
@@ -380,14 +381,15 @@ final class LevenbergMarquadt {
 	/**
 	 * @param params
 	 */
-	private void outputParamsPostFit(final Parameter[] params) {
+	@SuppressWarnings("unchecked")
+	private void outputParamsPostFit(final Parameter<Double>[] params) {
 		/* debug message */
 		messages.messageOut(iterationCount + " ", MessageHandler.NEW);
 		messages.messageOut(round(chiSq / dof, 3) + " ");
 		for (int i = 0; i < params.length; i++) {
-			messages.messageOut(round(nonLinFit.getParameter(
-					params[i].getName()).getDoubleValue(), 3)
-					+ " ");
+			final Parameter<Double> nlfParam = (Parameter<Double>) nonLinFit
+					.getParameter(params[i].getName());
+			messages.messageOut(round(nlfParam.getValue(), 3) + " ");
 		}
 		messages.messageOut("", MessageHandler.END);
 		/* fill in the symmetric side */
@@ -401,7 +403,7 @@ final class LevenbergMarquadt {
 	/**
 	 * @param params
 	 */
-	private void outputParameters(final Parameter[] params) {
+	private void outputParameters(final Parameter<?>[] params) {
 		if (iterationCount == 0) {
 			messages.messageOut("Iteration ChiSq/dof ", MessageHandler.NEW);
 			for (int i = 0; i < params.length; i++) {
@@ -414,11 +416,10 @@ final class LevenbergMarquadt {
 	/**
 	 * @param params
 	 */
-	private void setParameters(final Parameter[] params) {
-		/* set parameter values in funk */
+	private void setParameters(final Parameter<Double>[] params) {
+		/* set parameter values in function */
 		for (int i = 0; i < params.length; i++) {
-			nonLinFit.setParameter(params[i].getName(), params[i]
-					.getDoubleValue());
+			nonLinFit.setParameter(params[i].getName(), params[i].getValue());
 		}
 	}
 
@@ -499,7 +500,7 @@ final class LevenbergMarquadt {
 		return out;
 	}
 
-	int getDegreesOfFreedom() {
+	protected int getDegreesOfFreedom() {
 		return dof;
 	}
 

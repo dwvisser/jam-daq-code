@@ -23,7 +23,12 @@ import test.sort.mockfrontend.TestFrontEnd;
  * @author Dale Visser
  * 
  */
-public class OnlineTestCommon {
+public final class OnlineTestCommon {
+
+	private OnlineTestCommon() {
+		// make no instance
+	}
+
 	/**
 	 * Scripting object to be used by tests.
 	 */

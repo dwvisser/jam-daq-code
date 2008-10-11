@@ -29,9 +29,10 @@ public class OnlineScalerTest implements Observer {
 
 	private static Script script = OnlineTestCommon.script;
 
-	private final CountDownLatch latch = new CountDownLatch(1);
+	private transient final CountDownLatch latch = new CountDownLatch(1);
 
-	private final Broadcaster BROADCASTER = Broadcaster.getSingletonInstance();
+	private transient final Broadcaster BROADCASTER = Broadcaster
+			.getSingletonInstance();
 
 	@Before
 	public void setUp() {

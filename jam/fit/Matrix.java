@@ -14,23 +14,22 @@ final class Matrix {
 	/**
 	 * number of rows in matrix
 	 */
-	transient int rows;//NOPMD
+	transient int rows;// NOPMD
 
 	/**
 	 * number of columns in matrix
 	 */
-	transient int columns;//NOPMD
+	transient int columns;// NOPMD
 
 	/**
 	 * elements of matrix
 	 */
-	transient double[][] element; //NOPMD
+	transient double[][] element; // NOPMD
 
 	/*
 	 * non-javadoc: new r by c zero matrix
 	 */
-	Matrix(int nRows, int nCols) {
-		// contructor: creates an empty r by c matrix
+	Matrix(final int nRows, final int nCols) {
 		rows = nRows;
 		columns = nCols;
 		element = new double[rows][columns];
@@ -39,7 +38,7 @@ final class Matrix {
 	/*
 	 * non-javadoc: new r by c matrix with all entries = fill
 	 */
-	Matrix(int nRows, int nCols, double fill) {
+	Matrix(final int nRows, final int nCols, final double fill) {
 		this(nRows, nCols);
 		for (int i = 0; i < rows; i++) {
 			Arrays.fill(element[i], fill);
@@ -49,7 +48,7 @@ final class Matrix {
 	/*
 	 * non-javadoc: return a copy of matrix M
 	 */
-	Matrix(Matrix original) {
+	Matrix(final Matrix original) {
 		this(original.rows, original.columns);
 		for (int i = 0; i < rows; i++) {
 			System.arraycopy(original.element[i], 0, element[i], 0, columns);
@@ -61,7 +60,7 @@ final class Matrix {
 	 * {'c', 'r'} for columns or rows and a1, a2 represent the columns/rows to
 	 * swap
 	 */
-	Matrix permute(final int arg1, final int arg2, final char which) {
+	protected Matrix permute(final int arg1, final int arg2, final char which) {
 		final Matrix rval = new Matrix(this);
 		final boolean row = which == 'r';
 		final boolean col = which == 'c';
@@ -86,7 +85,7 @@ final class Matrix {
 	 * 
 	 * @param frac displayed fractional digits
 	 */
-	String toStringUL(final int frac) {
+	protected String toStringUL(final int frac) {
 		final StringBuffer outPut = new StringBuffer(); // return value
 		if (rows == columns) {
 			final NumberFormat formatter = NumberFormat.getInstance();
@@ -107,7 +106,7 @@ final class Matrix {
 	}
 
 	/* non-javadoc: Multiplies the given row by the given factor. */
-	void rowMultiply(final int row, final double factor) {
+	protected void rowMultiply(final int row, final double factor) {
 		for (int i = 0; i < columns; i++) {
 			element[row][i] = element[row][i] * factor;
 		}

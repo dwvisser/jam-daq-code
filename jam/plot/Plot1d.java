@@ -143,6 +143,7 @@ final class Plot1d extends AbstractPlot {
 	 * Displays a fit, starting
 	 */
 	@Override
+	protected
 	void displayFit(final double[][] signals, final double[] background,
 			final double[] residuals, final int lowerLimit) {
 		this.fitBackground = new double[0];
@@ -178,6 +179,7 @@ final class Plot1d extends AbstractPlot {
 	}
 
 	@Override
+	protected
 	void displayHistogram(final Histogram hist) {
 		synchronized (LOCK) {
 			if (hist == null) {
@@ -188,6 +190,7 @@ final class Plot1d extends AbstractPlot {
 	}
 
 	@Override
+	protected
 	void displaySetGate(final GateSetMode mode, final Bin pChannel,
 			final Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
@@ -269,6 +272,7 @@ final class Plot1d extends AbstractPlot {
 	 * Caller should have checked 'isCalibrated' first.
 	 */
 	@Override
+	protected
 	int getChannel(final double energy) {
 		final AbstractHist1D plotHist = (AbstractHist1D) getHistogram();
 		return (int) Math.round(plotHist.getCalibration().getChannel(energy));
@@ -336,6 +340,7 @@ final class Plot1d extends AbstractPlot {
 	 * non-javadoc: Caller should have checked 'isCalibrated' first.
 	 */
 	@Override
+	protected
 	double getEnergy(final double channel) {
 		final AbstractHist1D plotHist = (AbstractHist1D) getHistogram();
 		return plotHist.getCalibration().getValue(channel);
@@ -444,6 +449,7 @@ final class Plot1d extends AbstractPlot {
 	 * Overlay histograms.
 	 */
 	@Override
+	protected
 	void overlayHistograms(final List<AbstractHist1D> overlayHists) {
 		panel.setDisplayingOverlay(true);
 		/* retain any items in list in the map Performance improvement */
@@ -632,12 +638,14 @@ final class Plot1d extends AbstractPlot {
 	}
 
 	@Override
+	protected
 	void removeOverlays() {
 		overlayCounts.clear();
 		overlayNumber.clear();
 	}
 
 	@Override
+	protected
 	void reset() {
 		super.reset();
 		setBinWidth(1.0);

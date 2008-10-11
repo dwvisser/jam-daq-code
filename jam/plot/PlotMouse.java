@@ -14,8 +14,8 @@ import java.util.List;
  * 
  * @author Ken Swartz.
  */
-class PlotMouse extends MouseAdapter {
-	/* list of listeners for plotmouse */
+final class PlotMouse extends MouseAdapter {
+	/* list of listeners for PlotMouse */
 	private transient final List<PlotMouseListener> listeners = new ArrayList<PlotMouseListener>();
 
 	/* converts screen pixels to data values */
@@ -28,7 +28,7 @@ class PlotMouse extends MouseAdapter {
 	 * non-javadoc: Construction, PlotMouseListener belongs to a Plot. this plot
 	 * will now call PlotMouseListener for mouse events.
 	 */
-	PlotMouse(Painter plotGraphics) {
+	PlotMouse(final Painter plotGraphics) {
 		super();
 		this.painter = plotGraphics;
 	}
@@ -36,7 +36,7 @@ class PlotMouse extends MouseAdapter {
 	/*
 	 * non-javadoc: Add listener for plot select
 	 */
-	void setPlotSelectListener(final PlotSelectListener listener) {
+	protected void setPlotSelectListener(final PlotSelectListener listener) {
 		this.plotListener = listener;
 	}
 
@@ -44,7 +44,7 @@ class PlotMouse extends MouseAdapter {
 	 * non-javadoc: Add a class, a listener, that will be called if a PlotMouse
 	 * event occurs. Listener must implement PlotMouseListener (have method plot
 	 */
-	void addListener(final PlotMouseListener listener) {
+	protected void addListener(final PlotMouseListener listener) {
 		listeners.add(listener);
 	}
 
@@ -52,14 +52,14 @@ class PlotMouse extends MouseAdapter {
 	 * Non-javadoc: Remove a class that was called if a PlotMouse event occured.
 	 * returns true if it could remove this listener
 	 */
-	boolean removeListener(final PlotMouseListener listener) {
+	protected boolean removeListener(final PlotMouseListener listener) {
 		return listeners.remove(listener);
 	}
 
 	/**
 	 * Remove all listeners
 	 */
-	void removeAllListeners() {
+	protected void removeAllListeners() {
 		listeners.clear();
 	}
 
@@ -70,6 +70,7 @@ class PlotMouse extends MouseAdapter {
 	 * @param event
 	 *            the mouse-pressed event
 	 */
+	@Override
 	public void mousePressed(final MouseEvent event) {
 		final CountsContainer countsContainer = (CountsContainer) event
 				.getSource();

@@ -8,7 +8,11 @@ import java.util.List;
 
 final class Utility {
 
-	static HistInt1D getOneDHistogramFromSortGroup(final String name) {
+	private Utility() {
+		// make no instances
+	}
+
+	protected static HistInt1D getOneDHistogramFromSortGroup(final String name) {
 		final List<Histogram> oneDimHistograms = Histogram.getHistogramList(1);
 		assertFalse("Expected 1D histograms.", oneDimHistograms.isEmpty());
 		HistInt1D result = null;

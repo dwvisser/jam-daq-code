@@ -12,14 +12,14 @@ import jam.sort.SortRoutine;
  * Sort file for 3 singles channels of data
  * 
  * Each event is 2 channel numbered 0 through 7 and for each event we increment
- * all 2 histograms. We do not do zero suppressio so will would be a lot of
+ * all 2 histograms. We do not do zero suppression so will would be a lot of
  * zeros in the histograms convention for 2 d Histograms x first then y (x vs y)
  * 
- * @Author Ken Swartz , Erik Swanson & Cristina Bordeanu Oct 2004
+ * @Author Ken Swartz , Erik Swanson & Cristina Bordeanu October 2004
  * @Edited by Tom Brown March 2006
  * @version Jam version 0.5 November 98
  */
-public class CamacScalerTest extends SortRoutine {
+public class CamacScalerTest extends SortRoutine {// NOPMD
 
 	// histograms
 	private transient HistInt1D hCh0, hCh1, hCh2, hCh3, hCh4;
@@ -45,7 +45,7 @@ public class CamacScalerTest extends SortRoutine {
 	private transient Gate ampgate_1;// gates on Ge #1 to generate TAC
 	private transient Gate ampgate_2;// gates on Ge #2 to generate TAC
 
-	// event position ids
+	// event position id's
 	private transient int idCh0, idCh1, idCh2, idCh4, idCh5;
 
 	/**
@@ -54,60 +54,7 @@ public class CamacScalerTest extends SortRoutine {
 	 */
 	@Override
 	public void initialize() throws SortException {
-		/* Slot 40 is virtual CAMAC device in CC32 process. */
-		cnafCommands.init(1, 40, 9, 16, 2); // CMC203 in slot 9, mode - 2
-		cnafCommands.init(1, 40, 0, 17, 50); // check buffer every 50ms
-		cnafCommands.init(1, 40, 0, 18, 0x0011); // CMC203 Header 0x0011
-		cnafCommands.init(1, 0, 1, 16, 0); // crate dataway Z
-		cnafCommands.init(1, 0, 0, 16, 0); // crate dataway C
-		cnafCommands.init(1, 27, 0, 16, 0); // crate I
-		cnafCommands.init(1, 12, 0, 9, 0); // adc 413 clear
-		cnafCommands.init(1, 14, 0, 9, 0); // adc 413 clear
-
-		/* Set up CMC203 FERA bus controller in FIFO mode slot 8. */
-		cnafCommands.init(1, 9, 1, 16, 0x0099B); // cmc203 ctrl reg 0000 1001
-		/*
-		 * 1001 1011 - insert gate header
-		 */
-		cnafCommands.init(1, 9, 1, 9); // cmc203 Clear FIFO and counters
-		cnafCommands.init(1, 9, 7, 16, 900); // cmc203 Gate to REQ timeout
-		cnafCommands.init(1, 9, 14, 16, 100); // cmc203 Event to Clear timeout
-		cnafCommands.init(1, 9, 1, 26); // cmc203 Enable if no inhibit
-		/*
-		 * cmc203 Ext Output sel reg:S for busy
-		 */
-		cnafCommands.init(1, 9, 13, 16, 1472);
-		/*
-		 * cmc203 Request delay reg(13->0.5usec)
-		 */
-		cnafCommands.init(1, 9, 2, 16, 50);
-		/*
-		 * cmc203 12 bit gate header value
-		 */
-		cnafCommands.init(1, 9, 9, 16, 0x011);
-		cnafCommands.init(1, 9, 6, 17, 4000); // cmc203 clock tick - 80 usecs
-		cnafCommands.init(1, 12, 0, 16, 33024); // reg1 adc 413 no-LAM, Coinc,
-		// FERA readout
-		cnafCommands.init(1, 12, 1, 16, 15); // reg2 adc 413 enable all gates
-		// (1,2,3,4 & master)
-		cnafCommands.init(1, 14, 0, 16, 33024);
-		cnafCommands.init(1, 14, 1, 16, 15);
-		cnafCommands.init(1, 12, 0, 17, 40); // adc 413 (1) LLD threshold at
-		// 80 mV
-		cnafCommands.init(1, 12, 1, 17, 40); // adc 413 (1) LLD threshold at
-		// 80 mV
-		cnafCommands.init(1, 12, 2, 17, 40); // adc 413 (1) LLD threshold at
-		// 80 mV
-		cnafCommands.init(1, 12, 3, 17, 40); // adc 413 (1) LLD threshold at
-		// 80 mV
-		cnafCommands.init(1, 14, 0, 17, 40); // adc 413 (1) LLD threshold at
-		// 80 mV
-		cnafCommands.init(1, 14, 1, 17, 40); // adc 413 (1) LLD threshold at
-		// 80 mV
-		cnafCommands.init(1, 14, 2, 17, 40); // adc 413 (1) LLD threshold at
-		// 80 mV
-		cnafCommands.init(1, 14, 3, 17, 40); // adc 413 (1) LLD threshold at
-		// 80 mV
+		defineCamacInitSequence();
 		// event return id number to be used in sort
 		cnafCommands.eventRead(1, 9, 0, 2); // read FIFO ms time reg
 		cnafCommands.eventRead(1, 9, 0, 2); // read FIFO ls time reg
@@ -185,6 +132,63 @@ public class CamacScalerTest extends SortRoutine {
 		final Scaler sPulser = createScaler("Direct pulser", 0);
 
 		new Monitor("Direct Pulser", sPulser);
+	}
+
+	private void defineCamacInitSequence() {
+		/* Slot 40 is virtual CAMAC device in CC32 process. */
+		cnafCommands.init(1, 40, 9, 16, 2); // CMC203 in slot 9, mode - 2
+		cnafCommands.init(1, 40, 0, 17, 50); // check buffer every 50ms
+		cnafCommands.init(1, 40, 0, 18, 0x0011); // CMC203 Header 0x0011
+		cnafCommands.init(1, 0, 1, 16, 0); // crate dataway Z
+		cnafCommands.init(1, 0, 0, 16, 0); // crate dataway C
+		cnafCommands.init(1, 27, 0, 16, 0); // crate I
+		cnafCommands.init(1, 12, 0, 9, 0); // adc 413 clear
+		cnafCommands.init(1, 14, 0, 9, 0); // adc 413 clear
+
+		/* Set up CMC203 FERA bus controller in FIFO mode slot 8. */
+		cnafCommands.init(1, 9, 1, 16, 0x0099B); // cmc203 ctrl reg 0000 1001
+		/*
+		 * 1001 1011 - insert gate header
+		 */
+		cnafCommands.init(1, 9, 1, 9); // cmc203 Clear FIFO and counters
+		cnafCommands.init(1, 9, 7, 16, 900); // cmc203 Gate to REQ timeout
+		cnafCommands.init(1, 9, 14, 16, 100); // cmc203 Event to Clear timeout
+		cnafCommands.init(1, 9, 1, 26); // cmc203 Enable if no inhibit
+		/*
+		 * cmc203 Ext Output sel reg:S for busy
+		 */
+		cnafCommands.init(1, 9, 13, 16, 1472);
+		/*
+		 * cmc203 Request delay reg(13->0.5usec)
+		 */
+		cnafCommands.init(1, 9, 2, 16, 50);
+		/*
+		 * cmc203 12 bit gate header value
+		 */
+		cnafCommands.init(1, 9, 9, 16, 0x011);
+		cnafCommands.init(1, 9, 6, 17, 4000); // cmc203 clock tick - 80 usecs
+		cnafCommands.init(1, 12, 0, 16, 33024); // reg1 adc 413 no-LAM, Coinc,
+		// FERA readout
+		cnafCommands.init(1, 12, 1, 16, 15); // reg2 adc 413 enable all gates
+		// (1,2,3,4 & master)
+		cnafCommands.init(1, 14, 0, 16, 33024);
+		cnafCommands.init(1, 14, 1, 16, 15);
+		cnafCommands.init(1, 12, 0, 17, 40); // adc 413 (1) LLD threshold at
+		// 80 mV
+		cnafCommands.init(1, 12, 1, 17, 40); // adc 413 (1) LLD threshold at
+		// 80 mV
+		cnafCommands.init(1, 12, 2, 17, 40); // adc 413 (1) LLD threshold at
+		// 80 mV
+		cnafCommands.init(1, 12, 3, 17, 40); // adc 413 (1) LLD threshold at
+		// 80 mV
+		cnafCommands.init(1, 14, 0, 17, 40); // adc 413 (1) LLD threshold at
+		// 80 mV
+		cnafCommands.init(1, 14, 1, 17, 40); // adc 413 (1) LLD threshold at
+		// 80 mV
+		cnafCommands.init(1, 14, 2, 17, 40); // adc 413 (1) LLD threshold at
+		// 80 mV
+		cnafCommands.init(1, 14, 3, 17, 40); // adc 413 (1) LLD threshold at
+		// 80 mV
 	}
 
 	@Override
