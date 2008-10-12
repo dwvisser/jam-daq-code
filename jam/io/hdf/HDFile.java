@@ -42,7 +42,7 @@ public final class HDFile extends RandomAccessFile {
 	 * @param file
 	 * @return true if file is an hdf file
 	 */
-	static boolean isHDFFile(final File file) {
+	protected static boolean isHDFFile(final File file) {
 		final HDFileFilter filter = new HDFileFilter(false);
 		return filter.accept(file);
 	}
@@ -74,7 +74,8 @@ public final class HDFile extends RandomAccessFile {
 	 * @exception FileNotFoundException
 	 *                if given file not found
 	 */
-	public HDFile(File file, String mode) throws FileNotFoundException {
+	public HDFile(final File file, final String mode)
+			throws FileNotFoundException {
 		this(file, mode, null, 0);// ignores progress
 	}
 
@@ -92,7 +93,8 @@ public final class HDFile extends RandomAccessFile {
 	 * @exception FileNotFoundException
 	 *                if given file not found
 	 */
-	HDFile(File file, String mode, AsyncProgressMonitor progMon, int steps)
+	HDFile(final File file, final String mode,
+			final AsyncProgressMonitor progMon, final int steps)
 			throws FileNotFoundException {
 		super(file, mode);
 		monitor = progMon;
@@ -137,12 +139,12 @@ public final class HDFile extends RandomAccessFile {
 	}
 
 	private static final String REF = " ref ";
-	
+
 	/*
 	 * non-javadoc: Fixes reference for old files @param ref
 	 */
-	void debugDumpDD(final short tag, final short ref, final int offset,
-			final int length) throws IOException {
+	protected void debugDumpDD(final short tag, final short ref,
+			final int offset, final int length) throws IOException {
 		mark();
 		seek(offset);
 		LOGGER.info("Read Tag " + tag + REF + ref + " offset " + offset
@@ -174,7 +176,7 @@ public final class HDFile extends RandomAccessFile {
 
 	private int getNumberObjctProgressStep(final int numObjects,
 			final float timeFraction) {
-		int rval;
+		int rval = 1;
 		if (stepsToTake > 0) {
 			rval = numObjects / (stepsToTake - 1);
 			if (lazyLoadData) { // half the steps if lazy load (redo to take
@@ -184,20 +186,19 @@ public final class HDFile extends RandomAccessFile {
 			if (rval <= 0) {
 				rval = 1;
 			}
-		} else {
-			rval = 1;
 		}
 		return rval;
 	}
 
-	boolean isLazyLoadData() {
+	protected boolean isLazyLoadData() {
 		return lazyLoadData;
 	}
 
 	/*
 	 * non-javadoc: Lazy load the bytes for an object
 	 */
-	byte[] lazyReadData(final AbstractData dataObject) throws HDFException {
+	protected byte[] lazyReadData(final AbstractData dataObject)
+			throws HDFException {
 		final int numObjSteps = getNumberObjctProgressStep(lazyLoadNum,
 				FractionTime.READ_LAZY_HISTS);
 		final byte[] localBytes = new byte[dataObject.getLength()];
@@ -233,8 +234,8 @@ public final class HDFile extends RandomAccessFile {
 		seek(offset);
 		final int numRead = read(rval);
 		if (numRead < length) {
-			throw new IllegalStateException("Tried to read "+length+
-					" bytes from file. Only got "+numRead+".");
+			throw new IllegalStateException("Tried to read " + length
+					+ " bytes from file. Only got " + numRead + ".");
 		}
 		reset();
 		return rval;
@@ -296,16 +297,16 @@ public final class HDFile extends RandomAccessFile {
 	 * @throws HDFException
 	 * @throws IOException
 	 */
-	private void loadDataObject(final short tag, final short ref, final int offset, final int length) throws HDFException, IOException {
+	private void loadDataObject(final short tag, final short ref,
+			final int offset, final int length) throws HDFException,
+			IOException {
 		// Load scientific data as last moment needed
 		if (lazyLoadData && tag == Constants.DFTAG_SD) {
-			AbstractData.create(ScientificData.class, ref,
-					offset, length);
+			AbstractData.create(ScientificData.class, ref, offset, length);
 			lazyLoadNum++;
 		} else {
 			final byte[] bytes = readBytes(offset, length);
-			AbstractData.create(bytes, AbstractData.TYPES
-					.get(tag), ref);
+			AbstractData.create(bytes, AbstractData.TYPES.get(tag), ref);
 		}
 	}
 
@@ -337,14 +338,14 @@ public final class HDFile extends RandomAccessFile {
 		}
 	}
 
-	void setLazyLoadData(final boolean lazy) {
+	protected void setLazyLoadData(final boolean lazy) {
 		lazyLoadData = lazy;
 	}
 
 	private int sizeDataDescriptorBlock() {
 		/* The size of the DD block. */
 		/*
-		 * numDD's + offset to next (always 0 here) + size*12 for
+		 * numDD's + offset to next (always 0 here) + size12 for
 		 * tag/ref/offset/length info
 		 */
 		final int size = AbstractData.getDataObjectList().size();
@@ -353,8 +354,8 @@ public final class HDFile extends RandomAccessFile {
 
 	/**
 	 * Looks at the internal index of data elements and sets the offset fields
-	 * of the <code>DataObject</code>'s. To be run when all data elements
-	 * have been defined.
+	 * of the <code>DataObject</code>'s. To be run when all data elements have
+	 * been defined.
 	 */
 	private void updateBytesOffsets() {
 		synchronized (this) {
@@ -446,7 +447,7 @@ public final class HDFile extends RandomAccessFile {
 	 * 
 	 * @throws HDFException
 	 */
-	void writeFile() throws HDFException {
+	protected void writeFile() throws HDFException {
 		updateBytesOffsets();
 		writeMagicWord();
 		writeDataDescriptorBlock();

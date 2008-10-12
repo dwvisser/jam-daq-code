@@ -47,7 +47,8 @@ final class ParseCommand implements CommandListener {
 
 	private transient final Commandable commandable;
 
-	ParseCommand(Commandable commandable, CurrentPlotAccessor plotAccessor) {
+	ParseCommand(final Commandable commandable,
+			final CurrentPlotAccessor plotAccessor) {
 		super();
 		this.commandable = commandable;
 		this.plotAccessor = plotAccessor;

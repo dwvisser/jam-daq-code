@@ -54,9 +54,10 @@ public class LinearFunction extends AbstractCalibrationFunction {
 	}
 
 	@Override
-	public void updateFormula(final NumberFormat numFormat) {
-		formula.setLength(0);
+	public String updateFormula(final NumberFormat numFormat) {
+		final StringBuffer formula = new StringBuffer();
 		formula.append("E = ").append(numFormat.format(coeff[0])).append(" + ")
 				.append(numFormat.format(coeff[1])).append("\u2219ch");
+		return formula.toString();
 	}
 }

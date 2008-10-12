@@ -127,7 +127,7 @@ public final class SetupSortOn extends AbstractSetup {
 	private transient final JTextField textExpName, textPathHist, textPathData,
 			textPathLog;
 
-	private SetupSortOn(ConsoleLog console) {
+	private SetupSortOn(final ConsoleLog console) {
 		super("Setup Online");
 		initCheckLock();
 		initDiskCheckbox();

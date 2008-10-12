@@ -35,27 +35,27 @@ public final class VDataDescription extends AbstractData {
 	/**
 	 * Type for <code>short</code>.
 	 */
-	final static short DFNT_INT16 = 22;//NOPMD
+	final static short DFNT_INT16 = 22;// NOPMD
 
 	/**
 	 * Type for <code>int</code>.
 	 */
-	final static short DFNT_INT32 = 24;//NOPMD
+	final static short DFNT_INT32 = 24;// NOPMD
 
 	/**
 	 * Type for <code>char</code>.
 	 */
-	final static short DFNT_CHAR8 = 4;//NOPMD
+	final static short DFNT_CHAR8 = 4;// NOPMD
 
 	/**
 	 * Type for <code>float</code>.
 	 */
-	final static short DFNT_FLT32 = 5;//NOPMD
+	final static short DFNT_FLT32 = 5;// NOPMD
 
 	/**
 	 * Type for <code>double</code>.
 	 */
-	final static short DFNT_DBL64 = 6;//NOPMD
+	final static short DFNT_DBL64 = 6;// NOPMD
 
 	/**
 	 * Number of entries in Vdata.
@@ -112,8 +112,8 @@ public final class VDataDescription extends AbstractData {
 	 */
 	private final static short VH_VERSION = 3;
 
-	VDataDescription(String name, String classtype, int size, String[] names,
-			short[] types, short[] orders) {
+	VDataDescription(final String name, final String classtype, final int size,
+			final String[] names, final short[] types, final short[] orders) {
 		super(DFTAG_VH); // sets tag
 		/* Double check dimensionality */
 		if (names.length == 0 || (names.length != types.length)
@@ -193,7 +193,7 @@ public final class VDataDescription extends AbstractData {
 	 * @param types
 	 */
 	private void setSizes(final short[] types) {
-		for (int i = 0; i < nfields; i++) {//NOPMD
+		for (int i = 0; i < nfields; i++) {// NOPMD
 			isize[i] = getColumnByteLength(types[i], order[i]);
 			ivsize += isize[i];
 		}
@@ -203,7 +203,8 @@ public final class VDataDescription extends AbstractData {
 	 * given a data type and column length, return the number of bytes needed
 	 * for storage
 	 */
-	static short getColumnByteLength(final short type, final short order) {
+	protected static short getColumnByteLength(final short type,
+			final short order) {
 		final short rval;
 		switch (type) {
 		case DFNT_INT16:
@@ -232,6 +233,7 @@ public final class VDataDescription extends AbstractData {
 		super(DFTAG_VH);
 	}
 
+	@Override
 	public void interpretBytes() {
 		bytes.rewind();
 		interlace = bytes.getShort();
@@ -270,7 +272,7 @@ public final class VDataDescription extends AbstractData {
 		bytes.getShort(); // no extension
 	}
 
-	short getNumFields() {
+	protected short getNumFields() {
 		return nfields;
 	}
 
@@ -283,39 +285,39 @@ public final class VDataDescription extends AbstractData {
 		return nvert;
 	}
 
-	short getType(final int field) {
+	protected short getType(final int field) {
 		return datatypes[field];
 	}
 
-	short[] getDimensions() {
+	protected short[] getDimensions() {
 		final int len = order.length;
 		final short[] rval = new short[len];
 		System.arraycopy(order, 0, rval, 0, len);
 		return rval;
 	}
 
-	short getRowSize() {
+	protected short getRowSize() {
 		return ivsize;
 	}
 
-	short[] getTypes() {
+	protected short[] getTypes() {
 		final int len = datatypes.length;
 		final short[] rval = new short[len];
 		System.arraycopy(datatypes, 0, rval, 0, len);
 		return rval;
 	}
 
-	String getName() {
+	protected String getName() {
 		return name;
 	}
 
-	String getDataTypeName() {
+	protected String getDataTypeName() {
 		return dataTypeName;
 	}
 
 	/**
-	 * Returns the <code>VdataDescription</code> with the name specified.
-	 * Should only be called when the name is expected to be unique.
+	 * Returns the <code>VdataDescription</code> with the name specified. Should
+	 * only be called when the name is expected to be unique.
 	 * 
 	 * @param list
 	 *            should contain only VdataDescription objects
@@ -335,13 +337,14 @@ public final class VDataDescription extends AbstractData {
 		return output;
 	}
 
-	short[] getDataOffsets() {
+	protected short[] getDataOffsets() {
 		final int len = fieldOffsets.length;
 		final short[] rval = new short[len];
 		System.arraycopy(fieldOffsets, 0, rval, 0, len);
 		return rval;
 	}
 
+	@Override
 	public String toString() {
 		final char colon = ':';
 		final String rval = dataTypeName + colon + name + colon + order.length

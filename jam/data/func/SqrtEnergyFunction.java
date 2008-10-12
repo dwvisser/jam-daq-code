@@ -54,9 +54,10 @@ public class SqrtEnergyFunction extends AbstractCalibrationFunction {
 	}
 
 	@Override
-	protected void updateFormula(final NumberFormat numFormat) {
-		formula.setLength(0);
+	protected String updateFormula(final NumberFormat numFormat) {
+		final StringBuffer formula = new StringBuffer();
 		formula.append("\u221aE = ").append(numFormat.format(coeff[0])).append(
 				" + ").append(numFormat.format(coeff[1])).append("\u2219ch");
+		return formula.toString();
 	}
 }

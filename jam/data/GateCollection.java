@@ -10,7 +10,7 @@ import java.util.List;
  * @author Dale Visser
  * 
  */
-public class GateCollection {
+public final class GateCollection {
 
 	private transient final int dimensions;
 
@@ -19,7 +19,7 @@ public class GateCollection {
 	 */
 	private transient final List<DataElement> gates = new ArrayList<DataElement>();
 
-	GateCollection(int dim) {
+	GateCollection(final int dim) {
 		this.dimensions = dim;
 	}
 
@@ -45,7 +45,7 @@ public class GateCollection {
 		}
 	}
 
-	void clear() {
+	protected void clear() {
 		gates.clear();
 	}
 

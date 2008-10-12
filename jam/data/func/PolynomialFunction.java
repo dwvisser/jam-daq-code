@@ -14,7 +14,7 @@ public class PolynomialFunction extends AbstractCalibrationFunction {
 	 * @param numberTerms
 	 *            terms in the polynomial (including a constant term)
 	 */
-	public PolynomialFunction(int numberTerms) {
+	public PolynomialFunction(final int numberTerms) {
 		super("Polynomial", numberTerms);
 		title = "E = a0 + a1\u2219ch + a2\u2219(ch)\u00b2 + ...";
 		coeff = new double[numberTerms];
@@ -31,6 +31,7 @@ public class PolynomialFunction extends AbstractCalibrationFunction {
 	 *            value at which to get calibration
 	 * @return calibration value of the channel
 	 */
+	@Override
 	public double getValue(final double channel) {
 		double chanMult;
 		double value = 0.0;
@@ -43,6 +44,7 @@ public class PolynomialFunction extends AbstractCalibrationFunction {
 	}
 
 	// To be implemented later when This Function Works
+	@Override
 	public double getChannel(final double energy) {
 		return ((energy - coeff[0]) / coeff[1]);
 	}
@@ -50,13 +52,14 @@ public class PolynomialFunction extends AbstractCalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
+	@Override
 	public void fit() {
 		// does nothing so far
 	}
 
-	public void updateFormula(final NumberFormat numFormat) {
-		formula.setLength(0);
-		formula.append("Polynomial fit not yet implemented");
+	@Override
+	public String updateFormula(final NumberFormat numFormat) {
+		return "Polynomial fit not yet implemented";
 	}
 
 	/**

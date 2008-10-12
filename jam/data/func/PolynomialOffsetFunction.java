@@ -41,8 +41,9 @@ public class PolynomialOffsetFunction extends AbstractCalibrationFunction {
 	 *            value at which to get calibration
 	 * @return calibration value of the channel
 	 */
+	@Override
 	public double getValue(final double channel) {
-		//check that a calibration has been defined
+		// check that a calibration has been defined
 		double chanMult;
 		double value = 0.0;
 		chanMult = 1.0;
@@ -54,6 +55,7 @@ public class PolynomialOffsetFunction extends AbstractCalibrationFunction {
 	}
 
 	// To be implemented Later when this function Works
+	@Override
 	public double getChannel(final double energy) {
 		return ((energy - coeff[0]) / coeff[1]);
 	}
@@ -61,13 +63,14 @@ public class PolynomialOffsetFunction extends AbstractCalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
+	@Override
 	public void fit() {
-		//does nothing so far
+		// does nothing so far
 	}
 
-	protected void updateFormula(final NumberFormat numFormat) {
-		formula.setLength(0);
-		formula.append("Polynomial Offset fit not yet implemented");
+	@Override
+	protected String updateFormula(final NumberFormat numFormat) {
+		return "Polynomial Offset fit not yet implemented";
 	}
 
 }

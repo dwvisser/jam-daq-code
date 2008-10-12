@@ -31,7 +31,7 @@ import javax.swing.JMenuItem;
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @version 1.4
- * @since 30 Dec 2003
+ * @since 30 December 2003
  */
 final class MenuBar implements Observer {
 
@@ -288,11 +288,11 @@ final class MenuBar implements Observer {
 			view.add(namedMenuItem(name));
 		}
 	}
-	
+
 	private JMenuItem namedMenuItem(final String name) {
 		final JMenuItem rval = new JMenuItem(name);
 		rval.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			public void actionPerformed(final ActionEvent event) {
 				PlotDisplay.getDisplay().setView(View.getView(name));
 			}
 		});
@@ -302,7 +302,7 @@ final class MenuBar implements Observer {
 	/**
 	 * @return the only menubar created by this class
 	 */
-	static JMenuBar getMenuBar() {
+	protected static JMenuBar getMenuBar() {
 		return INSTANCE.menus;
 	}
 }

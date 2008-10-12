@@ -71,7 +71,7 @@ public final class HistInt1D extends AbstractHist1D {
 	}
 
 	@Override
-	void clearCounts() {
+	protected void clearCounts() {
 		synchronized (this) {
 			counts = EMPTY_INT;
 			unsetErrors();

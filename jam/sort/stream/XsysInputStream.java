@@ -27,22 +27,22 @@ public class XsysInputStream extends AbstractEventInputStream {
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
 	 */
-	public XsysInputStream(boolean console) {
+	public XsysInputStream(final boolean console) {
 		super(console);
 	}
 
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
 	 */
-	public XsysInputStream(boolean console, int eventSize) {
+	public XsysInputStream(final boolean console, final int eventSize) {
 		super(console, eventSize);
 	}
-	
+
 	/**
 	 * One allocation instead of many on readEvent() calls.
 	 */
-	private transient EventInputStatus eventInputStatus;//NOPMD	
-	
+	private transient EventInputStatus eventInputStatus;// NOPMD
+
 	/**
 	 * Reads an event from the input stream Expects the stream position to be
 	 * the beginning of an event. It is up to the user to ensure this.
@@ -50,6 +50,7 @@ public class XsysInputStream extends AbstractEventInputStream {
 	 * @exception EventException
 	 *                thrown when there is a problem with the event stream
 	 */
+	@Override
 	public EventInputStatus readEvent(int[] input) throws EventException {
 		synchronized (this) {
 			eventInputStatus = EventInputStatus.ERROR;
@@ -88,6 +89,7 @@ public class XsysInputStream extends AbstractEventInputStream {
 	 * @exception EventException
 	 *                thrown when there is a problem with the event stream
 	 */
+	@Override
 	public boolean readHeader() throws EventException {
 		headerRunNumber = 0;
 		headerTitle = "No Title for Xsys";
@@ -100,6 +102,7 @@ public class XsysInputStream extends AbstractEventInputStream {
 	 * Is the word a end of run word Xsys event stream has no end of event
 	 * marker
 	 */
+	@Override
 	public boolean isEndRun(final short dataWord) {
 		return false;
 	}

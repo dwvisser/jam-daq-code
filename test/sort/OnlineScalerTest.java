@@ -34,6 +34,9 @@ public class OnlineScalerTest implements Observer {
 	private transient final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
 
+	/**
+	 * set up before test
+	 */
 	@Before
 	public void setUp() {
 		this.BROADCASTER.addObserver(this);

@@ -68,13 +68,13 @@ public class Console extends JPanel {
 	 * @param listener
 	 *            listens to commands
 	 */
-	public Console(CommandFinder finder, CommandListener listener) {
+	public Console(final CommandFinder finder, final CommandListener listener) {
 		this(NUM_LINES, finder, listener);
 	}
 
 	/**
 	 * Constructs a JamConsole which has an text area for output a text field
-	 * for intput.
+	 * for input.
 	 * 
 	 * @param linesLog
 	 *            number of lines to retain in on-screen display
@@ -83,7 +83,8 @@ public class Console extends JPanel {
 	 * @param listener
 	 *            listens to commands
 	 */
-	public Console(int linesLog, CommandFinder finder, CommandListener listener) {
+	public Console(final int linesLog, final CommandFinder finder,
+			final CommandListener listener) {
 		super(new BorderLayout());
 		this.commandFinder = finder;
 		consoleLog = new ConsoleLog(linesLog);

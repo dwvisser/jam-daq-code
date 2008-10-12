@@ -4,9 +4,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
- * <code>RingBuffer</code> is a list of buffers which starts repeating after
- * the last buffer is filled. It allows asynchronous inter-Thread communication.
- * If a buffer is placed in a full ring, an exception is thrown.
+ * <code>RingBuffer</code> is a list of buffers which starts repeating after the
+ * last buffer is filled. It allows asynchronous inter-Thread communication. If
+ * a buffer is placed in a full ring, an exception is thrown.
  * 
  * @author Ken Swartz
  * @version 0.5,0.9
@@ -55,7 +55,7 @@ public final class RingBuffer {
 	 * @param empty
 	 *            whether this is a no-capacity ring buffer
 	 */
-	public RingBuffer(boolean empty) {
+	public RingBuffer(final boolean empty) {
 		super();
 		hasRing = !empty; // NOPMD
 		if (hasRing) {

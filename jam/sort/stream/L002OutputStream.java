@@ -31,13 +31,14 @@ public final class L002OutputStream extends AbstractL002HeaderWriter {
 	 * @param eventSize
 	 *            the number of parameters per event
 	 */
-	public L002OutputStream(int eventSize) {
+	public L002OutputStream(final int eventSize) {
 		super(eventSize);
 	}
 
 	/**
 	 * Check for end of run word
 	 */
+	@Override
 	public boolean isEndRun(final short dataWord) {
 		return (dataWord == RUN_END_MARKER);
 	}
@@ -60,6 +61,7 @@ public final class L002OutputStream extends AbstractL002HeaderWriter {
 	/**
 	 * Write the character that signifies the end of the run data.
 	 */
+	@Override
 	public void writeEndRun() throws EventException {
 		try {
 			dataOutput.writeShort(RUN_END_MARKER);

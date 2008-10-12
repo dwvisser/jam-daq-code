@@ -28,17 +28,18 @@ public class YaleInputStream extends AbstractL002HeaderReader {
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
 	 */
-	public YaleInputStream(boolean console) {
+	public YaleInputStream(final boolean console) {
 		super(console);
 	}
 
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
 	 */
-	public YaleInputStream(boolean console, int eventSize) {
+	public YaleInputStream(final boolean console, final int eventSize) {
 		super(console, eventSize);
 	}
 
+	@Override
 	public String getFormatDescription() {
 		return "Later implementation of ORNL L002 format at Yale.";
 	}
@@ -50,6 +51,7 @@ public class YaleInputStream extends AbstractL002HeaderReader {
 	 * @exception EventException
 	 *                thrown for errors in the event stream
 	 */
+	@Override
 	public EventInputStatus readEvent(int[] input) throws EventException {
 		synchronized (this) {
 			try {
@@ -106,6 +108,7 @@ public class YaleInputStream extends AbstractL002HeaderReader {
 	/**
 	 * Check for end of run word
 	 */
+	@Override
 	public boolean isEndRun(final short dataWord) {
 		synchronized (this) {
 			return (dataWord == RUN_END_MARKER);

@@ -32,17 +32,17 @@ final class SummaryTableModel implements TableModel {
 
 		private transient final String groupName;
 
-		RowDataElement(String groupName, DataElement dataElement) {
+		RowDataElement(final String groupName, final DataElement dataElement) {
 			super();
 			this.groupName = groupName;
 			this.dataElement = dataElement;
 		}
 
-		DataElement getDataElement() {
+		protected DataElement getDataElement() {
 			return dataElement;
 		}
 
-		String getGroupName() {
+		protected String getGroupName() {
 			return groupName;
 		}
 	}
@@ -264,7 +264,7 @@ final class SummaryTableModel implements TableModel {
 	/*
 	 * non-javadoc: Set the selection type
 	 */
-	void setSelectionType(final SummaryTable.Selection type) {
+	protected void setSelectionType(final SummaryTable.Selection type) {
 		selectionType = type;
 		final String COL_NAME_GROUP = "Group";
 		final String COL_NAME_NAME = "Name";
@@ -294,8 +294,7 @@ final class SummaryTableModel implements TableModel {
 	 * @see javax.swing.table.TableModel#setValueAt(java.lang.Object, int, int)
 	 */
 	public void setValueAt(final Object arg0, final int arg1, final int arg2) {
-		// TODO Auto-generated method stub
-
+		// no-op
 	}
 
 }

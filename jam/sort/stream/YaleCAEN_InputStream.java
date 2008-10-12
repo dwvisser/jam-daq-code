@@ -133,14 +133,14 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
 	 */
-	public YaleCAEN_InputStream(boolean console) {
+	public YaleCAEN_InputStream(final boolean console) {
 		super(console);
 	}
 
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
 	 */
-	public YaleCAEN_InputStream(boolean console, int eventSize) {
+	public YaleCAEN_InputStream(final boolean console, final int eventSize) {
 		super(console, eventSize);
 	}
 

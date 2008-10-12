@@ -116,7 +116,7 @@ public final class ScalerDisplay extends AbstractControl {
 		});
 		buttonPanel.add(bupdate);
 		bzero.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			public void actionPerformed(final ActionEvent event) {
 				checkDisabled.setSelected(true);
 				bzero.setEnabled(false);
 				BroadcastUtilities.zeroScalers();
@@ -126,7 +126,7 @@ public final class ScalerDisplay extends AbstractControl {
 		buttonPanel.add(bzero);
 		plower.add(buttonPanel);
 		checkDisabled.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent event) {
+			public void itemStateChanged(final ItemEvent event) {
 				bzero.setEnabled(!checkDisabled.isSelected());
 			}
 		});

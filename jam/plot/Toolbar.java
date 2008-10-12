@@ -112,7 +112,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 	 * 
 	 * @since Version 0.5
 	 */
-	Toolbar(Container container, Action action) {
+	Toolbar(final Container container, final Action action) {
 		super("Actions", ORIENTATION);
 		this.action = action;
 		isSyncEvent = false;
@@ -338,7 +338,8 @@ final class Toolbar extends JToolBar implements ActionListener {
 		}
 	}
 
-	void setHistogramProperties(final int dimension, final double binWidth) {
+	protected void setHistogramProperties(final int dimension,
+			final double binWidth) {
 		final boolean enable1D = dimension == 1;
 		bgoto.setEnabled(enable1D);
 		bnetarea.setEnabled(enable1D);

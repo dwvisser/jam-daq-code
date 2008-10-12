@@ -44,7 +44,7 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 * @param console
 	 *            where messages to the user go
 	 */
-	public Kmax6InputStream(boolean console) {
+	public Kmax6InputStream(final boolean console) {
 		super(console);
 	}
 
@@ -57,7 +57,7 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 *            where messages to user go
 	 */
 
-	public Kmax6InputStream(boolean console, int eventSize) {
+	public Kmax6InputStream(final boolean console, final int eventSize) {
 		super(console, eventSize);
 	}
 

@@ -54,7 +54,7 @@ public final class View {
 	 * @param cols
 	 *            number of columns of plots
 	 */
-	public View(String viewName, int rows, int cols) {
+	public View(final String viewName, final int rows, final int cols) {
 		super();
 		if (rows < 1) {
 			throw new IllegalArgumentException("Can't have a view with " + rows
@@ -74,8 +74,8 @@ public final class View {
 		while (MAP.containsKey(tempName)) {
 			final String addition = "[" + prime + "]";
 			tempName = StringUtilities.getInstance().makeLength(tempName,
-					NAME_LENGTH - addition.length())
-					+ addition;
+					NAME_LENGTH - addition.length());
+			tempName += addition;// NOPMD
 			prime++;
 		}
 		name = tempName;

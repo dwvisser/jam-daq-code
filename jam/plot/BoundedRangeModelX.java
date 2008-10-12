@@ -1,24 +1,23 @@
 package jam.plot;
 
-
 /**
  * <code>Scroller</code> contains instance of this, and it is be handed to the
- * horizontal <code>JScrollBar</code>.<code>setFields()</code> is to be
- * called whenever the displayed <code>Histogram</code> changes.
+ * horizontal <code>JScrollBar</code>.<code>setFields()</code> is to be called
+ * whenever the displayed <code>Histogram</code> changes.
  * 
  * @author Dale Visser
  * @version 1.2
  */
 final class BoundedRangeModelX extends AbstractScrollBarRangeModel {
 
-	BoundedRangeModelX(PlotContainer container) {
+	BoundedRangeModelX(final PlotContainer container) {
 		super(container);
 	}
 
-	void scrollBarMoved() {
-		final int maxX = getValue() + getExtent();
-		final int minX = getValue();
+	protected void scrollBarMoved() {
 		if (lim != null) {
+			final int minX = getValue();
+			final int maxX = minX + getExtent();
 			lim.setLimitsX(minX, maxX);
 		}
 	}
@@ -26,6 +25,7 @@ final class BoundedRangeModelX extends AbstractScrollBarRangeModel {
 	/**
 	 * Set model using values in Limits object.
 	 */
+	@Override
 	protected void setDisplayLimits() {
 		int min, max, extent, value;
 		min = 0;
@@ -36,7 +36,7 @@ final class BoundedRangeModelX extends AbstractScrollBarRangeModel {
 		} else {
 			extent = lim.getMaximumX() - lim.getMinimumX();
 			value = lim.getMinimumX();
-		} 
+		}
 		/*
 		 * BoundedRangeModel method, throws appropriate event up to scroll bar.
 		 */

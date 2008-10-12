@@ -12,7 +12,7 @@ public class CalibrationFitException extends Exception {
 	 * @param arg0
 	 *            message
 	 */
-	public CalibrationFitException(String arg0) {
+	public CalibrationFitException(final String arg0) {
 		super(arg0);
 	}
 
@@ -20,7 +20,7 @@ public class CalibrationFitException extends Exception {
 	 * @param arg0
 	 *            wrapped exception
 	 */
-	public CalibrationFitException(Throwable arg0) {
+	public CalibrationFitException(final Throwable arg0) {
 		super(arg0);
 	}
 
@@ -30,7 +30,7 @@ public class CalibrationFitException extends Exception {
 	 * @param arg1
 	 *            wrapped exception
 	 */
-	public CalibrationFitException(String arg0, Throwable arg1) {
+	public CalibrationFitException(final String arg0, final Throwable arg1) {
 		super(arg0, arg1);
 	}
 

@@ -47,7 +47,7 @@ public final class Peak extends Object implements Comparable<Peak>, Cloneable {
 	 * @param width
 	 *            Full width at half max of the peak
 	 */
-	private Peak(double position, double area, double width) {
+	private Peak(final double position, final double area, final double width) {
 		this(position, 0.0, area, 0.0, width, 0.0);
 	}
 
@@ -67,8 +67,9 @@ public final class Peak extends Object implements Comparable<Peak>, Cloneable {
 	 * @param widErr
 	 *            uncertainty in FWHM
 	 */
-	private Peak(double posn, double posnErr, double intensity, double intErr,
-			double wid, double widErr) {
+	private Peak(final double posn, final double posnErr,
+			final double intensity, final double intErr, final double wid,
+			final double widErr) {
 		super();
 		setPosition(posn, posnErr);
 		setArea(intensity, intErr);

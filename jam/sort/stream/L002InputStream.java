@@ -29,7 +29,7 @@ public class L002InputStream extends AbstractL002HeaderReader {
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
 	 */
-	public L002InputStream(boolean console) {
+	public L002InputStream(final boolean console) {
 		super(console);
 	}
 
@@ -41,10 +41,11 @@ public class L002InputStream extends AbstractL002HeaderReader {
 	 * @param console
 	 *            the place to write messages
 	 */
-	public L002InputStream(boolean console, int eventSize) {
+	public L002InputStream(final boolean console, final int eventSize) {
 		super(console, eventSize);
 	}
 
+	@Override
 	public String getFormatDescription() {
 		return "Original implementation of ORNL L002 format at Yale.";
 	}
@@ -56,6 +57,7 @@ public class L002InputStream extends AbstractL002HeaderReader {
 	 * @exception EventException
 	 *                thrown for errors in the event stream
 	 */
+	@Override
 	public EventInputStatus readEvent(int[] input) throws EventException {
 		synchronized (this) {
 			try {
@@ -114,6 +116,7 @@ public class L002InputStream extends AbstractL002HeaderReader {
 	/**
 	 * Check for end of run word
 	 */
+	@Override
 	public boolean isEndRun(final short dataWord) {
 		synchronized (this) {
 			return (dataWord == RUN_END_MARKER);

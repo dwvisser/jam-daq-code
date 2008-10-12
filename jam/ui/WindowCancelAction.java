@@ -7,52 +7,58 @@ import javax.swing.AbstractAction;
 
 /**
  * Action for a cancel button on a dialog window.
+ * 
  * @author Dale Visser
- *
+ * 
  */
 public final class WindowCancelAction extends AbstractAction {
 
 	private transient Window window;
 	private transient Canceller canceller;
+
 	private enum Type {
 		/**
 		 * simply dispose a dialog
 		 */
-		dialog, 
-		
+		dialog,
+
 		/**
 		 * call a canceller's cancel method
 		 */
-		canceller};
+		canceller
+	};
+
 	private transient Type type;
-	
-	private WindowCancelAction(){
+
+	private WindowCancelAction() {
 		super("Cancel");
 	}
-	
+
 	/**
 	 * 
-	 * @param window to dispose of when action is fired
+	 * @param window
+	 *            to dispose of when action is fired
 	 */
-	public WindowCancelAction(Window window){
+	public WindowCancelAction(final Window window) {
 		this();
-		type=Type.dialog;
-		this.window=window;
+		type = Type.dialog;
+		this.window = window;
 		this.putValue(SHORT_DESCRIPTION, "Close this dialog.");
 	}
-	
+
 	/**
 	 * 
-	 * @param canceller to call when action is fired
+	 * @param canceller
+	 *            to call when action is fired
 	 */
-	public WindowCancelAction(Canceller canceller){
+	public WindowCancelAction(final Canceller canceller) {
 		this();
-		type=Type.canceller;
-		this.canceller=canceller;
+		type = Type.canceller;
+		this.canceller = canceller;
 	}
-	
+
 	public void actionPerformed(final ActionEvent event) {
-		if (type.equals(Type.dialog)){
+		if (type.equals(Type.dialog)) {
 			window.dispose();
 		} else {
 			canceller.cancel();

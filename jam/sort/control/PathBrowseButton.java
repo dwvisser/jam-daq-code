@@ -11,17 +11,17 @@ import javax.swing.JFileChooser;
 import javax.swing.text.JTextComponent;
 
 final class PathBrowseButton extends JButton {
-	
+
 	private transient File path;
 	private transient final JTextComponent text;
-	private static final JamStatus STATUS=JamStatus.getSingletonInstance();
+	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
-	PathBrowseButton(File file, JTextComponent textComponent){
+	PathBrowseButton(final File file, final JTextComponent textComponent) {
 		super("Browse...");
-		assert(file != null);
-		assert(textComponent != null);
-		path=file;
-		text=textComponent;
+		assert (file != null);
+		assert (textComponent != null);
+		path = file;
+		text = textComponent;
 		text.setText(path.getPath());
 		addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent actionEvent) {
@@ -47,12 +47,12 @@ final class PathBrowseButton extends JButton {
 			path = fileChooser.getSelectedFile();
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @return most recently selected path
 	 */
-	public File getPath(){
+	public File getPath() {
 		return path;
 	}
 

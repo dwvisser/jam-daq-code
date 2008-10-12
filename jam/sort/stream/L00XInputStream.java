@@ -1,6 +1,11 @@
 package jam.sort.stream;
 
-import static jam.sort.stream.L002Parameters.*;
+import static jam.sort.stream.L002Parameters.BUFFER_END_MARKER;
+import static jam.sort.stream.L002Parameters.EVENT_END_MARKER;
+import static jam.sort.stream.L002Parameters.EVENT_MASK;
+import static jam.sort.stream.L002Parameters.EVENT_PARAMETER;
+import static jam.sort.stream.L002Parameters.RUN_END_MARKER;
+
 import java.io.EOFException;
 
 /**
@@ -28,7 +33,7 @@ public class L00XInputStream extends AbstractL002HeaderReader {
 	 * @param console
 	 *            object where messages to the user are printed
 	 */
-	public L00XInputStream(boolean console) {
+	public L00XInputStream(final boolean console) {
 		super(console);
 	}
 
@@ -40,10 +45,11 @@ public class L00XInputStream extends AbstractL002HeaderReader {
 	 * @param console
 	 *            object where messages to the user are printed
 	 */
-	public L00XInputStream(boolean console, int eventSize) {
+	public L00XInputStream(final boolean console, final int eventSize) {
 		super(console, eventSize);
 	}
 
+	@Override
 	public String getFormatDescription() {
 		return "A later modification, used by UConn, I think.";
 	}
@@ -58,6 +64,7 @@ public class L00XInputStream extends AbstractL002HeaderReader {
 	 *                thrown for errors in the event stream
 	 * @return status after attempt to read an event
 	 */
+	@Override
 	public EventInputStatus readEvent(int[] input) throws EventException {
 		synchronized (this) {
 			boolean gotParameter = false;
@@ -138,6 +145,7 @@ public class L00XInputStream extends AbstractL002HeaderReader {
 	 *            smallest atomic unit in data stream
 	 * @return whether the data word was an end-of-run word
 	 */
+	@Override
 	public boolean isEndRun(final short dataWord) {
 		synchronized (this) {
 			return (dataWord == RUN_END_MARKER);

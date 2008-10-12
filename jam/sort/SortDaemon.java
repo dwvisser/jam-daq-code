@@ -73,7 +73,7 @@ public class SortDaemon extends GoodThread {
 	 * @param con
 	 *            the sort control process
 	 */
-	public SortDaemon(Controller con) {
+	public SortDaemon(final Controller con) {
 		super();
 		controller = con;
 		this.setName("Sort Daemon");

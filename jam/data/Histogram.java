@@ -97,7 +97,7 @@ public abstract class Histogram implements DataElement {
 		 *            a 1-d or 2-d int or double array
 		 * @return which type the array corresponds to
 		 */
-		static Type getArrayType(final Object array) {
+		protected final static Type getArrayType(final Object array) {
 			final Type rval;
 			final String error = "You may pass int or double arrays of up to two dimensions as histogram counts.";
 			final Class<?> type = array.getClass();
@@ -125,7 +125,7 @@ public abstract class Histogram implements DataElement {
 
 		private transient final int typeNum;
 
-		private Type(int num) {
+		private Type(final int num) {
 			super();
 			typeNum = num;
 		}
@@ -393,7 +393,8 @@ public abstract class Histogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(Type type, int sizeX, int sizeY, String title) {
+	protected Histogram(final Type type, final int sizeX, final int sizeY,
+			final String title) {
 		super();
 		this.type = type;
 		this.sizeX = sizeX;
@@ -439,15 +440,15 @@ public abstract class Histogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(Type type, int sizeX, int sizeY, String title,
-			String axisLabelX, String axisLabelY) {
+	protected Histogram(final Type type, final int sizeX, final int sizeY,
+			final String title, final String axisLabelX, final String axisLabelY) {
 		this(type, sizeX, sizeY, title);
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
 	}
 
 	/**
-	 * Contructor with no number given, but axis labels are given.
+	 * Constructor with no number given, but axis labels are given.
 	 * 
 	 * @param group
 	 *            group this histogram belongs to
@@ -465,7 +466,7 @@ public abstract class Histogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(Type type, int size, String title) {
+	protected Histogram(final Type type, final int size, final String title) {
 		this(type, size, size, title);
 	}
 
@@ -492,8 +493,8 @@ public abstract class Histogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(Type type, int size, String title, String axisLabelX,
-			String axisLabelY) {
+	protected Histogram(final Type type, final int size, final String title,
+			final String axisLabelX, final String axisLabelY) {
 		this(type, size, size, title);
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
@@ -519,7 +520,7 @@ public abstract class Histogram implements DataElement {
 		NUMBER_MAP.put(number, this);
 	}
 
-	abstract void clearCounts();
+	protected abstract void clearCounts();
 
 	private void clearInfo() {
 		gates.clear();
@@ -610,7 +611,7 @@ public abstract class Histogram implements DataElement {
 		return name;
 	}
 
-	void setName(final String value) {
+	protected final void setName(final String value) {
 		name = value;
 	}
 
@@ -761,7 +762,7 @@ public abstract class Histogram implements DataElement {
 	}
 
 	/* Create the full histogram name with group name. */
-	final void updateNames(final Nameable group) {
+	protected final void updateNames(final Nameable group) {
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		groupName = group.getName();
 		NAME_MAP.remove(uniqueName);

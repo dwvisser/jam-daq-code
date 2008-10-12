@@ -39,20 +39,21 @@ public final class L003InputStream extends AbstractEventInputStream {
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
 	 */
-	public L003InputStream(boolean console) {
+	public L003InputStream(final boolean console) {
 		super(console);
 	}
 
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
 	 */
-	public L003InputStream(boolean console, int eventSize) {
+	public L003InputStream(final boolean console, final int eventSize) {
 		super(console, eventSize);
 	}
 
 	/**
 	 * Implementation of an <code>EventInputStream</code> abstract method.
 	 */
+	@Override
 	public boolean isEndRun(final short dataWord) {
 		synchronized (this) {
 			return (dataWord == L002Parameters.RUN_END_MARKER);
@@ -66,6 +67,7 @@ public final class L003InputStream extends AbstractEventInputStream {
 	 * @exception EventException
 	 *                thrown for errors in the event stream
 	 */
+	@Override
 	public EventInputStatus readEvent(int[] input) throws EventException {
 		synchronized (this) {
 			try {
@@ -89,6 +91,7 @@ public final class L003InputStream extends AbstractEventInputStream {
 	 * @throws EventException
 	 *             thrown for errors in the event stream
 	 */
+	@Override
 	public boolean readHeader() throws EventException {
 		final byte[] headerStart = new byte[32];
 		final byte[] date = new byte[16];
@@ -131,7 +134,7 @@ public final class L003InputStream extends AbstractEventInputStream {
 	 * non-javadoc: Read a event parameter
 	 */
 	private boolean readParameter() throws EventException, IOException {
-		boolean rval;
+		boolean rval = false;
 		int paramWord;
 		try {
 			paramWord = readVaxShort(); // read parameter word
@@ -140,17 +143,13 @@ public final class L003InputStream extends AbstractEventInputStream {
 				// need another read as marker is 2 shorts
 				readVaxShort();
 				numberEvents++;
-				rval = false;
 				status = EventInputStatus.EVENT;
 			} else if (paramWord == L002Parameters.BUFFER_END_MARKER) {
-				rval = false;
 				status = EventInputStatus.END_BUFFER;
 			} else if (paramWord == L002Parameters.RUN_END_MARKER) {
-				rval = false;
 				status = EventInputStatus.END_RUN;
 				// get parameter value if not special type
 			} else if (0 == (paramWord & L002Parameters.EVENT_PARAMETER)) {
-				rval = false;
 				status = EventInputStatus.UNKNOWN_WORD;
 				throw new EventException("L003InputStream parameter value: "
 						+ paramWord + " [L003InputStream]");
@@ -159,13 +158,12 @@ public final class L003InputStream extends AbstractEventInputStream {
 				// parameter number
 				eventValue = readVaxShort();
 				// read event word
-				rval = true;
 				status = EventInputStatus.PARTIAL_EVENT;
+				rval = true;
 			}
 			// we got to the end of a file
 		} catch (EOFException eof) {
 			showErrorMessage(eof);
-			rval = false;
 			status = EventInputStatus.END_FILE;
 		} catch (IOException ioe) {
 			showErrorMessage(ioe);

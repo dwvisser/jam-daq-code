@@ -26,8 +26,8 @@ public abstract class AbstractStorageDaemon extends GoodThread {
 	enum Mode {
 		/**
 		 * Mode value indicating this daemon is set for offline
-		 */		
-		OFFLINE, 
+		 */
+		OFFLINE,
 		/**
 		 * Mode value indicating this daemon is set for online
 		 */
@@ -106,7 +106,7 @@ public abstract class AbstractStorageDaemon extends GoodThread {
 	 * @param controller
 	 *            the object controlling the sort process
 	 */
-	AbstractStorageDaemon(Controller controller) {
+	AbstractStorageDaemon(final Controller controller) {
 		super();
 		this.controller = controller;
 		setPriority(ThreadPriorities.STORAGE);
@@ -114,7 +114,7 @@ public abstract class AbstractStorageDaemon extends GoodThread {
 		inputFileOpen = false;
 		outputFileOpen = false;
 	}
-	
+
 	/**
 	 * 
 	 * @return the file currently being used for event output
@@ -224,8 +224,8 @@ public abstract class AbstractStorageDaemon extends GoodThread {
 	/**
 	 * Returns whether there are more files in the list to sort.
 	 * 
-	 * @return <code>true</code> if there are more files, <code>false</code>
-	 *         if not
+	 * @return <code>true</code> if there are more files, <code>false</code> if
+	 *         not
 	 */
 	public abstract boolean hasMoreFiles();
 

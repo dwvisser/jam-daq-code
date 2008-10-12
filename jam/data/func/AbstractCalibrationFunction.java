@@ -63,7 +63,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	protected transient double[] ptsEnergy = new double[0];
 
 	/**
-	 * Coeffiecient values.
+	 * Coefficient values.
 	 */
 	protected double[] coeff;
 
@@ -71,11 +71,6 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * Length histogram
 	 */
 	protected transient int sizeHistogram;
-
-	/**
-	 * The formula for the function.
-	 */
-	protected transient StringBuffer formula = new StringBuffer();
 
 	/**
 	 * for subclasses to use
@@ -184,8 +179,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @return the function formula
 	 */
 	public String getFormula(final NumberFormat numFormat) {
-		updateFormula(numFormat);
-		return formula.toString();
+		return updateFormula(numFormat);
 	}
 
 	/**
@@ -202,7 +196,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * Called by setCoeff() to update the formula.
 	 * 
 	 */
-	protected abstract void updateFormula(NumberFormat numFormat);
+	protected abstract String updateFormula(NumberFormat numFormat);
 
 	/**
 	 * Set the calibration points used for fitting.

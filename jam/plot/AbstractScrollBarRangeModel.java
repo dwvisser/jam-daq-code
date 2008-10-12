@@ -21,28 +21,27 @@ abstract class AbstractScrollBarRangeModel extends DefaultBoundedRangeModel {
 	protected transient Limits lim;
 
 	/**
-	 * holds ref to plots
+	 * holds reference to plots
 	 */
 	protected transient PlotContainer plot;
 
-	AbstractScrollBarRangeModel(PlotContainer container) {
+	AbstractScrollBarRangeModel(final PlotContainer container) {
 		super();
 		setFields(container);
 	}
 
 	private final void setFields(final PlotContainer container) {
 		plot = container;
-		final Nameable hist = SelectionTree
-				.getCurrentHistogram();
+		final Nameable hist = SelectionTree.getCurrentHistogram();
 		if (hist instanceof Histogram) {
-			lim = Limits.getLimits((Histogram)hist);
+			lim = Limits.getLimits((Histogram) hist);
 		}
 		setDisplayLimits();
 	}
 
 	/**
 	 * Set the limits based on the model.
-	 *
+	 * 
 	 */
 	protected abstract void setDisplayLimits();
 

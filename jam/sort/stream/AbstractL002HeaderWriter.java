@@ -35,9 +35,9 @@ abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream {// NO
 
 	/**
 	 * @param eventSize
-	 *            number of parmas per event
+	 *            number of parameters per event
 	 */
-	protected AbstractL002HeaderWriter(int eventSize) {
+	protected AbstractL002HeaderWriter(final int eventSize) {
 		super(eventSize);
 	}
 
@@ -62,17 +62,17 @@ abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream {// NO
 		final int recLen = 0; // record length
 		final int blckImgRec = 0; // block line image rec
 		final int paramsPerEvent = runInfo.runEventSize; // parameters per
-															// event
+		// event
 		final int dataRecLen = runInfo.runRecordLength; // data record length
 		final byte[] reserved2 = new byte[92]; // reserved 2
 		try {
 			dataOutput.writeBytes(HEADER_START); // header
 			dataOutput.writeBytes(stringUtilities.makeLength(dateString, 16)); // date
-																				// //date
+			// //date
 			dataOutput.writeBytes(stringUtilities.makeLength(title, TITLE_MAX)); // title
 			dataOutput.writeInt(number); // header number
 			dataOutput.write(reserved1, 0, reserved1.length); // reserved
-																// space
+			// space
 			dataOutput.writeInt(numSecHead); // number secondary headers
 			dataOutput.writeInt(recLen); // record length
 			dataOutput.writeInt(blckImgRec); // block line image rec

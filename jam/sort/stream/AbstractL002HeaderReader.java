@@ -29,7 +29,7 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 	 * @param consoleExists
 	 *            whether a console exists
 	 */
-	AbstractL002HeaderReader(boolean consoleExists, int eventSize) {
+	AbstractL002HeaderReader(final boolean consoleExists, final int eventSize) {
 		super(consoleExists, eventSize);
 	}
 
@@ -37,7 +37,7 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 	 * @param consoleExists
 	 *            whether a console exists
 	 */
-	public AbstractL002HeaderReader(boolean consoleExists) {
+	public AbstractL002HeaderReader(final boolean consoleExists) {
 		super(consoleExists);
 	}
 
@@ -59,6 +59,7 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 	/**
 	 * @see jam.sort.stream.AbstractEventInputStream#readHeader()
 	 */
+	@Override
 	public final boolean readHeader() throws EventException {
 		final byte[] headerStart = new byte[32];// header key
 		final byte[] date = new byte[16];// date mo/da/yr hr:mn

@@ -18,15 +18,16 @@ public final class VME_Channel {
 	 * Encapsulates whether a parameter is an event parameter or a scaler
 	 * parameter.
 	 */
-	enum Type{
+	enum Type {
 		/**
 		 * event parameter type
 		 */
-		EVENT, 
+		EVENT,
 		/**
-		 * scaler parameter type 
+		 * scaler parameter type
 		 */
-		SCALER};
+		SCALER
+	};
 
 	/**
 	 * Creates an event parameter. V775/V785 TDC's/ADC's can have base addresses
@@ -46,8 +47,9 @@ public final class VME_Channel {
 	 * @throws SortException
 	 *             if passed invalid values
 	 */
-	VME_Channel(StringBuffer message, int slot, int baseAddress, int channel,
-			int threshold) throws SortException {
+	VME_Channel(/* final StringBuffer message, */final int slot,
+			final int baseAddress, final int channel, final int threshold)
+			throws SortException {
 		super();
 		if (channel >= 0 && channel < 32) {
 			this.channel = channel;
@@ -62,9 +64,9 @@ public final class VME_Channel {
 					+ " slot = " + slot);
 		}
 		if (baseAddress < 0x20000000 || baseAddress > 0xe0ff0000) {// highest
-																	// hex digit
-																	// must = 2
-																	// or 3
+			// hex digit
+			// must = 2
+			// or 3
 			this.baseAddress = baseAddress;
 		} else {
 			throw new SortException(getClass().getName() + S_INVALID
@@ -72,9 +74,6 @@ public final class VME_Channel {
 		}
 		if (threshold >= 0 && threshold < 4096) {
 			final int threshNum = (int) Math.round(threshold / 16.0);
-			message.append("Requested threshold: " + threshold
-					+ ", truncated to: " + threshNum + ", actual threshold: "
-					+ threshNum * 16 + "\n");
 			this.threshold = threshNum;
 		} else {
 			throw new SortException(getClass().getName() + S_INVALID

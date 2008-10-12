@@ -14,7 +14,7 @@ import org.junit.Test;
  */
 public final class CubicFunctionTest {// NOPMD
 
-	private static final int EXPECTED_CUBIC_TERMS = 4;
+	private static final int CUBIC_TERMS = 4;
 
 	/**
 	 * Test cubic fits.
@@ -30,8 +30,8 @@ public final class CubicFunctionTest {// NOPMD
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-		assertEquals("Expected number of terms = " + EXPECTED_CUBIC_TERMS,
-				EXPECTED_CUBIC_TERMS, function.getNumberTerms());
+		assertEquals("Expected number of terms = " + CUBIC_TERMS,
+				CUBIC_TERMS, function.getNumberTerms());
 	}
 
 }

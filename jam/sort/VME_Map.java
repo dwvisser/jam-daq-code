@@ -17,7 +17,7 @@ public final class VME_Map {
 	/** Contains all event parameters. */
 	private transient final List<VME_Channel> eventParams = new ArrayList<VME_Channel>();
 
-	private transient final EventSizeModeClient eventSizeModeClient;
+	private transient final EventSizeModeClient esmClient;
 
 	/**
 	 * Interval in milliseconds for the VME to insert scalers into the event
@@ -29,19 +29,15 @@ public final class VME_Map {
 
 	private transient int maxParamNum = 0;
 
-	private transient final StringBuffer messages = new StringBuffer(120);
-
 	/**
 	 * Constructs a new VME map for the given <code>AbstractSortRoutine</code>.
 	 * 
 	 * @param client
 	 *            the owner of this map
 	 */
-	VME_Map(EventSizeModeClient client) {
+	VME_Map(final EventSizeModeClient client) {
 		super();
-		eventSizeModeClient = client;
-		messages.append(eventSizeModeClient.getClass().getName());
-		messages.append(": \n");
+		esmClient = client;
 	}
 
 	/**
@@ -65,10 +61,10 @@ public final class VME_Map {
 	 */
 	public int eventParameter(final int slot, final int baseAddress,
 			final int channel, final int threshold) throws SortException {
-		final VME_Channel vmec = new VME_Channel(this.messages, slot,
+		final VME_Channel vmec = new VME_Channel(/* this.messages, */slot,
 				baseAddress, channel, threshold);
 		eventParams.add(vmec);
-		eventSizeModeClient.setEventSizeMode(EventSizeMode.VME_MAP);
+		esmClient.setEventSizeMode(EventSizeMode.VME_MAP);
 		/*
 		 * ADC's and TDC's in slots 2-7.
 		 */
@@ -129,26 +125,19 @@ public final class VME_Map {
 	 */
 	public void setV775Range(final int baseAddress, final int range)
 			throws SortException {
-		final String hexBase = "0x" + Integer.toHexString(baseAddress);
 		if (range < 141 || range > 1200) {
 			throw new SortException("Requested invalid TDC range: " + range
 					+ " ns, must be 141 to 1200 ns.");
 		}
 		final byte fullScale = (byte) (36000 / range);
-		final int actualRange = 36000 / fullScale;
-		messages.append("A range of ").append(range).append(
-				" ns requested for TDC with base address ").append(hexBase)
-				.append(", ").append(fullScale).append(
-						" set in register corresponding to a range of ")
-				.append(actualRange).append(" ns.\n");
 		V775ranges.put(baseAddress, fullScale);
 	}
 
 	/**
-	 * Gets the ranges of the TDC modules as a <code>Map</code>. The keys in
-	 * the map are the <code>Integer</code> base addresses of the TDC modules,
-	 * and the values are the <code>Byte</code> that actually gets written to
-	 * the range register in the module to set the requested range.
+	 * Gets the ranges of the TDC modules as a <code>Map</code>. The keys in the
+	 * map are the <code>Integer</code> base addresses of the TDC modules, and
+	 * the values are the <code>Byte</code> that actually gets written to the
+	 * range register in the module to set the requested range.
 	 * 
 	 * @return a <code>Map</code> to the time ranges in the TDC's
 	 * @see #setV775Range(int, int)

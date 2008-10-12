@@ -16,7 +16,7 @@ import java.io.File;
  */
 public final class PreSort {
 
-	private PreSort(String target, int angle) {
+	private PreSort(final String target, final int angle) {
 		super();
 		final Script scripter = new Script();
 		final File cpath = scripter.defineFile("");

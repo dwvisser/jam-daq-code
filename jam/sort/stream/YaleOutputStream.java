@@ -28,7 +28,7 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 	/**
 	 * @see AbstractEventOutputStream#AbstractEventOutputStream(int)
 	 */
-	public YaleOutputStream(int eventSize) {
+	public YaleOutputStream(final int eventSize) {
 		super(eventSize);
 	}
 
@@ -74,13 +74,15 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 			dataOutput.writeShort(parameterMarker(param));
 			dataOutput.writeShort(value);
 		} else {
-			throw new IllegalArgumentException("Parameter number out of range: " + param);
+			throw new IllegalArgumentException(
+					"Parameter number out of range: " + param);
 		}
 	}
 
 	/**
 	 * Check for end of run word
 	 */
+	@Override
 	public boolean isEndRun(final short dataWord) {
 		return (dataWord == RUN_END_MARKER);
 	}
@@ -88,6 +90,7 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 	/**
 	 * Write the character that signifies the end of the run data.
 	 */
+	@Override
 	public void writeEndRun() throws EventException {
 		try {
 			dataOutput.writeShort(RUN_END_MARKER);

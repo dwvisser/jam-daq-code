@@ -54,14 +54,14 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
 	 */
-	public UconnInputStream(boolean console) {
+	public UconnInputStream(final boolean console) {
 		super(console);
 	}
 
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
 	 */
-	public UconnInputStream(boolean console, int eventSize) {
+	public UconnInputStream(final boolean console, final int eventSize) {
 		super(console, eventSize);
 	}
 
@@ -69,6 +69,7 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	 * Is the word a end-of-run word
 	 * 
 	 */
+	@Override
 	public boolean isEndRun(final short dataWord) {
 		/* no end run marker */
 		return false;
@@ -120,6 +121,7 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	 * @exception EventException
 	 *                thrown for errors in the event stream
 	 */
+	@Override
 	public EventInputStatus readEvent(int[] input) throws EventException {
 		synchronized (this) {
 			try {
@@ -138,8 +140,9 @@ public final class UconnInputStream extends AbstractEventInputStream {
 					final long numSkip = blockFullSize - blockCurrSize;
 					final long skipped = dataInput.skip(numSkip);
 					if (skipped < numSkip) {
-						throw new EventException("Tried to skip "+numSkip+
-								"bytes. Was only able to skip "+skipped+".");
+						throw new EventException("Tried to skip " + numSkip
+								+ "bytes. Was only able to skip " + skipped
+								+ ".");
 					}
 					newBlock = true;
 					eventInputStatus = EventInputStatus.END_BUFFER;
@@ -152,8 +155,9 @@ public final class UconnInputStream extends AbstractEventInputStream {
 							* eventNumWord;
 					final long skipped = dataInput.skip(numSkip);
 					if (skipped < numSkip) {
-						throw new EventException("Tried to skip "+numSkip+
-								"bytes. Was only able to skip "+skipped+".");
+						throw new EventException("Tried to skip " + numSkip
+								+ "bytes. Was only able to skip " + skipped
+								+ ".");
 					}
 					// event state
 					input[64] = eventState;
@@ -196,6 +200,7 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	 * @exception EventException
 	 *                thrown for errors in the event stream
 	 */
+	@Override
 	public boolean readHeader() throws EventException {
 		return true;
 	}

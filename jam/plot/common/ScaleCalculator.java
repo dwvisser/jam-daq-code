@@ -13,7 +13,7 @@ public final class ScaleCalculator {
 	 */
 	private static final int MAXIMUM_COUNTS = 1000000000;
 
-	private final int range, scaleFactor;
+	private transient final int range, scaleFactor;
 
 	/**
 	 * @param range
@@ -21,7 +21,7 @@ public final class ScaleCalculator {
 	 * @param scaleFactor
 	 *            The scale factor to use.
 	 */
-	public ScaleCalculator(int range, int scaleFactor) {
+	public ScaleCalculator(final int range, final int scaleFactor) {
 		super();
 		this.range = range;
 		this.scaleFactor = scaleFactor;

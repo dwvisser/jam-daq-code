@@ -28,7 +28,7 @@ public class ComponentPrintable implements Printable {
 	 *            what to print
 	 * @see java.awt.print.Printable
 	 */
-	public ComponentPrintable(Component component) {
+	public ComponentPrintable(final Component component) {
 		super();
 		mComponent = component;
 	}

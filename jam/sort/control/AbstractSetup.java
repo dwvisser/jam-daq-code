@@ -62,7 +62,7 @@ abstract class AbstractSetup {
 
 		private final transient boolean m_ok;
 
-		ApplyAction(boolean isOK) {
+		ApplyAction(final boolean isOK) {
 			super(isOK ? OK_TEXT : APPLY);
 			m_ok = isOK;
 		}
@@ -156,7 +156,7 @@ abstract class AbstractSetup {
 	 */
 	protected transient final JTextField textSortPath;
 
-	AbstractSetup(String dialogName) {
+	AbstractSetup(final String dialogName) {
 		super();
 		// Jam properties needed
 		final String defInStream = JamProperties

@@ -69,7 +69,7 @@ public class Help extends JDialog {
 			final JButton exit = new JButton("Exit");
 			frame.getContentPane().add(exit, BorderLayout.CENTER);
 			exit.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+				public void actionPerformed(final ActionEvent e) {
 					System.exit(0);
 				}
 			});
@@ -82,10 +82,10 @@ public class Help extends JDialog {
 			proxy.doClick();
 		} catch (HelpSetException helpSetException) {
 			showErrorDialog(helpSetException);
-		} catch (InvocationTargetException invocationTargetException) {
-			showErrorDialog(invocationTargetException);
-		} catch (InterruptedException interruptedException) {
-			showErrorDialog(interruptedException);
+		} catch (InvocationTargetException itException) {
+			showErrorDialog(itException);
+		} catch (InterruptedException iException) {
+			showErrorDialog(iException);
 		}
 	}
 
@@ -167,7 +167,7 @@ public class Help extends JDialog {
 		contents.add(south, BorderLayout.SOUTH);
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			public void actionPerformed(final ActionEvent event) {
 				dispose();
 			}
 		});

@@ -29,7 +29,7 @@ final class GraphicsLayout {
 
 		final transient int right;// NOPMD
 
-		Border(int top, int left, int bottom, int right) {
+		Border(final int top, final int left, final int bottom, final int right) {
 			super();
 			this.top = top;
 			this.left = left;
@@ -47,7 +47,7 @@ final class GraphicsLayout {
 
 		final transient int major;// NOPMD
 
-		Tick(int minor, int major) {
+		Tick(final int minor, final int major) {
 			super();
 			this.minor = minor;
 			this.major = major;
@@ -65,7 +65,7 @@ final class GraphicsLayout {
 
 		final transient int date;// NOPMD
 
-		TitleOffsets(int top, int left, int date) {
+		TitleOffsets(final int top, final int left, final int date) {
 			super();
 			this.top = top;
 			this.left = left;
@@ -82,7 +82,7 @@ final class GraphicsLayout {
 
 		final transient int left;// NOPMD
 
-		LabelOffsets(int bottom, int left) {
+		LabelOffsets(final int bottom, final int left) {
 			super();
 			this.bottom = bottom;
 			this.left = left;
@@ -91,20 +91,7 @@ final class GraphicsLayout {
 
 	final LabelOffsets labelOffsets = new LabelOffsets(3, 3);// NOPMD
 
-	// axis labels
-	static class AxisLabelOffsets {
-		final transient int bottom;// NOPMD
-
-		final transient int left;// NOPMD
-
-		AxisLabelOffsets(int bottom, int left) {
-			super();
-			this.bottom = bottom;
-			this.left = left;
-		}
-	}
-
-	final AxisLabelOffsets axisLabelOffsets = new AxisLabelOffsets(20, 35);// NOPMD
+	final LabelOffsets axisLabelOffsets = new LabelOffsets(20, 35);// NOPMD
 
 	final static transient float SCREEN_FONT_SIZE = 12;// NOPMD
 
@@ -123,7 +110,7 @@ final class GraphicsLayout {
 		 */
 		final transient int size; // NOPMD
 
-		ColorScale(int offset, int labelOffset, int size) {
+		ColorScale(final int offset, final int labelOffset, final int size) {
 			super();
 			this.offset = offset;
 			this.labelOffset = labelOffset;
@@ -131,9 +118,9 @@ final class GraphicsLayout {
 		}
 	}
 
-	final ColorScale colorScale = new ColorScale(10, 5, 15);//NOPMD
+	final ColorScale colorScale = new ColorScale(10, 5, 15);// NOPMD
 
-	private GraphicsLayout(Type type) {
+	private GraphicsLayout(final Type type) {
 		super();
 		if (type == Type.WITH_LABELS) {
 			// border outside of plot
@@ -148,14 +135,14 @@ final class GraphicsLayout {
 		}
 	}
 
-	static GraphicsLayout getLayout(final Type type) {
+	protected static GraphicsLayout getLayout(final Type type) {
 		return type == Type.WITH_LABELS ? LABELS : NO_LABELS;
 	}
 
 	/**
 	 * Layout with axis labels.
 	 */
-	static final GraphicsLayout LABELS = new GraphicsLayout(Type.WITH_LABELS);//NOPMD
+	static final GraphicsLayout LABELS = new GraphicsLayout(Type.WITH_LABELS);// NOPMD
 
 	/**
 	 * Layout without axis labels.

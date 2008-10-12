@@ -20,18 +20,19 @@ import javax.swing.JOptionPane;
  */
 
 public abstract class AbstractEventInputStream {
-	
+
 	/**
 	 * Status type for event input streams.
+	 * 
 	 * @author Dale Visser
-	 *
+	 * 
 	 */
 	public enum EventInputStatus {
 		/**
 		 * Value to initialize to instead of null.
 		 */
 		NONE,
-		
+
 		/**
 		 * Status if just read an event.
 		 */
@@ -170,7 +171,7 @@ public abstract class AbstractEventInputStream {
 	 * @param consoleExists
 	 *            whether console exists
 	 */
-	public AbstractEventInputStream(boolean consoleExists) {
+	public AbstractEventInputStream(final boolean consoleExists) {
 		this();
 		setConsoleExists(consoleExists);
 	}
@@ -183,7 +184,7 @@ public abstract class AbstractEventInputStream {
 	 * @param size
 	 *            the number of signals per event
 	 */
-	public AbstractEventInputStream(boolean consoleExists, int size) {
+	public AbstractEventInputStream(final boolean consoleExists, final int size) {
 		this(consoleExists);
 		eventSize = size;
 	}
@@ -236,8 +237,8 @@ public abstract class AbstractEventInputStream {
 
 	/**
 	 * Reads a byte. Only implemented as a requirement of extending
-	 * <code>InputStream</code>, which defines this method
-	 * <code>abstract</code>.
+	 * <code>InputStream</code>, which defines this method <code>abstract</code>
+	 * .
 	 * 
 	 * @return the next byte in the stream defined in
 	 *         <code>setInputStream()</code>

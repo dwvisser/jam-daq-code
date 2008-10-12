@@ -19,7 +19,7 @@ public class CommunicationsException extends Exception {
 	 * @param arg0
 	 *            message
 	 */
-	public CommunicationsException(String arg0) {
+	public CommunicationsException(final String arg0) {
 		super(arg0);
 	}
 
@@ -27,7 +27,7 @@ public class CommunicationsException extends Exception {
 	 * @param arg0
 	 *            wrapped exception
 	 */
-	public CommunicationsException(Throwable arg0) {
+	public CommunicationsException(final Throwable arg0) {
 		super(arg0);
 	}
 
@@ -37,7 +37,7 @@ public class CommunicationsException extends Exception {
 	 * @param arg1
 	 *            wrapped exception
 	 */
-	public CommunicationsException(String arg0, Throwable arg1) {
+	public CommunicationsException(final String arg0, final Throwable arg1) {
 		super(arg0, arg1);
 	}
 }

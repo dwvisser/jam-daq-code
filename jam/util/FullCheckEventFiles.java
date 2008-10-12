@@ -57,7 +57,7 @@ public final class FullCheckEventFiles {
 
 	private static final Logger LOGGER = Logger.getLogger(packageName);
 
-	private FullCheckEventFiles(File dir) {
+	private FullCheckEventFiles(final File dir) {
 		super();
 		final File[] eventFiles = getEventFiles(dir);
 		if (eventFiles.length > 0) {
@@ -114,7 +114,7 @@ public final class FullCheckEventFiles {
 
 	private File[] getEventFiles(final File path) {
 		return path.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
+			public boolean accept(final File dir, final String name) {
 				return name.endsWith("evn");
 			}
 		});

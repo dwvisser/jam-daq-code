@@ -3,9 +3,9 @@ package jam.sort.control;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
+import jam.sort.AbstractStorageDaemon;
 import jam.sort.NetDaemon;
 import jam.sort.SortDaemon;
-import jam.sort.AbstractStorageDaemon;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -115,7 +115,7 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 	private JButton getClearButton() {
 		final JButton bclear = new JButton("Clear");
 		bclear.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			public void actionPerformed(final ActionEvent event) {
 				final String space = " ";
 				if (STATUS.getSortMode().isOnline()) {
 					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_ZERO);
@@ -166,7 +166,7 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 	private JButton getUpdateButton() {
 		final JButton bupdate = new JButton("Update");
 		bupdate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			public void actionPerformed(final ActionEvent event) {
 				if (STATUS.getSortMode().isOnline()) {
 					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_READ);
 					pBuffRecv.setText(String
@@ -260,7 +260,7 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 		if (command == BroadcastEvent.Command.COUNTERS_UPDATE) {
 			if (STATUS.getSortMode().isOnline()) {
 				/* update remote fields */
-				final int [] vmeCounters = (int[]) event.getContent();
+				final int[] vmeCounters = (int[]) event.getContent();
 				pBuffSent.setText(String.valueOf(vmeCounters[iBufferCt]));
 				pEvntSent.setText(String.valueOf(vmeCounters[iEventCount]));
 				updateSample();

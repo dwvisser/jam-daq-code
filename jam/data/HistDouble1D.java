@@ -81,7 +81,7 @@ public final class HistDouble1D extends AbstractHist1D {
 	 * @see jam.data.Histogram#clearCounts()
 	 */
 	@Override
-	void clearCounts() {
+	protected void clearCounts() {
 		synchronized (this) {
 			countsDouble = EMPTY;
 			unsetErrors();

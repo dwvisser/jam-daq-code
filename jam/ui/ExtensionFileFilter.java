@@ -21,8 +21,8 @@ public class ExtensionFileFilter extends FileFilter {
 	 * @param ext
 	 *            The extension without the period
 	 */
-	public ExtensionFileFilter(String ext) {
-		this(new String[] { ext }, null);
+	public ExtensionFileFilter(final String ext) {
+		this(ext, null);
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class ExtensionFileFilter extends FileFilter {
 	 * @param descr
 	 *            A short description of the file type
 	 */
-	public ExtensionFileFilter(String ext, String descr) {
+	public ExtensionFileFilter(final String ext, final String descr) {
 		this(new String[] { ext }, descr);
 	}
 
@@ -47,7 +47,7 @@ public class ExtensionFileFilter extends FileFilter {
 	 * @param descr
 	 *            A short description of the file type
 	 */
-	public ExtensionFileFilter(final String[] exts, String descr) {
+	public ExtensionFileFilter(final String[] exts, final String descr) {
 		super();
 		// clone and lowercase the extensions
 		final int len = exts.length;
@@ -69,6 +69,7 @@ public class ExtensionFileFilter extends FileFilter {
 		description = buffer.toString();
 	}
 
+	@Override
 	public boolean accept(final File file) {
 		boolean rval = false; // default return value
 		/*
@@ -77,7 +78,7 @@ public class ExtensionFileFilter extends FileFilter {
 		if (file.isDirectory()) {
 			rval = true;
 		}
-		/* ok, it's a regular file so check the extension */
+		/* OK, it's a regular file so check the extension */
 		final String name = file.getName().toLowerCase(Locale.ENGLISH);
 		for (int i = extensions.length - 1; i >= 0; i--) {
 			if (name.endsWith(extensions[i])) {
@@ -88,6 +89,7 @@ public class ExtensionFileFilter extends FileFilter {
 		return rval;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}

@@ -107,8 +107,7 @@ public final class BroadcastEvent {
 
 		/**
 		 * Counters have been received from the front end and should be updated.
-		 * Message always includes <code>int []</code> as the message
-		 * parameter.
+		 * Message always includes <code>int []</code> as the message parameter.
 		 */
 		COUNTERS_UPDATE,
 
@@ -162,7 +161,7 @@ public final class BroadcastEvent {
 	 * @param content
 	 *            additional object along for the ride
 	 */
-	public BroadcastEvent(Command command, Object content) {
+	public BroadcastEvent(final Command command, final Object content) {
 		super();
 		this.command = command;
 		this.content = content;

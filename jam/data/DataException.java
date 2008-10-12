@@ -14,7 +14,7 @@ public class DataException extends Exception {
 	 * @param errorMessage
 	 *            description of the error condition
 	 */
-	public DataException(String errorMessage) {
+	public DataException(final String errorMessage) {
 		super(errorMessage);
 	}
 
@@ -26,7 +26,7 @@ public class DataException extends Exception {
 	 * @param thrown
 	 *            wrapped exception
 	 */
-	public DataException(String msg, Throwable thrown) {
+	public DataException(final String msg, final Throwable thrown) {
 		super(msg, thrown);
 	}
 }

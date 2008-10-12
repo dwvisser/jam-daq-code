@@ -34,7 +34,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	/**
 	 * @see AbstractStorageDaemon#AbstractStorageDaemon(Controller)
 	 */
-	public DiskDaemon(Controller controller) {
+	public DiskDaemon(final Controller controller) {
 		super(controller);
 		setName("Disk I/O for Event Data");
 	}

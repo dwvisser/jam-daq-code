@@ -4,27 +4,27 @@ import java.text.NumberFormat;
 
 /**
  * Default non-calibration.
+ * 
  * @author Dale Visser
- *
+ * 
  */
 public final class NoFunction extends AbstractCalibrationFunction {
-	
+
 	/**
 	 * constructor
-	 *
+	 * 
 	 */
-	public NoFunction(){
+	public NoFunction() {
 		super();
-		name="Not calibrated.";
+		name = "Not calibrated.";
 		title = "";
-		coeff=new double[0];
-		labels=new String[0];
+		coeff = new double[0];
+		labels = new String[0];
 	}
 
 	@Override
-	protected void updateFormula(final NumberFormat numFormatCoeff) {
-		// do nothing
-
+	protected String updateFormula(final NumberFormat numFormatCoeff) {
+		return "";
 	}
 
 	@Override
@@ -42,7 +42,8 @@ public final class NoFunction extends AbstractCalibrationFunction {
 		// do nothing
 	}
 
-	public boolean isCalibrated(){
+	@Override
+	public boolean isCalibrated() {
 		return false;
 	}
 }

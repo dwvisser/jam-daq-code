@@ -211,7 +211,7 @@ public final class Group implements Nameable {
 	 * @param fileName
 	 *            name of file this group is associated with
 	 */
-	private Group(String groupName, Type type, String fileName) {
+	private Group(final String groupName, final Type type, final String fileName) {
 		super();
 		String tempFullName = "GROUP";
 		final boolean filenameNotNull = fileName != null;

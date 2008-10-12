@@ -46,7 +46,7 @@ public class LdfInputStream extends AbstractEventInputStream {
 	 * @param console
 	 *            object where messages to the user are printed
 	 */
-	public LdfInputStream(boolean console) {
+	public LdfInputStream(final boolean console) {
 		super(console);
 	}
 
@@ -58,7 +58,7 @@ public class LdfInputStream extends AbstractEventInputStream {
 	 * @param console
 	 *            object where messages to the user are printed
 	 */
-	public LdfInputStream(boolean console, int eventSize) {
+	public LdfInputStream(final boolean console, final int eventSize) {
 		super(console, eventSize);
 	}
 
@@ -74,6 +74,7 @@ public class LdfInputStream extends AbstractEventInputStream {
 	 *                thrown for errors in the event stream
 	 * @return status after attempt to read an event
 	 */
+	@Override
 	public EventInputStatus readEvent(final int[] input) throws EventException {
 		synchronized (this) {
 			boolean gotParameter = false;
@@ -104,7 +105,8 @@ public class LdfInputStream extends AbstractEventInputStream {
 	 * @return
 	 * @throws IOException
 	 */
-	private boolean readParameters(int[] input, final boolean gotParameter) throws IOException {
+	private boolean readParameters(int[] input, final boolean gotParameter)
+			throws IOException {
 		boolean rval = gotParameter;
 		while (isParameter(readVaxShort())) {// could be event or
 			// scaler
@@ -186,12 +188,14 @@ public class LdfInputStream extends AbstractEventInputStream {
 	 *            smallest atomic unit in data stream
 	 * @return whether the data word was an end-of-run word
 	 */
+	@Override
 	public boolean isEndRun(final short dataWord) {
 		synchronized (this) {
 			return (dataWord == RUN_END_MARKER);
 		}
 	}
 
+	@Override
 	public boolean readHeader() {
 		return true;
 	}
@@ -204,8 +208,10 @@ public class LdfInputStream extends AbstractEventInputStream {
 		final byte[] rval = new byte[2];
 		final int numRead = dataInput.read(rval);
 		if (numRead < rval.length) {
-			throw new IOException("Wasn't able to read 2 bytes for short integer.");
+			throw new IOException(
+					"Wasn't able to read 2 bytes for short integer.");
 		}
-		return NumberUtilities.getInstance().bytesToShort(rval,0,ByteOrder.LITTLE_ENDIAN);
+		return NumberUtilities.getInstance().bytesToShort(rval, 0,
+				ByteOrder.LITTLE_ENDIAN);
 	}
 }

@@ -36,8 +36,8 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @param countsIn
 	 *            array of counts to initialize with
 	 */
-	HistInt2D(String title, String axisLabelX, String axisLabelY,
-			int[][] countsIn) {
+	HistInt2D(final String title, final String axisLabelX,
+			final String axisLabelY, final int[][] countsIn) {
 		super(Type.TWO_DIM_INT, countsIn.length, countsIn[0].length, title,
 				axisLabelX, axisLabelY);
 		initCounts(countsIn);
@@ -88,7 +88,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @see jam.data.Histogram#clearCounts()
 	 */
 	@Override
-	void clearCounts() {
+	protected void clearCounts() {
 		synchronized (this) {
 			counts2d = EMPTY;
 			clear = true;
