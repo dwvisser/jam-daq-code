@@ -81,7 +81,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	 * @param msgHandler
 	 *            where to print messages
 	 */
-	public OpenSelectedHistogram(Frame frame) {
+	public OpenSelectedHistogram(final Frame frame) {
 		this.frame = frame;
 		hdfio = new HDFIO(frame);
 
@@ -206,19 +206,16 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	 * @return <code>true</code> if successful
 	 */
 	private boolean chooseFile() {
-		boolean openF = false;
 		final JFileChooser jfile = new JFileChooser(fileOpen);
 		jfile.setFileFilter(new HDFileFilter(true));
 		final int option = jfile.showOpenDialog(frame);
-		// dont do anything if it was cancel
-		if (option == JFileChooser.APPROVE_OPTION
-				&& jfile.getSelectedFile() != null) {
+		// Don't do anything if it was cancel
+		final boolean openF = (option == JFileChooser.APPROVE_OPTION && jfile
+				.getSelectedFile() != null);
+		if (openF) {
 			synchronized (this) {
 				fileOpen = jfile.getSelectedFile();
 			}
-			openF = true;
-		} else { // dialog didn't return a file
-			openF = false;
 		}
 		return openF;
 	}

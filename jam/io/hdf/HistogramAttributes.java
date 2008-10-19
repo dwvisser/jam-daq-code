@@ -45,7 +45,8 @@ public final class HistogramAttributes {
 
 	private transient int number;
 
-	HistogramAttributes(String groupName, String name, String title, int number) {
+	HistogramAttributes(final String groupName, final String name,
+			final String title, final int number) {
 		super();
 		this.groupName = groupName;
 		this.name = name;
@@ -96,11 +97,11 @@ public final class HistogramAttributes {
 		return rval.toString();
 	}
 
-	String getTitle() {
+	protected String getTitle() {
 		return title;
 	}
 
-	int getNumber() {
+	protected int getNumber() {
 		return number;
 	}
 }

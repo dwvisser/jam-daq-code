@@ -49,7 +49,7 @@ abstract class AbstractPrintingCommand extends AbstractCommand {// NOPMD
 		super();
 	}
 
-	AbstractPrintingCommand(String name) {
+	AbstractPrintingCommand(final String name) {
 		super(name);
 	}
 }

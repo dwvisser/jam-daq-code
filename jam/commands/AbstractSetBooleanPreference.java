@@ -22,7 +22,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {// N
 		super();
 	}
 
-	AbstractSetBooleanPreference(String name) {
+	AbstractSetBooleanPreference(final String name) {
 		super(name);
 	}
 
@@ -51,8 +51,8 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {// N
 	}
 
 	/**
-	 * Set to <code>true</code> here. Set differently in <em>constructor</em>
-	 * if necessary.
+	 * Set to <code>true</code> here. Set differently in <em>constructor</em> if
+	 * necessary.
 	 */
 	protected transient boolean defaultState = true;
 
@@ -62,6 +62,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {// N
 	 * 
 	 * @see jam.commands.Commandable#initCommand()
 	 */
+	@Override
 	public final void initCommand() {
 		synchronized (this) {
 			state = prefsNode.getBoolean(key, defaultState);
@@ -70,11 +71,12 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {// N
 	}
 
 	/**
-	 * If there is at least one element, and it is a <code>Boolean</code>,
-	 * set the state to the same value. Otherwise, toggle the state.
+	 * If there is at least one element, and it is a <code>Boolean</code>, set
+	 * the state to the same value. Otherwise, toggle the state.
 	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
+	@Override
 	protected final void execute(final Object[] cmdParams) {
 		synchronized (this) {
 			if (cmdParams != null && cmdParams.length > 0) {
@@ -84,7 +86,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {// N
 					state = bParam0.booleanValue();
 				}
 			} else {
-				state = !state;//NOPMD
+				state = !state;// NOPMD
 			}
 			prefsNode.putBoolean(key, state);
 			changeIcon();
@@ -99,8 +101,8 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {// N
 
 	/**
 	 * Sees if the first parameter is one of the items in the list. If so, sets
-	 * preference to <code>true</code>, otherwise <code>false</code>. If
-	 * there are no parameters, the state is toggled.
+	 * preference to <code>true</code>, otherwise <code>false</code>. If there
+	 * are no parameters, the state is toggled.
 	 * 
 	 * <ul>
 	 * <li>on</li>
@@ -110,6 +112,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {// N
 	 * 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
+	@Override
 	protected final void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
 		final Boolean[] pass = new Boolean[1];

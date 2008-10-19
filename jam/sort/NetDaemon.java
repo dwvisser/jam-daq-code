@@ -68,8 +68,8 @@ public final class NetDaemon extends GoodThread {
 	 * @exception SortException
 	 *                thrown if there's a problem setting up the pipes
 	 */
-	public NetDaemon(RingBuffer sortRing, RingBuffer storeRing, String host,
-			int port) throws SortException {
+	public NetDaemon(final RingBuffer sortRing, final RingBuffer storeRing,
+			final String host, final int port) throws SortException {
 		super();
 		sortingRing = sortRing;
 		storageRing = storeRing;
@@ -121,8 +121,8 @@ public final class NetDaemon extends GoodThread {
 	 * to a full ringbuffer.
 	 * 
 	 * @param state
-	 *            <code>true</code> if we lost a buffer, <code>false</code>
-	 *            to reset
+	 *            <code>true</code> if we lost a buffer, <code>false</code> to
+	 *            reset
 	 */
 	public void setEmptyBefore(final boolean state) {
 		synchronized (this) {
@@ -196,8 +196,7 @@ public final class NetDaemon extends GoodThread {
 	 * Sets whether to write out events to the storage pipe.
 	 * 
 	 * @param writerOn
-	 *            <code>true</code> if write events, <code>false</code> if
-	 *            not
+	 *            <code>true</code> if write events, <code>false</code> if not
 	 */
 	public void setWriter(final boolean writerOn) {
 		if (storageRing.isNull()) {

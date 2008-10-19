@@ -221,7 +221,7 @@ public final class ScalerScan {
 				if (!pBstatus.isCanceled()) {
 					final String title = txtRunName.getText() + ", runs "
 							+ txtFirst.getText() + " to " + txtLast.getText();
-					new TextDisplayDialog(frame, title, false, outText
+					new TextDisplayDialog(frame, title, outText
 							.toString());
 				}
 				updateProgressBar("Done", lastRun);

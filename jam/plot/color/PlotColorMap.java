@@ -51,7 +51,7 @@ public final class PlotColorMap {
 
 	private transient Color peakLabel;
 
-	private PlotColorMap(Mode mode) {
+	private PlotColorMap(final Mode mode) {
 		super();
 		setColorMap(mode);
 	}

@@ -97,7 +97,7 @@ public final class Scaler implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if name ><code>NAME_LENGTH</code> characters
 	 */
-	Scaler(String nameIn, String uniqueName, int idNum) {
+	Scaler(final String nameIn, final String uniqueName, final int idNum) {
 		super();
 		name = nameIn;
 		number = idNum;

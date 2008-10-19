@@ -47,7 +47,7 @@ class SplashWindow extends JWindow {
 	 * @param waitTime
 	 *            time in milliseconds after which the window disappears
 	 */
-	public SplashWindow(Frame frame, int waitTime) {
+	public SplashWindow(final Frame frame, final int waitTime) {
 		super(frame);
 		final ClassLoader classLoader = getClass().getClassLoader();
 		urlNukeIcon = classLoader.getResource("jam/nukeicon.png");
@@ -62,6 +62,7 @@ class SplashWindow extends JWindow {
 		}
 		drawWindow();
 		addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(final MouseEvent mouseEvent) {
 				setVisible(false);
 				dispose();

@@ -28,9 +28,8 @@ import javax.swing.DefaultBoundedRangeModel;
  * </ul>
  * There is a separate instance of <code>Limits</code> for every
  * <code>Histogram</code>. The class contains a <code>static 
- * Hashtable</code>
- * referring to all the <code>Limits</code> objects by the associated
- * <code>Histogram</code> object.
+ * Hashtable</code> referring to all the <code>Limits</code> objects by the
+ * associated <code>Histogram</code> object.
  * 
  * @author Ken Swartz
  * @author Dale Visser
@@ -72,7 +71,7 @@ final class Limits {
 	 * Use for initial value instead of null reference.
 	 */
 	public static final Limits NULL = new Limits();
-	
+
 	/**
 	 * Creates the display limits for the specified histogram, specifying
 	 * whether to ignore first and/or last channels for auto-scaling.
@@ -84,7 +83,8 @@ final class Limits {
 	 * @param ignoreFull
 	 *            ignores the last channel for auto scaling histogram
 	 */
-	private Limits(Histogram hist, boolean ignoreZero, boolean ignoreFull) {
+	private Limits(final Histogram hist, final boolean ignoreZero,
+			final boolean ignoreFull) {
 		super();
 		if (hist == null) {
 			throw new IllegalArgumentException(
@@ -163,7 +163,8 @@ final class Limits {
 			maxCounts = getMaxCounts1D((AbstractHist1D) histogram, chminX,
 					chmaxX);
 		} else {// dim==2
-			maxCounts = getMaxCounts2D((AbstractHist2D)histogram, chminX, chmaxX, chminY, chmaxY);
+			maxCounts = getMaxCounts2D((AbstractHist2D) histogram, chminX,
+					chmaxX, chminY, chmaxY);
 		}
 		maxCounts *= scaleUp;
 		maxCounts /= scaleBackDown;
@@ -191,14 +192,14 @@ final class Limits {
 			final int chmaxX, final int chminY, final int chmaxY) {
 		int maxCounts = DEFAULTMAXCOUNTS;
 		if (hist instanceof HistDouble2D) {
-			final double[][] counts2d = ((HistDouble2D)hist).getCounts();
+			final double[][] counts2d = ((HistDouble2D) hist).getCounts();
 			for (int i = chminX; i <= chmaxX; i++) {
 				for (int j = chminY; j <= chmaxY; j++) {
 					maxCounts = Math.max(maxCounts, (int) counts2d[i][j]);
 				}
 			}
 		} else {// instanceof int [][]
-			final int[][] counts2d = ((HistInt2D)hist).getCounts();
+			final int[][] counts2d = ((HistInt2D) hist).getCounts();
 			for (int i = chminX; i <= chmaxX; i++) {
 				for (int j = chminY; j <= chmaxY; j++) {
 					maxCounts = Math.max(maxCounts, counts2d[i][j]);
@@ -482,6 +483,7 @@ final class Limits {
 	/**
 	 * @return text giving the histogram and the X-limits
 	 */
+	@Override
 	public String toString() {
 		final String limitsof = "Limits of \"";
 		final String colon = "\": ";

@@ -25,7 +25,7 @@ public class LoggerConfig {
 	 * @param name
 	 *            package name of logger
 	 */
-	public LoggerConfig(String name) {
+	public LoggerConfig(final String name) {
 		super();
 		logger = Logger.getLogger(name);
 		logger.setLevel(Level.FINEST);
@@ -50,7 +50,7 @@ public class LoggerConfig {
 	 * @param msgHandler
 	 *            for user readable screen output
 	 */
-	public LoggerConfig(String name, final MessageHandler msgHandler) {
+	public LoggerConfig(final String name, final MessageHandler msgHandler) {
 		this(name);
 		final Collection<Handler> handlers = Arrays
 				.asList(logger.getHandlers());

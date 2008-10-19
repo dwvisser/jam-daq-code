@@ -48,12 +48,14 @@ public abstract class AbstractCommand extends AbstractAction implements
 	AbstractCommand() {
 		super();
 	}
-	
+
 	/**
 	 * Provided so subclasses can override default constructor with a name.
-	 * @param name of command
+	 * 
+	 * @param name
+	 *            of command
 	 */
-	protected AbstractCommand(String name) {
+	protected AbstractCommand(final String name) {
 		super(name);
 	}
 
@@ -74,8 +76,8 @@ public abstract class AbstractCommand extends AbstractAction implements
 	}
 
 	/**
-	 * Perform a command and log it. This calls <code>execute()</code> with
-	 * the given parameters.
+	 * Perform a command and log it. This calls <code>execute()</code> with the
+	 * given parameters.
 	 * 
 	 * @param cmdParams
 	 *            the command parameters
@@ -92,8 +94,8 @@ public abstract class AbstractCommand extends AbstractAction implements
 	}
 
 	/**
-	 * Perform a command and log it. This calls <code>executeParse()</code>
-	 * with the given parameters.
+	 * Perform a command and log it. This calls <code>executeParse()</code> with
+	 * the given parameters.
 	 * 
 	 * @param strCmdParams
 	 *            the command parameters as strings

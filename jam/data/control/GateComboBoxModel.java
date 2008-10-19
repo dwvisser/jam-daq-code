@@ -62,7 +62,7 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 	 *            whether just gates for the current histogram or all histograms
 	 *            of the same dimensionality should be shown
 	 */
-	GateComboBoxModel(Mode listmode) {
+	GateComboBoxModel(final Mode listmode) {
 		super();
 		mode = listmode;
 	}
@@ -80,6 +80,7 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 	 * @param index
 	 *            the index of the desired element
 	 */
+	@Override
 	public Object getElementAt(final int index) {
 		final int nonNegIndex = Math.max(index, 0);
 		final String NO_GATES = "No Gates";
@@ -95,7 +96,8 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 				if (Mode.DISPLAYED_HIST.equals(mode)) {
 					rval = his.getGateCollection().getGates().get(which);
 				} else {
-					final List<Gate> list = Gate.getGateList(his.getDimensionality());
+					final List<Gate> list = Gate.getGateList(his
+							.getDimensionality());
 					rval = list.get(which);
 				}
 			}
@@ -111,6 +113,7 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 	/**
 	 * @return the currently selected item
 	 */
+	@Override
 	public Object getSelectedItem() {
 		return selection;
 	}
@@ -118,6 +121,7 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 	/**
 	 * @return number of list elements in chooser.
 	 */
+	@Override
 	public int getSize() {
 		final int rval = numGates() + 1;
 		final int oldSize = lastValue.size();
@@ -151,6 +155,7 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 	 * @param anItem
 	 *            the item to set the selection to
 	 */
+	@Override
 	public void setSelectedItem(final Object anItem) {
 		synchronized (this) {
 			selection = anItem;

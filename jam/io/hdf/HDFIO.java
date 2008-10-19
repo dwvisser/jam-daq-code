@@ -13,7 +13,6 @@ import jam.data.func.NoFunction;
 import jam.global.JamStatus;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
-import jam.util.AbstractSwingWorker;
 import jam.util.FileUtilities;
 
 import java.awt.Frame;
@@ -28,6 +27,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 /**
  * Reads and writes HDF files containing spectra, scalers, gates, and additional
@@ -974,9 +974,9 @@ public final class HDFIO implements DataIO {
 			final List<HistogramAttributes> histAttributeList) {
 		uiMessage = "";
 		uiErrorMsg = "";
-		final AbstractSwingWorker worker = new AbstractSwingWorker() {
+		final SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>() {
 			@Override
-			public Object construct() {
+			public Object doInBackground() {
 				// FIXME KBS Test change thread priority to make monitor pop up
 				// sooner
 				Thread.yield();
@@ -1019,7 +1019,7 @@ public final class HDFIO implements DataIO {
 
 			/* Runs on the event-dispatching thread. */
 			@Override
-			public void finished() {
+			public void done() {
 				if (uiErrorMsg.length() > 0) {
 					LOGGER.severe(uiErrorMsg);
 				}
@@ -1028,34 +1028,35 @@ public final class HDFIO implements DataIO {
 				}
 			}
 		};
-		worker.start();
+		worker.execute();
 	}
 
 	/*
-	 * non-javadoc: Asyncronized write
+	 * non-javadoc: Asynchronized write
 	 */
 	private void spawnAsyncWriteFile(final File file, final List<Group> groups,
 			final List<Histogram> histograms, final boolean writeData,
 			final boolean wrtSettings) {
-		uiMessage = "";
-		uiErrorMsg = "";
-		final AbstractSwingWorker worker = new AbstractSwingWorker() {
+		this.uiMessage = "";
+		this.uiErrorMsg = "";
+		final SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>() {
 			@Override
-			public Object construct() {
-				asyncWriteFile(file, groups, histograms, writeData, wrtSettings);
+			public Object doInBackground() {
+				HDFIO.this.asyncWriteFile(file, groups, histograms, writeData,
+						wrtSettings);
 				return null;
 			}
 
 			@Override
-			public void finished() {
-				if (uiErrorMsg.length() == 0) {
+			public void done() {
+				if (HDFIO.this.uiErrorMsg.length() == 0) {
 					LOGGER.info(uiMessage);
 				} else {
 					LOGGER.severe(uiErrorMsg);
 				}
 			}
 		};
-		worker.start();
+		worker.execute();
 	}
 
 	private static final List<Histogram> EMPTY_HIST_LIST = Collections

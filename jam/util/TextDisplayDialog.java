@@ -29,14 +29,12 @@ public class TextDisplayDialog extends JDialog {
 	 *            parent frame
 	 * @param title
 	 *            title for dialog
-	 * @param modal
-	 *            whether the dialog is modal
 	 * @param text
 	 *            text to display in dialog
 	 */
-	public TextDisplayDialog(Frame frame, String title, boolean modal,
-			String text) {
-		super(frame, title, modal);
+	public TextDisplayDialog(final Frame frame, final String title,
+			final String text) {
+		super(frame, title, false);
 		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
 		final JTextArea textArea = new JTextArea(text);

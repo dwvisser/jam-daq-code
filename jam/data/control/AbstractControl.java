@@ -62,7 +62,7 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	 * @param modal
 	 *            whether dialog is modal
 	 */
-	protected AbstractControl(String title, boolean modal) {
+	protected AbstractControl(final String title, final boolean modal) {
 		super(STATUS.getFrame(), title, modal);
 		controllers.add(this);
 		BROADCASTER.addObserver(this);
@@ -130,6 +130,7 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	/**
 	 * Remove self from list of controllers
 	 */
+	@Override
 	protected void finalize() throws Throwable {
 		controllers.remove(this);
 		BROADCASTER.deleteObserver(this);

@@ -72,7 +72,7 @@ public final class MultipleFileChooser extends JPanel {
 	 * @param frame
 	 *            parent frame
 	 */
-	public MultipleFileChooser(Frame frame) {
+	public MultipleFileChooser(final Frame frame) {
 		super(new BorderLayout(5, 5));
 		this.frame = frame;
 		// Panel with list
@@ -259,7 +259,7 @@ public final class MultipleFileChooser extends JPanel {
 		}
 	}
 
-	int readFileList(final File file) {
+	protected int readFileList(final File file) {
 		int numFiles = 0;
 		lastFile = file;
 		BufferedReader reader = null;

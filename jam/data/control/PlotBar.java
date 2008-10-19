@@ -52,7 +52,7 @@ public final class PlotBar extends JPanel {
 	 * @param inMon
 	 *            monitor to display status of
 	 */
-	public PlotBar(Monitor inMon) {
+	public PlotBar(final Monitor inMon) {
 		super();
 		setMonitor(inMon);
 		setBackground(SystemColor.control);
@@ -85,6 +85,7 @@ public final class PlotBar extends JPanel {
 	/**
 	 * paint method that is called to redraw widget
 	 */
+	@Override
 	public void paintComponent(final Graphics graphics) {
 		synchronized (this) {
 			int plotLength;

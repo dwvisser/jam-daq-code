@@ -15,12 +15,12 @@ import java.util.List;
  */
 final class DataIDLabel extends AbstractData {
 
-	static <T extends AbstractData> DataIDLabel withTagRef(final Class<T> tag,
-			final int ref) {
+	protected static <T extends AbstractData> DataIDLabel withTagRef(
+			final Class<T> tag, final int ref) {
 		return withTagRef(ofType(DataIDLabel.class), tag, ref);
 	}
 
-	static <T extends AbstractData> DataIDLabel withTagRef(
+	protected static <T extends AbstractData> DataIDLabel withTagRef(
 			final List<DataIDLabel> labels, final Class<T> tag, final int ref) {
 		DataIDLabel rval = null;
 		for (DataIDLabel dil : labels) {
@@ -30,12 +30,6 @@ final class DataIDLabel extends AbstractData {
 				break;
 			}
 		}
-		// if (rval==null) {
-		// throw new IllegalStateException("We should always have a result here.
-		// In a list of "+
-		// labels.size()+" labels, none pointed to tag="+tag.getName()+",
-		// ref="+ref+".");
-		// }
 		return rval;
 	}
 
@@ -46,7 +40,7 @@ final class DataIDLabel extends AbstractData {
 
 	private transient String label;
 
-	DataIDLabel(AbstractData obj, String label) {
+	DataIDLabel(final AbstractData obj, final String label) {
 		super(DFTAG_DIL); // sets tag
 		object = obj;
 		this.label = label;
@@ -70,6 +64,7 @@ final class DataIDLabel extends AbstractData {
 	 * @exception HDFException
 	 *                thrown if there is a problem interpreting the bytes
 	 */
+	@Override
 	protected void interpretBytes() throws HDFException {
 		bytes.position(0);
 		final short tagType = bytes.getShort();
@@ -87,6 +82,7 @@ final class DataIDLabel extends AbstractData {
 		return label;
 	}
 
+	@Override
 	public String toString() {
 		final StringBuilder rval = new StringBuilder("(Label \"");
 		rval.append(label).append("\": ");

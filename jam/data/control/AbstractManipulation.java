@@ -16,6 +16,7 @@ import javax.swing.JComboBox;
  * 
  */
 abstract class AbstractManipulation extends AbstractControl {
+	@Override
 	public abstract void doSetup();
 
 	/**
@@ -31,7 +32,7 @@ abstract class AbstractManipulation extends AbstractControl {
 	/** String to prepend to new histogram group in combobox */
 	protected final static String NEW_HIST = "NEW: ";
 
-	/** String to append to new histogram group in combobox */
+	/** String to append to new histogram group in combo box */
 	private final static String WILD_CARD = "/.";
 
 	/**
@@ -42,14 +43,14 @@ abstract class AbstractManipulation extends AbstractControl {
 	 * @param modal
 	 *            whether to grab focus from parent window
 	 */
-	public AbstractManipulation(String title, boolean modal) {
+	public AbstractManipulation(final String title, final boolean modal) {
 		super(title, modal);
 	}
 
 	/*
 	 * non-javadoc: add histograms of type type1 and type2 to chooser
 	 */
-	void loadAllHists(final JComboBox comboBox, final boolean addNew,
+	protected void loadAllHists(final JComboBox comboBox, final boolean addNew,
 			final int histDim) {
 		comboBox.removeAllItems();
 		if (addNew) {
@@ -79,7 +80,7 @@ abstract class AbstractManipulation extends AbstractControl {
 	/*
 	 * Is the histogram name one of a new histogram
 	 */
-	boolean isNewHistogram(final String name) {
+	protected boolean isNewHistogram(final String name) {
 		return name.startsWith(NEW_HIST);
 	}
 
@@ -87,7 +88,7 @@ abstract class AbstractManipulation extends AbstractControl {
 	 * Get the group name from the combobox string @param name The name in the
 	 * combobox @return the group name
 	 */
-	String parseGroupName(final String name) {
+	protected String parseGroupName(final String name) {
 		final StringBuilder builder = new StringBuilder(name);
 		final String groupName = builder.substring(NEW_HIST.length(), name
 				.length()
@@ -106,8 +107,8 @@ abstract class AbstractManipulation extends AbstractControl {
 	 *            number of channels in histogram
 	 * @return a 1D double histogram
 	 */
-	protected static final Histogram createNewDoubleHistogram(final String groupName,
-			final String histName, final int size) {
+	protected static final Histogram createNewDoubleHistogram(
+			final String groupName, final String histName, final int size) {
 		Group group;
 		Histogram hist;
 		group = Group.getGroup(groupName);
@@ -118,15 +119,15 @@ abstract class AbstractManipulation extends AbstractControl {
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		return hist;
 	}
-	
+
 	/**
 	 * Get the mean character width in pixels
 	 * 
 	 * @param fontMetrics
 	 * @return mean width of a character in pixels
 	 */
-	int getMeanCharWidth(final FontMetrics fontMetrics) {
-		final int numWidths = 256; //ASCII set
+	protected int getMeanCharWidth(final FontMetrics fontMetrics) {
+		final int numWidths = 256; // ASCII set
 		final int[] widths = fontMetrics.getWidths();
 		double sum = 0.0;
 		for (int i = 0; i < numWidths; i++) {

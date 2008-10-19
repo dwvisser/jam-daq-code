@@ -163,7 +163,7 @@ public final class Gate implements DataElement {
 	 * @param hist
 	 *            the <code>Histogram</code> to which the gate will belong.
 	 */
-	public Gate(String nameIn, Histogram hist) {
+	public Gate(final String nameIn, final Histogram hist) {
 		super();
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		histUniqueName = hist.getFullName();

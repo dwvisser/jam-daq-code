@@ -22,7 +22,7 @@ class AbstractExportFile extends AbstractImportExport {
 	 * 
 	 * @see AbstractCommand#AbstractCommand(String)
 	 */
-	protected AbstractExportFile(String name) {
+	protected AbstractExportFile(final String name) {
 		super(name);
 	}
 
@@ -34,6 +34,7 @@ class AbstractExportFile extends AbstractImportExport {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 * @see java.io.File
 	 */
+	@Override
 	protected final void execute(final Object[] cmdParams)
 			throws CommandException {
 		try {

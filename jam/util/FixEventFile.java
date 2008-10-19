@@ -96,7 +96,7 @@ public class FixEventFile {
 
 	// unique,sorted elements
 
-	FixEventFile(File inputFile) {
+	FixEventFile(final File inputFile) {
 		super();
 		/*
 		 * the input file has the format: event directory experiment name output
@@ -208,8 +208,8 @@ public class FixEventFile {
 			// file
 			numRead = fromStream.read(dataBlock);
 			if (numRead < dataBlock.length) {
-				LOGGER.severe("Expected " + dataBlock.length + " bytes, only got"
-						+ numRead + ".");
+				LOGGER.severe("Expected " + dataBlock.length
+						+ " bytes, only got" + numRead + ".");
 			}
 			appendStream.write(dataBlock);
 			appendStream.close();

@@ -129,7 +129,7 @@ public final class RunControl extends JDialog implements Controller,
 	 * @param frame
 	 *            parent frame
 	 */
-	private RunControl(Frame frame) {
+	private RunControl(final Frame frame) {
 		super(frame, "Run", false);
 		vmeComm = VMECommunication.getSingletonInstance();
 		RunInfo.getInstance().runNumber = 100;

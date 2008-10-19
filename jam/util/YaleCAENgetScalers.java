@@ -65,7 +65,7 @@ public class YaleCAENgetScalers {
 	}
 
 	private void display() {
-		new TextDisplayDialog(frame, fileName, false, strScalerText);
+		new TextDisplayDialog(frame, fileName, strScalerText);
 	}
 
 	/**

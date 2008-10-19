@@ -2,8 +2,8 @@ package jam.data.control;
 
 import jam.data.AbstractHist1D;
 import jam.data.func.AbstractCalibrationFunction;
-import jam.data.func.CalibrationFunctionCollection;
 import jam.data.func.CalibrationFitException;
+import jam.data.func.CalibrationFunctionCollection;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
 import jam.ui.CalibrationListCellRenderer;
@@ -201,7 +201,7 @@ public class CalibrationFit extends AbstractControl {
 		cUse[index].setSelected(true);
 		pPoint[index].add(cUse[index]);
 		cUse[index].addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent itemEvent) {
+			public void itemStateChanged(final ItemEvent itemEvent) {
 				setPointFieldActive(index, cUse[index].isSelected());
 			}
 		});
@@ -448,7 +448,7 @@ public class CalibrationFit extends AbstractControl {
 			/* Calibrated with points */
 			if (isCalPts) {
 				setCalibratedWithPoints(ptsChannel, ptsEnergy, labels, coeff);
-				// Coeffients set for fit
+				// Coefficients set for fit
 			} else {
 				for (int i = 0; i < NUM_POINTS; i++) {
 					tChannel[i].setText("");

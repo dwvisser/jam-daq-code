@@ -5,8 +5,8 @@ import jam.global.CommandListenerException;
 import javax.swing.JDialog;
 
 /**
- * Commands that are for showing <code>JDialog</code>'s. Dialogs simply
- * extend this and assign a reference to
+ * Commands that are for showing <code>JDialog</code>'s. Dialogs simply extend
+ * this and assign a reference to
  * <code>dialog</control> in <code>initCommand()</code>.
  * 
  * @author Ken Swartz
@@ -20,7 +20,7 @@ public class AbstractShowDialog extends AbstractCommand {
 	/**
 	 * @see AbstractCommand#AbstractCommand(String)
 	 */
-	protected AbstractShowDialog(String name) {
+	protected AbstractShowDialog(final String name) {
 		super(name);
 	}
 
@@ -29,10 +29,12 @@ public class AbstractShowDialog extends AbstractCommand {
 	 */
 	protected transient JDialog dialog;
 
+	@Override
 	protected final void execute(final Object[] cmdParams) {
 		dialog.setVisible(true);
 	}
 
+	@Override
 	protected final void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
 		execute(null);
@@ -44,6 +46,7 @@ public class AbstractShowDialog extends AbstractCommand {
 	 * 
 	 * @see javax.swing.Action#setEnabled(boolean)
 	 */
+	@Override
 	public final void setEnabled(final boolean state) {
 		super.setEnabled(state);
 		if (!state) {

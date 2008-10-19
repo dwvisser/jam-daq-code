@@ -26,7 +26,7 @@ public final class SortMode implements QuerySortMode {
 	 * Looking at data that was read in from a file.
 	 */
 	static public final QuerySortMode FILE = new SortMode(I_FILE);
-	
+
 	/**
 	 * Not sorting, and no file loaded.
 	 */
@@ -54,19 +54,23 @@ public final class SortMode implements QuerySortMode {
 
 	private final transient int mode;
 
-	private SortMode(int iMode) {
+	private SortMode(final int iMode) {
 		super();
 		mode = iMode;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jam.global.QuerySortMode#isOffline()
 	 */
 	public boolean isOffline() {
 		return mode == I_OFFLINE;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jam.global.QuerySortMode#isOnline()
 	 */
 	public boolean isOnline() {

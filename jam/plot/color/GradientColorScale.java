@@ -20,7 +20,7 @@ public final class GradientColorScale implements ColorScale {
 	private static final GradientColorScale LOG = new GradientColorScale(0,
 			100, Scale.LOG);
 
-	static Color getRGB(final double level, final double x0R,
+	protected static Color getRGB(final double level, final double x0R,
 			final double sigR, final double x0G, final double sigG,
 			final double x0B, final double sigB) {
 		final float red = gaussExp(level, x0R, sigR);
@@ -109,7 +109,8 @@ public final class GradientColorScale implements ColorScale {
 	 * @param scale
 	 *            whether linear or logarithmic
 	 */
-	private GradientColorScale(double min, double max, Scale scale) {
+	private GradientColorScale(final double min, final double max,
+			final Scale scale) {
 		super();
 		if (min > max) {
 			setMaxCounts(min);

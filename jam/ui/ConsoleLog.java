@@ -31,7 +31,7 @@ import javax.swing.text.StyleConstants;
  * 
  * @author Dale Visser
  */
-public class ConsoleLog implements MessageHandler {
+public final class ConsoleLog implements MessageHandler {
 	private transient static final SimpleAttributeSet ATR_WARN, ATR_ERR;
 
 	/**
@@ -68,7 +68,7 @@ public class ConsoleLog implements MessageHandler {
 
 	private transient int numberLines; // number of lines in output
 
-	ConsoleLog(int linesLog) {
+	ConsoleLog(final int linesLog) {
 		super();
 		textLog
 				.setToolTipText("After setup, this log is (usually) written to a file, too.");
@@ -119,7 +119,7 @@ public class ConsoleLog implements MessageHandler {
 		super.finalize();// NOPMD
 	}
 
-	Component getComponent() {
+	protected Component getComponent() {
 		return jsp;
 	}
 

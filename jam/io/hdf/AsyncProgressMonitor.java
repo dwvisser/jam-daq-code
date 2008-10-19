@@ -26,12 +26,12 @@ public class AsyncProgressMonitor {
 
 	private transient ProgressMonitor monitor;
 
-	AsyncProgressMonitor(Component frame) {
+	AsyncProgressMonitor(final Component frame) {
 		super();
 		this.frame = frame;
 	}
 
-	void close() {
+	protected void close() {
 		final Runnable runner = new Runnable() {
 			public void run() {
 				monitor.close();
@@ -44,7 +44,7 @@ public class AsyncProgressMonitor {
 		}
 	}
 
-	void increment() {
+	protected void increment() {
 		count++;
 		final Runnable runner = new Runnable() {
 			public void run() {
@@ -59,7 +59,7 @@ public class AsyncProgressMonitor {
 
 	}
 
-	void setNote(final String note) {
+	protected void setNote(final String note) {
 		final Runnable runner = new Runnable() {
 			public void run() {
 				monitor.setNote(note);
@@ -72,7 +72,7 @@ public class AsyncProgressMonitor {
 		}
 	}
 
-	void setProgress(final int value) {
+	protected void setProgress(final int value) {
 		final Runnable runner = new Runnable() {
 			public void run() {
 				monitor.setProgress(value);
@@ -86,7 +86,7 @@ public class AsyncProgressMonitor {
 
 	}
 
-	void setup(final String message, final String note, final int max) {
+	protected void setup(final String message, final String note, final int max) {
 		count = 0;
 		final Runnable runner = new Runnable() {
 			public void run() {

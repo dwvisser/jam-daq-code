@@ -40,7 +40,7 @@ final class VirtualGroup extends AbstractData {
 
 	private final static short MORE = 0; // unused but must add
 
-	VirtualGroup(String name, String type) {
+	VirtualGroup(final String name, final String type) {
 		super(DFTAG_VG); // sets tag
 		this.name = name;
 		this.type = type;
@@ -53,6 +53,7 @@ final class VirtualGroup extends AbstractData {
 	/**
 	 * Should be called whenever a change is made to the contents of the vGroup.
 	 */
+	@Override
 	protected void refreshBytes() {
 		// Length 7 shorts always each member has 2 short,
 		// plus length of string of 2 strings
@@ -82,6 +83,7 @@ final class VirtualGroup extends AbstractData {
 	 * Interprets bytes in internal byte array.
 	 * 
 	 */
+	@Override
 	protected void interpretBytes() {
 		bytes.rewind();
 		final short numItems = bytes.getShort();
@@ -113,7 +115,7 @@ final class VirtualGroup extends AbstractData {
 	 * @throws IllegalArgumentException
 	 *             if <code>data==null</code>
 	 */
-	void add(final AbstractData data) {
+	protected void add(final AbstractData data) {
 		if (data == null) {
 			throw new IllegalArgumentException("Can't add null to vGroup.");
 		}
@@ -125,11 +127,11 @@ final class VirtualGroup extends AbstractData {
 	 * 
 	 * @return the name of this group
 	 */
-	String getName() {
+	protected String getName() {
 		return name;
 	}
 
-	List<AbstractData> getObjects() {
+	protected List<AbstractData> getObjects() {
 		return elements;
 	}
 
@@ -143,7 +145,7 @@ final class VirtualGroup extends AbstractData {
 	 *            type string showing what kind of info is contained
 	 * @return list of groups with the given type
 	 */
-	static List<VirtualGroup> ofType(final List<VirtualGroup> list,
+	protected static List<VirtualGroup> ofType(final List<VirtualGroup> list,
 			final String groupType) {
 		final List<VirtualGroup> output = new ArrayList<VirtualGroup>();
 		for (VirtualGroup group : list) {
@@ -161,7 +163,7 @@ final class VirtualGroup extends AbstractData {
 	 * @throws IllegalStateException
 	 *             if there is more than one VGroup with the type
 	 */
-	static VirtualGroup ofClass(final String groupType) {
+	protected static VirtualGroup ofClass(final String groupType) {
 		VirtualGroup rval = null;
 		final List<AbstractData> objectList = getDataObjectList();
 		boolean error = false;
@@ -197,7 +199,7 @@ final class VirtualGroup extends AbstractData {
 	 * @throws IllegalStateException
 	 *             if there is more than one VGroup with the name
 	 */
-	static VirtualGroup ofName(final String groupName) {
+	protected static VirtualGroup ofName(final String groupName) {
 		VirtualGroup output = null;
 		final List<AbstractData> objectList = getDataObjectList();
 		boolean error = false;
@@ -233,7 +235,7 @@ final class VirtualGroup extends AbstractData {
 	 *            name of the desired group
 	 * @return the group with the given name
 	 */
-	static VirtualGroup ofName(final List<VirtualGroup> list,
+	protected static VirtualGroup ofName(final List<VirtualGroup> list,
 			final String groupName) {
 		VirtualGroup output = null;
 		for (VirtualGroup group : list) {
@@ -250,10 +252,11 @@ final class VirtualGroup extends AbstractData {
 	 * 
 	 * @return the type of this group
 	 */
-	String getType() {
+	protected String getType() {
 		return type;
 	}
 
+	@Override
 	public String toString() {
 		return "(VG: type=\"" + type + "\", name=\"" + name + "\", ref="
 				+ getRef() + ")";

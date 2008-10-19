@@ -228,13 +228,13 @@ public final class RingBufferTest {// NOPMD
 		private transient final RingBuffer ring;
 		private static final byte[] buffer = RingBuffer.freshBuffer();
 
-		Getter(RingBuffer ring) {
+		Getter(final RingBuffer ring) {
 			this.ring = ring;
 		}
 
 		public byte[] call() throws InterruptedException {
 			ring.getBuffer(buffer);
-			return buffer;
+			return buffer; // NOPMD
 		}
 	}
 
@@ -244,7 +244,7 @@ public final class RingBufferTest {// NOPMD
 
 		private transient final long msecToSleep;
 
-		Putter(RingBuffer ring, long milliseconds) {
+		Putter(final RingBuffer ring, final long milliseconds) {
 			this.ring = ring;
 			this.msecToSleep = milliseconds;
 		}

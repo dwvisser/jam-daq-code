@@ -46,7 +46,7 @@ public final class SaveSelectedHistogram {
 	 * @param frame
 	 *            parent frame
 	 */
-	public SaveSelectedHistogram(Frame frame) {
+	public SaveSelectedHistogram(final Frame frame) {
 		super();
 		this.frame = frame;
 		dialog = new JDialog(frame, "Save Selected Histograms", false);

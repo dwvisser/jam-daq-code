@@ -85,7 +85,7 @@ public final class DiscreteColorScale implements ColorScale {
 
 	private transient final Scale scale;
 
-	private DiscreteColorScale(Scale newScale) {
+	private DiscreteColorScale(final Scale newScale) {
 		super();
 		scale = newScale;
 		setColors(Mode.B_ON_W);
@@ -140,7 +140,7 @@ public final class DiscreteColorScale implements ColorScale {
 		}
 	}
 
-	static void setColors(final Mode mode) {
+	protected static void setColors(final Mode mode) {
 		synchronized (DiscreteColorScale.class) {
 			if (mode == Mode.B_ON_W) {
 				colors = B_ON_W;

@@ -9,18 +9,18 @@ package jam.sort;
  */
 public class SortException extends Exception {
 
-    /**
-     * @see Exception#Exception(java.lang.String)
-     */
-    SortException(String msg) {
-        super(msg);
-    }
-    
-    SortException(String msg, Throwable thrown){
-        super(msg, thrown);
-    }
+	/**
+	 * @see Exception#Exception(java.lang.String)
+	 */
+	SortException(final String msg) {
+		super(msg);
+	}
 
-    SortException(Throwable thrown){
-        super(thrown);
-    }
+	SortException(final String msg, final Throwable thrown) {
+		super(msg, thrown);
+	}
+
+	SortException(final Throwable thrown) {
+		super(thrown);
+	}
 }

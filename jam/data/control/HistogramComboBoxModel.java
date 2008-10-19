@@ -15,10 +15,10 @@ import javax.swing.JOptionPane;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 1.4.2 RC3
  */
-class HistogramComboBoxModel extends DefaultComboBoxModel {
+final class HistogramComboBoxModel extends DefaultComboBoxModel {
 
 	private transient Object selection = null;
-	
+
 	private transient final Object monitor = new Object();
 
 	private transient int lastSize = 0;// NOPMD
@@ -64,7 +64,7 @@ class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 * @param mode
 	 *            which histograms to display
 	 */
-	HistogramComboBoxModel(Mode mode) {
+	HistogramComboBoxModel(final Mode mode) {
 		super();
 		if (Mode.ALL.equals(mode)) {
 			histograms = Histogram.getListSortedByNumber();
@@ -80,7 +80,7 @@ class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 * histograms. Utility method added so that JamMain could notify when things
 	 * have changed.
 	 */
-	void changeOccured() {
+	protected void changeOccured() {
 		fireContentsChanged(this, 0, getSize());
 	}
 
@@ -89,6 +89,7 @@ class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 * @param index
 	 *            the index of the element to get
 	 */
+	@Override
 	public Object getElementAt(final int index) {
 		final String NO_HISTS = "No Histograms";
 		Object rval = NO_HISTS; // default value if no histograms
@@ -112,6 +113,7 @@ class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 * 
 	 * @return the number of list elements in the chooser
 	 */
+	@Override
 	public int getSize() {
 		final int rval = Math.max(1, numHists());
 		synchronized (this) {
@@ -129,6 +131,7 @@ class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 * @param anItem
 	 *            the item to select
 	 */
+	@Override
 	public void setSelectedItem(final Object anItem) {
 		synchronized (monitor) {
 			selection = anItem;
@@ -138,6 +141,7 @@ class HistogramComboBoxModel extends DefaultComboBoxModel {
 	/**
 	 * @return the selected item
 	 */
+	@Override
 	public Object getSelectedItem() {
 		synchronized (monitor) {
 			return selection;
