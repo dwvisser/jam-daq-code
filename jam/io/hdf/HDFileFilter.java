@@ -25,11 +25,12 @@ public class HDFileFilter extends FileFilter implements java.io.FileFilter {
 	 *            whether to show directories as well
 	 * @see Constants#HDF_HEADER
 	 */
-	public HDFileFilter(boolean showDir) {
+	public HDFileFilter(final boolean showDir) {
 		super();
 		option = showDir;
 	}
 
+	@Override
 	public boolean accept(final File file) {
 		boolean rval = false;// default return value
 		if (file.isDirectory()) {
@@ -47,6 +48,7 @@ public class HDFileFilter extends FileFilter implements java.io.FileFilter {
 		return rval;
 	}
 
+	@Override
 	public String getDescription() {
 		return "Hierarchical Data  Format v4.1r2";
 	}

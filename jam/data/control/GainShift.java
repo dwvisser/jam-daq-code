@@ -296,21 +296,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 				.intToDoubleArray(((jam.data.HistInt1D) hfrom).getCounts())
 				: ((jam.data.HistDouble1D) hfrom).getCounts();
 		final double[] errIn = hfrom.getErrors();
-		/* Get or create output histogram. */
-		final String name = (String) cto.getSelectedItem();
-
-		if (isNewHistogram(name)) {
-			final String histName = ttextto.getText().trim();
-			final String groupName = parseGroupName(name);
-			hto = (AbstractHist1D) createNewDoubleHistogram(groupName,
-					histName, hfrom.getSizeX());
-			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
-					+ "'");
-
-		} else {
-			hto = (AbstractHist1D) Histogram.getHistogram(name);
-
-		}
+		getOrCreateOutputHistogram();
 		hto.setZero();
 		final int countLen = hto.getType() == oneDi ? ((jam.data.HistInt1D) hto)
 				.getCounts().length
@@ -332,6 +318,20 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 				+ " + " + format(slope2) + " x ch");
 	}
 
+	private void getOrCreateOutputHistogram() {
+		final String name = (String) cto.getSelectedItem();
+		if (isNewHistogram(name)) {
+			final String histName = ttextto.getText().trim();
+			final String groupName = parseGroupName(name);
+			hto = (AbstractHist1D) createNewDoubleHistogram(groupName,
+					histName, hfrom.getSizeX());
+			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
+					+ "'");
+		} else {
+			hto = (AbstractHist1D) Histogram.getHistogram(name);
+		}
+	}
+
 	/**
 	 * Loads the list of gates and set co-ordinates as x y if 2d or lower upper
 	 * if 1 d
@@ -349,7 +349,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 
 	/**
 	 * Error terms gain-shifting subroutine adapted from Fortran code written
-	 * and used at the Nuclear Physics Laboratory at University of Washigton,
+	 * and used at the Nuclear Physics Laboratory at University of Washington,
 	 * Seattle.
 	 * 
 	 * @param countsIn
@@ -373,8 +373,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 			final double interceptIn, final double slopeIn,
 			final double interceptOut, final double slopeOut, final int npts2)
 			throws DataException {
-		double[] countsOut = new double[npts2];// lang spec says elements init
-		// to zero
+		double[] countsOut = new double[npts2];
 		for (int n = 0; n < countsIn.length; n++) {
 			calculateIntermediateValues(interceptIn, slopeIn, interceptOut,
 					slopeOut, npts2, n);
@@ -485,10 +484,10 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 	 */
 	private void getChannels() throws DataException {
 		try {
-			chan1i = Double.valueOf(text1.getText().trim()).doubleValue();
-			chan1f = Double.valueOf(text2.getText().trim()).doubleValue();
-			chan2i = Double.valueOf(text3.getText().trim()).doubleValue();
-			chan2f = Double.valueOf(text4.getText().trim()).doubleValue();
+			chan1i = Double.parseDouble(text1.getText().trim());
+			chan1f = Double.parseDouble(text2.getText().trim());
+			chan2i = Double.parseDouble(text3.getText().trim());
+			chan2f = Double.parseDouble(text4.getText().trim());
 		} catch (NumberFormatException nfe) {
 			throw new DataException("A Channel is not a valid number.", nfe);
 		}
@@ -499,10 +498,10 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 	 */
 	private void getCoefficients() throws DataException {
 		try {
-			intercept1 = Double.valueOf(text1.getText().trim()).doubleValue();
-			slope1 = Double.valueOf(text2.getText().trim()).doubleValue();
-			intercept2 = Double.valueOf(text3.getText().trim()).doubleValue();
-			slope2 = Double.valueOf(text4.getText().trim()).doubleValue();
+			intercept1 = Double.parseDouble(text1.getText().trim());
+			slope1 = Double.parseDouble(text2.getText().trim());
+			intercept2 = Double.parseDouble(text3.getText().trim());
+			slope2 = Double.parseDouble(text4.getText().trim());
 		} catch (NumberFormatException nfe) {
 			throw new DataException(
 					"A Coefficient is not a valid number [GainShift]", nfe);

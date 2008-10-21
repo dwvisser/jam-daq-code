@@ -29,7 +29,8 @@ public final class Bin implements Cloneable {
 	/**
 	 * Constructs a bin at the coordinate (x,y)
 	 * 
-	 * @param coords any missing default to 0
+	 * @param coords
+	 *            any missing default to 0
 	 * @return bin at (x,y)
 	 */
 	public static Bin create(final int... coords) {
@@ -38,34 +39,35 @@ public final class Bin implements Cloneable {
 		return create(new Point(xCoord, yCoord));
 	}
 
-	private Bin(Point point) {
+	private Bin(final Point point) {
 		super();
 		setChannel(point);
 	}
 
+	@Override
 	public Object clone() {
 		return create(channel);
 	}
 
-	void setChannel(final Point point) {
+	protected void setChannel(final Point point) {
 		synchronized (this) {
 			channel.setLocation(point);
 		}
 	}
 
-	void setChannel(final Bin bin) {
+	protected void setChannel(final Bin bin) {
 		synchronized (this) {
 			channel.setLocation(bin.getPoint());
 		}
 	}
 
-	void setChannel(final int xChan, final int yChan) {
+	protected void setChannel(final int xChan, final int yChan) {
 		synchronized (this) {
 			channel.setLocation(xChan, yChan);
 		}
 	}
 
-	Point getPoint() {
+	protected Point getPoint() {
 		synchronized (this) {
 			return new Point(channel);
 		}
@@ -93,6 +95,7 @@ public final class Bin implements Cloneable {
 		}
 	}
 
+	@Override
 	public boolean equals(final Object object) {
 		boolean rval = object instanceof Bin;
 		if (rval) {
@@ -102,6 +105,7 @@ public final class Bin implements Cloneable {
 		return rval;
 	}
 
+	@Override
 	public int hashCode() {
 		return channel.hashCode();
 	}

@@ -73,7 +73,7 @@ public final class View {
 		prime = 1;
 		while (MAP.containsKey(tempName)) {
 			final String addition = "[" + prime + "]";
-			tempName = StringUtilities.getInstance().makeLength(tempName,
+			tempName = StringUtilities.getInstance().makeLength(tempName, // NOPMD
 					NAME_LENGTH - addition.length());
 			tempName += addition;// NOPMD
 			prime++;

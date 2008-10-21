@@ -338,11 +338,8 @@ public final class RuntimeSubclassIdentifier {
 		 * Code from JWhich Translate the package name into an absolute path
 		 */
 		final SortedSet<String> rval = new TreeSet<String>();
-		String name = pckgname; // copy
-		if (!name.startsWith(SLASH)) {
-			name = SLASH + name;
-		}
-		name = name.replace('.', '/');
+		final String name = (pckgname.startsWith(SLASH) ? pckgname : SLASH
+				+ pckgname).replace('.', '/');
 		final URL url = RuntimeSubclassIdentifier.class.getResource(name);
 		if (url != null) {
 			/*

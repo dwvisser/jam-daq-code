@@ -7,8 +7,8 @@ import java.nio.ByteBuffer;
 /**
  * Class to represent a 32-bit java int HDF <em>NumberType</em> data object.
  * When constructed with argument <code>NumberType.INT</code>, creates the
- * object indicating <code>int</code> primitives. When constructed with
- * argument <code>NumberType.DOUBLE</code>, creates the object indicating
+ * object indicating <code>int</code> primitives. When constructed with argument
+ * <code>NumberType.DOUBLE</code>, creates the object indicating
  * <code>double</code> primitives.
  * 
  * @version 0.5 November 98
@@ -71,14 +71,14 @@ final class NumberType extends AbstractData {
 	/**
 	 * @return the double number type.
 	 */
-	static NumberType getDoubleType() {
+	protected static NumberType getDoubleType() {
 		return doubleNT;
 	}
 
 	/**
 	 * @return the int number type.
 	 */
-	static NumberType getIntType() {
+	protected static NumberType getIntType() {
 		return intNT;
 	}
 
@@ -90,7 +90,7 @@ final class NumberType extends AbstractData {
 	 * 
 	 * @see jam.io.hdf.NumberType
 	 */
-	static void createDefaultTypes() {
+	protected static void createDefaultTypes() {
 		intNT = new NumberType(NumberType.INT);
 		doubleNT = new NumberType(NumberType.DOUBLE);
 	}
@@ -101,7 +101,7 @@ final class NumberType extends AbstractData {
 	 * @throws IllegalArgumentException
 	 *             if an invalid type is given
 	 */
-	NumberType(byte type) {
+	NumberType(final byte type) {
 		super(DFTAG_NT);
 		createBytes(type);
 	}
@@ -129,6 +129,7 @@ final class NumberType extends AbstractData {
 	/**
 	 * Implementation of <code>DataObject</code> abstract method.
 	 */
+	@Override
 	public void interpretBytes() {
 		final byte type = bytes.get(1);
 		switch (type) {
@@ -147,7 +148,7 @@ final class NumberType extends AbstractData {
 		}
 	}
 
-	byte getType() {
+	protected byte getType() {
 		return nType;
 	}
 }

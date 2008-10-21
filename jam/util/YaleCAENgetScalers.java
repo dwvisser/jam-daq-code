@@ -51,8 +51,6 @@ public class YaleCAENgetScalers {
 
 	private transient ProgressMonitor pBstatus;
 
-	private transient final StringBuffer strError = new StringBuffer();
-
 	private transient String strScalerText;
 
 	/**
@@ -76,7 +74,7 @@ public class YaleCAENgetScalers {
 	 *            the file to search
 	 * @return whether we were successful
 	 */
-	private boolean doIt(final File events) {
+	private boolean doIt(final File events, final StringBuilder strError) {
 		final int mega = 1024 * 1024;
 		final long fileLength = events.length();
 		final int lengthMB = (int) (fileLength / mega);
@@ -154,10 +152,6 @@ public class YaleCAENgetScalers {
 		return rval;
 	}
 
-	private String getErrorTxt() {
-		return strError.toString();
-	}
-
 	/**
 	 * Scans the given event file for scaler blocks.
 	 * 
@@ -167,10 +161,12 @@ public class YaleCAENgetScalers {
 	public void processEventFile(final File events) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
-				if (doIt(events)) {
+				StringBuilder error = new StringBuilder();
+				if (doIt(events, error)) {
 					display();
 				} else {
-					LOGGER.severe("Reading Yale CAEN Scalers " + getErrorTxt());
+					LOGGER.severe("Reading Yale CAEN Scalers "
+							+ error.toString());
 				}
 			}
 		};

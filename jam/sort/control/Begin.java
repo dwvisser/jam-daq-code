@@ -15,16 +15,18 @@ import javax.swing.JOptionPane;
 import javax.swing.text.JTextComponent;
 
 class Begin extends AbstractAction {
-	
-	private static final Logger LOGGER = Logger.getLogger(Begin.class.getPackage().getName());
+
+	private static final Logger LOGGER = Logger.getLogger(Begin.class
+			.getPackage().getName());
 
 	private transient final RunController runControl;
-	
+
 	private transient final Component parent;
 
 	private transient final JTextComponent textRunTitle;
 
-	Begin(Component parent, RunController runControl, JTextComponent text) {
+	Begin(final Component parent, final RunController runControl,
+			final JTextComponent text) {
 		super();
 		this.parent = parent;
 		this.runControl = runControl;

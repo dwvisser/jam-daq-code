@@ -158,7 +158,7 @@ public final class HDFIO implements DataIO {
 	 * @param parent
 	 *            the parent window
 	 */
-	public HDFIO(Frame parent) {
+	public HDFIO(final Frame parent) {
 		super();
 		asyncMonitor = new AsyncProgressMonitor(parent);
 		jamToHDF = new ConvertJamObjToHDFObj();
@@ -595,7 +595,7 @@ public final class HDFIO implements DataIO {
 			if (wrtSettings) {
 				final List<DataParameter> paramList = DataParameter
 						.getParameterList();
-				if (paramList.size() > 0) {
+				if (!paramList.isEmpty()) {
 					final VirtualGroup vgParams = jamToHDF
 							.addParameterSection();
 					vgGroup.add(vgParams);
@@ -621,7 +621,7 @@ public final class HDFIO implements DataIO {
 	 */
 	private void addScalers(final VirtualGroup globalScaler, final Group group,
 			final VirtualGroup vgGroup, final List<Scaler> scalerList) {
-		if (scalerList.size() > 0) {
+		if (!scalerList.isEmpty()) {
 			final VirtualGroup vgScalers = jamToHDF.addScalerSection();
 			vgGroup.add(vgScalers);
 			final VDataDescription vddScalers = jamToHDF

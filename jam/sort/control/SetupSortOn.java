@@ -113,9 +113,9 @@ public final class SetupSortOn extends AbstractSetup {
 	private transient final jam.comm.FrontEndCommunication frontEnd = jam.comm.VMECommunication
 			.getSingletonInstance();
 
-	private transient final String hostDataIP;
+	private transient String hostDataIP;
 
-	private transient final int hostDataPort;
+	private transient int hostDataPort;
 
 	private transient NetDaemon netDaemon;
 
@@ -124,31 +124,19 @@ public final class SetupSortOn extends AbstractSetup {
 	/* sorting classes */
 	private transient SortDaemon sortDaemon;
 
-	private transient final JTextField textExpName, textPathHist, textPathData,
-			textPathLog;
+	private transient JTextField textExpName;
+
+	private transient final JTextField textPathHist, textPathData, textPathLog;
 
 	private SetupSortOn(final ConsoleLog console) {
 		super("Setup Online");
 		initCheckLock();
 		initDiskCheckbox();
-		final int fileTextCols = 25;
-		final String defaultName = JamProperties
-				.getPropString(PropertyKeys.EXP_NAME);
-		dataFolder = new File(JamProperties
-				.getPropString(PropertyKeys.EVENT_OUTPATH));
-		histFolder = new File(JamProperties
-				.getPropString(PropertyKeys.HIST_PATH));
-		logDirectory = new File(JamProperties
-				.getPropString(PropertyKeys.LOG_PATH));
-		hostDataIP = JamProperties.getPropString(PropertyKeys.HOST_DATA_IP);
-		hostDataPort = JamProperties.getPropInt(PropertyKeys.HOST_DATA_P_RECV);
-
+		readProperties();
 		runControl = RunControl.getInstance();
 		consoleLog = console;
 		dialog.setResizable(false);
 		dialog.setLocation(20, 50);
-		final java.awt.Container dcp = dialog.getContentPane();
-		dcp.setLayout(new BorderLayout(5, 5));
 		final int gap = 5;
 		final JPanel pLabels = new JPanel(new GridLayout(0, 1, gap, gap));
 		final int topInset = 10;
@@ -157,6 +145,8 @@ public final class SetupSortOn extends AbstractSetup {
 		pLabels
 				.setBorder(new EmptyBorder(topInset, leftInset, noSpace,
 						noSpace));
+		final java.awt.Container dcp = dialog.getContentPane();
+		dcp.setLayout(new BorderLayout(5, 5));
 		dcp.add(pLabels, BorderLayout.WEST);
 		final JLabel expName = new JLabel("Experiment Name", RIGHT);
 		pLabels.add(expName);
@@ -179,16 +169,7 @@ public final class SetupSortOn extends AbstractSetup {
 		/* blank label balances out the grid */
 		final JLabel lssf = new JLabel();
 		pLabels.add(lssf);
-		/* Entries Panel */
-		final JPanel pEntries = new JPanel(new GridLayout(0, 1, gap, gap));
-		pEntries
-				.setBorder(new EmptyBorder(topInset, noSpace, noSpace, noSpace));
-		dcp.add(pEntries, BorderLayout.CENTER);
-		textExpName = new JTextField(defaultName);
-		textExpName
-				.setToolTipText("Used to name data files. Only 20 characters get written to event files.");
-		textExpName.setColumns(20);
-		pEntries.add(textExpName);
+		final JPanel pEntries = createEntriesPanel(gap, topInset, noSpace, dcp);
 		/* Radio buttons for path */
 		final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER,
 				noSpace, noSpace));
@@ -207,6 +188,7 @@ public final class SetupSortOn extends AbstractSetup {
 		/* Output stream classes */
 		pEntries.add(outChooser);
 		textPathHist = new JTextField(histFolder.getPath());
+		final int fileTextCols = 25;
 		textPathHist.setColumns(fileTextCols);
 		textPathHist
 				.setToolTipText("Path to save HDF summary files at the end of each run.");
@@ -258,6 +240,33 @@ public final class SetupSortOn extends AbstractSetup {
 		dialog
 				.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		dialog.pack();
+	}
+
+	private JPanel createEntriesPanel(final int gap, final int topInset,
+			final int noSpace, final java.awt.Container dcp) {
+		final JPanel pEntries = new JPanel(new GridLayout(0, 1, gap, gap));
+		pEntries
+				.setBorder(new EmptyBorder(topInset, noSpace, noSpace, noSpace));
+		dcp.add(pEntries, BorderLayout.CENTER);
+		final String defaultName = JamProperties
+				.getPropString(PropertyKeys.EXP_NAME);
+		textExpName = new JTextField(defaultName);
+		textExpName
+				.setToolTipText("Used to name data files. Only 20 characters get written to event files.");
+		textExpName.setColumns(20);
+		pEntries.add(textExpName);
+		return pEntries;
+	}
+
+	private void readProperties() {
+		dataFolder = new File(JamProperties
+				.getPropString(PropertyKeys.EVENT_OUTPATH));
+		histFolder = new File(JamProperties
+				.getPropString(PropertyKeys.HIST_PATH));
+		logDirectory = new File(JamProperties
+				.getPropString(PropertyKeys.LOG_PATH));
+		hostDataIP = JamProperties.getPropString(PropertyKeys.HOST_DATA_IP);
+		hostDataPort = JamProperties.getPropInt(PropertyKeys.HOST_DATA_P_RECV);
 	}
 
 	/**

@@ -16,9 +16,9 @@ import javax.help.HelpSetException;
  */
 public final class Help {
 
-	private transient HelpSet helpset = null;
+	private transient HelpSet helpset;
 
-	private transient HelpBroker broker = null;
+	private transient HelpBroker broker;
 
 	private static Help instance = new Help();
 

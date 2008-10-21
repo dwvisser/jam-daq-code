@@ -17,7 +17,7 @@ public class PolynomialOffsetFunction extends AbstractCalibrationFunction {
 	 * @throws IllegalArgumentException
 	 *             thrown if invalid <code>type</code> passed to constructor
 	 */
-	public PolynomialOffsetFunction(int numberTerms) {
+	public PolynomialOffsetFunction(final int numberTerms) {
 		super("Polynomial Offset", numberTerms);
 		if (numberTerms < MAX_TERMS) {
 			title = "E = a0+a1*(ch-x0)+a2*(ch-x0)^2+ ...";

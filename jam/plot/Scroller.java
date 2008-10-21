@@ -49,7 +49,7 @@ class Scroller extends JPanel implements AdjustmentListener, Limitable {
 	 * @param plot
 	 *            the plot that uses this scroller
 	 */
-	Scroller(AbstractPlot plot) {
+	Scroller(final AbstractPlot plot) {
 		super();
 		this.plot = plot;
 		if (plot instanceof Plot1d) {
@@ -87,6 +87,7 @@ class Scroller extends JPanel implements AdjustmentListener, Limitable {
 			/**
 			 * Returns the count scrollbar to the middle.
 			 */
+			@Override
 			public void mouseReleased(final MouseEvent event) {
 				update();
 			}
@@ -202,7 +203,7 @@ class Scroller extends JPanel implements AdjustmentListener, Limitable {
 		}
 	}
 
-	void enableScrolling(final boolean enableIn) {
+	protected void enableScrolling(final boolean enableIn) {
 		scrollCount.setVisible(enableIn);
 		scrollHorz.setVisible(enableIn);
 		if (isPlot2d) {

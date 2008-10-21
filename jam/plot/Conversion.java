@@ -1,31 +1,30 @@
 package jam.plot;
 
 /**
- * Gives the number of pixels per channel for each screen
- * dimension.
+ * Gives the number of pixels per channel for each screen dimension.
  * 
  * @author Dale Visser
  */
 final class Conversion {
-	
+
 	private transient final double xFactor, yFactor, yLogFactor;
-	
-	Conversion(double xfac, double yfac, double ylogfac) {
+
+	Conversion(final double xfac, final double yfac, final double ylogfac) {
 		super();
 		xFactor = xfac;
 		yFactor = yfac;
 		yLogFactor = ylogfac;
 	}
-	
-	double getX(){
+
+	protected double getX() {
 		return xFactor;
 	}
-	
-	double getY(){
+
+	protected double getY() {
 		return yFactor;
 	}
-	
-	double getYLog(){
+
+	protected double getYLog() {
 		return yLogFactor;
 	}
 }

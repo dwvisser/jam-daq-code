@@ -29,7 +29,7 @@ class SummaryTableToolbar extends JToolBar {
 
 	private transient final SummaryTableModel summaryTableModel;
 
-	SummaryTableToolbar(SummaryTableModel stm) {
+	SummaryTableToolbar(final SummaryTableModel stm) {
 		super();
 		summaryTableModel = stm;
 		final Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
@@ -80,13 +80,13 @@ class SummaryTableToolbar extends JToolBar {
 	 * non-javadoc: Load icons for tool bar.
 	 */
 	private Icon loadToolbarIcon(final String path) {
-		Icon toolbarIcon=null;//no icon if URL doesn't exist
+		Icon toolbarIcon = null;// no icon if URL doesn't exist
 		final ClassLoader loader = this.getClass().getClassLoader();
 		final URL urlResource = loader.getResource(path);
 		if (urlResource == null) {
 			JOptionPane.showMessageDialog(this, "Can't load resource: " + path,
 					"Missing Icon", JOptionPane.ERROR_MESSAGE);
-		} else { 
+		} else {
 			toolbarIcon = new ImageIcon(urlResource);
 		}
 		return toolbarIcon;

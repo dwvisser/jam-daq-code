@@ -147,21 +147,28 @@ public final class GateSet extends AbstractControl {
 		contents.add(pFields, BorderLayout.CENTER);
 		contents.add(pedit, BorderLayout.EAST);
 		contents.add(pokcancel, BorderLayout.SOUTH);
+		setWindowHandlers();
+		pack();
+	}
+
+	private void setWindowHandlers() {
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowActivated(final WindowEvent windowEvent) {
 				checkHistogram();
 			}
 
+			@Override
 			public void windowClosing(final WindowEvent windowEvent) {
 				canceller.cancel();
 				dispose();
 			}
 
+			@Override
 			public void windowOpened(final WindowEvent windowEvent) {
 				doSetup();
 			}
 		});
-		pack();
 	}
 
 	/**
@@ -265,6 +272,7 @@ public final class GateSet extends AbstractControl {
 	 * if 1 d
 	 * 
 	 */
+	@Override
 	public void doSetup() {
 		synchronized (this) {
 			currentHistogram = SelectionTree.getCurrentHistogram();
@@ -315,26 +323,7 @@ public final class GateSet extends AbstractControl {
 		checkHistogram(); // check we have same histogram
 		try { // check fields are numbers
 			if (currentGate != null) {
-				if (currentHistogram instanceof AbstractHist1D) {
-					final int lim1 = Integer.parseInt(textLower.getText());
-					final int lim2 = Integer.parseInt(textUpper.getText());
-					currentGate.setLimits(lim1, lim2);
-					LOGGER.info("Gate Set " + currentGate.getName()
-							+ " Limits=" + lim1 + "," + lim2);
-				} else if (currentHistogram instanceof AbstractHist2D) {
-					/* complete gate, adding a last point = first point */
-					gatePoints.add(gatePoints.get(0));
-					/* make a polygon from data points */
-					final Polygon gatePoly2d = new Polygon();
-					for (int i = 0; i < gatePoints.size(); i++) {
-						final int pointX = gatePoints.get(i).getX();
-						final int pointY = gatePoints.get(i).getY();
-						gatePoly2d.addPoint(pointX, pointY);
-					}
-					currentGate.setLimits(gatePoly2d);
-					LOGGER.info("Gate Set " + currentGate.getName());
-					printPoints(gatePoly2d);
-				}
+				saveGate();
 				BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT,
 						currentGate);
 				cgate.repaint();
@@ -346,7 +335,34 @@ public final class GateSet extends AbstractControl {
 		canceller.cancel();
 	}
 
-	void selectGate(final Gate gate) {
+	private void saveGate() {
+		if (currentHistogram instanceof AbstractHist1D) {
+			final int lim1 = Integer.parseInt(textLower.getText());
+			final int lim2 = Integer.parseInt(textUpper.getText());
+			currentGate.setLimits(lim1, lim2);
+			LOGGER.info("Gate Set " + currentGate.getName()
+					+ " Limits=" + lim1 + "," + lim2);
+		} else if (currentHistogram instanceof AbstractHist2D) {
+			saveTwoDimensionalGate();
+		}
+	}
+
+	private void saveTwoDimensionalGate() {
+		/* complete gate, adding a last point = first point */
+		gatePoints.add(gatePoints.get(0));
+		/* make a polygon from data points */
+		final Polygon gatePoly2d = new Polygon();
+		for (int i = 0; i < gatePoints.size(); i++) {
+			final int pointX = gatePoints.get(i).getX();
+			final int pointY = gatePoints.get(i).getY();
+			gatePoly2d.addPoint(pointX, pointY);
+		}
+		currentGate.setLimits(gatePoly2d);
+		LOGGER.info("Gate Set " + currentGate.getName());
+		printPoints(gatePoly2d);
+	}
+
+	protected void selectGate(final Gate gate) {
 		canceller.cancel(); // cancel current state
 		synchronized (this) {
 			currentGate = gate;
@@ -419,6 +435,7 @@ public final class GateSet extends AbstractControl {
 	 * @param object
 	 *            the message
 	 */
+	@Override
 	public void update(final Observable observable, final Object object) {
 		final BroadcastEvent event = (BroadcastEvent) object;
 		final BroadcastEvent.Command com = event.getCommand();

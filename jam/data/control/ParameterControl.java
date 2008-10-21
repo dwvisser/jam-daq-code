@@ -67,7 +67,8 @@ public final class ParameterControl extends AbstractControl {
 		cddisp.setLayout(new java.awt.BorderLayout());
 		/* Central Panel */
 		pCenter = new JPanel(new GridLayout(0, 1, BORDER_HEIGHT, 5));
-		pCenter.setBorder(new EmptyBorder(BORDER_HEIGHT, 10, BORDER_HEIGHT, 10));
+		pCenter
+				.setBorder(new EmptyBorder(BORDER_HEIGHT, 10, BORDER_HEIGHT, 10));
 		/* Scroll Panel */
 		final JScrollPane scrollPane = new JScrollPane(pCenter);
 		scrollPane
@@ -97,7 +98,8 @@ public final class ParameterControl extends AbstractControl {
 		});
 		pLoadSave.add(bsave);
 
-		final JPanel pButtonsBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		final JPanel pButtonsBottom = new JPanel(new FlowLayout(
+				FlowLayout.CENTER));
 		pLower.add(pButtonsBottom);
 		final JPanel pOKApplyCancel = new JPanel(new GridLayout(1, 0, 5, 5));
 		pButtonsBottom.add(pOKApplyCancel);
@@ -128,6 +130,7 @@ public final class ParameterControl extends AbstractControl {
 		pOKApplyCancel.add(bcancel);
 
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
@@ -146,17 +149,17 @@ public final class ParameterControl extends AbstractControl {
 		for (int i = 0; i < textParam.length; i++) {
 			try {
 				textValue = textParam[i].getText().trim();
-				if (textValue.length()==0) {
+				if (textValue.length() == 0) {
 					textValue = "0.0";
 					textParam[i].setText(textValue);
 				}
 			} catch (NumberFormatException nfe) {
 				allValid = false;
-				if (invalidNames.length()==0) {
+				if (invalidNames.length() == 0) {
 					invalidNames = labelParam[i].getText();
 				} else {
 					invalidNames = invalidNames + ", "
-					+ labelParam[i].getText();
+							+ labelParam[i].getText();
 				}
 			}
 		}
@@ -169,7 +172,8 @@ public final class ParameterControl extends AbstractControl {
 	 * @param saveProperties
 	 * @return
 	 */
-	private String copyPropertiesToParameters(final String name, final StringBuilder listNotLoaded, final Properties saveProperties) {
+	private String copyPropertiesToParameters(final String name,
+			final StringBuilder listNotLoaded, final Properties saveProperties) {
 		// copy from properties to parameters
 		String rval = name;
 		for (DataParameter parameter : DataParameter.getParameterList()) {
@@ -179,7 +183,7 @@ public final class ParameterControl extends AbstractControl {
 				final double valueDouble = Double.parseDouble(valueString);
 				parameter.setValue(valueDouble);
 			} else {
-				if (listNotLoaded.length()>0) {
+				if (listNotLoaded.length() > 0) {
 					listNotLoaded.append(", ");
 				}
 				listNotLoaded.append(rval);
@@ -193,8 +197,8 @@ public final class ParameterControl extends AbstractControl {
 	 * @param currentParameter
 	 */
 	private JLabel createParameterLabel(final DataParameter currentParameter) {
-		return new JLabel(currentParameter.getName()
-				.trim(), SwingConstants.RIGHT);
+		return new JLabel(currentParameter.getName().trim(),
+				SwingConstants.RIGHT);
 	}
 
 	/**
@@ -202,8 +206,7 @@ public final class ParameterControl extends AbstractControl {
 	 * @param pParam
 	 */
 	private JPanel createParameterPanel() {
-		return new JPanel(new FlowLayout(FlowLayout.RIGHT, 10,
-				0));
+		return new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 	}
 
 	/**
@@ -219,6 +222,7 @@ public final class ParameterControl extends AbstractControl {
 	 * Setup the display dialog box.
 	 * 
 	 */
+	@Override
 	public void doSetup() {
 		int count;
 		final List<DataParameter> plist = DataParameter.getParameterList();
@@ -243,8 +247,8 @@ public final class ParameterControl extends AbstractControl {
 		}
 		pack();
 		if (numberParameters > 0) {
-			final Dimension dialogDim = calculateScrollDialogSize(this, pParam[0],
-					BORDER_HEIGHT, numberParameters);
+			final Dimension dialogDim = calculateScrollDialogSize(this,
+					pParam[0], BORDER_HEIGHT, numberParameters);
 			setSize(dialogDim);
 		}
 	}
@@ -268,10 +272,11 @@ public final class ParameterControl extends AbstractControl {
 				final Properties saveProperties = new Properties();
 				fis = new FileInputStream(inputFile);
 				saveProperties.load(fis);
-				name = copyPropertiesToParameters(name, listNotLoaded, saveProperties);
+				name = copyPropertiesToParameters(name, listNotLoaded, // NOPMD
+						saveProperties);// NOPMD
 				read();
 				LOGGER.info("Load Parameters from file " + inputFile.getName());
-				if (listNotLoaded.length()>0) {
+				if (listNotLoaded.length() > 0) {
 					LOGGER.warning("Did not load parameter(s) " + listNotLoaded
 							+ ".");
 				}
@@ -288,7 +293,7 @@ public final class ParameterControl extends AbstractControl {
 					if (fis != null) {
 						fis.close();
 					}
-				} catch (IOException ioe){
+				} catch (IOException ioe) {
 					LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
 				}
 			}
@@ -328,7 +333,8 @@ public final class ParameterControl extends AbstractControl {
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fileDialog.getSelectedFile() != null) {
 			final File selectFile = fileDialog.getSelectedFile();
-			final jam.util.FileUtilities fileUtility = jam.util.FileUtilities.getInstance();
+			final jam.util.FileUtilities fileUtility = jam.util.FileUtilities
+					.getInstance();
 			final File outputFile = fileUtility.changeExtension(selectFile,
 					FILE_EXTENSION, jam.util.FileUtilities.APPEND_ONLY);
 			if (fileUtility.overWriteExistsConfirm(outputFile)) {
@@ -356,7 +362,7 @@ public final class ParameterControl extends AbstractControl {
 						if (fos != null) {
 							fos.close();
 						}
-					} catch (IOException ioe){
+					} catch (IOException ioe) {
 						LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
 					}
 				}
@@ -386,7 +392,7 @@ public final class ParameterControl extends AbstractControl {
 						nfe);
 			}
 		} else {
-			if (invalidNames.length()>0) {
+			if (invalidNames.length() > 0) {
 				LOGGER
 						.severe("Parameters not set, not a number for parameter(s) "
 								+ invalidNames + ".");
@@ -394,6 +400,7 @@ public final class ParameterControl extends AbstractControl {
 		}
 	}
 
+	@Override
 	public void setVisible(final boolean state) {
 		if (state) {
 			read();

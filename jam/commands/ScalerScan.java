@@ -221,8 +221,7 @@ public final class ScalerScan {
 				if (!pBstatus.isCanceled()) {
 					final String title = txtRunName.getText() + ", runs "
 							+ txtFirst.getText() + " to " + txtLast.getText();
-					new TextDisplayDialog(frame, title, outText
-							.toString());
+					new TextDisplayDialog(frame, title, outText.toString());
 				}
 				updateProgressBar("Done", lastRun);
 			}
@@ -287,8 +286,7 @@ public final class ScalerScan {
 			final int numScalers = dataDesc.getNumRows();
 			sname = new String[numScalers];
 			for (int i = 0; i < numScalers; i++) {
-				sname[i] = data.getString(i, 1);
-				sname[i] = sname[i].trim();
+				sname[i] = data.getString(i, 1).trim();
 				final char space = ' ';
 				while (sname[i].indexOf(space) != -1) {
 					final int tmp = sname[i].indexOf(space);

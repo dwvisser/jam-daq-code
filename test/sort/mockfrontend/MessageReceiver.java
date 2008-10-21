@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
 /**
  * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
- * @version Feb 16, 2004
+ * @version February 16, 2004
  */
 public class MessageReceiver extends GoodThread {
 	private transient final DatagramSocket socket;
@@ -25,7 +25,7 @@ public class MessageReceiver extends GoodThread {
 	private transient final MessageSender sender;
 	private transient final Console console;
 
-	private transient boolean receivedListScaler = false;
+	private transient boolean receivedLS = false;
 
 	/**
 	 * Creates a new message receiver.
@@ -68,19 +68,8 @@ public class MessageReceiver extends GoodThread {
 				final ByteBuffer byteBuffer = ByteBuffer.wrap(packet.getData());
 				final int status = byteBuffer.getInt();
 				if (status == PacketTypes.OK_MESSAGE.intValue()) {
-					final String message = this.unPackMessage(byteBuffer);
-					MessageReceiver.this.console.messageOutln("Recieved: "
-							+ message);
-					if ("start".equalsIgnoreCase(message)) {
-						eventGenerator = this.sender.startSendingEventData();
-					} else if ((null != eventGenerator)
-							&& "stop".equalsIgnoreCase(message)) {
-						stopEventGenerator(eventGenerator);
-						eventGenerator = null;
-					} else if ("list scaler".equalsIgnoreCase(message)) {
-						this.receivedListScaler = true;
-						this.sender.sendScalerValues();
-					}
+					eventGenerator = handleNormalMessage(eventGenerator,
+							byteBuffer);
 				} else if (status == PacketTypes.VME_ADDRESS.intValue()) {
 					this.console.messageOutln("VME Conguration Info:\n"
 							+ this.unPackMessage(byteBuffer));
@@ -92,6 +81,23 @@ public class MessageReceiver extends GoodThread {
 						.getName(), JOptionPane.ERROR_MESSAGE);
 			}
 		}
+	}
+
+	private Future<?> handleNormalMessage(final Future<?> eventGenerator,
+			final ByteBuffer byteBuffer) {
+		final String message = this.unPackMessage(byteBuffer);
+		MessageReceiver.this.console.messageOutln("Recieved: " + message);
+		Future<?> result = null;
+		if ("start".equalsIgnoreCase(message)) {
+			result = this.sender.startSendingEventData();
+		} else if ((null != eventGenerator) && "stop".equalsIgnoreCase(message)) {
+			stopEventGenerator(eventGenerator);
+		} else if ("list scaler".equalsIgnoreCase(message)) {
+			this.receivedLS = true;
+			this.sender.sendScalerValues();
+			result = eventGenerator;
+		}
+		return result;
 	}
 
 	private void stopEventGenerator(final Future<?> eventGenerator) {
@@ -126,7 +132,7 @@ public class MessageReceiver extends GoodThread {
 	 * @return whether a "list scaler" message has been received
 	 */
 	public boolean hasReceivedListScaler() {
-		return this.receivedListScaler;
+		return this.receivedLS;
 	}
 
 }

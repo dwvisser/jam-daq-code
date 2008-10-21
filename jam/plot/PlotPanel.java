@@ -54,11 +54,13 @@ final class PlotPanel extends JPanel implements CountsContainer {
 		 * @param mouseEvent
 		 *            created when mouse exits the plot
 		 */
+		@Override
 		public void mouseExited(final MouseEvent mouseEvent) {
 			setMouseMoved(false);
 			repaint();
 		}
 
+		@Override
 		public void mouseMoved(final MouseEvent mouseEvent) {
 			plot.mouseMoved(mouseEvent);
 		}
@@ -80,7 +82,7 @@ final class PlotPanel extends JPanel implements CountsContainer {
 	 */
 	private transient boolean settingGate = false;
 
-	PlotPanel(Plot plot) {
+	PlotPanel(final Plot plot) {
 		super(false);
 		this.plot = plot;
 	}
@@ -89,31 +91,31 @@ final class PlotPanel extends JPanel implements CountsContainer {
 		return plot.getCounts();
 	}
 
-	boolean isAreaMarked() {
+	protected boolean isAreaMarked() {
 		synchronized (this) {
 			return areaMarked;
 		}
 	}
 
-	boolean isDisplayingOverlay() {
+	protected boolean isDisplayingOverlay() {
 		synchronized (this) {
 			return displayingOverlay;
 		}
 	}
 
-	boolean isMarkingChannels() {
+	protected boolean isMarkingChannels() {
 		synchronized (this) {
 			return markingChannels;
 		}
 	}
 
-	boolean isSelectingArea() {
+	protected boolean isSelectingArea() {
 		synchronized (this) {
 			return selectingArea;
 		}
 	}
 
-	boolean isSettingGate() {
+	protected boolean isSettingGate() {
 		synchronized (this) {
 			return settingGate;
 		}
@@ -147,6 +149,7 @@ final class PlotPanel extends JPanel implements CountsContainer {
 	/**
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
+	@Override
 	protected void paintComponent(final Graphics graphics) {
 		super.paintComponent(graphics);
 		final PlotColorMap pcm = PlotColorMap.getInstance();
@@ -178,38 +181,38 @@ final class PlotPanel extends JPanel implements CountsContainer {
 		}
 	}
 
-	void setAreaMarked(final boolean state) {
+	protected void setAreaMarked(final boolean state) {
 		synchronized (this) {
 			areaMarked = state;
 		}
 	}
 
-	void setColorMode(final boolean color) {
+	protected void setColorMode(final boolean color) {
 		synchronized (this) {
 			colorMode = color ? Mode.W_ON_B : Mode.B_ON_W;
 		}
 		setBackground(PlotColorMap.getInstance().getBackground());
 	}
 
-	void setDisplayingFit(final boolean state) {
+	protected void setDisplayingFit(final boolean state) {
 		synchronized (this) {
 			displayingFit = state;
 		}
 	}
 
-	void setDisplayingGate(final boolean state) {
+	protected void setDisplayingGate(final boolean state) {
 		synchronized (this) {
 			displayingGate = state;
 		}
 	}
 
-	void setDisplayingOverlay(final boolean state) {
+	protected void setDisplayingOverlay(final boolean state) {
 		synchronized (this) {
 			displayingOverlay = state;
 		}
 	}
 
-	void setListenToMouse(final boolean listen) {
+	protected void setListenToMouse(final boolean listen) {
 		if (listen) {
 			addMouseListener(mouseInputAdapter);
 		} else {
@@ -217,7 +220,7 @@ final class PlotPanel extends JPanel implements CountsContainer {
 		}
 	}
 
-	void setListenToMouseMotion(final boolean listen) {
+	protected void setListenToMouseMotion(final boolean listen) {
 		if (listen) {
 			addMouseMotionListener(mouseInputAdapter);
 		} else {
@@ -225,7 +228,7 @@ final class PlotPanel extends JPanel implements CountsContainer {
 		}
 	}
 
-	void setMarkingChannels(final boolean state) {
+	protected void setMarkingChannels(final boolean state) {
 		synchronized (this) {
 			markingChannels = state;
 		}
@@ -243,13 +246,13 @@ final class PlotPanel extends JPanel implements CountsContainer {
 		}
 	}
 
-	void setPageFormat(final PageFormat format) {
+	protected void setPageFormat(final PageFormat format) {
 		synchronized (this) {
 			pageformat = format;
 		}
 	}
 
-	void setSelectingArea(final boolean selecting) {
+	protected void setSelectingArea(final boolean selecting) {
 		synchronized (this) {
 			selectingArea = selecting;
 			setListenToMouseMotion(selecting);
@@ -259,7 +262,7 @@ final class PlotPanel extends JPanel implements CountsContainer {
 		}
 	}
 
-	void setSettingGate(final boolean state) {
+	protected void setSettingGate(final boolean state) {
 		synchronized (this) {
 			settingGate = state;
 		}

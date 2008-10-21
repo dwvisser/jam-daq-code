@@ -55,7 +55,7 @@ public class GoodThread extends Thread {
 	 * @param runnable
 	 *            code to execute in thread
 	 */
-	public GoodThread(Runnable runnable) {
+	public GoodThread(final Runnable runnable) {
 		super(runnable);
 	}
 
@@ -89,8 +89,8 @@ public class GoodThread extends Thread {
 	 * <code>setState(int)</code> with either <code>STOP</code> or
 	 * <code>RUN</code> to get the thread out of <code>checkState()</code>.
 	 * 
-	 * @return <code>true</code> if OK to resume, <code>false</code> if
-	 *         state is <code>STOP</code>
+	 * @return <code>true</code> if OK to resume, <code>false</code> if state is
+	 *         <code>STOP</code>
 	 */
 	public boolean checkState() {
 		synchronized (stateLock) {
@@ -108,6 +108,7 @@ public class GoodThread extends Thread {
 		}
 	}
 
+	@Override
 	public String toString() {
 		final StringBuffer rval = new StringBuffer(super.toString());
 		rval.append(": state=");

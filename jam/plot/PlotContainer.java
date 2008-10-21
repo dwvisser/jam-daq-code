@@ -60,11 +60,11 @@ public final class PlotContainer implements PlotSelectListener {
 	private static final String KEY2 = "2D Plot";
 
 	/*
-	 * any access to currentSubPlot should be syn synchronized on this
+	 * any access to currentSubPlot should be synchronized on this
 	 */
 	private transient final Object plotLock = new Object();
 
-	private transient final CardLayout plotSwapPanelLayout;
+	private transient final CardLayout cardLayout;
 
 	private transient final Plot1d plot1d;
 
@@ -74,7 +74,7 @@ public final class PlotContainer implements PlotSelectListener {
 
 	private transient boolean hasData;
 
-	private transient final PlotSelectListener plotSelectListener;
+	private transient final PlotSelectListener selectListener;
 
 	private transient LayoutType layoutType;
 
@@ -88,13 +88,13 @@ public final class PlotContainer implements PlotSelectListener {
 	 * @param plotSelect
 	 *            place to send selection messages
 	 */
-	private PlotContainer(PlotSelectListener plotSelect) {
-		plotSelectListener = plotSelect;
+	private PlotContainer(final PlotSelectListener plotSelect) {
+		selectListener = plotSelect;
 		/*
 		 * panel containing plots panel to holds 1d and 2d plots, and swaps them
 		 */
-		plotSwapPanelLayout = new CardLayout();
-		panel.setLayout(plotSwapPanelLayout);
+		cardLayout = new CardLayout();
+		panel.setLayout(cardLayout);
 		/* panel 1d plot and its scroll bars */
 		plot1d = new Plot1d();
 		scroller1d = new Scroller(plot1d);
@@ -106,11 +106,12 @@ public final class PlotContainer implements PlotSelectListener {
 		panel.add(KEY2, scroller2d);
 		plot2d.getPlotMouse().setPlotSelectListener(this);
 		/* Initial show plot1d */
-		plotSwapPanelLayout.show(panel, KEY1);
+		cardLayout.show(panel, KEY1);
 		currentSubPlot = plot1d;
 	}
 
-	static PlotContainer createPlotContainer(final PlotSelectListener psl) {
+	protected static PlotContainer createPlotContainer(
+			final PlotSelectListener psl) {
 		return new PlotContainer(psl);
 	}
 
@@ -119,7 +120,7 @@ public final class PlotContainer implements PlotSelectListener {
 	 * 
 	 * @param selectedState
 	 */
-	void select(final boolean selectedState) {
+	protected void select(final boolean selectedState) {
 		Border border = null;
 		if ((layoutType == LayoutType.LABELS_BORDER)
 				|| (layoutType == LayoutType.NO_LABELS_BORDER)) {
@@ -135,7 +136,7 @@ public final class PlotContainer implements PlotSelectListener {
 	 * 
 	 * @param type
 	 */
-	void setLayoutType(final LayoutType type) {
+	protected void setLayoutType(final LayoutType type) {
 		layoutType = type;
 		// Plot labels
 		if ((type == LayoutType.LABELS_BORDER) || (type == LayoutType.LABELS)) {
@@ -161,14 +162,14 @@ public final class PlotContainer implements PlotSelectListener {
 	 * @param hist
 	 *            histogram to display
 	 */
-	void displayHistogram(final Histogram hist) {
+	protected void displayHistogram(final Histogram hist) {
 		synchronized (plotLock) {
 			select(true);
 			if (hist == null) {
 				/* Histogram is null set to blank 1D */
 				currentSubPlot = plot1d;
 				hasData = false;
-				plotSwapPanelLayout.show(panel, KEY1);
+				cardLayout.show(panel, KEY1);
 			} else {
 				hasData = true;
 				final int dim = hist.getDimensionality();
@@ -180,7 +181,7 @@ public final class PlotContainer implements PlotSelectListener {
 					currentSubPlot = plot2d;
 					key = KEY2;
 				}
-				plotSwapPanelLayout.show(panel, key);
+				cardLayout.show(panel, key);
 			}
 			currentSubPlot.displayHistogram(hist);
 		}
@@ -192,7 +193,7 @@ public final class PlotContainer implements PlotSelectListener {
 	 * @param hists
 	 *            to overlay
 	 */
-	void overlayHistograms(final List<AbstractHist1D> hists) {
+	protected void overlayHistograms(final List<AbstractHist1D> hists) {
 		currentSubPlot.overlayHistograms(hists);
 	}
 
@@ -219,7 +220,7 @@ public final class PlotContainer implements PlotSelectListener {
 	/**
 	 * Clear overlays.
 	 */
-	void removeOverlays() {
+	protected void removeOverlays() {
 		currentSubPlot.removeOverlays();
 	}
 
@@ -228,7 +229,7 @@ public final class PlotContainer implements PlotSelectListener {
 	 * 
 	 * @return the histogram displayed in the current subplot
 	 */
-	Histogram getHistogram() {
+	protected Histogram getHistogram() {
 		return getPlot().getHistogram();
 	}
 
@@ -237,7 +238,7 @@ public final class PlotContainer implements PlotSelectListener {
 	 * 
 	 * @return <code>true</code> if this plot contains a histogram
 	 */
-	boolean hasHistogram() {
+	protected boolean hasHistogram() {
 		return hasData;
 	}
 
@@ -246,28 +247,28 @@ public final class PlotContainer implements PlotSelectListener {
 	 * 
 	 * @return plot type
 	 */
-	int getDimensionality() {
+	protected int getDimensionality() {
 		return (getPlot() == plot1d) ? 1 : 2;
 	}
 
-	void enableScrolling(final boolean enable) {
+	protected void enableScrolling(final boolean enable) {
 		scroller1d.enableScrolling(enable);
 		scroller2d.enableScrolling(enable);
 	}
 
-	int getNumber() {
+	protected int getNumber() {
 		return plotNumber;
 	}
 
-	void setNumber(final int numIn) {
+	protected void setNumber(final int numIn) {
 		plotNumber = numIn;
 	}
 
-	Limits getLimits() {
+	protected Limits getLimits() {
 		return getPlot().getLimits();
 	}
 
-	void markChannel(final Bin bin) {
+	protected void markChannel(final Bin bin) {
 		getPlot().markChannel(bin);
 	}
 
@@ -275,7 +276,7 @@ public final class PlotContainer implements PlotSelectListener {
 	 * Only update plot if it has a histogram
 	 * 
 	 */
-	void update() {
+	protected void update() {
 		if (hasData) {
 			getPlot().update();
 		}
@@ -311,7 +312,7 @@ public final class PlotContainer implements PlotSelectListener {
 	 *            to check energy for
 	 * @return energy value for the channel
 	 */
-	double getEnergy(final double channel) {
+	protected double getEnergy(final double channel) {
 		return getPlot().getEnergy(channel);
 	}
 
@@ -322,18 +323,18 @@ public final class PlotContainer implements PlotSelectListener {
 	 *            bin to grab counts from
 	 * @return counts in the bin
 	 */
-	double getCount(final Bin channel) {
+	protected double getCount(final Bin channel) {
 		return getPlot().getCount(channel);
 	}
 
-	int getChannel(final double energy) {
+	protected int getChannel(final double energy) {
 		return getPlot().getChannel(energy);
 	}
 
 	/**
 	 * @return array of counts in the currently selected plot
 	 */
-	Object getCounts() {
+	protected Object getCounts() {
 		return getPlot().getCounts();
 	}
 
@@ -360,7 +361,7 @@ public final class PlotContainer implements PlotSelectListener {
 	/*
 	 * Non-javadoc: Zoom the region viewed.
 	 */
-	void zoom(final PlotContainer.Zoom inOut) {
+	protected void zoom(final PlotContainer.Zoom inOut) {
 		final Limits limits = getLimits();
 		int xll = limits.getMinimumX();
 		int xul = limits.getMaximumX();
@@ -397,19 +398,19 @@ public final class PlotContainer implements PlotSelectListener {
 		plot.refresh();
 	}
 
-	void markArea(final Bin bin1, final Bin bin2) {
+	protected void markArea(final Bin bin1, final Bin bin2) {
 		getPlot().markArea(bin1, bin2);
 	}
 
-	void setMarkArea(final boolean isMarkingArea) {
+	protected void setMarkArea(final boolean isMarkingArea) {
 		getPlot().setMarkArea(isMarkingArea);
 	}
 
-	void autoCounts() {
+	protected void autoCounts() {
 		getPlot().autoCounts();
 	}
 
-	void setRange(final int limC1, final int limC2) {
+	protected void setRange(final int limC1, final int limC2) {
 		getPlot().setRange(limC1, limC2);
 	}
 
@@ -419,39 +420,39 @@ public final class PlotContainer implements PlotSelectListener {
 	 * @param channel1
 	 * @param channel2
 	 */
-	void expand(final Bin channel1, final Bin channel2) {
+	protected void expand(final Bin channel1, final Bin channel2) {
 		getPlot().expand(channel1, channel2);
 	}
 
 	/**
 	 * Show full plot
 	 */
-	void setFull() {
+	protected void setFull() {
 		getPlot().setFull();
 	}
 
 	/**
 	 * Set the scale as linear
 	 */
-	void setLinear() {
+	protected void setLinear() {
 		getPlot().setLinear();
 	}
 
 	/**
 	 * Set the scale as log
 	 */
-	void setLog() {
+	protected void setLog() {
 		getPlot().setLog();
 	}
 
-	void setBinWidth(final double width) {
+	protected void setBinWidth(final double width) {
 		final AbstractPlot plot = getPlot();
 		if (plot instanceof Plot1d) {
 			((Plot1d) plot).setBinWidth(width);
 		}
 	}
 
-	double getBinWidth() {
+	protected double getBinWidth() {
 		final AbstractPlot plot = getPlot();
 		double rval = 1.0;
 		if (plot instanceof Plot1d) {
@@ -460,40 +461,41 @@ public final class PlotContainer implements PlotSelectListener {
 		return rval;
 	}
 
-	void setSelectingArea(final boolean isSelectingArea) {
+	protected void setSelectingArea(final boolean isSelectingArea) {
 		getPlot().setSelectingArea(isSelectingArea);
 	}
 
-	void setMarkingChannels(final boolean isMarkingChannels) {
+	protected void setMarkingChannels(final boolean isMarkingChannels) {
 		getPlot().setMarkingChannels(isMarkingChannels);
 	}
 
-	void initializeSelectingArea(final Bin bin) {
+	protected void initializeSelectingArea(final Bin bin) {
 		getPlot().initializeSelectingArea(bin);
 	}
 
-	void displayGate(final Gate gate) {
+	protected void displayGate(final Gate gate) {
 		getPlot().displayGate(gate);
 	}
 
-	void displaySetGate(final GateSetMode mode, final Bin pChannel,
+	protected void displaySetGate(final GateSetMode mode, final Bin pChannel,
 			final Point pPixel) {
 		getPlot().displaySetGate(mode, pChannel, pPixel);
 	}
 
-	void setRenderForPrinting(final boolean printing, final PageFormat format) {
+	protected void setRenderForPrinting(final boolean printing,
+			final PageFormat format) {
 		getPlot().setRenderForPrinting(printing, format);
 	}
 
-	ComponentPrintable getComponentPrintable() {
+	protected ComponentPrintable getComponentPrintable() {
 		return getPlot().getComponentPrintable();
 	}
 
-	int getSizeX() {
+	protected int getSizeX() {
 		return getPlot().size.getSizeX();
 	}
 
-	int getSizeY() {
+	protected int getSizeY() {
 		return getPlot().size.getSizeY();
 	}
 
@@ -503,7 +505,7 @@ public final class PlotContainer implements PlotSelectListener {
 	 * @param listener
 	 *            the listener to add
 	 */
-	void addPlotMouseListener(final PlotMouseListener listener) {
+	protected void addPlotMouseListener(final PlotMouseListener listener) {
 		plot1d.getPlotMouse().addListener(listener);
 		plot2d.getPlotMouse().addListener(listener);
 	}
@@ -513,12 +515,12 @@ public final class PlotContainer implements PlotSelectListener {
 	/*
 	 * non-javadoc: Remove a mouse listener.
 	 */
-	void removePlotMouseListener(final PlotMouseListener listener) {
+	protected void removePlotMouseListener(final PlotMouseListener listener) {
 		plot1d.getPlotMouse().removeListener(listener);
 		plot2d.getPlotMouse().removeListener(listener);
 	}
 
-	void removeAllPlotMouseListeners() {
+	protected void removeAllPlotMouseListeners() {
 		plot1d.getPlotMouse().removeAllListeners();
 		plot2d.getPlotMouse().removeAllListeners();
 	}
@@ -527,20 +529,20 @@ public final class PlotContainer implements PlotSelectListener {
 	 * @see PlotSelectListener#plotSelected(Object)
 	 */
 	public void plotSelected(final Object source) {
-		plotSelectListener.plotSelected(this);
+		selectListener.plotSelected(this);
 	}
 
 	// End Mouse methods
-	void reset() {
+	protected void reset() {
 		plot1d.reset();
 		plot2d.reset();
 	}
 
-	void repaint() {
+	protected void repaint() {
 		panel.repaint();
 	}
 
-	Component getComponent() {
+	protected Component getComponent() {
 		return panel;
 	}
 }

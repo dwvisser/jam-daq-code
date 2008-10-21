@@ -40,7 +40,7 @@ public final class VData extends AbstractData {
 		super(DFTAG_VS);
 	}
 
-	VData(VDataDescription vdd) {
+	VData(final VDataDescription vdd) {
 		super(DFTAG_VS); // sets tag
 		description = vdd;
 		nfields = description.getNumFields();
@@ -56,7 +56,7 @@ public final class VData extends AbstractData {
 
 	private static final String WDFC = "Wrong data type for column ";
 
-	void addChars(final int column, final int row, final String indata) {
+	protected void addChars(final int column, final int row, final String indata) {
 		if (description.getType(column) == VDataDescription.DFNT_CHAR8) {
 			setCell(column, row, indata);
 		} else { // uh oh... not right type
@@ -64,7 +64,8 @@ public final class VData extends AbstractData {
 		}
 	}
 
-	void addDouble(final int column, final int row, final double indata) {
+	protected void addDouble(final int column, final int row,
+			final double indata) {
 		if (description.getType(column) == VDataDescription.DFNT_DBL64) {
 			final Object temp = new Double(indata);
 			setCell(column, row, temp);
@@ -73,7 +74,7 @@ public final class VData extends AbstractData {
 		}
 	}
 
-	void addFloat(final int column, final int row, final float indata) {
+	protected void addFloat(final int column, final int row, final float indata) {
 		if (description.getType(column) == VDataDescription.DFNT_FLT32) {
 			final Object temp = new Float(indata);
 			setCell(column, row, temp);
@@ -82,7 +83,7 @@ public final class VData extends AbstractData {
 		}
 	}
 
-	void addInteger(final int column, final int row, final int indata) {
+	protected void addInteger(final int column, final int row, final int indata) {
 		if (description.getType(column) == VDataDescription.DFNT_INT32) {
 			final Object temp = Integer.valueOf(indata);
 			setCell(column, row, temp);
@@ -110,7 +111,7 @@ public final class VData extends AbstractData {
 	 * assuming that an object resides at that cell already.
 	 * 
 	 * @param row record to retrieve from @param col column in record to
-	 * retreive from
+	 * Retrieve from
 	 */
 	private byte[] getBytes(final int row, final int col) {
 		final ByteBuffer out = ByteBuffer.allocate(VDataDescription
@@ -151,7 +152,7 @@ public final class VData extends AbstractData {
 	 * non-javadoc: Get the double in the specified cell. Of course, there'd
 	 * better actually be a float there!
 	 */
-	Double getDouble(final int row, final int col) {
+	protected Double getDouble(final int row, final int col) {
 		Double out = null;
 		if (types[col] == VDataDescription.DFNT_DBL64) {
 			final int location = row * ivsize + offsets[col];
@@ -169,7 +170,7 @@ public final class VData extends AbstractData {
 	 * non-javadoc: Get the float in the specified cell. Of course, there'd
 	 * better actually be a float there!
 	 */
-	Float getFloat(final int row, final int col) {
+	protected Float getFloat(final int row, final int col) {
 		Float out = null;
 		if (types[col] == VDataDescription.DFNT_FLT32) {
 			final int location = row * ivsize + offsets[col];
@@ -251,7 +252,8 @@ public final class VData extends AbstractData {
 		return out;
 	}
 
-	void init(final byte[] data, final short reference) {
+	@Override
+	protected void init(final byte[] data, final short reference) {
 		super.init(data, reference);
 		description = getObject(VDataDescription.class, reference);
 		description.interpretBytes();
@@ -264,6 +266,7 @@ public final class VData extends AbstractData {
 		offsets = description.getDataOffsets();
 	}
 
+	@Override
 	protected void interpretBytes() throws HDFException {
 		for (int col = 0; col < nfields; col++) {
 			interpretColumnBytes(col);
@@ -300,7 +303,8 @@ public final class VData extends AbstractData {
 	 * to set the byte representation. The workhorse of this method is calls
 	 * made to the <it>protected </it> method <code>getBytes(row,col)</code>.
 	 */
-	void refreshBytes() {
+	@Override
+	protected void refreshBytes() {
 		final int numBytes = nvert * ivsize;
 		bytes = ByteBuffer.allocate(numBytes);
 		for (int i = 0; i < nvert; i++) {
@@ -310,7 +314,7 @@ public final class VData extends AbstractData {
 		}
 	}
 
-	void setCell(final int column, final int row, final Object indata) {
+	protected void setCell(final int column, final int row, final Object indata) {
 		cells[column][row] = indata;
 	}
 
@@ -342,6 +346,7 @@ public final class VData extends AbstractData {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return "Data:" + description.toString();
 	}

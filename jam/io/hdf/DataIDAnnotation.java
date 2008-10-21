@@ -6,9 +6,8 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
- * Class to represent an HDF <em>Data identifier annotation</em> data object.
- * An annotation is lenghtier than a label, and can hold a descriptive text
- * block.
+ * Class to represent an HDF <em>Data identifier annotation</em> data object. An
+ * annotation is lenghtier than a label, and can hold a descriptive text block.
  * 
  * @version 0.5 December 98
  * @author Dale Visser
@@ -26,7 +25,7 @@ final class DataIDAnnotation extends AbstractData {
 	 * @return annotation object that refers to the object witht the given tag
 	 *         and ref
 	 */
-	static <T extends AbstractData> DataIDAnnotation withTagRef(
+	protected static <T extends AbstractData> DataIDAnnotation withTagRef(
 			final Class<T> tag, final int ref) {
 		return withTagRef(ofType(DataIDAnnotation.class), tag, ref);
 	}
@@ -42,7 +41,7 @@ final class DataIDAnnotation extends AbstractData {
 	 * @return annotation object that refers to the object witht the given tag
 	 *         and ref
 	 */
-	static <T extends AbstractData> DataIDAnnotation withTagRef(
+	protected static <T extends AbstractData> DataIDAnnotation withTagRef(
 			final List<DataIDAnnotation> labels, final Class<T> tag,
 			final int ref) {
 		DataIDAnnotation rval = null;
@@ -75,7 +74,7 @@ final class DataIDAnnotation extends AbstractData {
 	 * @param note
 	 *            text of annotation
 	 */
-	DataIDAnnotation(AbstractData obj, String note) {
+	protected DataIDAnnotation(final AbstractData obj, final String note) {
 		super(DFTAG_DIA); // sets tag
 		this.object = obj;
 		this.note = note;
@@ -94,6 +93,7 @@ final class DataIDAnnotation extends AbstractData {
 	 * Implementation of <code>DataObject</code> abstract method.
 	 * 
 	 */
+	@Override
 	protected void interpretBytes() {
 		bytes.position(0);
 		final short tagType = bytes.getShort();
@@ -102,10 +102,11 @@ final class DataIDAnnotation extends AbstractData {
 		object = getObject(TYPES.get(tagType), reference);
 	}
 
-	String getNote() {
+	protected String getNote() {
 		return note;
 	}
 
+	@Override
 	public String toString() {
 		return note;
 	}

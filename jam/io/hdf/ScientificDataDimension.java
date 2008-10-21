@@ -28,8 +28,8 @@ final class ScientificDataDimension extends AbstractData {
 
 	private transient byte numberType;
 
-	static ScientificDataDimension create(final short rank, final int sizeX,
-			final int sizeY, final byte numberType) {
+	protected static ScientificDataDimension create(final short rank,
+			final int sizeX, final int sizeY, final byte numberType) {
 		ScientificDataDimension rval = null;// return value
 		for (ScientificDataDimension sdd : AbstractData
 				.ofType(ScientificDataDimension.class)) {
@@ -45,8 +45,8 @@ final class ScientificDataDimension extends AbstractData {
 		return rval;
 	}
 
-	private ScientificDataDimension(short rank, int sizeX, int sizeY,
-			byte numberType) {
+	private ScientificDataDimension(final short rank, final int sizeX,
+			final int sizeY, final byte numberType) {
 		super(DFTAG_SDD); // sets tag
 		this.rank = rank;
 		this.sizeX = sizeX;
@@ -85,6 +85,7 @@ final class ScientificDataDimension extends AbstractData {
 		super(DFTAG_SDD);
 	}
 
+	@Override
 	public void interpretBytes() {
 		short numberTag, numberRef;
 		bytes.position(0);
@@ -99,22 +100,23 @@ final class ScientificDataDimension extends AbstractData {
 		/* We don't bother reading the scales */
 	}
 
-	int getRank() {
+	protected int getRank() {
 		return rank;
 	}
 
-	int getSizeX() {
+	protected int getSizeX() {
 		return sizeX;
 	}
 
-	int getSizeY() {
+	protected int getSizeY() {
 		return sizeY;
 	}
 
-	byte getType() {
+	protected byte getType() {
 		return numberType;
 	}
 
+	@Override
 	public String toString() {
 		final StringBuffer rval = new StringBuffer();
 		final String type = numberType == NumberType.DOUBLE ? "Double"

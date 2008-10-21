@@ -17,8 +17,8 @@ import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
 import jam.data.func.AbstractCalibrationFunction;
-import jam.data.func.CalibrationFunctionCollection;
 import jam.data.func.CalibrationFitException;
+import jam.data.func.CalibrationFunctionCollection;
 import jam.io.FileOpenMode;
 import jam.util.StringUtilities;
 
@@ -89,8 +89,9 @@ final class ConvertHDFObjToJamObj {
 		return rval;
 	}
 
-	AbstractCalibrationFunction convertCalibration(final Histogram hist,
-			final VDataDescription vdd) throws HDFException {
+	protected AbstractCalibrationFunction convertCalibration(
+			final Histogram hist, final VDataDescription vdd)
+			throws HDFException {
 		final VData data = AbstractData.getObject(VData.class, vdd.getRef());
 		final String funcName = vdd.getName();
 		final String dataTypeName = vdd.getDataTypeName();
@@ -132,8 +133,9 @@ final class ConvertHDFObjToJamObj {
 		return calFunc;
 	}
 
-	Gate convertGate(final Histogram hist, final VDataDescription vdd,
-			final String gateName, final FileOpenMode mode) {
+	protected Gate convertGate(final Histogram hist,
+			final VDataDescription vdd, final String gateName,
+			final FileOpenMode mode) {
 		final Gate gate;
 		final Polygon shape = new Polygon();
 		final VData data = AbstractData.getObject(VData.class, vdd.getRef());
@@ -165,7 +167,7 @@ final class ConvertHDFObjToJamObj {
 		return gate;
 	}
 
-	Gate convertGate(final Histogram hist, final VirtualGroup currVG,
+	protected Gate convertGate(final Histogram hist, final VirtualGroup currVG,
 			final FileOpenMode mode) throws HDFException {
 		// Get VDD member of Virtual group
 		final VDataDescription vdd = AbstractData.ofType(currVG.getObjects(),
@@ -184,8 +186,8 @@ final class ConvertHDFObjToJamObj {
 	 * @param mode whether to open or reload @throws HDFException thrown if
 	 * unrecoverable error occurs
 	 */
-	int convertGatesOriginal(final Group currentGroup, final FileOpenMode mode)
-			throws HDFException {
+	protected int convertGatesOriginal(final Group currentGroup,
+			final FileOpenMode mode) throws HDFException {
 		int numGates = 0;
 		// Gate gate = null;
 		/* get list of all VG's in file */
@@ -393,6 +395,7 @@ final class ConvertHDFObjToJamObj {
 	 * 
 	 * @param mode whether to open or reload @param sb summary message under
 	 * construction @param histNames names of histograms to read, null if all
+	 * 
 	 * @exception HDFException thrown if unrecoverable error occurs @throws
 	 * IllegalStateException if any histogram apparently has more than 2
 	 * dimensions @return number of histograms
@@ -442,7 +445,7 @@ final class ConvertHDFObjToJamObj {
 		int numParameters = 0;
 		final List<VDataDescription> list = AbstractData.ofType(currVG
 				.getObjects(), VDataDescription.class);
-		if (list.size() > 0) {
+		if (!list.isEmpty()) {
 			final VDataDescription vdd = list.get(0);
 			/* only the "parameters" VH (only one element) in the file */
 			if (vdd != null) {
@@ -521,6 +524,7 @@ final class ConvertHDFObjToJamObj {
 	 * 
 	 * @param mode whether to open or reload @param sb summary message under
 	 * construction @param histNames names of histograms to read, null if all
+	 * 
 	 * @exception HDFException thrown if unrecoverable error occurs @throws
 	 * IllegalStateException if any histogram apparently has more than 2
 	 * dimensions @return number of histograms

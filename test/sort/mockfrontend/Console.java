@@ -126,27 +126,26 @@ public class Console extends JPanel implements MessageHandler {
 	 */
 	public void messageOut(final String _message, final int part) {
 		synchronized (syncLock) {
-			String message = _message;
 			if (part == NEW) {
 				msgLock = true;
-				messageFile = getDate() + ">" + message;
-				message = END_LINE + getTime() + ">" + message;
+				messageFile = getDate() + ">" + _message;
+				final String message = buildConsoleMessage(_message, false);
 				try {
 					doc.insertString(doc.getLength(), message, attr_normal);
 				} catch (final BadLocationException e) {
 					logException("messageOut", e);
 				}
 			} else if (part == CONTINUE) {
-				messageFile = messageFile + message;
+				messageFile = messageFile + _message;
 				try {
-					doc.insertString(doc.getLength(), message, attr_normal);
+					doc.insertString(doc.getLength(), _message, attr_normal);
 				} catch (final BadLocationException e) {
 					logException("messageOut", e);
 				}
 			} else if (part == END) {
-				messageFile = messageFile + message + END_LINE;
+				messageFile = messageFile + _message + END_LINE;
 				try {
-					doc.insertString(doc.getLength(), message, attr_normal);
+					doc.insertString(doc.getLength(), _message, attr_normal);
 				} catch (final BadLocationException e) {
 					logException("messageOut", e);
 				}
@@ -159,6 +158,18 @@ public class Console extends JPanel implements MessageHandler {
 				LOGGER.severe("Error not a valid message part [JamConsole]");
 			}
 		}
+	}
+
+	private String buildConsoleMessage(final String message,
+			final boolean addEndLine) {
+		final StringBuilder result = new StringBuilder(END_LINE);
+		result.append(getTime());
+		result.append('>');
+		result.append(message);
+		if (addEndLine) {
+			result.append(END_LINE);
+		}
+		return result.toString();
 	}
 
 	private void logException(final String method, final Throwable throwing) {
@@ -180,10 +191,9 @@ public class Console extends JPanel implements MessageHandler {
 	 */
 	public void messageOutln(final String _message) {
 		synchronized (syncLock) {
-			String message = _message;
 			msgLock = true;
-			messageFile = getDate() + ">" + message + END_LINE;
-			message = END_LINE + getTime() + ">" + message;
+			messageFile = getDate() + ">" + _message + END_LINE;
+			final String message = this.buildConsoleMessage(_message, false);
 			try {
 				doc.insertString(doc.getLength(), message, attr_normal);
 			} catch (final BadLocationException e) {
@@ -213,16 +223,16 @@ public class Console extends JPanel implements MessageHandler {
 
 	private void promptOutln(final String _message, final AttributeSet attr) {
 		synchronized (syncLock) {
-			String message = _message;
+			String message = null;
 			/*
-			 * Dont wait for lock. Output message right away.
+			 * Don't wait for lock. Output message right away.
 			 */
 			if (msgLock) { // if locked add extra returns
 				messageFile = END_LINE + getDate() + ">" + message + END_LINE;
-				message = END_LINE + getTime() + ">" + message + END_LINE;
+				message = this.buildConsoleMessage(_message, true);
 			} else { // normal message
 				messageFile = getDate() + ">" + message + END_LINE;
-				message = END_LINE + getTime() + ">" + message;
+				message = this.buildConsoleMessage(_message, false);
 			}
 			try {
 				doc.insertString(doc.getLength(), message, attr);

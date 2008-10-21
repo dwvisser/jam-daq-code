@@ -11,7 +11,7 @@ class End extends AbstractAction {
 
 	private transient final RunController runControl;
 
-	End(RunController runControl) {
+	End(final RunController runControl) {
 		super();
 		this.runControl = runControl;
 		putValue(Action.NAME, "End Run");

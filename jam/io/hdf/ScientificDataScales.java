@@ -16,7 +16,7 @@ final class ScientificDataScales extends AbstractData {
 		super(DFTAG_SDS); // sets tag
 	}
 
-	ScientificDataScales(ScientificDataDimension sdd) {
+	ScientificDataScales(final ScientificDataDimension sdd) {
 		this();
 		final int rank = sdd.getRank();
 		final int sizeX = sdd.getSizeX();
@@ -39,6 +39,7 @@ final class ScientificDataScales extends AbstractData {
 		}
 	}
 
+	@Override
 	protected void interpretBytes() {
 		// do-nothing
 	}

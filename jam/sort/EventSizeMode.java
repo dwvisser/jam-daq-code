@@ -5,7 +5,7 @@ package jam.sort;
  * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
  */
-public class EventSizeMode {//NOPMD
+public class EventSizeMode {// NOPMD
 	private static final int SET_BY_CNAF = 0;
 
 	private static final int SET_EXPLICIT = 2;
@@ -21,8 +21,7 @@ public class EventSizeMode {//NOPMD
 	/**
 	 * Indicates that the parameter count has been set explicitly.
 	 */
-	public static final EventSizeMode EXPLICIT = new EventSizeMode(
-			SET_EXPLICIT);
+	public static final EventSizeMode EXPLICIT = new EventSizeMode(SET_EXPLICIT);
 
 	/**
 	 * No method of defining the event size exists yet.
@@ -38,15 +37,14 @@ public class EventSizeMode {//NOPMD
 	private static final int SET_VME_MAP = 1;
 
 	/**
-	 * Indicates the parameter count has been set implicitly by specifying a
-	 * VME map.
+	 * Indicates the parameter count has been set implicitly by specifying a VME
+	 * map.
 	 */
-	public static final EventSizeMode VME_MAP = new EventSizeMode(
-			SET_VME_MAP);
+	public static final EventSizeMode VME_MAP = new EventSizeMode(SET_VME_MAP);
 
 	private final transient int mode;
 
-	private EventSizeMode(int value) {
+	private EventSizeMode(final int value) {
 		super();
 		mode = value;
 	}
@@ -55,8 +53,7 @@ public class EventSizeMode {//NOPMD
 	 * Returns whether this event size mode represents a properly set event
 	 * size.
 	 * 
-	 * @return whether this event size mode represents a properly set event
-	 *         size
+	 * @return whether this event size mode represents a properly set event size
 	 */
 	public boolean isSet() {
 		return IS_SET[mode];

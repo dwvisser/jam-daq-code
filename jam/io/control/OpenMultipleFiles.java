@@ -39,7 +39,7 @@ import javax.swing.event.ChangeListener;
  * @author Ken Swartz
  * 
  */
-public class OpenMultipleFiles implements HDFIO.AsyncListener {
+public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 
 	private static final Logger LOGGER = Logger
 			.getLogger(OpenMultipleFiles.class.getPackage().getName());
@@ -56,9 +56,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 
 	private transient final JCheckBox chkBoxAdd;
 
-
 	private transient final MultipleFileChooser multiChooser;
-
 
 	/** HDF file reader */
 	private transient final HDFIO hdfio;
@@ -77,7 +75,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 * @param console
 	 *            where to print messages
 	 */
-	public OpenMultipleFiles(java.awt.Frame parent) {
+	public OpenMultipleFiles(final java.awt.Frame parent) {
 		broadcaster = Broadcaster.getSingletonInstance();
 		hdfio = new HDFIO(parent);
 		dialog = new JDialog(parent, "Open Multiple Files");
@@ -225,7 +223,6 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 
 	/*
 	 * non-javadoc: Load name of histograms from the selected file
-	 * 
 	 */
 	private boolean loadHistNames(final File fileSelect) {
 		boolean loadState;
@@ -233,7 +230,8 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 		try {
 
 			/* Read in histogram names attributes */
-			final List<HistogramAttributes> attrList = hdfio.readHistogramAttributes(fileSelect);
+			final List<HistogramAttributes> attrList = hdfio
+					.readHistogramAttributes(fileSelect);
 			for (HistogramAttributes histAtt : attrList) {
 				hListModel.addElement(histAtt.getFullName());
 			}
@@ -254,7 +252,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 	private void loadFiles() {
 		checkHistogramsLoaded();
 		final List<HistogramAttributes> selectAttrib = createSelectedHistogramNamesList();
-		if (selectAttrib.size() == 0) {// No histograms selected
+		if (selectAttrib.isEmpty()) {// No histograms selected
 			LOGGER.severe("No histograms selected");
 			return;
 		}
@@ -265,12 +263,12 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 		hdfio.setListener(this);
 		/* Sum counts */
 		if (chkBoxAdd.isSelected()) {
-			hdfio
-					.readFile(jam.io.FileOpenMode.ADD_OPEN_ONE, files, null,
-							selectAttrib);
+			hdfio.readFile(jam.io.FileOpenMode.ADD_OPEN_ONE, files, null,
+					selectAttrib);
 			STATUS.setSortMode(jam.global.SortMode.FILE, "Multiple Sum");
 		} else {
-			hdfio.readFile(jam.io.FileOpenMode.OPEN_MORE, files, null, selectAttrib);
+			hdfio.readFile(jam.io.FileOpenMode.OPEN_MORE, files, null,
+					selectAttrib);
 			STATUS.setSortMode(jam.global.SortMode.FILE, "Multiple");
 		}
 	}
@@ -309,11 +307,11 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		/* Set the current histogram to the first opened histogram. */
 		final List<jam.data.Group> groupList = jam.data.Group.getGroupList();
-		if (groupList.size() > 0) {
+		if (!groupList.isEmpty()) {
 			final jam.data.Group firstGroup = groupList.get(0);
 			STATUS.setCurrentGroup(firstGroup);
 			final List<jam.data.Histogram> list = firstGroup.getHistogramList();
-			if (list.size() > 0) {
+			if (!list.isEmpty()) {
 				final jam.data.Histogram firstHist = list.get(0);
 				SelectionTree.setCurrentHistogram(firstHist);
 				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,

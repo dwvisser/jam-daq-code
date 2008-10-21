@@ -57,6 +57,10 @@ public final class ColorSettingsFrame extends JDialog implements ChangeListener 
 	private ColorSettingsFrame() {
 		super(JamStatus.getSingletonInstance().getFrame(),
 				"Color Scale Settings");
+		final Container contents = getContentPane();
+		contents.setLayout(new GridBagLayout());
+		final GridBagConstraints gbc = new GridBagConstraints();
+		final PanelOKApplyCancelButtons buttons = createStandardButtonsPanel();
 		final int x0R = (int) Math.round(100 * COLOR_PREFS.getDouble(
 				GradientSpecFieldsRGB.X0R.toString(), .80));
 		final int x0G = (int) Math.round(100 * COLOR_PREFS.getDouble(
@@ -69,32 +73,6 @@ public final class ColorSettingsFrame extends JDialog implements ChangeListener 
 				GradientSpecFieldsRGB.AGREEN.toString(), .40));
 		final int aBlue = (int) Math.round(100 * COLOR_PREFS.getDouble(
 				GradientSpecFieldsRGB.ABLUE.toString(), .30));
-		final Container contents = getContentPane();
-		contents.setLayout(new GridBagLayout());
-		final GridBagConstraints gbc = new GridBagConstraints();
-		final PanelOKApplyCancelButtons buttons = new PanelOKApplyCancelButtons(
-				new PanelOKApplyCancelButtons.AbstractListener(this) {
-					public void apply() {
-						final double x0red = x0RSlider.getValue() / 100.0;
-						final double x0green = x0GSlider.getValue() / 100.0;
-						final double x0blue = x0BSlider.getValue() / 100.0;
-						final double aRedD = aRSlider.getValue() / 100.0;
-						final double aGreenD = aGSlider.getValue() / 100.0;
-						final double aBlueD = aBSlider.getValue() / 100.0;
-						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.ABLUE
-								.toString(), aBlueD);
-						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.AGREEN
-								.toString(), aGreenD);
-						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.ARED
-								.toString(), aRedD);
-						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.X0B
-								.toString(), x0blue);
-						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.X0G
-								.toString(), x0green);
-						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.X0R
-								.toString(), x0red);
-					}
-				});
 		x0RSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, x0R);
 		x0RSlider.addChangeListener(this);
 		x0RSlider.setPreferredSize(new Dimension(20, 130));
@@ -113,15 +91,6 @@ public final class ColorSettingsFrame extends JDialog implements ChangeListener 
 		aBSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, aBlue);
 		aBSlider.addChangeListener(this);
 		aBSlider.setPreferredSize(new Dimension(20, 130));
-		final JComponent redLabel = new JLabel("Red");
-		final JComponent greenLabel = new JLabel("Green");
-		final JComponent blueLabel = new JLabel("Blue");
-		final JComponent x0RLabel = new JLabel("Position : ");
-		final JComponent x0GLabel = new JLabel("Position : ");
-		final JComponent x0BLabel = new JLabel("Position : ");
-		final JComponent aRLabel = new JLabel("Amount : ");
-		final JComponent aGLabel = new JLabel("Amount : ");
-		final JComponent aBLabel = new JLabel("Amount : ");
 		x0RField = new JTextField(5);
 		x0RField.setText(String.valueOf(x0R / 100.0));
 		x0RField.setEditable(false);
@@ -140,8 +109,91 @@ public final class ColorSettingsFrame extends JDialog implements ChangeListener 
 		aBField = new JTextField(5);
 		aBField.setText(String.valueOf(aBlue / 100.0));
 		aBField.setEditable(false);
+		gbc.insets = new Insets(5, 5, 5, 5);
+		final JPanel sliderPanel = createSliderPanel(gbc);
+		gbc.insets = new Insets(5, 5, 5, 5);
+		setGrid(gbc, 0, 0, 1);
+		final JPanel colorPanel = new JPanel(new GridBagLayout());
 		final JComponent csLabel = new JLabel(
 				"<html>Choose a<p>color scheme :</html>");
+		colorPanel.add(csLabel, gbc);
+		setGrid(gbc, 0, 1, 1);
+		final JComboBox csChooser = defineColorSchemeChooser();
+		colorPanel.add(csChooser, gbc);
+		setGrid(gbc, 0, 2, 1);
+		final JScrollPane scrollpane = new JScrollPane(rainbowPanel,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollpane.setPreferredSize(new Dimension(50, 100));
+		colorPanel.add(scrollpane, gbc);
+		setGrid(gbc, 1, 1, 1);
+		contents.add(colorPanel, gbc);
+		setGrid(gbc, 2, 1, 1);
+		contents.add(sliderPanel, gbc);
+		setGrid(gbc, 0, 2, 3);
+		contents.add(buttons.getComponent(), gbc);
+		gbc.gridwidth = 1;
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		pack();
+	}
+
+	private JPanel createSliderPanel(final GridBagConstraints gbc) {
+		final JPanel sliderPanel = new JPanel(new GridBagLayout());
+		setGrid(gbc, 0, 0, 2);
+		final JComponent redLabel = new JLabel("Red");
+		sliderPanel.add(redLabel, gbc);
+		setGrid(gbc, 2, 0, 2);
+		final JComponent greenLabel = new JLabel("Green");
+		sliderPanel.add(greenLabel, gbc);
+		setGrid(gbc, 4, 0, 2);
+		final JComponent blueLabel = new JLabel("Blue");
+		sliderPanel.add(blueLabel, gbc);
+		setGrid(gbc, 0, 1, 1);
+		final JComponent x0RLabel = new JLabel("Position : ");
+		sliderPanel.add(x0RLabel, gbc);
+		setGrid(gbc, 0, 2, 1);
+		sliderPanel.add(x0RField, gbc);
+		setGrid(gbc, 0, 3, 1);
+		sliderPanel.add(x0RSlider, gbc);
+		setGrid(gbc, 1, 1, 1);
+		final JComponent aRLabel = new JLabel("Amount : ");
+		sliderPanel.add(aRLabel, gbc);
+		setGrid(gbc, 1, 2, 1);
+		sliderPanel.add(aRField, gbc);
+		setGrid(gbc, 1, 3, 1);
+		sliderPanel.add(aRSlider, gbc);
+		setGrid(gbc, 2, 1, 1);
+		final JComponent x0GLabel = new JLabel("Position : ");
+		sliderPanel.add(x0GLabel, gbc);
+		setGrid(gbc, 2, 2, 1);
+		sliderPanel.add(x0GField, gbc);
+		setGrid(gbc, 2, 3, 1);
+		sliderPanel.add(x0GSlider, gbc);
+		setGrid(gbc, 3, 1, 1);
+		final JComponent aGLabel = new JLabel("Amount : ");
+		sliderPanel.add(aGLabel, gbc);
+		setGrid(gbc, 3, 2, 1);
+		sliderPanel.add(aGField, gbc);
+		setGrid(gbc, 3, 3, 1);
+		sliderPanel.add(aGSlider, gbc);
+		setGrid(gbc, 4, 1, 1);
+		final JComponent x0BLabel = new JLabel("Position : ");
+		sliderPanel.add(x0BLabel, gbc);
+		setGrid(gbc, 4, 2, 1);
+		sliderPanel.add(x0BField, gbc);
+		setGrid(gbc, 4, 3, 1);
+		sliderPanel.add(x0BSlider, gbc);
+		setGrid(gbc, 5, 1, 1);
+		final JComponent aBLabel = new JLabel("Amount : ");
+		sliderPanel.add(aBLabel, gbc);
+		setGrid(gbc, 5, 2, 1);
+		sliderPanel.add(aBField, gbc);
+		setGrid(gbc, 5, 3, 1);
+		sliderPanel.add(aBSlider, gbc);
+		return sliderPanel;
+	}
+
+	private JComboBox defineColorSchemeChooser() {
 		final String current = "Current";
 		final String rainbow = "Rainbow";
 		final JComboBox csChooser = new JComboBox();
@@ -203,73 +255,34 @@ public final class ColorSettingsFrame extends JDialog implements ChangeListener 
 		csChooser.addItem("Greyscale");
 		csChooser.setSelectedItem(rainbow);
 		csChooser.setSelectedItem(current);
-		final JScrollPane scrollpane = new JScrollPane(rainbowPanel,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollpane.setPreferredSize(new Dimension(50, 100));
-		final JPanel colorPanel = new JPanel(new GridBagLayout());
-		// final JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
-		final JPanel sliderPanel = new JPanel(new GridBagLayout());
-		gbc.insets = new Insets(5, 5, 5, 5);
-		setGrid(gbc, 0, 0, 2);
-		sliderPanel.add(redLabel, gbc);
-		setGrid(gbc, 2, 0, 2);
-		sliderPanel.add(greenLabel, gbc);
-		setGrid(gbc, 4, 0, 2);
-		sliderPanel.add(blueLabel, gbc);
-		setGrid(gbc, 0, 1, 1);
-		sliderPanel.add(x0RLabel, gbc);
-		setGrid(gbc, 0, 2, 1);
-		sliderPanel.add(x0RField, gbc);
-		setGrid(gbc, 0, 3, 1);
-		sliderPanel.add(x0RSlider, gbc);
-		setGrid(gbc, 1, 1, 1);
-		sliderPanel.add(aRLabel, gbc);
-		setGrid(gbc, 1, 2, 1);
-		sliderPanel.add(aRField, gbc);
-		setGrid(gbc, 1, 3, 1);
-		sliderPanel.add(aRSlider, gbc);
-		setGrid(gbc, 2, 1, 1);
-		sliderPanel.add(x0GLabel, gbc);
-		setGrid(gbc, 2, 2, 1);
-		sliderPanel.add(x0GField, gbc);
-		setGrid(gbc, 2, 3, 1);
-		sliderPanel.add(x0GSlider, gbc);
-		setGrid(gbc, 3, 1, 1);
-		sliderPanel.add(aGLabel, gbc);
-		setGrid(gbc, 3, 2, 1);
-		sliderPanel.add(aGField, gbc);
-		setGrid(gbc, 3, 3, 1);
-		sliderPanel.add(aGSlider, gbc);
-		setGrid(gbc, 4, 1, 1);
-		sliderPanel.add(x0BLabel, gbc);
-		setGrid(gbc, 4, 2, 1);
-		sliderPanel.add(x0BField, gbc);
-		setGrid(gbc, 4, 3, 1);
-		sliderPanel.add(x0BSlider, gbc);
-		setGrid(gbc, 5, 1, 1);
-		sliderPanel.add(aBLabel, gbc);
-		setGrid(gbc, 5, 2, 1);
-		sliderPanel.add(aBField, gbc);
-		setGrid(gbc, 5, 3, 1);
-		sliderPanel.add(aBSlider, gbc);
-		gbc.insets = new Insets(5, 5, 20, 5);
-		gbc.insets = new Insets(5, 5, 5, 5);
-		setGrid(gbc, 0, 0, 1);
-		colorPanel.add(csLabel, gbc);
-		setGrid(gbc, 0, 1, 1);
-		colorPanel.add(csChooser, gbc);
-		setGrid(gbc, 0, 2, 1);
-		colorPanel.add(scrollpane, gbc);
-		setGrid(gbc, 1, 1, 1);
-		contents.add(colorPanel, gbc);
-		setGrid(gbc, 2, 1, 1);
-		contents.add(sliderPanel, gbc);
-		setGrid(gbc, 0, 2, 3);
-		contents.add(buttons.getComponent(), gbc);
-		gbc.gridwidth = 1;
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		pack();
+		return csChooser;
+	}
+
+	private PanelOKApplyCancelButtons createStandardButtonsPanel() {
+		final PanelOKApplyCancelButtons buttons = new PanelOKApplyCancelButtons(
+				new PanelOKApplyCancelButtons.AbstractListener(this) {
+					public void apply() {
+						final double x0red = x0RSlider.getValue() / 100.0;
+						final double x0green = x0GSlider.getValue() / 100.0;
+						final double x0blue = x0BSlider.getValue() / 100.0;
+						final double aRedD = aRSlider.getValue() / 100.0;
+						final double aGreenD = aGSlider.getValue() / 100.0;
+						final double aBlueD = aBSlider.getValue() / 100.0;
+						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.ABLUE
+								.toString(), aBlueD);
+						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.AGREEN
+								.toString(), aGreenD);
+						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.ARED
+								.toString(), aRedD);
+						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.X0B
+								.toString(), x0blue);
+						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.X0G
+								.toString(), x0green);
+						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.X0R
+								.toString(), x0red);
+					}
+				});
+		return buttons;
 	}
 
 	private void setGrid(final GridBagConstraints gbc, final int gridx,
