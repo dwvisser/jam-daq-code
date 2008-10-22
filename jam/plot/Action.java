@@ -47,8 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
 
 /**
  * Class the does the actions on plots. Receives commands from buttons and
@@ -76,8 +74,7 @@ import java.util.prefs.PreferenceChangeListener;
  * @version 0.5
  */
 
-final class Action implements PlotMouseListener, PreferenceChangeListener,
-		Commandable {
+final class Action {
 
 	/** Broadcaster for event and gate change */
 	private static final Broadcaster BROADCASTER = Broadcaster
@@ -131,9 +128,6 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 				: false;
 	}
 
-	/* reference auto scale on expand */
-	private transient boolean autoOnExpand = true;
-
 	private final transient List<Bin> clicks = new ArrayList<Bin>();
 
 	/** Is there a command present */
@@ -166,6 +160,8 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 
 	private transient final CommandFinder commandFinder;
 
+	private transient final AutoCounts autoCounts = new AutoCounts();
+
 	/**
 	 * Master constructor has no broadcaster.
 	 * 
@@ -180,7 +176,8 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 		this.commandFinder = finder;
 		plotAccessor = disp;
 		textOut = console.getLog();
-		final ParseCommand parseCommand = new ParseCommand(this, disp);
+		final ParseCommand parseCommand = new ParseCommand(this.commandable,
+				disp);
 		console.addCommandListener(parseCommand);
 		cursorBin = Bin.create();
 		commandPresent = false;
@@ -192,7 +189,7 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 		final int fracDigits = 2;
 		numFormat.setMinimumFractionDigits(fracDigits);
 		numFormat.setMaximumFractionDigits(fracDigits);
-		PlotPrefs.PREFS.addPreferenceChangeListener(this);
+		PlotPrefs.PREFS.addPreferenceChangeListener(this.autoCounts);
 	}
 
 	private void cloneClickAndAdd(final Bin bin) {
@@ -334,7 +331,7 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 	 *            the first element of which is the number of the hist to
 	 *            display
 	 */
-	void display(final List<Double> hist) {
+	protected void display(final List<Double> hist) {
 		if (!commandPresent) {
 			cursorCommand = false;
 			init();
@@ -375,44 +372,64 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 		}
 	}
 
-	/*
-	 * non-javadoc: Command with no paramters
-	 * 
-	 * @param inCommand
-	 */
-	public void doCommand(final String inCommand, final boolean console) {
-		doCommand(inCommand, null, console);
-	}
-
-	/*
-	 * non-javadoc: does a command with parameters
-	 */
-	public void doCommand(final String inCommand, final List<Double> inParams,
-			final boolean console) {
-		synchronized (this) {
-			/* if inCommand is null, keep currentCommand */
-			if (inCommand != null) {
-				if (inCommand.equals(CURSOR)) {
-					/* use cursor only if current command does not exist */
-					if (currentCommand.length() == 0) {
-						currentCommand = inCommand;
-					}
-				} else {
-					/* Not a cursor command so its a "real" command */
-					if (!inCommand.equals(currentCommand)) {
-						/* cancel previous command */
-						done();
-					}
-					currentCommand = inCommand;
-				}
-			}
-			/* check that a histogram is defined */
-			if (SelectionTree.getCurrentHistogram() != UnNamed
-					.getSingletonInstance()) {
-				doCurrentCommand(inParams, console);
+	final Commandable commandable = new Commandable() {
+		public String getCurrentCommand() {
+			synchronized (this) {
+				return Action.this.currentCommand;
 			}
 		}
-	}
+
+		public void setCursor(final Bin cursorIn) {
+			synchronized (this) {
+				Action.this.cursorBin.setChannel(cursorIn);
+			}
+		}
+
+		public boolean isCursorCommand() {
+			synchronized (this) {
+				return Action.this.cursorCommand;
+			}
+		}
+
+		/*
+		 * non-javadoc: Command with no parameters
+		 * 
+		 * @param inCommand
+		 */
+		public void doCommand(final String inCommand, final boolean console) {
+			this.doCommand(inCommand, null, console);
+		}
+
+		/*
+		 * non-javadoc: does a command with parameters
+		 */
+		public void doCommand(final String inCommand,
+				final List<Double> inParams, final boolean console) {
+			synchronized (this) {
+				/* if inCommand is null, keep currentCommand */
+				if (inCommand != null) {
+					if (inCommand.equals(CURSOR)) {
+						/* use cursor only if current command does not exist */
+						if (Action.this.currentCommand.length() == 0) {
+							Action.this.currentCommand = inCommand;
+						}
+					} else {
+						/* Not a cursor command so its a "real" command */
+						if (!inCommand.equals(currentCommand)) {
+							/* cancel previous command */
+							done();
+						}
+						Action.this.currentCommand = inCommand;
+					}
+				}
+				/* check that a histogram is defined */
+				if (SelectionTree.getCurrentHistogram() != UnNamed
+						.getSingletonInstance()) {
+					Action.this.doCurrentCommand(inParams, console);
+				}
+			}
+		}
+	};
 
 	private void doCurrentCommand(final List<Double> parameters,
 			final boolean console) {
@@ -485,9 +502,7 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 						MessageHandler.END);
 				currentPlot.expand(getClick(0), cursorBin);
 			}
-			if (autoOnExpand) {
-				currentPlot.autoCounts();
-			}
+			this.autoCounts.conditionalAutoCounts(currentPlot);
 			done();
 		}
 	}
@@ -500,9 +515,7 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 		cursorCommand = false;
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
 		currentPlot.setFull();
-		if (autoOnExpand) {
-			currentPlot.autoCounts();
-		}
+		this.autoCounts.conditionalAutoCounts(currentPlot);
 		done();
 	}
 
@@ -529,18 +542,6 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 
 	private Bin getClick(final int bin) {
 		return clicks.get(bin);
-	}
-
-	public String getCurrentCommand() {
-		synchronized (this) {
-			return currentCommand;
-		}
-	}
-
-	public boolean isCursorCommand() {
-		synchronized (this) {
-			return cursorCommand;
-		}
 	}
 
 	private void getNetArea(final double[] netArea, double[] netAreaError,
@@ -990,41 +991,33 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 		}
 	}
 
-	/**
-	 * @see PlotMouseListener#plotMousePressed(Bin, Point)
-	 */
-	public void plotMousePressed(final Bin pChannel, final Point pPixel) {
-		synchronized (this) {
-			/* cursor position and counts for that channel */
-			cursorBin.setChannel(pChannel);
-			/* see if there is a command currently being processed */
-			if (commandPresent) {
-				/* Do the command */
-				doCommand(currentCommand, false);
-			} else if (settingGate) {
-				/* No command being processed check if gate is being set */
-				final PlotContainer currentPlot = plotAccessor
-						.getPlotContainer();
-				BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_POINT,
-						pChannel);
-				currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE, pChannel,
-						pPixel);
-			} else {
-				doCommand(CURSOR, false);
+	transient final PlotMouseListener mouseListener = new PlotMouseListener() {// NOPMD
+		/**
+		 * @see PlotMouseListener#plotMousePressed(Bin, Point)
+		 */
+		public void plotMousePressed(final Bin pChannel, final Point pPixel) {
+			synchronized (this) {
+				/* cursor position and counts for that channel */
+				Action.this.cursorBin.setChannel(pChannel);
+				/* see if there is a command currently being processed */
+				if (Action.this.commandPresent) {
+					/* Do the command */
+					Action.this.commandable.doCommand(
+							Action.this.currentCommand, false);
+				} else if (settingGate) {
+					/* No command being processed check if gate is being set */
+					final PlotContainer currentPlot = Action.this.plotAccessor
+							.getPlotContainer();
+					Broadcaster.getSingletonInstance().broadcast(
+							BroadcastEvent.Command.GATE_SET_POINT, pChannel);
+					currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE,
+							pChannel, pPixel);
+				} else {
+					Action.this.commandable.doCommand(CURSOR, false);
+				}
 			}
 		}
-	}
-
-	/**
-	 * @see PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
-	 */
-	public void preferenceChange(final PreferenceChangeEvent pce) {
-		final String key = pce.getKey();
-		final String newValue = pce.getNewValue();
-		if (key.equals(PlotPrefs.AUTO_ON_EXPAND)) {
-			setAutoOnExpand(Boolean.valueOf(newValue).booleanValue());
-		}
-	}
+	};
 
 	/*
 	 * non-javadoc: Set the range for the counts scale.
@@ -1099,24 +1092,6 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 		}
 	}
 
-	/**
-	 * Sets whether expand/zoom also causes an auto-scale.
-	 * 
-	 * @param whether
-	 *            <code>true</code> if auto-scale on expand or zoom is desired
-	 */
-	private void setAutoOnExpand(final boolean whether) {
-		synchronized (this) {
-			autoOnExpand = whether;
-		}
-	}
-
-	public void setCursor(final Bin cursorIn) {
-		synchronized (this) {
-			cursorBin.setChannel(cursorIn);
-		}
-	}
-
 	protected void setDefiningGate(final boolean whether) {
 		synchronized (this) {
 			settingGate = whether;
@@ -1169,9 +1144,7 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 		cursorCommand = false;
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
 		currentPlot.zoom(PlotContainer.Zoom.IN);
-		if (autoOnExpand) {
-			currentPlot.autoCounts();
-		}
+		this.autoCounts.conditionalAutoCounts(currentPlot);
 		done();
 	}
 
@@ -1183,9 +1156,7 @@ final class Action implements PlotMouseListener, PreferenceChangeListener,
 		cursorCommand = false;
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
 		currentPlot.zoom(PlotContainer.Zoom.OUT);
-		if (autoOnExpand) {
-			currentPlot.autoCounts();
-		}
+		this.autoCounts.conditionalAutoCounts(currentPlot);
 		done();
 	}
 

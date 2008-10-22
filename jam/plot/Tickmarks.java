@@ -37,7 +37,7 @@ final class Tickmarks {
 	 * an lower limit, upper limit, and scale (Log or Linear) and histogram type
 	 * either one or 2 d
 	 */
-	int[] getTicks(final int lowerLimit, final int upperLimit,
+	protected int[] getTicks(final int lowerLimit, final int upperLimit,
 			final Scale scale, final Type type) {
 		int[] ticks = new int[0];
 		if (scale == Scale.LINEAR) {
@@ -167,48 +167,48 @@ final class Tickmarks {
 	 * </table>
 	 */
 	private int[] ticksLog(final int lowerLimit, final int upperLimit) {
-		int[] ticks;
 		/*
 		 * where to start putting ticks takes care of zero minimum check that
 		 * min points are not zero (cannot take of zero) if so set to 1 find
 		 * power of min and max values
 		 */
 		final int decadeMin = (lowerLimit == 0) ? 0 : getDecade(lowerLimit);
-		final int decadeMax = (upperLimit == 0) ? 0 : getDecade(upperLimit);
 		// take the power of decadeMin and decadeMax;
 		getCountInDecadeMin(decadeMin);
-		int countInDecadeMax = 1;
-		for (int i = 0; i < decadeMax; i++) {
-			countInDecadeMax *= 10;
-		}
 		// where to start possibly putting ticks
 		final int startTick = (lowerLimit == 0) ? 1 : lowerLimit;
-		/*
-		 * if (lowerLimit != 0) { startTick = lowerLimit; } else { startTick =
-		 * 1; }
-		 */
 		// count number of ticks
 		// go through the Y scale increase scale by 10 when we pass a new decade
 		int numberTicks = 0;
-		int decade = countInDecadeMin;
-		for (int i = startTick; i <= upperLimit; i += decade) {
+		int decadeIncrement = countInDecadeMin;
+		for (int i = startTick; i <= upperLimit; i += decadeIncrement) {
 			numberTicks++;
-			if (i % (decade * 10) == 0) {
-				decade *= 10;
-			} // for we at exactly a power of 10
+			decadeIncrement = nextDecadeIfValueIsMultipleOfCurrent(
+					decadeIncrement, i);
 		}
 		// load tick values
-		ticks = new int[numberTicks];
-		int countTick = 0;
-		decade = countInDecadeMin;
-		for (int i = startTick; i <= upperLimit; i += decade) {
-			ticks[countTick] = i;
-			countTick++;
-			if (i % (decade * 10) == 0) {
-				decade *= 10;
-			} // for we at exactly a power of 10 increase
+		// Yes, a using a List<Integer> could avoid 2 loops, but we'll
+		// keep it this way because it's working and only allocates an
+		// array.
+		int[] ticks = new int[numberTicks];
+		int tickIndex = 0;
+		decadeIncrement = countInDecadeMin;
+		for (int i = startTick; i <= upperLimit; i += decadeIncrement) {
+			ticks[tickIndex] = i;
+			tickIndex++;
+			decadeIncrement = nextDecadeIfValueIsMultipleOfCurrent(
+					decadeIncrement, i);
 		}
 		return ticks;
+	}
+
+	private int nextDecadeIfValueIsMultipleOfCurrent(final int decade,
+			final int value) {
+		int result = decade;
+		if (value % (decade * 10) == 0) {
+			result *= 10;
+		} // for we at exactly a power of 10
+		return result;
 	}
 
 	/**

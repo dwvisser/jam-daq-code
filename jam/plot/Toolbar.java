@@ -268,7 +268,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 	 */
 	public void actionPerformed(final ActionEvent actionEvent) {
 		final String command = actionEvent.getActionCommand();
-		action.doCommand(command, false);
+		action.commandable.doCommand(command, false);
 	}
 
 	private void fitToolbar() {
@@ -334,7 +334,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 		final List<Double> parameters = Collections.singletonList(Double
 				.parseDouble(ratio));
 		if (!isSyncEvent) {
-			action.doCommand(PlotCommands.REBIN, parameters, false);
+			action.commandable.doCommand(PlotCommands.REBIN, parameters, false);
 		}
 	}
 

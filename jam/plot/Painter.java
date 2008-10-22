@@ -298,7 +298,7 @@ final class Painter {
 	 * 
 	 * @since Version 0.5
 	 */
-	void drawDate(final String sdate) {
+	protected void drawDate(final String sdate) {
 		final int xCoord = view.getRight() - metrics.stringWidth(sdate); // position
 		// of
 		// string
@@ -311,7 +311,7 @@ final class Painter {
 	 * 
 	 * @since Version 0.5
 	 */
-	void drawRun(final int runNumber) {
+	protected void drawRun(final int runNumber) {
 		final String runLabel = "Run " + runNumber;
 		final int yCoordinate = border.top - graphLayout.titleOffsets.date;
 		graphics2d.drawString(runLabel, border.left, yCoordinate);
@@ -324,7 +324,7 @@ final class Painter {
 	 * 
 	 * @since Version 0.5
 	 */
-	void drawBorder() {
+	protected void drawBorder() {
 		graphics2d.drawRect(border.left, border.top, view.getWidth() - 1, view
 				.getHeight() - 1);
 	}
@@ -335,7 +335,7 @@ final class Painter {
 	 * @param side
 	 * @since Version 0.5
 	 */
-	void drawTicks(final int side) {
+	protected void drawTicks(final int side) {
 		Scale scale = Scale.LINEAR;
 		if (side == BOTTOM) {// always linear
 			synchronized (limitsLock) {
@@ -436,7 +436,7 @@ final class Painter {
 	 * @param side
 	 * @since Version 0.5
 	 */
-	void drawLabels(final int side) {
+	protected void drawLabels(final int side) {
 		synchronized (limitsLock) {
 			if (side == BOTTOM) {
 				labelsBottom(plotLimits.getMinimumX(), plotLimits.getMaximumX());
@@ -503,7 +503,7 @@ final class Painter {
 	 * 
 	 * @since Version 0.5
 	 */
-	void drawAxisLabel(final String label, final int side) {
+	protected void drawAxisLabel(final String label, final int side) {
 		if (side == BOTTOM) {
 			axisLabelBottom(label);
 		}
@@ -552,7 +552,7 @@ final class Painter {
 	 * 
 	 * @since Version 0.5
 	 */
-	void drawHist(final double[] counts, final double binWidth) {
+	protected void drawHist(final double[] counts, final double binWidth) {
 		Scale scale = null;
 		synchronized (limitsLock) {
 			scale = plotLimits.getScale();
@@ -567,7 +567,7 @@ final class Painter {
 	 * 
 	 * @since Version 0.5
 	 */
-	void drawLine(final double[] channel, final double[] countsdl) {
+	protected void drawLine(final double[] channel, final double[] countsdl) {
 		synchronized (limitsLock) {
 			if (plotLimits.getScale() == Scale.LINEAR) {
 				drawLineLinear(channel, countsdl);
@@ -764,7 +764,7 @@ final class Painter {
 	 *            colors to use
 	 * @since Version 0.5
 	 */
-	void drawScale2d(final DiscreteColorScale colors) {
+	protected void drawScale2d(final DiscreteColorScale colors) {
 		final int minCount = getMinimumCounts();
 		colors.setRange(minCount, getMaximumCounts());
 		final int[] colorThresholds = colors.getColorThresholds();
@@ -807,7 +807,7 @@ final class Painter {
 		}
 	}
 
-	void drawScale2d() {
+	protected void drawScale2d() {
 		Scale scale = null;
 		synchronized (limitsLock) {
 			scale = plotLimits.getScale();
@@ -852,7 +852,7 @@ final class Painter {
 	 * 
 	 * @since Version 0.5
 	 */
-	void drawHist2d(final double[][] counts, final int minChanX,
+	protected void drawHist2d(final double[][] counts, final int minChanX,
 			final int minChanY, final int maxChanX, final int maxChanY,
 			final DiscreteColorScale colors) {
 		final int minCount = getMinimumCounts();
@@ -889,7 +889,7 @@ final class Painter {
 	 * 
 	 * @since Version 0.5
 	 */
-	void drawHist2d(final double[][] counts, final int minChanX,
+	protected void drawHist2d(final double[][] counts, final int minChanX,
 			final int minChanY, final int maxChanX, final int maxChanY) {
 		ColorScale colors = null;
 		synchronized (limitsLock) {
@@ -923,7 +923,7 @@ final class Painter {
 	 * 
 	 * @since Version 0.5
 	 */
-	void drawGate1d(final int lowerLimit, final int upperLimit,
+	protected void drawGate1d(final int lowerLimit, final int upperLimit,
 			final boolean noFillMode) {
 		clipPlot();
 		final int xValue = toViewHorzLin(lowerLimit);
@@ -944,7 +944,7 @@ final class Painter {
 	 * @param gate
 	 *            the array to be displayed
 	 */
-	void drawGate2d(final boolean[][] gate) {
+	protected void drawGate2d(final boolean[][] gate) {
 		if (gate != null) {
 			int minX = 0;
 			int maxX = 0;
@@ -976,7 +976,7 @@ final class Painter {
 	 *            gate points to be drawn (in graphics coordinates)
 	 * @since Version 0.5
 	 */
-	void settingGate1d(final Polygon gatePoints) {
+	protected void settingGate1d(final Polygon gatePoints) {
 		clipPlot();
 		if (gatePoints.npoints > 0) {
 			final int xValue = gatePoints.xpoints[gatePoints.npoints - 1];
@@ -1001,7 +1001,8 @@ final class Painter {
 	 * @return a rectangle in graphics coordinates that will highlight the
 	 *         channels indicated
 	 */
-	Rectangle getRectangleOutline1d(final int xValue1, final int xValue2) {
+	protected Rectangle getRectangleOutline1d(final int xValue1,
+			final int xValue2) {
 		final int height = view.getBottom() - border.top;// Full plot
 		// vertically
 		final int tempX;
@@ -1039,7 +1040,7 @@ final class Painter {
 	 * @param xValue2
 	 *            a point in plot coordinates
 	 */
-	void markAreaOutline1d(final int xValue1, final int xValue2) {
+	protected void markAreaOutline1d(final int xValue1, final int xValue2) {
 		clipPlot();
 		graphics2d.draw(getRectangleOutline1d(xValue1, xValue2));
 	}
@@ -1052,7 +1053,7 @@ final class Painter {
 	 *            in plot coordinates
 	 * @return in graphics coordinates
 	 */
-	Rectangle getRectangleOutline2d(final Rectangle channels) {
+	protected Rectangle getRectangleOutline2d(final Rectangle channels) {
 		final int highX = (int) channels.getMaxX();
 		final int highY = (int) channels.getMaxY();
 		return getRectangleOutline2d(Bin.create(channels.getLocation()), Bin
@@ -1069,7 +1070,7 @@ final class Painter {
 	 *            in plot coordinates
 	 * @return in graphics coordinates
 	 */
-	Rectangle getRectangleOutline2d(final Bin bin1, final Bin bin2) {
+	protected Rectangle getRectangleOutline2d(final Bin bin1, final Bin bin2) {
 		final int xValue1 = bin1.getX();
 		final int yValue1 = bin1.getY();
 		final int xValue2 = bin2.getX();
@@ -1130,7 +1131,7 @@ final class Painter {
 	 * @param bin2
 	 *            in plot coordinates
 	 */
-	void markArea2dOutline(final Bin bin1, final Bin bin2) {
+	protected void markArea2dOutline(final Bin bin1, final Bin bin2) {
 		clipPlot();
 		graphics2d.draw(getRectangleOutline2d(bin1, bin2));
 	}
@@ -1142,7 +1143,7 @@ final class Painter {
 	 *            the points of the gate to be drawn
 	 * @since Version 0.5
 	 */
-	void settingGate2d(final Polygon gatePoints) {
+	protected void settingGate2d(final Polygon gatePoints) {
 		clipPlot();
 		final Polygon shape = toView(gatePoints);
 		graphics2d.drawPolyline(shape.xpoints, shape.ypoints, shape.npoints);
@@ -1162,7 +1163,7 @@ final class Painter {
 	/*
 	 * non-javadoc: Mark a channel for 1d.
 	 */
-	void markChannel1d(final int channel, final double count) {
+	protected void markChannel1d(final int channel, final double count) {
 		int yValue2;
 
 		final int xValue1 = toViewHorzLin(channel + 0.5);
@@ -1188,7 +1189,7 @@ final class Painter {
 		}
 	}
 
-	void drawPeakLabels(final double[][] peaks) {
+	protected void drawPeakLabels(final double[][] peaks) {
 		int yValue1; // bottom of line
 		final Color initColor = graphics2d.getColor();
 		setGraphicsFont(font.deriveFont(GraphicsLayout.SCREEN_FONT_SIZE));
@@ -1217,7 +1218,7 @@ final class Painter {
 	/*
 	 * non-javadoc: Mark a channel for 2d
 	 */
-	void markChannel2d(final Bin bin) {
+	protected void markChannel2d(final Bin bin) {
 		final Rectangle rectangle = getRectangleOutline2d(bin, bin);
 		final String label = Integer.toString(bin.getX()) + "," + bin.getY();
 		graphics2d.draw(rectangle);
@@ -1230,7 +1231,8 @@ final class Painter {
 	 * 
 	 * @lowChan lower channel @highChan upper channel
 	 */
-	void markArea1d(final int lowChan, final int highChan, final double[] counts) {
+	protected void markArea1d(final int lowChan, final int highChan,
+			final double[] counts) {
 		int minChan = 0;
 		int maxChan = 0;
 		boolean log = false;
@@ -1251,15 +1253,9 @@ final class Painter {
 		for (int i = minChan; i <= maxChan; i++) {
 			yValue = log ? toViewVertLog(counts[i])
 					: toViewVertLinCk(counts[i]);
-			if (yValue != lasty) {
-				fill.addPoint(xValue, yValue);
-				lasty = yValue;
-			}
+			lasty = addToFillY(fill, lasty, xValue, yValue);
 			xValue = Math.min(view.getRight(), toViewHorzLin(i + 1));
-			if (!(xValue == lastx && yValue == lasty)) {
-				fill.addPoint(xValue, yValue);
-				lastx = xValue;
-			}
+			lastx = addToFillX(fill, lastx, lasty, xValue, yValue);
 		}
 		if (yValue != yInitial) {// go back to bottom on last
 			yValue = yInitial;
@@ -1268,13 +1264,33 @@ final class Painter {
 		graphics2d.fill(fill);
 	}
 
+	private int addToFillX(final Polygon fill, final int lastx,
+			final int lasty, final int xValue, final int yValue) {
+		int result = lastx;
+		if (!(xValue == lastx && yValue == lasty)) {
+			fill.addPoint(xValue, yValue);
+			result = xValue;
+		}
+		return result;
+	}
+
+	private int addToFillY(final Polygon fill, final int lasty,
+			final int xValue, final int yValue) {
+		int result = lasty;
+		if (yValue != lasty) {
+			fill.addPoint(xValue, yValue);
+			result = yValue;
+		}
+		return result;
+	}
+
 	/**
 	 * Mark an area in a 2d plot.
 	 * 
 	 * @param rectangle
 	 *            rectangle in graphics coordinates
 	 */
-	void markArea2d(final Rectangle rectangle) {
+	protected void markArea2d(final Rectangle rectangle) {
 		clipPlot();
 		graphics2d.fill(rectangle);
 	}
@@ -1286,8 +1302,8 @@ final class Painter {
 	 * 
 	 * @since Version 0.5
 	 */
-	void drawDataLine(final int xValue1, final int yValue1, final int xValue2,
-			final int yValue2) {
+	protected void drawDataLine(final int xValue1, final int yValue1,
+			final int xValue2, final int yValue2) {
 		graphics2d.drawLine(toViewHorzLin(xValue1), toViewVertLin(yValue1),
 				toViewHorzLin(xValue2), toViewVertLin(yValue2));
 	}
@@ -1297,7 +1313,7 @@ final class Painter {
 	 * routines do not have to be as fast as the to view ones, as it is not very
 	 * often we want to go this way. The ones that return int are faster.
 	 */
-	Bin toData(final Point viewPoint) {
+	protected Bin toData(final Point viewPoint) {
 		synchronized (monitor) {
 			return Bin.create(toDataHorz(viewPoint.x), toDataVert(viewPoint.y));
 		}
@@ -1307,7 +1323,7 @@ final class Painter {
 	 * non-javadoc: Give the horizontal plot coordinate for the given graphics
 	 * horizontal coodinate.
 	 */
-	int toDataHorz(final int xView) {
+	protected int toDataHorz(final int xView) {
 		synchronized (monitor) {
 			final int data;
 			/* if we are beyond limits set point to limit */
@@ -1329,7 +1345,7 @@ final class Painter {
 	 * non-javadoc: Give the vertical plot coordinate for the given graphics
 	 * vertical coordinate.
 	 */
-	int toDataVert(final int yCoordinate) {
+	protected int toDataVert(final int yCoordinate) {
 		synchronized (monitor) {
 			final int data;
 			/* if we are beyond limits set point to limit */
@@ -1348,7 +1364,7 @@ final class Painter {
 	/*
 	 * non-javadoc: Convert data point to view point
 	 */
-	Point toViewLin(final Bin dataPoint) {
+	protected Point toViewLin(final Bin dataPoint) {
 		final Point viewPoint = new Point(toViewHorzLin(dataPoint.getX()),
 				toViewVertLin(dataPoint.getY()));
 		return viewPoint;
@@ -1367,7 +1383,7 @@ final class Painter {
 	/**
 	 * Clip so only active region of plot is drawn on.
 	 */
-	void clipPlot() {
+	protected void clipPlot() {
 		graphics2d.clipRect(border.left, border.top, view.getWidth() + 1, view
 				.getHeight() + 1);
 	}

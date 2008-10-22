@@ -297,46 +297,75 @@ public final class Projections extends AbstractManipulation implements
 	 * non-javadoc: Does the work of projecting a histogram
 	 */
 	private void project() throws DataException {
-		final String typeProj;
-		double[] countsDouble = null;
 		final double[][] counts2d;
-		final Object selected = cchan.getSelectedItem();
-		final boolean gateSelected = selected instanceof Gate;
 		final Histogram hfrom = Histogram.getHistogram(hfromname);
 		final NumberUtilities numbers = NumberUtilities.getInstance();
 		counts2d = (hfrom.getType() == Histogram.Type.TWO_D_DOUBLE) ? ((HistDouble2D) hfrom)
 				.getCounts()
 				: numbers.intToDouble2DArray(((HistInt2D) hfrom).getCounts());
 		final String name = (String) cto.getSelectedItem();
-		final boolean between = selected.equals(BETWEEN);
-		final int[] limits = between ? getLimits() : new int[2];
-		if (selected.equals(FULL)) {
-			setLimitsFull(counts2d, limits);
-		}
+		final Object selected = cchan.getSelectedItem();
+		final boolean between = BETWEEN.equals(selected);
+		final boolean full = FULL.equals(selected);
+		final int[] limits = setLimits(counts2d, between, full);
 		getDestinationHistogram(hfrom, name);
+		final boolean gateSelected = selected instanceof Gate;
+		final Gate gate = gateSelected ? (Gate) selected : null; // NOPMD
+		internalProject(counts2d, hfrom, numbers, limits, gateSelected, gate);
+	}
+
+	private void internalProject(final double[][] counts2d,
+			final Histogram hfrom, final NumberUtilities numbers,
+			final int[] limits, final boolean gateSelected, final Gate gate)
+			throws DataException {
+		double[] countsDouble;
+		final StringBuffer typeProj = new StringBuffer();
 		if (cdown.isSelected()) {
-			if (gateSelected) {
-				final Gate gate = (Gate) selected;
-				typeProj = "using gate " + gate.getName();
-				countsDouble = projectX(counts2d, hto.getSizeX(), gate);
-			} else {
-				typeProj = "counts between Y channels " + limits[0] + " and "
-						+ limits[1];
-				countsDouble = projectX(counts2d, hto.getSizeX(), limits[0],
-						limits[1]);
-			}
+			countsDouble = calculateXprojection(counts2d, limits, gateSelected,
+					gate, typeProj);
 		} else { // cacross is true
-			if (gateSelected) {
-				final Gate gate = (Gate) selected;
-				typeProj = "using gate " + gate.getName();
-				countsDouble = projectY(counts2d, hto.getSizeX(), gate);
-			} else {
-				typeProj = "counts between X channels " + limits[0] + " and "
-						+ limits[1];
-				countsDouble = projectY(counts2d, hto.getSizeX(), limits[0],
-						limits[1]);
-			}
+			countsDouble = calculateYprojection(counts2d, limits, gateSelected,
+					gate, typeProj);
 		}
+		setProjectionCounts(countsDouble, numbers);
+		LOGGER.info("Project " + hfrom.getFullName().trim() + " to "
+				+ hto.getFullName() + " " + typeProj);
+	}
+
+	private double[] calculateYprojection(final double[][] counts2d,
+			final int[] limits, final boolean gateSelected, final Gate gate,
+			final StringBuffer typeProj) {
+		double[] countsDouble;
+		if (gateSelected) {
+			typeProj.append("using gate ").append(gate.getName());
+			countsDouble = projectY(counts2d, hto.getSizeX(), gate);
+		} else {
+			typeProj.append("counts between X channels ").append(limits[0])
+					.append(" and ").append(limits[1]);
+			countsDouble = projectY(counts2d, hto.getSizeX(), limits[0],
+					limits[1]);
+		}
+		return countsDouble;
+	}
+
+	private double[] calculateXprojection(final double[][] counts2d,
+			final int[] limits, final boolean gateSelected, final Gate gate,
+			final StringBuffer typeProj) {
+		double[] countsDouble;
+		if (gateSelected) {
+			typeProj.append("using gate ").append(gate.getName());
+			countsDouble = projectX(counts2d, hto.getSizeX(), gate);
+		} else {
+			typeProj.append("counts between Y channels ").append(limits[0])
+					.append(" and ").append(limits[1]);
+			countsDouble = projectX(counts2d, hto.getSizeX(), limits[0],
+					limits[1]);
+		}
+		return countsDouble;
+	}
+
+	private void setProjectionCounts(final double[] countsDouble,
+			final NumberUtilities numbers) throws DataException {
 		if (hto.getType() == Histogram.Type.ONE_D_DOUBLE) {
 			hto.setCounts(countsDouble);
 		} else if (hto.getType() == Histogram.Type.ONE_DIM_INT) {
@@ -344,8 +373,15 @@ public final class Projections extends AbstractManipulation implements
 		} else {
 			throw new DataException("Need to project to 1 dimension histogram");
 		}
-		LOGGER.info("Project " + hfrom.getFullName().trim() + " to "
-				+ hto.getFullName() + " " + typeProj);
+	}
+
+	private int[] setLimits(final double[][] counts2d, final boolean between,
+			final boolean full) throws DataException {
+		final int[] limits = between ? getLimits() : new int[2];
+		if (full) {
+			setLimitsFull(counts2d, limits);
+		}
+		return limits;
 	}
 
 	/**
@@ -380,7 +416,7 @@ public final class Projections extends AbstractManipulation implements
 		}
 	}
 
-	double[] projectX(final double[][] inArray, final int outLength,
+	protected double[] projectX(final double[][] inArray, final int outLength,
 			final int _ll, final int _ul) {
 		final double[] out = new double[outLength];
 		final int lower = Math.max(0, _ll);
@@ -394,7 +430,7 @@ public final class Projections extends AbstractManipulation implements
 		return out;
 	}
 
-	double[] projectY(final double[][] inArray, final int outLength,
+	protected double[] projectY(final double[][] inArray, final int outLength,
 			final int _ll, final int _ul) {
 		double[] out = new double[outLength];
 		final int lower = Math.max(0, _ll);

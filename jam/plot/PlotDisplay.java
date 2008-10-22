@@ -54,7 +54,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	/** Grid panel that contains plots */
 	private transient JPanel gridPanel;
 
-	/** show axis lables */
+	/** show axis labels */
 	private transient boolean isAxisLabels;
 
 	/** Overlay histograms */
@@ -187,7 +187,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	public void displayHistogram(final Histogram hist) {
 		if (hist != null) {
 			currentPlot.removeAllPlotMouseListeners();
-			currentPlot.addPlotMouseListener(action);
+			currentPlot.addPlotMouseListener(action.mouseListener);
 			currentPlot.setMarkArea(false);
 			currentPlot.setMarkingChannels(false);
 			toolbar.setHistogramProperties(hist.getDimensionality(),
@@ -272,9 +272,9 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		final String newValue = pce.getNewValue();
 
 		if (key.equals(PlotPrefs.ENABLE_SCROLLING)) {
-			isScrolling = Boolean.valueOf(newValue).booleanValue();
+			isScrolling = Boolean.parseBoolean(newValue);
 		} else if (key.equals(PlotPrefs.DISPLAY_LABELS)) {
-			isAxisLabels = Boolean.valueOf(newValue).booleanValue();
+			isAxisLabels = Boolean.parseBoolean(newValue);
 		}
 		updateLayout();
 		update();
@@ -341,7 +341,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 					currentPlot.removeAllPlotMouseListeners();
 				}
 				if (container.hasHistogram()) {
-					container.addPlotMouseListener(action);
+					container.addPlotMouseListener(action.mouseListener);
 				}
 				/* Change selected plot */
 				for (PlotContainer plotContainer : plotContainers) {

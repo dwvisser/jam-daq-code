@@ -47,15 +47,15 @@ final class Plot1d extends AbstractPlot {
 		autoPeakFind = which;
 	}
 
-	static void setPeakFindDisplayCal(final boolean which) {
+	protected static void setPeakFindDisplayCal(final boolean which) {
 		pfcal = which;
 	}
 
-	static void setSensitivity(final double val) {
+	protected static void setSensitivity(final double val) {
 		sensitivity = val;
 	}
 
-	static void setWidth(final double val) {
+	protected static void setWidth(final double val) {
 		width = val;
 	}
 
@@ -143,9 +143,9 @@ final class Plot1d extends AbstractPlot {
 	 * Displays a fit, starting
 	 */
 	@Override
-	protected
-	void displayFit(final double[][] signals, final double[] background,
-			final double[] residuals, final int lowerLimit) {
+	protected void displayFit(final double[][] signals,
+			final double[] background, final double[] residuals,
+			final int lowerLimit) {
 		this.fitBackground = new double[0];
 		this.fitChannels = new double[0];
 		this.fitResiduals = new double[0];
@@ -179,8 +179,7 @@ final class Plot1d extends AbstractPlot {
 	}
 
 	@Override
-	protected
-	void displayHistogram(final Histogram hist) {
+	protected void displayHistogram(final Histogram hist) {
 		synchronized (LOCK) {
 			if (hist == null) {
 				counts = new double[100];
@@ -190,8 +189,7 @@ final class Plot1d extends AbstractPlot {
 	}
 
 	@Override
-	protected
-	void displaySetGate(final GateSetMode mode, final Bin pChannel,
+	protected void displaySetGate(final GateSetMode mode, final Bin pChannel,
 			final Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
 			pointsGate.reset();
@@ -262,7 +260,7 @@ final class Plot1d extends AbstractPlot {
 		return minCounts;
 	}
 
-	double getBinWidth() {
+	protected double getBinWidth() {
 		synchronized (LOCK) {
 			return binWidth;
 		}
@@ -272,8 +270,7 @@ final class Plot1d extends AbstractPlot {
 	 * Caller should have checked 'isCalibrated' first.
 	 */
 	@Override
-	protected
-	int getChannel(final double energy) {
+	protected int getChannel(final double energy) {
 		final AbstractHist1D plotHist = (AbstractHist1D) getHistogram();
 		return (int) Math.round(plotHist.getCalibration().getChannel(energy));
 	}
@@ -285,16 +282,16 @@ final class Plot1d extends AbstractPlot {
 	 * 
 	 * @param clipShape
 	 *            the shape we want to cover with a rectangular clip region
-	 * @param shapeInChannelCoords
+	 * @param chanCoords
 	 *            if <code>true</code>, the given shape is assumed given in
 	 *            channel coordinates, otherwise it is assumed given in graphics
 	 *            coordinates
 	 * @return a bounding rectangle in the graphics coordinates
 	 */
 	private Rectangle getClipBounds(final Shape clipShape,
-			final boolean shapeInChannelCoords) {
+			final boolean chanCoords) {
 		final Rectangle rval = clipShape.getBounds();
-		if (shapeInChannelCoords) {// shape is in channel coordinates
+		if (chanCoords) {// shape is in channel coordinates
 			/* add one more plot channel around the edges */
 			/* now do conversion */
 			rval.setBounds(painter.getRectangleOutline1d(rval.x - 2, (int) rval
@@ -340,8 +337,7 @@ final class Plot1d extends AbstractPlot {
 	 * non-javadoc: Caller should have checked 'isCalibrated' first.
 	 */
 	@Override
-	protected
-	double getEnergy(final double channel) {
+	protected double getEnergy(final double channel) {
 		final AbstractHist1D plotHist = (AbstractHist1D) getHistogram();
 		return plotHist.getCalibration().getValue(channel);
 	}
@@ -449,8 +445,7 @@ final class Plot1d extends AbstractPlot {
 	 * Overlay histograms.
 	 */
 	@Override
-	protected
-	void overlayHistograms(final List<AbstractHist1D> overlayHists) {
+	protected void overlayHistograms(final List<AbstractHist1D> overlayHists) {
 		panel.setDisplayingOverlay(true);
 		/* retain any items in list in the map Performance improvement */
 		overlayCounts.clear();
@@ -523,28 +518,27 @@ final class Plot1d extends AbstractPlot {
 	@Override
 	public void paintHistogram(final Graphics graphics) {
 		final Histogram plotHist = getHistogram();
-		if (plotHist.getDimensionality() != 1) {
-			return;// not sure how this happens, but need to check
+		if (plotHist.getDimensionality() == 1) {
+			if (getBinWidth() > plotHist.getSizeX()) {
+				setBinWidth(1.0);
+				warning("Bin width > hist size, so setting bin width back to 1.");
+			}
+			graphics.setColor(colorMap.getHistogram());
+			painter.drawHist(counts, getBinWidth());
+			if (autoPeakFind) {
+				painter.drawPeakLabels(((AbstractHist1D) plotHist).findPeaks(
+						sensitivity, width, pfcal));
+			}
+			/* draw ticks after histogram so they are on top */
+			graphics.setColor(colorMap.getForeground());
+			paintTextAndTicks(plotHist);
+			final String axisLabelX = plotHist.getLabelX();
+			painter.drawAxisLabel(axisLabelX == null ? X_LABEL_1D : axisLabelX,
+					javax.swing.SwingConstants.BOTTOM);
+			final String axisLabelY = plotHist.getLabelY();
+			painter.drawAxisLabel(axisLabelY == null ? Y_LABEL_1D : axisLabelY,
+					javax.swing.SwingConstants.LEFT);
 		}
-		if (getBinWidth() > plotHist.getSizeX()) {
-			setBinWidth(1.0);
-			warning("Bin width > hist size, so setting bin width back to 1.");
-		}
-		graphics.setColor(colorMap.getHistogram());
-		painter.drawHist(counts, getBinWidth());
-		if (autoPeakFind) {
-			painter.drawPeakLabels(((AbstractHist1D) plotHist).findPeaks(
-					sensitivity, width, pfcal));
-		}
-		/* draw ticks after histogram so they are on top */
-		graphics.setColor(colorMap.getForeground());
-		paintTextAndTicks(plotHist);
-		final String axisLabelX = plotHist.getLabelX();
-		painter.drawAxisLabel(axisLabelX == null ? X_LABEL_1D : axisLabelX,
-				javax.swing.SwingConstants.BOTTOM);
-		final String axisLabelY = plotHist.getLabelY();
-		painter.drawAxisLabel(axisLabelY == null ? Y_LABEL_1D : axisLabelY,
-				javax.swing.SwingConstants.LEFT);
 	}
 
 	@Override
@@ -626,7 +620,7 @@ final class Plot1d extends AbstractPlot {
 	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		if (key.equals(PlotPrefs.AUTO_PEAK_FIND)) {
-			setPeakFind(Boolean.valueOf(pce.getNewValue()).booleanValue());
+			setPeakFind(Boolean.parseBoolean(pce.getNewValue()));
 		} else {
 			super.preferenceChange(pce);
 		}
@@ -638,15 +632,13 @@ final class Plot1d extends AbstractPlot {
 	}
 
 	@Override
-	protected
-	void removeOverlays() {
+	protected void removeOverlays() {
 		overlayCounts.clear();
 		overlayNumber.clear();
 	}
 
 	@Override
-	protected
-	void reset() {
+	protected void reset() {
 		super.reset();
 		setBinWidth(1.0);
 	}
@@ -672,7 +664,7 @@ final class Plot1d extends AbstractPlot {
 		}
 	}
 
-	void setBinWidth(final double width) {
+	protected void setBinWidth(final double width) {
 		synchronized (LOCK) {
 			binWidth = width;
 		}
