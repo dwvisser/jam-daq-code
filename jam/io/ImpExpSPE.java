@@ -21,7 +21,7 @@ import javax.swing.filechooser.FileFilter;
  * @version 0.5
  * @author Ken Swartz
  */
-public final class ImpExpSPE extends AbstractImpExp {//NOPMD
+public final class ImpExpSPE extends AbstractImpExp {// NOPMD
 
 	private static final int NAME_LENGTH = 8;
 
@@ -32,14 +32,17 @@ public final class ImpExpSPE extends AbstractImpExp {//NOPMD
 	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
 			"spe", "Radware gf3");
 
+	@Override
 	protected FileFilter getFileFilter() {
 		return FILTER;
 	}
 
+	@Override
 	protected String getDefaultExtension() {
 		return FILTER.getExtension(0);
 	}
 
+	@Override
 	public String getFormatDescription() {
 		return FILTER.getDescription();
 	}
@@ -51,6 +54,7 @@ public final class ImpExpSPE extends AbstractImpExp {//NOPMD
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the MessageHandler
 	 */
+	@Override
 	public boolean openFile(final File file) throws ImpExpException {
 		return openFile(file, "Import RadWare .spe file ");
 	}
@@ -62,6 +66,7 @@ public final class ImpExpSPE extends AbstractImpExp {//NOPMD
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the MessageHandler
 	 */
+	@Override
 	public void saveFile(final Histogram hist) throws ImpExpException {
 		if (hist.getDimensionality() == 2) {
 			if (!silent) {
@@ -80,6 +85,7 @@ public final class ImpExpSPE extends AbstractImpExp {//NOPMD
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the MessageHandler
 	 */
+	@Override
 	public void readData(final InputStream buffin) throws ImpExpException {
 		try {
 			final DataInputStream dis = new DataInputStream(buffin);
@@ -117,6 +123,7 @@ public final class ImpExpSPE extends AbstractImpExp {//NOPMD
 		}
 	}
 
+	@Override
 	public void writeHist(final OutputStream outStream, final Histogram hist)
 			throws ImpExpException {
 		try {
@@ -175,17 +182,19 @@ public final class ImpExpSPE extends AbstractImpExp {//NOPMD
 
 	private float[] copyIntToFloat(final int[] countsInt, final int size) {
 		final float[] countsFlt = new float[size];
-		for (int i = 0; i < size; i++) {//NOPMD
+		for (int i = 0; i < size; i++) {// NOPMD
 			countsFlt[i] = countsInt[i];
 		}
 		return countsFlt;
 	}
 
+	@Override
 	public boolean canExport() {
 		return true;
 	}
 
-	boolean batchExportAllowed() {
+	@Override
+	protected boolean batchExportAllowed() {
 		return true;
 	}
 }

@@ -69,7 +69,7 @@ final class ConvertJamObjToHDFObj {
 	 * 
 	 * @see jam.io.hdf.NumberType
 	 */
-	void addDefaultDataObjects(final String fileID) {
+	protected void addDefaultDataObjects(final String fileID) {
 		new LibVersion(); // DataObjects add themselves
 		NumberType.createDefaultTypes();
 		new JavaMachineType();
@@ -83,7 +83,7 @@ final class ConvertJamObjToHDFObj {
 	 * 
 	 * @see jam.global.JamProperties
 	 */
-	void addFileNote() {
+	protected void addFileNote() {
 		final String noteAddition = "\n\nThe histograms when loaded into jam are displayed starting at channel zero up\n"
 				+ "to dimension-1.  Two-dimensional data are properly displayed with increasing channel\n"
 				+ "number from the lower left to the lower right for, and from the lower left to the upper\n"
@@ -106,7 +106,7 @@ final class ConvertJamObjToHDFObj {
 	/*
 	 * non-javadoc: Adds data objects for the virtual group of groups
 	 */
-	VirtualGroup addGroupSection() {
+	protected VirtualGroup addGroupSection() {
 		VirtualGroup virtualGroup;
 		virtualGroup = new VirtualGroup(GRP_SECTION, FILE_SECTION);
 		new DataIDLabel(virtualGroup, GRP_SECTION);
@@ -116,7 +116,7 @@ final class ConvertJamObjToHDFObj {
 	/*
 	 * non-javadoc: Adds data objects for the virtual group of histograms.
 	 */
-	VirtualGroup addHistogramSection() {
+	protected VirtualGroup addHistogramSection() {
 		final VirtualGroup allHists = new VirtualGroup(HIST_SECTION,
 				FILE_SECTION);
 		new DataIDLabel(allHists, HIST_SECTION);
@@ -126,7 +126,7 @@ final class ConvertJamObjToHDFObj {
 	/*
 	 * non-javadoc: Adds data objects for the virtual group of gates.
 	 */
-	VirtualGroup addGateSection() {
+	protected VirtualGroup addGateSection() {
 		final VirtualGroup allGates = new VirtualGroup(GATE_SECTION,
 				FILE_SECTION);
 		new DataIDLabel(allGates, GATE_SECTION);
@@ -136,7 +136,7 @@ final class ConvertJamObjToHDFObj {
 	/*
 	 * non-javadoc: Adds data objects for the virtual group of scalers.
 	 */
-	VirtualGroup addScalerSection() {
+	protected VirtualGroup addScalerSection() {
 		final VirtualGroup scalerGroup = new VirtualGroup(SCALER_SECT,
 				FILE_SECTION);
 		new DataIDLabel(scalerGroup, SCALER_SECT);
@@ -146,7 +146,7 @@ final class ConvertJamObjToHDFObj {
 	/*
 	 * non-javadoc: Adds data objects for the virtual group of scalers.
 	 */
-	VirtualGroup addScalers() {
+	protected VirtualGroup addScalers() {
 		final VirtualGroup scalerGroup = new VirtualGroup(SCALER_SECT,
 				FILE_SECTION);
 		new DataIDLabel(scalerGroup, SCALER_SECT);
@@ -156,7 +156,7 @@ final class ConvertJamObjToHDFObj {
 	/*
 	 * non-javadoc: Adds data objects for the virtual group of parameters.
 	 */
-	VirtualGroup addParameterSection() {
+	protected VirtualGroup addParameterSection() {
 
 		final VirtualGroup paramGroup = new VirtualGroup(PARAMETERS,
 				FILE_SECTION);
@@ -168,7 +168,7 @@ final class ConvertJamObjToHDFObj {
 	/*
 	 * non-javadoc: Adds group object for the a histogram
 	 */
-	VirtualGroup addHistogramGroup(final Histogram hist) {
+	protected VirtualGroup addHistogramGroup(final Histogram hist) {
 		final VirtualGroup histVGroup = new VirtualGroup(hist.getName(),
 				HIST_TYPE);
 		/* vGroup label is Histogram name */
@@ -180,7 +180,7 @@ final class ConvertJamObjToHDFObj {
 	/*
 	 * non-javadoc: Adds data objects for the virtual group of histograms.
 	 */
-	VirtualGroup convertGroup(final Group group) {
+	protected VirtualGroup convertGroup(final Group group) {
 		final VirtualGroup virtualGroup = new VirtualGroup(group.getName(),
 				GROUP_TYPE);
 		new DataIDLabel(virtualGroup, group.getName());
@@ -189,25 +189,26 @@ final class ConvertJamObjToHDFObj {
 
 	/*
 	 * non-javadoc: Convert a histogram into a hdf Virtual group @param hist
+	 * 
 	 * @return VirtualGroup for the histogram @throws HDFException
 	 */
-	NumericalDataGroup convertHistogram(final VirtualGroup histVGroup,
-			final Histogram hist) {
+	protected NumericalDataGroup convertHistogram(
+			final VirtualGroup histVGroup, final Histogram hist) {
 		/* vGroup Annotation is Histogram title */
 		final NumericalDataGroup ndg = new NumericalDataGroup();
-		
+
 		/* make the NDG label the histogram number */
 		histVGroup.add(ndg);
-		
+
 		/* NDG to contain data */
 		new DataIDLabel(ndg, Integer.toString(hist.getNumber()));
-		
+
 		/* add to specific histogram vGroup (other info maybe later) */
 		final ScientificDataDimension sdd = getSDD(hist);
 		ndg.addDataObject(sdd); // use new SDD
 		final Histogram.Type type = hist.getType();
 		ScientificData sciData;
-		AbstractHist1D hist1d = null;		
+		AbstractHist1D hist1d = null;
 		if (type == Histogram.Type.ONE_DIM_INT) {
 			sciData = new ScientificData(((HistInt1D) hist).getCounts());
 			hist1d = (AbstractHist1D) hist;
@@ -233,7 +234,7 @@ final class ConvertJamObjToHDFObj {
 			final NumericalDataGroup ndgErr = new NumericalDataGroup();
 			histVGroup.add(ndgErr);
 			new DataIDLabel(ndgErr, ERROR_LABEL);
-			
+
 			/* explicitly floating point */
 			ndgErr.addDataObject(sddErr);
 			final ScientificData sdErr = new ScientificData(hist1d.getErrors());
@@ -246,7 +247,7 @@ final class ConvertJamObjToHDFObj {
 	 * non-javadoc: Converts a gate to a Virtual group @param g the gate to
 	 * convert @exception HDFException thrown if unrecoverable error occurs
 	 */
-	VDataDescription convertCalibration(
+	protected VDataDescription convertCalibration(
 			final AbstractCalibrationFunction calibration) {
 		String calibType;
 		String[] columnNames;
@@ -297,7 +298,7 @@ final class ConvertJamObjToHDFObj {
 	 * non-javadoc: Converts a gate to a Virtual group @param g the gate to
 	 * convert @exception HDFException thrown if unrecoverable error occurs
 	 */
-	VirtualGroup convertGate(final Gate gate) {
+	protected VirtualGroup convertGate(final Gate gate) {
 		String gateType;
 		String[] columnNames;
 		int size = 1;
@@ -346,7 +347,7 @@ final class ConvertJamObjToHDFObj {
 	 * non-javadoc: Converts a scaler to a Virtual group @param list the list to
 	 * convert @exception HDFException thrown if unrecoverable error occurs
 	 */
-	VDataDescription convertScalers(final List<Scaler> scalers) {
+	protected VDataDescription convertScalers(final List<Scaler> scalers) {
 		final int size = scalers.size();
 		final short[] types = { VDataDescription.DFNT_INT32,
 				VDataDescription.DFNT_CHAR8, VDataDescription.DFNT_INT32 };
@@ -376,7 +377,8 @@ final class ConvertJamObjToHDFObj {
 	 * list to convert @exception HDFException thrown if unrecoverable error
 	 * occurs
 	 */
-	VDataDescription convertParameters(final List<DataParameter> parameters) {
+	protected VDataDescription convertParameters(
+			final List<DataParameter> parameters) {
 		final short[] types = { VDataDescription.DFNT_CHAR8,
 				VDataDescription.DFNT_FLT32 };
 		final short[] orders = new short[2];
@@ -397,7 +399,7 @@ final class ConvertJamObjToHDFObj {
 		return desc;
 	}
 
-	<T extends Nameable> int maxNameLength(final List<T> dataList) {
+	protected <T extends Nameable> int maxNameLength(final List<T> dataList) {
 		int maxLength = 0;
 		for (Nameable named : dataList) {
 			final String name = named.getName();

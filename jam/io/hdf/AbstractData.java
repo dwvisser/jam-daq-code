@@ -105,7 +105,7 @@ public abstract class AbstractData {
 	 * @param data
 	 *            data object
 	 */
-	static void addDataObjectToList(final AbstractData data) {
+	protected static void addDataObjectToList(final AbstractData data) {
 		final Integer key = calculateKey(data.getClass(), data.getRef());
 		if (tagRefMap.containsKey(key)) {
 			throw new IllegalArgumentException(
@@ -118,19 +118,19 @@ public abstract class AbstractData {
 	/*
 	 * non-javadoc: Create a unique key given then tag an ref numbers.
 	 */
-	private static <T extends AbstractData> int calculateKey(final Class<T> tag,
-			final short ref) {
+	private static <T extends AbstractData> int calculateKey(
+			final Class<T> tag, final short ref) {
 		final int tagInt = TAGS.get(tag);
 		final int refInt = ref;
 		final int key = (tagInt << 16) + refInt;
-		LOGGER.finer(" Key tag "+tagInt+" ref "+refInt+" key "+key);
+		LOGGER.finer(" Key tag " + tagInt + " ref " + refInt + " key " + key);
 		return key;
 	}
 
 	/**
 	 * Clear the lists of all data objects.
 	 */
-	static void clearAll() {
+	protected static void clearAll() {
 		// set all object data to none
 		for (AbstractData dataObject : objectList) {
 			dataObject.bytes = ByteBuffer.wrap(CLEARBYTES);
@@ -140,8 +140,9 @@ public abstract class AbstractData {
 		refCount = 1;
 	}
 
-	static final <T extends AbstractData> T create(final byte[] bytes,
-			final Class<T> tag, final short ref) throws HDFException {
+	protected static final <T extends AbstractData> T create(
+			final byte[] bytes, final Class<T> tag, final short ref)
+			throws HDFException {
 		T dataObject = null;
 		dataObject = createDataObject(tag);
 		if (dataObject != null) {// Only create necessary objects
@@ -150,7 +151,7 @@ public abstract class AbstractData {
 		return dataObject;
 	}
 
-	static <T extends AbstractData> T create(final Class<T> tag,
+	protected static <T extends AbstractData> T create(final Class<T> tag,
 			final short ref, final int offset, final int length)
 			throws HDFException {
 		T dataObject = null;
@@ -186,7 +187,8 @@ public abstract class AbstractData {
 	 * @return a reference number for the given HDF object @param refs the map
 	 * for a given tag type
 	 */
-	static <T extends AbstractData> short createUniqueRef(final Class<T> tag) {
+	protected static <T extends AbstractData> short createUniqueRef(
+			final Class<T> tag) {
 		if (tag == null) {
 			throw new IllegalArgumentException("null tag not acceptable.");
 		}
@@ -206,7 +208,7 @@ public abstract class AbstractData {
 	 * 
 	 * @return list of all objects
 	 */
-	static List<AbstractData> getDataObjectList() {
+	protected static List<AbstractData> getDataObjectList() {
 		return Collections.unmodifiableList(objectList);
 	}
 
@@ -229,13 +231,13 @@ public abstract class AbstractData {
 		return match;
 	}
 
-	static void interpretBytesAll() throws HDFException {
+	protected static void interpretBytesAll() throws HDFException {
 		for (AbstractData dataObject : getDataObjectList()) {
 			dataObject.interpretBytes();
 		}
 	}
 
-	static boolean isValidType(final short type) {
+	protected static boolean isValidType(final short type) {
 		return TYPES.containsKey(type);
 	}
 
@@ -258,7 +260,7 @@ public abstract class AbstractData {
 	 * @param type
 	 *            the type to return
 	 */
-	static <T extends AbstractData> List<T> ofType(
+	protected static <T extends AbstractData> List<T> ofType(
 			final Collection<AbstractData> collection, final Class<T> type) {
 		final List<T> rval = new ArrayList<T>();
 		for (AbstractData data : collection) {
@@ -297,10 +299,10 @@ public abstract class AbstractData {
 
 	/**
 	 * Creates a new HDF DataObject, belonging to the specified
-	 * <code>HDFile</code>. My approach is to have a separate HDFile object
-	 * for each physical HDF file on disk. Each <code>HDFile</code> object
-	 * handles the bookkeeping of the HDF File Header (see NCSA HDF:
-	 * Specifications and Developer's Guide v3.2).
+	 * <code>HDFile</code>. My approach is to have a separate HDFile object for
+	 * each physical HDF file on disk. Each <code>HDFile</code> object handles
+	 * the bookkeeping of the HDF File Header (see NCSA HDF: Specifications and
+	 * Developer's Guide v3.2).
 	 * 
 	 * @param tag
 	 *            The hdf tag of the new object.
@@ -313,18 +315,18 @@ public abstract class AbstractData {
 	}
 
 	/*
-	 * non-javadoc: Returns the byte representation to be written at <code>offset</code>
-	 * in the file.
+	 * non-javadoc: Returns the byte representation to be written at
+	 * <code>offset</code> in the file.
 	 */
-	ByteBuffer getBytes() {
+	protected ByteBuffer getBytes() {
 		return bytes;
 	}
 
-	int getLength() {
+	protected int getLength() {
 		return length;
 	}
 
-	int getOffset() {
+	protected int getOffset() {
 		return offset;
 	}
 
@@ -358,7 +360,7 @@ public abstract class AbstractData {
 	 * in the HDF standard, of this item. The tag is a 2-byte integer denoting a
 	 * unique data object type.
 	 */
-	final short getTag() {
+	protected final short getTag() {
 		return tag;
 	}
 
@@ -372,7 +374,7 @@ public abstract class AbstractData {
 	 * of data object. @throws IllegalArgumentException if the data is null or
 	 * empty
 	 */
-	void init(final byte[] data, final short reference) {
+	protected void init(final byte[] data, final short reference) {
 		if (data == null) {
 			throw new IllegalArgumentException(
 					"Null data reference. Need data for initializiation.");
@@ -387,15 +389,16 @@ public abstract class AbstractData {
 	}
 
 	/*
-	 * non-javadoc: Creates a new <code>DataObject</code> pointing to the
-	 * offset in the file where its data reside. This option is for when you
-	 * don't want to hog memory with a large byte array.
+	 * non-javadoc: Creates a new <code>DataObject</code> pointing to the offset
+	 * in the file where its data reside. This option is for when you don't want
+	 * to hog memory with a large byte array.
 	 * 
 	 * @param file The file to contain the new object. @param offset The
 	 * location in <code>file</code> @param reference The unique value
 	 * specifying the type of data object.
 	 */
-	void init(final int byteOffset, final int len, final short reference) {
+	protected void init(final int byteOffset, final int len,
+			final short reference) {
 		tag = TAGS.get(getClass());
 		setRef(reference);
 		offset = byteOffset;
@@ -426,7 +429,7 @@ public abstract class AbstractData {
 	 * Refreshes the byte array for each object, Should be called before find
 	 * size or writing out. Override when an update of is needed.
 	 */
-	void refreshBytes() {
+	protected void refreshBytes() {
 		// default is do nothing
 	}
 
@@ -434,7 +437,7 @@ public abstract class AbstractData {
 	 * non-javadoc: Called back by <code>HDFile</code> to set the offset
 	 * information.
 	 */
-	void setOffset(final int off) {
+	protected void setOffset(final int off) {
 		offset = off;
 	}
 
@@ -443,7 +446,7 @@ public abstract class AbstractData {
 	 * 
 	 * @param newref
 	 */
-	final void setRef(final short newref) {
+	protected final void setRef(final short newref) {
 		// Remove object with old ref
 		final Integer key = calculateKey(getClass(), ref);
 		if (tagRefMap.containsKey(key)) {
@@ -469,6 +472,7 @@ public abstract class AbstractData {
 		tag = newTag;
 	}
 
+	@Override
 	public String toString() {
 		return "(" + getClass().getName() + ": ref=" + getRef() + ")";
 	}

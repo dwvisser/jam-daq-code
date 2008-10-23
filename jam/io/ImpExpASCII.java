@@ -53,18 +53,22 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
 			EXTS, "Text file");
 
+	@Override
 	protected FileFilter getFileFilter() {
 		return FILTER;
 	}
 
+	@Override
 	protected String getDefaultExtension() {
 		return FILTER.getExtension(0);
 	}
 
+	@Override
 	public String getFormatDescription() {
 		return FILTER.getDescription();
 	}
 
+	@Override
 	public boolean openFile(final File file) throws ImpExpException {
 		return openFile(file, "Import text file ");
 	}
@@ -75,17 +79,18 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 	 * @param hist
 	 *            the current <code>Histogram</code>
 	 * @exception ImpExpException
-	 *                all exceptions given to <code>ImpExpException</code> go
-	 *                to the msgHandler
+	 *                all exceptions given to <code>ImpExpException</code> go to
+	 *                the msgHandler
 	 */
+	@Override
 	public void saveFile(final Histogram hist) throws ImpExpException {
 		saveFile("Export text file ", hist);
 	}
 
 	/**
-	 * Read ASCII data from an <code>InputStream</code>. The first lines may
-	 * be a header these lines are read in until a line with leading token that
-	 * is a number is found. The first line of the header will be used as the
+	 * Read ASCII data from an <code>InputStream</code>. The first lines may be
+	 * a header these lines are read in until a line with leading token that is
+	 * a number is found. The first line of the header will be used as the
 	 * title. (Its first token as above cannot be a number.)
 	 * 
 	 * <p>
@@ -100,6 +105,7 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 	 * @exception ImpExpException
 	 *                exception related to import/export
 	 */
+	@Override
 	protected void readData(final InputStream inStream) throws ImpExpException {
 		double[] counts;
 		double[][] counts2d;
@@ -330,9 +336,10 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 	 * @param hist
 	 *            the histogram to write
 	 * @exception ImpExpException
-	 *                all exceptions given to <code>ImpExpException</code> go
-	 *                to the msgHandler
+	 *                all exceptions given to <code>ImpExpException</code> go to
+	 *                the msgHandler
 	 */
+	@Override
 	protected void writeHist(final OutputStream buffout, final Histogram hist)
 			throws ImpExpException {
 		try {
@@ -389,11 +396,13 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 		}
 	}
 
+	@Override
 	public boolean canExport() {
 		return true;
 	}
 
-	boolean batchExportAllowed() {
+	@Override
+	protected boolean batchExportAllowed() {
 		return true;
 	}
 }

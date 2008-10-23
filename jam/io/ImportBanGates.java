@@ -160,7 +160,7 @@ public final class ImportBanGates extends AbstractImpExp {
 	}
 
 	@Override
-	boolean batchExportAllowed() {
+	protected boolean batchExportAllowed() {
 		return false;
 	}
 }

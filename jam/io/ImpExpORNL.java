@@ -79,14 +79,17 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
 			EXTS, "Oak Ridge DAMM");
 
+	@Override
 	protected FileFilter getFileFilter() {
 		return FILTER;
 	}
 
+	@Override
 	protected String getDefaultExtension() {
 		return FILTER.getExtension(0);
 	}
 
+	@Override
 	public String getFormatDescription() {
 		return FILTER.getDescription();
 	}
@@ -99,6 +102,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the MessageHandler
 	 */
+	@Override
 	public boolean openFile(final File file) throws ImpExpException {
 		return openFile(file, "Import ORNL file ");
 	}
@@ -110,6 +114,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the MessageHandler
 	 */
+	@Override
 	public void saveFile(final Histogram hist) throws ImpExpException {
 		saveFile("Export ORNL", hist);
 	}
@@ -120,6 +125,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	 * @exception ImpExpException
 	 *                thrown for errors
 	 */
+	@Override
 	public void readData(final InputStream buffin) throws ImpExpException {
 		try {
 			Histogram.clearList(); // clear current list of histograms
@@ -432,6 +438,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the msgHandler
 	 */
+	@Override
 	public void writeHist(final OutputStream ignored, final Histogram hist)
 			throws ImpExpException {
 		try {
@@ -649,11 +656,13 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		return NUM_UTIL.bytesToShort(rval, 0, byteOrder);
 	}
 
+	@Override
 	public boolean canExport() {
 		return true;
 	}
 
-	boolean batchExportAllowed() {
+	@Override
+	protected boolean batchExportAllowed() {
 		return false;
 	}
 
@@ -666,6 +675,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	 *            text to go on title bar of dialog box
 	 * @return whether file was successfully read
 	 */
+	@Override
 	protected boolean openFile(final File file, final String msg) {
 		File inFile = file;
 		boolean rval = false; // default return value

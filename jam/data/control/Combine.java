@@ -287,9 +287,9 @@ public class Combine extends AbstractManipulation implements Observer {
 	 */
 	private int getNumChannels(final double[] in1, final double[] in2,
 			final double[] out) {
-		// Minimun size of both out an in1
+		// Minimum size of both out an in1
 		int numChannels = Math.min(out.length, in1.length);
-		// Minimun size of all out an in1 and in2
+		// Minimum size of all out an in1 and in2
 		if (!cnorm.isSelected()) {
 			numChannels = Math.min(numChannels, in2.length);
 		}
@@ -504,7 +504,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		}
 	}
 
-	boolean validateFactors() throws DataException {
+	protected boolean validateFactors() throws DataException {
 		try {// read information for first histogram
 			fac1 = Double.parseDouble(ttimes1.getText().trim());
 		} catch (NumberFormatException nfe) {

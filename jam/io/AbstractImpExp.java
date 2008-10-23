@@ -122,8 +122,8 @@ public abstract class AbstractImpExp {
 	 * @param hist
 	 *            the histogram to be saved
 	 * @exception ImpExpException
-	 *                all exceptions given to <code>ImpExpException</code> go
-	 *                to the msgHandler
+	 *                all exceptions given to <code>ImpExpException</code> go to
+	 *                the msgHandler
 	 */
 	public abstract void saveFile(Histogram hist) throws ImpExpException;
 
@@ -141,8 +141,8 @@ public abstract class AbstractImpExp {
 	 * @param inStream
 	 *            the stream to read the histogram from
 	 * @exception ImpExpException
-	 *                all exceptions given to <code>ImpExpException</code> go
-	 *                to the msgHandler
+	 *                all exceptions given to <code>ImpExpException</code> go to
+	 *                the msgHandler
 	 */
 	abstract protected void readData(InputStream inStream)
 			throws ImpExpException;
@@ -157,8 +157,8 @@ public abstract class AbstractImpExp {
 	 * @param hist
 	 *            to write
 	 * @exception ImpExpException
-	 *                all exceptions given to <code>ImpExpException</code> go
-	 *                to the msgHandler
+	 *                all exceptions given to <code>ImpExpException</code> go to
+	 *                the msgHandler
 	 */
 	abstract protected void writeHist(OutputStream outStream, Histogram hist)
 			throws ImpExpException;
@@ -221,7 +221,8 @@ public abstract class AbstractImpExp {
 	/**
 	 * Save a specific histogram using a file dialog box. The programmer
 	 * supplies a file dialog box title, a file extension, and the histogram to
-	 * save. Implementers should call this from <code>saveFile(Histogram)</code>.
+	 * save. Implementers should call this from <code>saveFile(Histogram)</code>
+	 * .
 	 * 
 	 * @param msg
 	 *            text to go on title bar of dialog box
@@ -311,8 +312,7 @@ public abstract class AbstractImpExp {
 	 *            text to go on title bar of dialog box
 	 * @param state
 	 *            <code>ImpExp.LOAD</code> or <code>ImpExp.SAVE</code>
-	 * @return a <code>File</code> chosen by the user, null if dialog
-	 *         cancelled
+	 * @return a <code>File</code> chosen by the user, null if dialog cancelled
 	 */
 	protected File getFile(final String msg, final int state) {
 		File file = null;
@@ -403,5 +403,5 @@ public abstract class AbstractImpExp {
 	 * 
 	 * @return whether batch export is allowed
 	 */
-	abstract boolean batchExportAllowed();
+	protected abstract boolean batchExportAllowed();
 }

@@ -17,9 +17,8 @@ final class ScientificData extends AbstractData {
 
 	private enum InputMode {
 		/**
-		 * indicates normal mode of operation, where <code>bytes</code> is
-		 * read in when instantizing, which can be a memory hog and cause
-		 * problems
+		 * indicates normal mode of operation, where <code>bytes</code> is read
+		 * in when instantizing, which can be a memory hog and cause problems
 		 */
 		STORE,
 		/**
@@ -60,7 +59,7 @@ final class ScientificData extends AbstractData {
 		super(DFTAG_SD);
 	}
 
-	ScientificData(double[] counts) {//NOPMD
+	ScientificData(double[] counts) {// NOPMD
 		super(DFTAG_SD); // sets tag
 		numberType = NumberType.DOUBLE;
 		inputMode = InputMode.STORE;
@@ -71,7 +70,7 @@ final class ScientificData extends AbstractData {
 		this.countsD = counts;
 	}
 
-	ScientificData(double[][] counts2d) {//NOPMD
+	ScientificData(double[][] counts2d) {// NOPMD
 		super(DFTAG_SD); // sets tag
 		numberType = NumberType.DOUBLE;
 		inputMode = InputMode.STORE;
@@ -83,7 +82,7 @@ final class ScientificData extends AbstractData {
 		this.counts2dD = counts2d;
 	}
 
-	ScientificData(int[] counts) {//NOPMD
+	ScientificData(int[] counts) {// NOPMD
 		super(DFTAG_SD); // sets tag
 		numberType = NumberType.INT;
 		inputMode = InputMode.STORE;
@@ -94,7 +93,7 @@ final class ScientificData extends AbstractData {
 		this.counts = counts;
 	}
 
-	ScientificData(int[][] counts2d) {//NOPMD
+	ScientificData(int[][] counts2d) {// NOPMD
 		super(DFTAG_SD); // sets tag
 		numberType = NumberType.INT;
 		inputMode = InputMode.STORE;
@@ -113,7 +112,8 @@ final class ScientificData extends AbstractData {
 	 * @throws IllegalStateException
 	 *             if the rank is not 1 or 2
 	 */
-	ByteBuffer getBytes() {
+	@Override
+	protected ByteBuffer getBytes() {
 		bytes = ByteBuffer.allocate(byteLength);
 		switch (rank) {
 		case 1:
@@ -168,6 +168,7 @@ final class ScientificData extends AbstractData {
 	/*
 	 * non-javadoc: @throws HDFException unrecoverable error @throws
 	 * UnsupportedOperationException if this object doesn't represent 1d int
+	 * 
 	 * @throws IllegalStateException if the input mode isn't recognized
 	 */
 	int[] getData1d(final HDFile infile, final int size) throws HDFException {
@@ -254,12 +255,15 @@ final class ScientificData extends AbstractData {
 		return numberType;
 	}
 
-	void init(final byte[] data, final short reference) {
+	@Override
+	protected void init(final byte[] data, final short reference) {
 		super.init(data, reference);
 		inputMode = InputMode.STORE;
 	}
 
-	void init(final int byteOffset, final int len, final short reference) {
+	@Override
+	protected void init(final int byteOffset, final int len,
+			final short reference) {
 		super.init(byteOffset, len, reference);
 		inputMode = InputMode.WAIT_TO_READ;
 	}
@@ -267,6 +271,7 @@ final class ScientificData extends AbstractData {
 	/**
 	 * requires associated SDD, NT, NDG records
 	 */
+	@Override
 	public void interpretBytes() {
 		// do-nothing
 	}
@@ -283,6 +288,7 @@ final class ScientificData extends AbstractData {
 		}
 	}
 
+	@Override
 	public String toString() {
 		final StringBuffer rval = new StringBuffer();
 		final String type = numberType == NumberType.DOUBLE ? "Double"

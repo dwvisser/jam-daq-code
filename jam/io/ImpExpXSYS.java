@@ -421,7 +421,7 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	}
 
 	@Override
-	boolean batchExportAllowed() {
+	protected boolean batchExportAllowed() {
 		return false;
 	}
 }

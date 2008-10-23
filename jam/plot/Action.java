@@ -372,7 +372,7 @@ final class Action {
 		}
 	}
 
-	final Commandable commandable = new Commandable() {
+	public transient final Commandable commandable = new Commandable() {
 		public String getCurrentCommand() {
 			synchronized (this) {
 				return Action.this.currentCommand;

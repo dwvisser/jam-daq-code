@@ -184,10 +184,10 @@ public class SetupRemote extends JDialog implements ActionListener,
 				setActive(true);
 				lockFields(true);
 
-				if (command == "ok") {
+				if ("ok".equals(command)) {
 					dispose();
 				}
-			} else if (command == "cancel") {
+			} else if ("cancel".equals(command)) {
 				dispose();
 			}
 		} catch (JamException je) {

@@ -8,8 +8,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 final class CounterPanel extends JPanel {
-	
-	private transient final JTextField textField=new JTextField();
+
+	private transient final JTextField textField = new JTextField();
 
 	CounterPanel(final String description) {
 		super();
@@ -25,8 +25,8 @@ final class CounterPanel extends JPanel {
 		add(label);
 		add(textField);
 	}
-	
-	void setText(final String text){
+
+	protected void setText(final String text) {
 		textField.setText(text);
 	}
 }
