@@ -1,8 +1,8 @@
 package jam;
 
 import jam.data.Gate;
-import jam.data.Histogram;
 import jam.data.Group;
+import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 
@@ -46,11 +46,11 @@ public final class InitialHistograms {
 		groupInitial = group;
 	}
 
-	Group getInitialGroup() {
+	protected Group getInitialGroup() {
 		return groupInitial;
 	}
 
-	Histogram getInitialHist() {
+	protected Histogram getInitialHist() {
 		return histInitial;
 	}
 

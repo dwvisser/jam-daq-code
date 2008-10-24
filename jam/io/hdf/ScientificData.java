@@ -146,7 +146,7 @@ final class ScientificData extends AbstractData {
 	/*
 	 * non-javadoc: Late loading of data
 	 */
-	Object getData(final HDFile infile, final int histDim,
+	protected Object getData(final HDFile infile, final int histDim,
 			final byte histNumType, final int xlen, final int ylen)
 			throws HDFException {
 		Object rval;
@@ -171,7 +171,8 @@ final class ScientificData extends AbstractData {
 	 * 
 	 * @throws IllegalStateException if the input mode isn't recognized
 	 */
-	int[] getData1d(final HDFile infile, final int size) throws HDFException {
+	protected int[] getData1d(final HDFile infile, final int size)
+			throws HDFException {
 		if (numberType != NumberType.INT || rank != 1) {
 			throw new HDFException("getData1d called on wrong type of SD.");
 		}
@@ -185,7 +186,7 @@ final class ScientificData extends AbstractData {
 		return output;
 	}
 
-	double[] getData1dD(final HDFile infile, final int size)
+	protected double[] getData1dD(final HDFile infile, final int size)
 			throws HDFException {
 		double[] output;
 		if (numberType != NumberType.DOUBLE || rank != 1) {
@@ -202,8 +203,8 @@ final class ScientificData extends AbstractData {
 		return output;
 	}
 
-	int[][] getData2d(final HDFile infile, final int xlen, final int ylen)
-			throws HDFException {
+	protected int[][] getData2d(final HDFile infile, final int xlen,
+			final int ylen) throws HDFException {
 		if (numberType != NumberType.INT || rank != 2) {
 			throw new HDFException("getData2d called on wrong type of SD.");
 		}
@@ -219,8 +220,8 @@ final class ScientificData extends AbstractData {
 		return output;
 	}
 
-	double[][] getData2dD(final HDFile infile, final int xlen, final int ylen)
-			throws HDFException {
+	protected double[][] getData2dD(final HDFile infile, final int xlen,
+			final int ylen) throws HDFException {
 		if (numberType != NumberType.DOUBLE || rank != 2) {
 			throw new HDFException("getData2dD called on wrong type of SD.");
 		}
@@ -251,7 +252,7 @@ final class ScientificData extends AbstractData {
 		return localBytes;
 	}
 
-	int getNumberType() {
+	protected int getNumberType() {
 		return numberType;
 	}
 
@@ -276,13 +277,13 @@ final class ScientificData extends AbstractData {
 		// do-nothing
 	}
 
-	void setNumberType(final byte type) {
+	protected void setNumberType(final byte type) {
 		synchronized (this) {
 			numberType = type;
 		}
 	}
 
-	void setRank(final int newRank) {
+	protected void setRank(final int newRank) {
 		synchronized (this) {
 			rank = newRank;
 		}

@@ -129,7 +129,7 @@ public final class View {
 	 * 
 	 * @return rows
 	 */
-	int getRows() {
+	protected int getRows() {
 		return nRows;
 	}
 
@@ -138,7 +138,7 @@ public final class View {
 	 * 
 	 * @return columns
 	 */
-	int getColumns() {
+	protected int getColumns() {
 		return nCols;
 	}
 
@@ -147,7 +147,7 @@ public final class View {
 	 * 
 	 * @return the number of plots
 	 */
-	int getNumberHists() {
+	protected int getNumberHists() {
 		return histogramNames.length;
 	}
 
@@ -158,7 +158,7 @@ public final class View {
 	 *            which plot
 	 * @return histogram for the given plot
 	 */
-	Histogram getHistogram(final int num) {
+	protected Histogram getHistogram(final int num) {
 		return Histogram.getHistogram(histogramNames[num]);
 	}
 
@@ -170,7 +170,7 @@ public final class View {
 	 * @param histIn
 	 *            the Histogram
 	 */
-	void setHistogram(final int num, final Nameable histIn) {
+	protected void setHistogram(final int num, final Nameable histIn) {
 		if (histIn == null) {
 			histogramNames[num] = "";
 		} else {

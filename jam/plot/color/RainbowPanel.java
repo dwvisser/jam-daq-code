@@ -33,6 +33,7 @@ final class RainbowPanel extends JPanel {
 		setSize(100, 50);
 	}
 
+	@Override
 	public void paintComponent(final Graphics graphics) {
 		final Graphics2D graph2d = (Graphics2D) graphics;
 		super.paintComponent(graph2d);
@@ -51,8 +52,9 @@ final class RainbowPanel extends JPanel {
 		graph2d.drawString("Min", 10, 92);
 	}
 
-	void setSpecs(final double xor, final double xog, final double xob,
-			final double sigr, final double sigg, final double sigb) {
+	protected void setSpecs(final double xor, final double xog,
+			final double xob, final double sigr, final double sigg,
+			final double sigb) {
 		synchronized (this) {
 			x0R = xor;
 			x0G = xog;

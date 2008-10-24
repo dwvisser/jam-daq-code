@@ -5,6 +5,7 @@
  */
 
 package jam.data.peaks;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,35 +14,36 @@ import java.util.List;
 /**
  * Represents a group of peaks in a spectrum.
  * 
- * @author  <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  */
 final class Multiplet extends ArrayList<Peak> {
-	
-	private Multiplet(){
+
+	private Multiplet() {
 		super();
 	}
-    
-    static Multiplet createMultiplet(){
-        return new Multiplet();
-    }
 
-    List<Double> getAllCentroids(){
-        final List<Double> centroids=new ArrayList<Double>();
-        for (Peak peak : this){
-            centroids.add(peak.getPosition());
-        }
-        return centroids;
-    }
+	protected static Multiplet createMultiplet() {
+		return new Multiplet();
+	}
 
-    static Multiplet combineMultiplets(final Multiplet... mult){
-        return combineMultiplets(Arrays.asList(mult));
-    }
-    
-    static Multiplet combineMultiplets(final Collection<Multiplet> collection){
-    	final Multiplet rval=new Multiplet();
-    	for (Multiplet multiplet : collection){
-    		rval.addAll(multiplet);
-    	}
-    	return rval;
-    }
+	protected List<Double> getAllCentroids() {
+		final List<Double> centroids = new ArrayList<Double>();
+		for (Peak peak : this) {
+			centroids.add(peak.getPosition());
+		}
+		return centroids;
+	}
+
+	protected static Multiplet combineMultiplets(final Multiplet... mult) {
+		return combineMultiplets(Arrays.asList(mult));
+	}
+
+	protected static Multiplet combineMultiplets(
+			final Collection<Multiplet> collection) {
+		final Multiplet rval = new Multiplet();
+		for (Multiplet multiplet : collection) {
+			rval.addAll(multiplet);
+		}
+		return rval;
+	}
 }

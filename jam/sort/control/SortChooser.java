@@ -37,11 +37,11 @@ final class SortChooser extends JComboBox {
 		});
 	}
 
-	SortRoutine getSortRoutine() {
+	protected SortRoutine getSortRoutine() {
 		return sortRoutine;
 	}
 
-	void forgetSortRoutine() {
+	protected void forgetSortRoutine() {
 		sortRoutine = null;// NOPMD
 	}
 
@@ -161,9 +161,8 @@ final class SortChooser extends JComboBox {
 	 * @return set of available sort routines
 	 */
 	private Set<Class<? extends SortRoutine>> findSortClasses(final File path) {
-		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier
-				.getSingletonInstance();
-		return runtimeSubclassIdentifier.find(path, SortRoutine.class);
+		return RuntimeSubclassIdentifier.getSingletonInstance().find(path,
+				SortRoutine.class);
 	}
 
 	/**
@@ -173,13 +172,10 @@ final class SortChooser extends JComboBox {
 	 */
 	private Set<Class<? extends SortRoutine>> findSortClassesDefault() {
 		final Set<Class<? extends SortRoutine>> set = new LinkedHashSet<Class<? extends SortRoutine>>();
-		final RuntimeSubclassIdentifier runtimeSubclassIdentifier = RuntimeSubclassIdentifier
+		final RuntimeSubclassIdentifier rtsi = RuntimeSubclassIdentifier
 				.getSingletonInstance();
-		set.addAll(runtimeSubclassIdentifier.find("help", SortRoutine.class,
-				true));
-		set.addAll(runtimeSubclassIdentifier.find("sort", SortRoutine.class,
-				true));
+		set.addAll(rtsi.find("help", SortRoutine.class, true));
+		set.addAll(rtsi.find("sort", SortRoutine.class, true));
 		return set;
 	}
-
 }

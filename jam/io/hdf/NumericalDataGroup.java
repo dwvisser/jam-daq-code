@@ -29,6 +29,7 @@ final class NumericalDataGroup extends AbstractData {
 	/**
 	 * Should be called whenever a change is made to the contents of the NDG.
 	 */
+	@Override
 	protected void refreshBytes() {
 		final int numBytes = 4 * elements.size();
 		/* see DFTAG_NDG specification for HDF 4.1r2 */
@@ -42,6 +43,7 @@ final class NumericalDataGroup extends AbstractData {
 	/**
 	 * Implementation of <code>DataObject</code> abstract method.
 	 */
+	@Override
 	public void interpretBytes() {
 		bytes.rewind();
 		/* 2 for each tag, 2 for each ref */
@@ -61,17 +63,18 @@ final class NumericalDataGroup extends AbstractData {
 	 * @param data
 	 *            data element to be added
 	 */
-	void addDataObject(final AbstractData data) {
+	protected void addDataObject(final AbstractData data) {
 		elements.add(data);
 	}
 
 	/*
 	 * non-javadoc: Passes the internal vector back.
 	 */
-	List<AbstractData> getObjects() {
+	protected List<AbstractData> getObjects() {
 		return Collections.unmodifiableList(elements);
 	}
 
+	@Override
 	public String toString() {
 		final StringBuffer rval = new StringBuffer();
 		rval.append("NDG[");

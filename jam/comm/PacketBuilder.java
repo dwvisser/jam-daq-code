@@ -12,19 +12,19 @@ import java.nio.ByteBuffer;
  * @author Dale Visser
  * 
  */
-public final class PacketBuilder {
+final class PacketBuilder {
 	private static final PacketBuilder INSTANCE = new PacketBuilder();
 
 	private PacketBuilder() {
 		super();
 	}
 
-	static PacketBuilder getInstance() {
+	protected static PacketBuilder getInstance() {
 		return INSTANCE;
 	}
 
-	DatagramPacket message(final PacketTypes status, final String message,
-			final InetAddress address, final int port) {
+	protected DatagramPacket message(final PacketTypes status,
+			final String message, final InetAddress address, final int port) {
 		final byte[] byteMessage = new byte[message.length() + 5];
 		final ByteBuffer byteBuff = ByteBuffer.wrap(byteMessage);
 		byteBuff.putInt(status.intValue());

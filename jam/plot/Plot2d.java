@@ -113,15 +113,14 @@ final class Plot2d extends AbstractPlot {
 	}
 
 	@Override
-	protected
-	void displayFit(final double[][] signals, final double[] background,
-			final double[] residuals, final int lowerLimit) {
+	protected void displayFit(final double[][] signals,
+			final double[] background, final double[] residuals,
+			final int lowerLimit) {
 		// NOP
 	}
 
 	@Override
-	protected
-	void displayHistogram(final Histogram hist) {
+	protected void displayHistogram(final Histogram hist) {
 		synchronized (this) {
 			if (hist == null) {
 				counts2d = EMPTY;
@@ -142,8 +141,7 @@ final class Plot2d extends AbstractPlot {
 	 *            the plot coordinates of the point
 	 */
 	@Override
-	protected
-	void displaySetGate(final GateSetMode mode, final Bin pChannel,
+	protected void displaySetGate(final GateSetMode mode, final Bin pChannel,
 			final Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
 			panel.setSettingGate(true);
@@ -244,8 +242,7 @@ final class Plot2d extends AbstractPlot {
 	}
 
 	@Override
-	protected
-	int getChannel(final double energy) {
+	protected int getChannel(final double energy) {
 		return 0;
 	}
 
@@ -272,16 +269,16 @@ final class Plot2d extends AbstractPlot {
 	 * 
 	 * @param clipShape
 	 *            the shape we want to cover with a rectangular clip region
-	 * @param shapeInChannelCoords
+	 * @param chanCoords
 	 *            if <code>true</code>, the given shape is assumed given in
 	 *            channel coordinates, otherwise it is assumed given in graphics
 	 *            coordinates
 	 * @return a bounding rectangle in the graphics coordinates
 	 */
 	private Rectangle getClipBounds(final Shape clipShape,
-			final boolean shapeInChannelCoords) {
+			final boolean chanCoords) {
 		Rectangle box = clipShape.getBounds();
-		if (shapeInChannelCoords) {// shape is in channel coordinates
+		if (chanCoords) {// shape is in channel coordinates
 			/* add one more plot channel around the edges */
 			box.add(box.x + box.width + 1, box.y + box.height + 1);
 			box.add(box.x - 1, box.y - 1);
@@ -337,8 +334,7 @@ final class Plot2d extends AbstractPlot {
 	 * Caller should have checked 'isCalibrated' first.
 	 */
 	@Override
-	protected
-	double getEnergy(final double channel) {
+	protected double getEnergy(final double channel) {
 		return 0.0;
 	}
 
@@ -357,8 +353,7 @@ final class Plot2d extends AbstractPlot {
 	 *            a corner of the rectangle in plot coordinates
 	 */
 	@Override
-	protected
-	void markArea(final Bin bin1, final Bin bin2) {
+	protected void markArea(final Bin bin1, final Bin bin2) {
 		// While storing the boolean condition could make the code a
 		// few lines more compact, this form makes the code analysis
 		// engine happier about the null check and has the additional
@@ -423,8 +418,7 @@ final class Plot2d extends AbstractPlot {
 	}
 
 	@Override
-	protected
-	void overlayHistograms(final List<AbstractHist1D> overlayHists) {
+	protected void overlayHistograms(final List<AbstractHist1D> overlayHists) {
 		// NOP
 	}
 
@@ -539,7 +533,7 @@ final class Plot2d extends AbstractPlot {
 	 * @throws DataException
 	 *             if there's a problem painting the gate
 	 */
-	void paintPolyGate(final Graphics context) {
+	protected void paintPolyGate(final Graphics context) {
 		context.setPaintMode();
 		context.setColor(plotColorMap.getGateShow());
 		final Polygon gatePoints = currentGate.getBananaGate();
@@ -623,8 +617,7 @@ final class Plot2d extends AbstractPlot {
 	}
 
 	@Override
-	protected
-	void removeOverlays() {
+	protected void removeOverlays() {
 		// NOP
 	}
 

@@ -22,41 +22,43 @@ import javax.swing.SwingConstants;
  * @see jam.global.RunState
  */
 final class RunStateBox implements Observer {
-	private static final RunStateBox INSTANCE=new RunStateBox();
+	private static final RunStateBox INSTANCE = new RunStateBox();
+
 	/**
 	 * @return the only instance of this class.
 	 */
-	static RunStateBox getInstance(){
-	    return INSTANCE;
+	protected static RunStateBox getInstance() {
+		return INSTANCE;
 	}
-	
+
 	private transient final JLabel lrunState = new JLabel("   Welcome   ",
 			SwingConstants.CENTER);
-	
+
 	private transient final JPanel pRunState = new JPanel();
-	
-	private RunStateBox(){
+
+	private RunStateBox() {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		pRunState.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		pRunState.add(new JLabel(" Status: "));
 		lrunState.setOpaque(true);
-		pRunState.add(lrunState);	    	
+		pRunState.add(lrunState);
 	}
 
 	/**
 	 * Returns the displayable component.
+	 * 
 	 * @return the displayable component
 	 */
-	Component getComponent(){
+	protected Component getComponent() {
 		return pRunState;
 	}
-	
+
 	private void setRunState(final RunState runState) {
 		lrunState.setBackground(runState.getColor());
 		lrunState.setText(runState.getLabel());
 	}
-	
+
 	/**
 	 * Implementation of Observable interface.
 	 * 
@@ -70,7 +72,7 @@ final class RunStateBox implements Observer {
 		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
 			setRunState((RunState) event.getContent());
-		} 
+		}
 	}
 
 }

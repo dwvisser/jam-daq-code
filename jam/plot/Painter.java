@@ -274,7 +274,7 @@ final class Painter {
 		}
 	}
 
-	void drawNumber(final int number, final int[] overlayNumbers) {
+	protected void drawNumber(final int number, final int[] overlayNumbers) {
 		final String string = Integer.toString(number);
 		setGraphicsFont(font);
 		int width = metrics.stringWidth(string);
@@ -1149,7 +1149,7 @@ final class Painter {
 		graphics2d.drawPolyline(shape.xpoints, shape.ypoints, shape.npoints);
 	}
 
-	Polygon toView(final Polygon shape) {
+	protected Polygon toView(final Polygon shape) {
 		final int nPoints = shape.npoints;
 		final int[] xValues = new int[nPoints];
 		final int[] yValues = new int[nPoints];

@@ -216,7 +216,7 @@ final class Limits {
 	 *            Histogram to retrieve the limits for
 	 * @return display limits for the specified histogram
 	 */
-	static Limits getLimits(final Histogram hist) {
+	protected static Limits getLimits(final Histogram hist) {
 		final Limits rval;
 		if (hist == null) {
 			rval = LIMITS_NULL;
@@ -239,14 +239,14 @@ final class Limits {
 	/**
 	 * @return model for scrollbar attached to X-limits
 	 */
-	BoundedRangeModel getModelX() {
+	protected BoundedRangeModel getModelX() {
 		return rangeModelX;
 	}
 
 	/**
 	 * @return model for scrollbar attached to Y-limits
 	 */
-	BoundedRangeModel getModelY() {
+	protected BoundedRangeModel getModelY() {
 		return rangeModelY;
 	}
 
@@ -258,7 +258,7 @@ final class Limits {
 	 * @param maxX
 	 *            new maximum x value
 	 */
-	void setLimitsX(final int minX, final int maxX) {
+	protected void setLimitsX(final int minX, final int maxX) {
 		synchronized (this) {
 			minimumX = minX;
 			maximumX = maxX;
@@ -272,7 +272,7 @@ final class Limits {
 	 * @param minX
 	 *            new minimum x value
 	 */
-	void setMinimumX(final int minX) {
+	protected void setMinimumX(final int minX) {
 		synchronized (this) {
 			minimumX = minX;
 			updateModelX();
@@ -285,7 +285,7 @@ final class Limits {
 	 * @param maxX
 	 *            the new maximum x value
 	 */
-	void setMaximumX(final int maxX) {
+	protected void setMaximumX(final int maxX) {
 		synchronized (this) {
 			maximumX = maxX;
 			updateModelX();
@@ -300,7 +300,7 @@ final class Limits {
 	 * @param maxY
 	 *            maximum Y to display
 	 */
-	void setLimitsY(final int minY, final int maxY) {
+	protected void setLimitsY(final int minY, final int maxY) {
 		synchronized (this) {
 			minimumY = minY;
 			maximumY = maxY;
@@ -314,7 +314,7 @@ final class Limits {
 	 * @param minY
 	 *            minumum Y to display
 	 */
-	void setMinimumY(final int minY) {
+	protected void setMinimumY(final int minY) {
 		synchronized (this) {
 			minimumY = minY;
 			updateModelY();
@@ -327,7 +327,7 @@ final class Limits {
 	 * @param maxY
 	 *            maximum Y to display
 	 */
-	void setMaximumY(final int maxY) {
+	protected void setMaximumY(final int maxY) {
 		synchronized (this) {
 			maximumY = maxY;
 			updateModelY();
@@ -353,7 +353,7 @@ final class Limits {
 	 * @param minCounts
 	 *            the lowest count value to display
 	 */
-	void setMinimumCounts(final int minCounts) {
+	protected void setMinimumCounts(final int minCounts) {
 		synchronized (this) {
 			minimumCounts = minCounts;
 		}
@@ -365,7 +365,7 @@ final class Limits {
 	 * @param maxCounts
 	 *            the highest count value to display
 	 */
-	void setMaximumCounts(final int maxCounts) {
+	protected void setMaximumCounts(final int maxCounts) {
 		synchronized (this) {
 			maximumCounts = maxCounts;
 		}
@@ -378,7 +378,7 @@ final class Limits {
 	 *            one of <code>Limits.LINEAR</code> or <code>
 	 * Limits.LOG</code>
 	 */
-	void setScale(final Scale newScale) {
+	protected void setScale(final Scale newScale) {
 		synchronized (scale) {
 			scale = newScale;
 		}
@@ -387,7 +387,7 @@ final class Limits {
 	/**
 	 * update the values from the model
 	 */
-	void update() {
+	protected void update() {
 		synchronized (this) {
 			minimumX = rangeModelX.getValue();
 			maximumX = minimumX + rangeModelX.getExtent();
@@ -417,7 +417,7 @@ final class Limits {
 	/**
 	 * @return the lowest x-channel to display
 	 */
-	int getMinimumX() {
+	protected int getMinimumX() {
 		synchronized (this) {
 			return minimumX;
 		}
@@ -426,7 +426,7 @@ final class Limits {
 	/**
 	 * @return the highest x-channel to display
 	 */
-	int getMaximumX() {
+	protected int getMaximumX() {
 		synchronized (this) {
 			return maximumX;
 		}
@@ -435,7 +435,7 @@ final class Limits {
 	/**
 	 * @return the lowest y-channel to display
 	 */
-	int getMinimumY() {
+	protected int getMinimumY() {
 		synchronized (this) {
 			return minimumY;
 		}
@@ -444,7 +444,7 @@ final class Limits {
 	/**
 	 * @return the highest y-channel to display
 	 */
-	int getMaximumY() {
+	protected int getMaximumY() {
 		synchronized (this) {
 			return maximumY;
 		}
@@ -453,7 +453,7 @@ final class Limits {
 	/**
 	 * @return the minimum count level to be displayed
 	 */
-	int getMinimumCounts() {
+	protected int getMinimumCounts() {
 		synchronized (this) {
 			return minimumCounts;
 		}
@@ -462,7 +462,7 @@ final class Limits {
 	/**
 	 * @return the maximum count level to be displayed
 	 */
-	int getMaximumCounts() {
+	protected int getMaximumCounts() {
 		synchronized (this) {
 			return maximumCounts;
 		}
@@ -474,7 +474,7 @@ final class Limits {
 	 * @return <code>PlotGraphics.LINEAR</code> or <code>
 	 * PlotGraphics.LOG</code>
 	 */
-	Scale getScale() {
+	protected Scale getScale() {
 		synchronized (scale) {
 			return scale;
 		}

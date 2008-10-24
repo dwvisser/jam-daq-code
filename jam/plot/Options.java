@@ -3,12 +3,12 @@ package jam.plot;
 final class Options {
 
 	/**
-	 * Dont use full scale ch for auto scale
+	 * Don't use full scale channel for auto scale
 	 */
 	private transient boolean ignoreChFull;
 
 	/**
-	 * Dont use 0 ch for auto scale
+	 * Don't use 0 channel for auto scale
 	 */
 	private transient boolean ignoreChZero;
 
@@ -20,11 +20,11 @@ final class Options {
 		super();
 	}
 
-	boolean isIgnoreChFull() {
+	protected boolean isIgnoreChFull() {
 		return ignoreChFull;
 	}
 
-	boolean isIgnoreChZero() {
+	protected boolean isIgnoreChZero() {
 		return ignoreChZero;
 	}
 
@@ -37,32 +37,31 @@ final class Options {
 		}
 	}
 
-	boolean isPrinting() {
+	protected boolean isPrinting() {
 		return printing;
 	}
 
 	/*
 	 * non-javadoc: ignore channel full scale on auto scale
 	 */
-	void setIgnoreChFull(final boolean state) {
+	protected void setIgnoreChFull(final boolean state) {
 		ignoreChFull = state;
 	}
 
 	/*
 	 * non-javadoc: ignore channel zero on auto scale
 	 */
-	void setIgnoreChZero(final boolean state) {
+	protected void setIgnoreChZero(final boolean state) {
 		ignoreChZero = state;
 	}
 
-	void setNoFillMode(final boolean bool) {
+	protected void setNoFillMode(final boolean bool) {
 		synchronized (this) {
 			noFillMode = bool;
 		}
 	}
 
-	void setPrinting(final boolean value) {
+	protected void setPrinting(final boolean value) {
 		printing = value;
 	}
-
 }
