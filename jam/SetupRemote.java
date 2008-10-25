@@ -2,9 +2,6 @@
  */
 package jam;
 
-import jam.data.Gate;
-import jam.data.Histogram;
-import jam.data.RemoteData;
 import jam.global.JamException;
 import jam.global.JamStatus;
 import jam.global.SortMode;
@@ -22,7 +19,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.UnknownHostException;
 import java.util.logging.Level;
@@ -36,8 +32,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 /**
- * Class to make this process into a remote server for Jam or hookup to a remote
- * online acquisition that is a server.
+ * Class to make this process into a remote server for Jam or hook up to a
+ * remote online acquisition that is a server.
  * 
  * @author Ken Swartz
  */
@@ -73,6 +69,8 @@ public class SetupRemote extends JDialog implements ActionListener,
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	private static final Object classMonitor = new Object();
+
+	private static final RemoteSnapshot remote = new RemoteSnapshot();
 
 	/**
 	 * 
@@ -173,11 +171,11 @@ public class SetupRemote extends JDialog implements ActionListener,
 					LOGGER.info("Jam made as server: " + name);
 				} else if (mode == Mode.SNAP) {
 					LOGGER.info("Trying " + name);
-					snap(name);
+					remote.takeSnapshot(name);
 					LOGGER.info("Jam remote snapShot: " + name);
 				} else if (mode == Mode.LINK) {
 					LOGGER.info("Trying " + name);
-					link(textName.getText().trim());
+					remote.takeSnapshot(textName.getText().trim());
 					LOGGER.info("Jam remote link: " + name);
 				}
 
@@ -225,19 +223,6 @@ public class SetupRemote extends JDialog implements ActionListener,
 	}
 
 	/**
-	 * Link to a jam process for now just calls snap
-	 * 
-	 * @param url
-	 *            location of service
-	 * @exception JamException
-	 *                all exceptions given to <code>JamException</code> go to
-	 *                the console
-	 */
-	public void link(final String url) throws JamException {
-		snap(url);
-	}
-
-	/**
 	 * Locks up the Remote setup so the fields cannot be edited. and puts us in
 	 * remote mode
 	 * 
@@ -259,8 +244,7 @@ public class SetupRemote extends JDialog implements ActionListener,
 	 * Not sure what needs to be done here.
 	 */
 	public void reset() {
-		// remoteAccess = null;
-		// remoteData = null;
+		// nothing so far
 	}
 
 	/**
@@ -303,42 +287,6 @@ public class SetupRemote extends JDialog implements ActionListener,
 			} else {
 				STATUS.setSortMode(SortMode.NO_SORT, "No Sort");
 			}
-		}
-	}
-
-	/**
-	 * Get a snap shot of data.
-	 * 
-	 * @param url
-	 *            location of service
-	 * @exception JamException
-	 *                all exceptions given to <code>JamException</code> go to
-	 *                the console
-	 */
-	public void snap(final String url) throws JamException {
-		final RemoteData remoteData;
-		try {
-			if (STATUS.canSetup()) {
-				remoteData = (RemoteData) Naming.lookup(url);
-				LOGGER.info("Remote lookup OK!");
-			} else {
-				throw new JamException(
-						"Can't view remotely, sort mode locked [SetupRemote]");
-			}
-		} catch (RemoteException re) {
-			throw new JamException("Remote lookup up failed URL: " + url, re);
-		} catch (java.net.MalformedURLException mue) {
-			throw new JamException("Remote look up malformed URL: " + url, mue);
-		} catch (NotBoundException nbe) {
-			throw new JamException("Remote look up could not find name " + url,
-					nbe);
-		}
-		try {
-			Histogram.setHistogramList(remoteData.getHistogramList());
-			Gate.setGateList(remoteData.getGateList());
-		} catch (RemoteException re) {
-			throw new JamException(
-					"Remote getting histogram list [SetupRemote]", re);
 		}
 	}
 }

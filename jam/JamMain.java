@@ -3,14 +3,10 @@ package jam;
 import jam.commands.CommandManager;
 import jam.commands.CommandNames;
 import jam.data.control.AbstractControl;
-import jam.global.AcquisitionStatus;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
-import jam.global.LoggerConfig;
-import jam.global.QuerySortMode;
-import jam.global.RunState;
 import jam.global.SortMode;
 import jam.plot.PlotDisplay;
 import jam.sort.control.SetupSortOn;
@@ -23,8 +19,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -40,7 +34,7 @@ import javax.swing.SwingUtilities;
  * @author Ken Swartz
  * @since JDK1.1
  */
-public final class JamMain extends JFrame implements Observer {
+public final class JamMain extends JFrame {
 
 	/**
 	 * Message output and text input.
@@ -51,10 +45,8 @@ public final class JamMain extends JFrame implements Observer {
 
 	static {
 		Utility.setLookAndFeel();
-		final CommandManager manager = CommandManager.getInstance();
-		console = new Console(manager, manager);
 		final String packageName = JamMain.class.getPackage().getName();
-		new LoggerConfig(packageName, console.getLog());
+		console = jam.ui.Factory.createConsole(packageName);
 		LOGGER = Logger.getLogger(packageName);
 	}
 
@@ -72,8 +64,6 @@ public final class JamMain extends JFrame implements Observer {
 	 * Configuration information for Jam.
 	 */
 	private transient final JamProperties properties;
-
-	private RunState runState = RunState.NO_ACQ;
 
 	/**
 	 * Overall status of Jam.
@@ -114,17 +104,14 @@ public final class JamMain extends JFrame implements Observer {
 		super("Jam");
 		status.setShowGUI(showGUI);
 		showSplashScreen(showGUI);
+
 		/* Application initialization */
 		properties = new JamProperties(); // class that has properties
 		status.setFrame(this);
-		status.setAcqisitionStatus(new AcquisitionStatus() {
-			public boolean isAcqOn() {
-				return getRunState().isAcqOn();
-			}
-		});
+
+		/* this object rooted by Broadcaster and JamStatus */
+		new AcquisitionAndRunState(this);
 		/* class to distribute events to all listeners */
-		final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
-		broadcaster.addObserver(this);
 		/* Create main window GUI */
 		loadIcon();
 		final Container contents = getContentPane();
@@ -173,7 +160,8 @@ public final class JamMain extends JFrame implements Observer {
 		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
 		status.setCurrentGroup(initHists.getInitialGroup());
 		SelectionTree.setCurrentHistogram(initHists.getInitialHist());
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+		Broadcaster.getSingletonInstance().broadcast(
+				BroadcastEvent.Command.HISTOGRAM_SELECT,
 				initHists.getInitialHist());
 		showMainWindow(showGUI);
 	}
@@ -185,15 +173,6 @@ public final class JamMain extends JFrame implements Observer {
 	}
 
 	/**
-	 * @return the current run state
-	 */
-	private AcquisitionStatus getRunState() {
-		synchronized (runState) {
-			return runState;
-		}
-	}
-
-	/**
 	 * Load the application icon
 	 */
 	private void loadIcon() {
@@ -202,29 +181,6 @@ public final class JamMain extends JFrame implements Observer {
 		setIconImage((new ImageIcon(loader.getResource("jam/nukeicon.png"))
 				.getImage()));
 
-	}
-
-	/**
-	 * <p>
-	 * Sets run state when taking data online. The run state mostly determints
-	 * the state of control JMenu items. This method uses imformation set by
-	 * <code>setSortMode()</code>. In addition:
-	 * </p>
-	 * <ul>
-	 * <li>Control JMenu items are enabled and disabled as appropriate.</li>
-	 * <li>Control JMenu items are states are set and unset as appropriate.
-	 * </li>
-	 * <li>The JMenu bar is to show online sort.</li>
-	 * <li>Updates display status label .</li>
-	 * </ul>
-	 * 
-	 * @param state
-	 *            one of the possible run states control dialog box
-	 */
-	private void setRunState(final RunState state) {
-		synchronized (runState) {
-			runState = state;
-		}
 	}
 
 	/**
@@ -266,53 +222,4 @@ public final class JamMain extends JFrame implements Observer {
 		}
 	}
 
-	/**
-	 * Set the mode for sorting data, adjusting title and menu items as
-	 * appropriate.
-	 * 
-	 * @see jam.global.SortMode
-	 */
-	private void sortModeChanged() {
-		final StringBuilder title = new StringBuilder("Jam - ");
-		final String disk = "disk";
-		final QuerySortMode mode = status.getSortMode();
-		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK) {
-			setRunState(RunState.ACQ_OFF);
-			title.append("Online Sorting");
-			if (mode == SortMode.ONLINE_DISK) {
-				title.append(" TO ").append(disk);
-			}
-			setTitle(title.toString());
-		} else if (mode == SortMode.OFFLINE) {
-			setRunState(RunState.ACQ_OFF);
-			title.append("Offline Sorting");
-			if (mode == SortMode.OFFLINE) {
-				title.append(" FROM ").append(disk);
-			}
-			this.setTitle(title.toString());
-		} else if (mode == SortMode.REMOTE) { // remote display
-			setRunState(RunState.NO_ACQ);
-			this.setTitle(title.append("Remote Mode").toString());
-		} else if (mode == SortMode.FILE) { // just read in a file
-			setRunState(RunState.NO_ACQ);
-			this.setTitle(title.append(status.getSortName()).toString());
-		} else if (mode == SortMode.NO_SORT) {
-			setRunState(RunState.NO_ACQ);
-			title.append("sorting not enabled");
-			this.setTitle(title.toString());
-		}
-	}
-
-	/**
-	 * @see Observer#update(java.util.Observable, java.lang.Object)
-	 */
-	public void update(final Observable event, final Object param) {
-		final BroadcastEvent beParam = (BroadcastEvent) param;
-		final BroadcastEvent.Command command = beParam.getCommand();
-		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
-			sortModeChanged();
-		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
-			setRunState((RunState) beParam.getContent());
-		}
-	}
 }

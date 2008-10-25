@@ -1,5 +1,6 @@
 package jam.data.control;
 
+import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -85,6 +86,7 @@ public final class GateAdd extends AbstractControl {
 		final JButton bcanceladd = new JButton(new WindowCancelAction(this));
 		pbadd.add(bcanceladd);
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
@@ -116,11 +118,12 @@ public final class GateAdd extends AbstractControl {
 	/**
 	 * @see jam.data.control.AbstractControl#doSetup()
 	 */
+	@Override
 	public void doSetup() {
 		cadd.setSelectedIndex(0);
 	}
 
-	void selectGateAdd(final Gate gate) {
+	protected void selectGateAdd(final Gate gate) {
 		synchronized (this) {
 			currentGateAdd = gate;
 		}

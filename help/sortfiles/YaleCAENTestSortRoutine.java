@@ -8,8 +8,8 @@ import jam.sort.SortException;
 import jam.sort.SortRoutine;
 
 /**
- * Sort routine for neutron counting with the aid of an anti-coincidence cosmic
- * muon shield and a NaI Annulus.
+ * Sort routine for neutron counting with the aid of an anti-coincidence muon
+ * shield and a NaI Annulus.
  * 
  * @author R. Longland
  */

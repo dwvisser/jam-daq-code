@@ -1,5 +1,6 @@
-package jam;
+package jam.script;
 
+import jam.JamMain;
 import jam.commands.CommandManager;
 import jam.commands.CommandNames;
 import jam.data.Group;
@@ -47,13 +48,13 @@ import java.util.logging.Logger;
  * combine their results in a "merge script".
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Apr 5, 2004
+ * @version April 5, 2004
  */
-public final class Script implements Observer {
+public final class Session implements Observer {
 
 	private static final String INSTREAM = "\tin: ";
 
-	private static final Logger LOGGER = Logger.getLogger(Script.class
+	private static final Logger LOGGER = Logger.getLogger(Session.class
 			.getPackage().getName());
 
 	private static final String OUTSTREAM = "\tout: ";
@@ -87,7 +88,7 @@ public final class Script implements Observer {
 	 * an offline sorting session. A non-trivial side-effect of invoking this
 	 * constructor is that an instance of Jam is started up in the background.
 	 */
-	public Script() {
+	public Session() {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		jam = JamMain.getInstance(false);
@@ -98,9 +99,9 @@ public final class Script implements Observer {
 	/**
 	 * Add an event file to the list of event files to sort. If the file
 	 * reference passed represents a directory, then all files with names ending
-	 * in <code>.evn</code> in the directory are added to the list. Files
-	 * whose names don't meet this requirement are ignored and not added to the
-	 * list. This method does <em>not</em> recurse into the directory tree.
+	 * in <code>.evn</code> in the directory are added to the list. Files whose
+	 * names don't meet this requirement are ignored and not added to the list.
+	 * This method does <em>not</em> recurse into the directory tree.
 	 * 
 	 * @param fileOrDir
 	 *            <code>.evn</code> file or folder containing such files
@@ -130,7 +131,7 @@ public final class Script implements Observer {
 	}
 
 	/**
-	 * Add the hisgogram counts in the given HDF file, or all HDF files in the
+	 * Add the histogram counts in the given HDF file, or all HDF files in the
 	 * given directory, into the histograms in memory. You must have already
 	 * invoked <code>setupSort()</code>.
 	 * 
@@ -163,8 +164,8 @@ public final class Script implements Observer {
 	 * Launch the offline sort.
 	 * 
 	 * @throws IllegalStateException
-	 *             if <code>setupOffline()</code> hasn't been called yet, or
-	 *             if no event files have been specified
+	 *             if <code>setupOffline()</code> hasn't been called yet, or if
+	 *             no event files have been specified
 	 */
 	public void beginSort() {
 		if (!isSetup) {
@@ -208,8 +209,8 @@ public final class Script implements Observer {
 	 * that java was launched from. Here's an example for Linux and MacOS X
 	 * systems: If the JVM was launched from <code>/home/user/sortscript</code>,
 	 * and this method is called with the argument
-	 * <code>"../thesisRuns/run34.evn"</code>, then a File object
-	 * representing <code>/home/user/thesisRuns/run34.evn</code> is returned,
+	 * <code>"../thesisRuns/run34.evn"</code>, then a File object representing
+	 * <code>/home/user/thesisRuns/run34.evn</code> is returned,
 	 * <em>whether or not that file really exists yet</em>.
 	 * 
 	 * @param fname
@@ -324,15 +325,15 @@ public final class Script implements Observer {
 	 * for setting up offline sorting. That is, calling this defines the
 	 * classpath to sort routines, the fully qualified name of the
 	 * <code>AbstractSortRoutine</code> to use for sorting, and references to
-	 * the <code>EventInputStream</code> and <code>EventOutputStream</code>
-	 * to use.
+	 * the <code>EventInputStream</code> and <code>EventOutputStream</code> to
+	 * use.
 	 * 
 	 * @param classPath
 	 *            the path that sort routines get loaded from
 	 * @param sortName
 	 *            fully qualified with all package names in the standard java
-	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for
-	 *            the file <code>sort/Calorimeter.class</code> relative to
+	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for the
+	 *            file <code>sort/Calorimeter.class</code> relative to
 	 *            <code>classPath</code>
 	 * @param inStream
 	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
@@ -358,15 +359,15 @@ public final class Script implements Observer {
 	 * for setting up offline sorting. That is, calling this defines the
 	 * classpath to sort routines, the fully qualified name of the
 	 * <code>AbstractSortRoutine</code> to use for sorting, and references to
-	 * the <code>EventInputStream</code> and <code>EventOutputStream</code>
-	 * to use.
+	 * the <code>EventInputStream</code> and <code>EventOutputStream</code> to
+	 * use.
 	 * 
 	 * @param classPath
 	 *            the path that sort routines get loaded from
 	 * @param sortName
 	 *            fully qualified with all package names in the standard java
-	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for
-	 *            the file <code>sort/Calorimeter.class</code> relative to
+	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for the
+	 *            file <code>sort/Calorimeter.class</code> relative to
 	 *            <code>classPath</code>
 	 * @param inStream
 	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
@@ -388,54 +389,6 @@ public final class Script implements Observer {
 	}
 
 	/**
-	 * 
-	 * @param classPath
-	 *            the path that sort routines get loaded from
-	 * @param sortName
-	 *            fully qualified with all package names in the standard java
-	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for
-	 *            the file <code>sort/Calorimeter.class</code> relative to
-	 *            <code>classPath</code>
-	 * @param inStream
-	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
-	 * @param outStream
-	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
-	 */
-	public void setupOnline(final File classPath, final String sortName,
-			final Class<? extends AbstractEventInputStream> inStream,
-			final Class<? extends AbstractEventOutputStream> outStream) {
-		setupSortOnline.setupSort(classPath, sortName, inStream, outStream);
-		LOGGER.log(Level.INFO, "Setup online sorting:");
-		LOGGER.log(Level.INFO, "\t" + classPath + ": " + sortName);
-		LOGGER.log(Level.INFO, INSTREAM + inStream);
-		LOGGER.log(Level.INFO, OUTSTREAM + outStream);
-		isSetup = true;
-	}
-
-	/**
-	 * 
-	 * @param sortName
-	 *            fully qualified with all package names in the standard java
-	 *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for
-	 *            the file <code>sort/Calorimeter.class</code> relative to
-	 *            <code>classPath</code>
-	 * @param inStream
-	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
-	 * @param outStream
-	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
-	 */
-	public void setupOnline(final String sortName,
-			final Class<? extends AbstractEventInputStream> inStream,
-			final Class<? extends AbstractEventOutputStream> outStream) {
-		setupSortOnline.setupSort(sortName, inStream, outStream);
-		LOGGER.log(Level.INFO, "Setup online sorting:");
-		LOGGER.log(Level.INFO, "\t" + sortName);
-		LOGGER.log(Level.INFO, INSTREAM + inStream);
-		LOGGER.log(Level.INFO, OUTSTREAM + outStream);
-		isSetup = true;
-	}
-
-	/**
 	 * Show Jam's graphical interface. Once shown, the user may interact with
 	 * Jam like normal, including interrupting the scripted process.
 	 * 
@@ -445,17 +398,92 @@ public final class Script implements Observer {
 	}
 
 	/**
-	 * Start online acquisition.
+	 * Online acquisition scripting.
 	 */
-	public void startAcquisition() {
-		this.runControl.startAcq();
-	}
+	public Online online = new Online();
 
 	/**
-	 * Stop online acquisition.
+	 * Online acquisition scripting.
+	 * 
+	 * @author Dale Visser
 	 */
-	public void stopAcquisition() {
-		this.runControl.stopAcq();
+	public class Online {
+
+		Online() {
+			// nothing
+		}
+
+		/**
+		 * Start online acquisition.
+		 */
+		public void start() {
+			Session.this.runControl.startAcq();
+		}
+
+		/**
+		 * 
+		 * @param classPath
+		 *            the path that sort routines get loaded from
+		 * @param sortName
+		 *            fully qualified with all package names in the standard
+		 *            java "dot" notation, e.g., <code>"sort.Calorimeter"</code>
+		 *            for the file <code>sort/Calorimeter.class</code> relative
+		 *            to <code>classPath</code>
+		 * @param inStream
+		 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
+		 * @param outStream
+		 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
+		 */
+		public void setup(final File classPath, final String sortName,
+				final Class<? extends AbstractEventInputStream> inStream,
+				final Class<? extends AbstractEventOutputStream> outStream) {
+			Session.this.setupSortOnline.setupSort(classPath, sortName,
+					inStream, outStream);
+			Session.LOGGER.log(Level.INFO, "Setup online sorting:");
+			Session.LOGGER.log(Level.INFO, "\t" + classPath + ": " + sortName);
+			this.internalSetup(inStream, outStream);
+		}
+
+		private void internalSetup(
+				final Class<? extends AbstractEventInputStream> inStream,
+				final Class<? extends AbstractEventOutputStream> outStream) {
+			Session.LOGGER.log(Level.INFO, INSTREAM + inStream);
+			Session.LOGGER.log(Level.INFO, OUTSTREAM + outStream);
+			Session.this.isSetup = true;
+		}
+
+		/**
+		 * 
+		 * @param sortName
+		 *            fully qualified with all package names in the standard
+		 *            java "dot" notation, e.g., <code>"sort.Calorimeter"</code>
+		 *            for the file <code>sort/Calorimeter.class</code> relative
+		 *            to <code>classPath</code>
+		 * @param inStream
+		 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
+		 * @param outStream
+		 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
+		 */
+		public void setup(final String sortName,
+				final Class<? extends AbstractEventInputStream> inStream,
+				final Class<? extends AbstractEventOutputStream> outStream) {
+			Session.this.setupSortOnline
+					.setupSort(sortName, inStream, outStream);
+			Session.LOGGER.log(Level.INFO, "Setup online sorting:");
+			Session.LOGGER.log(Level.INFO, "\t" + sortName);
+			this.internalSetup(inStream, outStream);
+		}
+
+		/**
+		 * Stop online acquisition.
+		 * 
+		 * @param script
+		 *            TODO
+		 */
+		public void stop() {
+			Session.this.runControl.stopAcq();
+		}
+
 	}
 
 	public void update(final Observable event, final Object param) {

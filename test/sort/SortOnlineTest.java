@@ -3,8 +3,8 @@ package test.sort;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import jam.Script;
 import jam.data.HistInt1D;
+import jam.script.Session;
 
 import org.junit.After;
 import org.junit.Test;
@@ -16,7 +16,7 @@ import org.junit.Test;
  */
 public class SortOnlineTest {
 
-	private static Script script = OnlineTestCommon.script;
+	private static Session session = OnlineTestCommon.session;
 
 	private static final String sortName = "help.sortfiles.EvsDE";
 
@@ -31,7 +31,7 @@ public class SortOnlineTest {
 	 */
 	@After
 	public void tearDown() {
-		script.cancelOnline();
+		session.cancelOnline();
 	}
 
 	/**
@@ -42,7 +42,7 @@ public class SortOnlineTest {
 	public void testSetupOnThenCancelThenSetupOn() {// NOPMD
 		OnlineTestCommon.setupWithinTimeoutPeriod(sortName);
 		verifyEnergyHistogramExists();
-		script.cancelOnline();
+		session.cancelOnline();
 		OnlineTestCommon.setupWithinTimeoutPeriod(sortName);
 		verifyEnergyHistogramExists();
 	}
@@ -55,13 +55,13 @@ public class SortOnlineTest {
 	public void testSuccessfulOnlineSort() {
 		OnlineTestCommon.setupWithinTimeoutPeriod(sortName);
 		final HistInt1D energy = verifyEnergyHistogramExists();
-		script.startAcquisition();
+		session.online.start();
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException ie) {
 			fail("Interrupted while sleeping." + ie.getMessage());
 		}
-		script.stopAcquisition();
+		session.online.stop();
 		assertTrue("Expected counts > 0.", energy.getArea() > 0.0);
 	}
 

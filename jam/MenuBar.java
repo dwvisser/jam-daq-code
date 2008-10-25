@@ -5,17 +5,10 @@ import jam.commands.CommandManager;
 import jam.commands.CommandNames;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.JamStatus;
-import jam.global.QuerySortMode;
-import jam.global.SortMode;
 import jam.io.hdf.HDFPrefs;
-import jam.plot.PlotDisplay;
 import jam.plot.PlotPrefs;
-import jam.plot.View;
 import jam.plot.color.ColorPrefs;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -35,13 +28,8 @@ import javax.swing.JMenuItem;
  */
 final class MenuBar implements Observer {
 
-	final transient private JMenuItem impHist = new JMenu("Import");
-
 	/** Fit menu needed as members so we can add a fit */
 	final transient private JMenu fitting = new JMenu("Fitting");
-
-	/** Fit menu needed as members so we can add a fit */
-	final transient private JMenu view = new JMenu("View");
 
 	final transient private JMenuBar menus = new JMenuBar();
 
@@ -56,7 +44,7 @@ final class MenuBar implements Observer {
 	 * <li>Histogram</li>
 	 * <li>Gate</li>
 	 * <li>Scalers</li>
-	 * <li>Preferencs</li>
+	 * <li>Preferences</li>
 	 * <li>Fitting</li>
 	 * <li>Help</li>
 	 * </ul>
@@ -68,64 +56,51 @@ final class MenuBar implements Observer {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		menus.add(createFileMenu());
-		menus.add(createSetupMenu());
+		menus.add(createMenu("Setup", CommandNames.SHOW_SETUP_ONLINE,
+				CommandNames.SHOW_SETUP_OFF, CommandNames.SHOW_SETUP_REMOTE,
+				CommandNames.SHOW_CONFIG));
 		menus.add(createControlMenu());
 		menus.add(createHistogramMenu());
-		menus.add(createGateMenu());
+		menus.add(createMenu("Gate", CommandNames.SHOW_NEW_GATE,
+				CommandNames.SHOW_ADD_GATE, CommandNames.SHOW_SET_GATE));
 		menus.add(createScalerMenu());
-		menus.add(createViewMenu());
+		final ViewMenu viewMenu = new ViewMenu();
+		menus.add(viewMenu.getMenu());
 		menus.add(createPreferencesMenu());
 		menus.add(createFitMenu());
-		menus.add(createHelp());
+		menus.add(createMenu("Help", CommandNames.HELP_ABOUT,
+				CommandNames.USER_GUIDE, CommandNames.HELP_LICENSE));
 	}
 
 	private JMenu createFileMenu() {
-
-		final JMenu file = new JMenu("File");
-
-		file.add(getMenuItem(CommandNames.CLEAR));
-		file.add(getMenuItem(CommandNames.OPEN_HDF));
-
-		final JMenuItem openSpecial = new JMenu("Open Special");
-		file.add(openSpecial);
-		openSpecial.add(getMenuItem(CommandNames.OPEN_MULTIPLE_HDF));
-		openSpecial.add(getMenuItem(CommandNames.OPEN_ADD_HDF));
-		openSpecial.add(getMenuItem(CommandNames.OPEN_SELECTED));
-
+		final JMenu file = createMenu("File", CommandNames.CLEAR,
+				CommandNames.OPEN_HDF);
+		file.add(createMenu("Open Special", CommandNames.OPEN_MULTIPLE_HDF,
+				CommandNames.OPEN_ADD_HDF, CommandNames.OPEN_SELECTED));
 		file.add(getMenuItem(CommandNames.RELOAD_HDF));
 		file.add(getMenuItem(CommandNames.ADD_HDF));
 		file.add(getMenuItem(CommandNames.SAVE_HDF));
 		file.add(getMenuItem(CommandNames.SAVE_AS_HDF));
 
-		final JMenuItem saveSpecial = new JMenu("Save Special");
-		saveSpecial.add(getMenuItem(CommandNames.SAVE_SORT));
-		saveSpecial.add(getMenuItem(CommandNames.SAVE_GROUP));
-		saveSpecial.add(getMenuItem(CommandNames.SAVE_HISTOGRAMS));
-		saveSpecial.add(getMenuItem(CommandNames.SAVE_GATES));
+		final JMenuItem saveSpecial = createMenu("Save Special",
+				CommandNames.SAVE_SORT, CommandNames.SAVE_GROUP,
+				CommandNames.SAVE_HISTOGRAMS, CommandNames.SAVE_GATES);
 
 		file.add(saveSpecial);
 		file.addSeparator();
 
-		final JMenuItem utilities = new JMenu("Scaler Utilities");
+		final JMenuItem utilities = createMenu("Scaler Utilities",
+				CommandNames.OPEN_SCALERS, CommandNames.SHOW_SCALER_SCAN);
 		file.add(utilities);
-		utilities.add(getMenuItem(CommandNames.OPEN_SCALERS));
-		utilities.add(getMenuItem(CommandNames.SHOW_SCALER_SCAN));
 		file.addSeparator();
 
-		file.add(impHist);
-		impHist.add(getMenuItem(CommandNames.IMPORT_TEXT));
-		impHist.add(getMenuItem(CommandNames.IMPORT_SPE));
-		impHist.add(getMenuItem(CommandNames.IMPORT_DAMM));
-		impHist.add(getMenuItem(CommandNames.IMPORT_XSYS));
-		impHist.add(getMenuItem(CommandNames.IMPORT_BAN));
+		final ImportMenu importMenu = new ImportMenu();
+		file.add(importMenu.getMenu());
 
-		final JMenu expHist = new JMenu("Export");
+		final JMenu expHist = createMenu("Export", CommandNames.EXPORT_TABLE,
+				CommandNames.EXPORT_TEXT, CommandNames.EXPORT_SPE,
+				CommandNames.EXPORT_DAMM, CommandNames.SHOW_BATCH_EXPORT);
 		file.add(expHist);
-		expHist.add(getMenuItem(CommandNames.EXPORT_TABLE));
-		expHist.add(getMenuItem(CommandNames.EXPORT_TEXT));
-		expHist.add(getMenuItem(CommandNames.EXPORT_SPE));
-		expHist.add(getMenuItem(CommandNames.EXPORT_DAMM));
-		expHist.add(getMenuItem(CommandNames.SHOW_BATCH_EXPORT));
 
 		file.addSeparator();
 		file.add(getMenuItem(CommandNames.PRINT));
@@ -136,13 +111,14 @@ final class MenuBar implements Observer {
 		return file;
 	}
 
-	private JMenu createSetupMenu() {
-		final JMenu setup = new JMenu("Setup");
-		setup.add(getMenuItem(CommandNames.SHOW_SETUP_ONLINE));
-		setup.add(getMenuItem(CommandNames.SHOW_SETUP_OFF));
-		setup.add(getMenuItem(CommandNames.SHOW_SETUP_REMOTE));
-		setup.add(getMenuItem(CommandNames.SHOW_CONFIG));
-		return setup;
+	protected static JMenu createMenu(final String name,
+			final String... commandNames) {
+		final JMenu result = new JMenu(name);
+		for (String commandName : commandNames) {
+			result.add(getMenuItem(commandName));
+		}
+
+		return result;
 	}
 
 	private JMenu createControlMenu() {
@@ -177,23 +153,6 @@ final class MenuBar implements Observer {
 		return histogram;
 	}
 
-	private JMenu createGateMenu() {
-
-		final JMenu gate = new JMenu("Gate");
-		menus.add(gate);
-		gate.add(getMenuItem(CommandNames.SHOW_NEW_GATE));
-		gate.add(getMenuItem(CommandNames.SHOW_ADD_GATE));
-		gate.add(getMenuItem(CommandNames.SHOW_SET_GATE));
-		return gate;
-	}
-
-	private JMenu createViewMenu() {
-
-		updateViews();
-		return view;
-
-	}
-
 	private JMenu createScalerMenu() {
 		final JMenu scalers = new JMenu("Scaler");
 		menus.add(scalers);
@@ -211,21 +170,10 @@ final class MenuBar implements Observer {
 		return fitting;
 	}
 
-	private JMenu createHelp() {
-
-		final JMenu helpMenu = new JMenu("Help");
-		menus.add(helpMenu);
-		helpMenu.add(getMenuItem(CommandNames.HELP_ABOUT));
-		helpMenu.add(getMenuItem(CommandNames.USER_GUIDE));
-		helpMenu.add(getMenuItem(CommandNames.HELP_LICENSE));
-		return helpMenu;
-	}
-
 	private JMenu createPreferencesMenu() {
-		final JMenu mPrefer = new JMenu("Preferences");
-		mPrefer.add(getMenuItem(PlotPrefs.AUTO_IGNORE_ZERO));
-		mPrefer.add(getMenuItem(PlotPrefs.AUTO_IGNORE_FULL));
-		mPrefer.add(getMenuItem(PlotPrefs.AUTO_ON_EXPAND));
+		final JMenu mPrefer = createMenu("Preferences",
+				PlotPrefs.AUTO_IGNORE_ZERO, PlotPrefs.AUTO_IGNORE_FULL,
+				PlotPrefs.AUTO_ON_EXPAND);
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(PlotPrefs.HIGHLIGHT_GATE));
 		mPrefer.add(getMenuItem(ColorPrefs.SMOOTH_SCALE));
@@ -252,7 +200,7 @@ final class MenuBar implements Observer {
 	 *            name of the command
 	 * @return JMenuItem that invokes the associated action
 	 */
-	private JMenuItem getMenuItem(final String name) {
+	protected static JMenuItem getMenuItem(final String name) {
 		return new JMenuItem(CommandManager.getInstance().getAction(name));
 	}
 
@@ -262,41 +210,10 @@ final class MenuBar implements Observer {
 	public void update(final Observable observe, final Object obj) {
 		final BroadcastEvent event = (BroadcastEvent) obj;
 		final BroadcastEvent.Command command = event.getCommand();
-		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
-			sortModeChanged();
-		} else if (command == BroadcastEvent.Command.FIT_NEW) {
+		if (command == BroadcastEvent.Command.FIT_NEW) {
 			final Action fitAction = (Action) (event.getContent());
 			fitting.add(new JMenuItem(fitAction));
-		} else if (command == BroadcastEvent.Command.VIEW_NEW) {
-			updateViews();
 		}
-	}
-
-	private void sortModeChanged() {
-		final JamStatus status = JamStatus.getSingletonInstance();
-		final QuerySortMode mode = status.getSortMode();
-		final boolean file = mode == SortMode.FILE || mode == SortMode.NO_SORT;
-		impHist.setEnabled(file);
-	}
-
-	private void updateViews() {
-		view.removeAll();
-		view.add(getMenuItem(CommandNames.SHOW_VIEW_NEW));
-		view.add(getMenuItem(CommandNames.SHOW_VIEW_DELETE));
-		view.addSeparator();
-		for (final String name : View.getNameList()) {
-			view.add(namedMenuItem(name));
-		}
-	}
-
-	private JMenuItem namedMenuItem(final String name) {
-		final JMenuItem rval = new JMenuItem(name);
-		rval.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				PlotDisplay.getDisplay().setView(View.getView(name));
-			}
-		});
-		return rval;
 	}
 
 	/**

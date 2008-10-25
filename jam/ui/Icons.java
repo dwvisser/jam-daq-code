@@ -140,7 +140,7 @@ public final class Icons {
 		}
 	}
 
-	boolean areAnyNull(final URL... urls) {
+	protected boolean areAnyNull(final URL... urls) {
 		boolean rval = false;
 		for (int i = urls.length - 1; i >= 0; i--) {
 			if (urls[i] == null) {

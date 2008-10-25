@@ -11,7 +11,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 final class GroupControlInitializer {
-	static JTextField initializeDialog(final JDialog dialog) {
+	protected static JTextField initializeDialog(final JDialog dialog) {
 		dialog.setLocation(30, 30);
 		dialog.setResizable(false);
 		final Container cdialog = dialog.getContentPane();

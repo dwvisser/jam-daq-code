@@ -1,7 +1,7 @@
 package test.sort;
 
 import static org.junit.Assert.fail;
-import jam.Script;
+import jam.script.Session;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 import jam.sort.stream.YaleInputStream;
@@ -32,7 +32,7 @@ public final class OnlineTestCommon {
 	/**
 	 * Scripting object to be used by tests.
 	 */
-	public static Script script = new Script();
+	public static Session session = new Session();
 
 	/**
 	 * GUI mock front end application.
@@ -55,7 +55,7 @@ public final class OnlineTestCommon {
 			final Class<? extends AbstractEventOutputStream> outputStream) {
 		return new Runnable() {
 			public void run() {
-				script.setupOnline(sortName, inputStream, outputStream);
+				session.online.setup(sortName, inputStream, outputStream);
 			}
 		};
 	}

@@ -1,6 +1,5 @@
 package jam.commands;
 
-import jam.Help;
 
 /**
  * Show the license dialog.
@@ -11,6 +10,6 @@ final class ShowDialogLicense extends AbstractShowDialog {
 
 	ShowDialogLicense() {
 		super("License\u2026");
-		dialog = new Help();
+		dialog = jam.Factory.createHelp();
 	}
 }

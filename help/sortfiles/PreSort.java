@@ -1,6 +1,6 @@
 package help.sortfiles;
 
-import jam.Script;
+import jam.script.Session;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 import jam.sort.stream.YaleCAEN_InputStream;
@@ -18,7 +18,7 @@ public final class PreSort {
 
 	private PreSort(final String target, final int angle) {
 		super();
-		final Script scripter = new Script();
+		final Session scripter = new Session();
 		final File cpath = scripter.defineFile("");
 		final Class<? extends AbstractEventInputStream> inStream = YaleCAEN_InputStream.class;
 		final Class<? extends AbstractEventOutputStream> outStream = YaleOutputStream.class;

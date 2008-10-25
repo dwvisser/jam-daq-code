@@ -10,14 +10,8 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.help.CSH;
@@ -41,9 +35,6 @@ import javax.swing.UIManager;
  * @version version 0.5 November 98
  */
 public class Help extends JDialog {
-	private static final Logger LOGGER = Logger.getLogger(Help.class
-			.getPackage().getName());
-
 	private final static int POS_X = 20;
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
@@ -123,11 +114,14 @@ public class Help extends JDialog {
 
 	/**
 	 * Constructor.
+	 * 
+	 * @param licenseReader
+	 *            responsible for getting the license text
 	 */
-	public Help() {
+	public Help(final LicenseReader licenseReader) {
 		super(STATUS.getFrame(),
 				"University of Illinois/NCSA Open Source License", true);
-		layoutLicenseDialog();
+		layoutLicenseDialog(licenseReader);
 		final String defaultVal = "notseen";
 		final String version = Version.getInstance().getName();
 		final String key = "license";
@@ -139,28 +133,12 @@ public class Help extends JDialog {
 		}
 	}
 
-	private void layoutLicenseDialog() {
+	private void layoutLicenseDialog(final LicenseReader licenseReader) {
 		final Container contents = this.getContentPane();
 		this.setResizable(true);
 		contents.setLayout(new BorderLayout());
 		final JPanel center = new JPanel(new GridLayout(0, 1));
-		final InputStream license_in = Thread.currentThread()
-				.getContextClassLoader().getResourceAsStream("license.txt");
-		final Reader reader = new InputStreamReader(license_in);
-		int length = 0;
-		final char[] textarray = new char[2000];
-		try {
-			length = reader.read(textarray);
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
-		} finally {
-			try {
-				reader.close();
-			} catch (IOException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			}
-		}
-		final String text = new String(textarray, 0, length);
+		final String text = licenseReader.getLicenseText();
 		center.add(new JScrollPane(new JTextArea(text)));
 		contents.add(center, BorderLayout.CENTER);
 		final JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER));

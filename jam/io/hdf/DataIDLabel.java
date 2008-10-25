@@ -78,7 +78,7 @@ final class DataIDLabel extends AbstractData {
 	/**
 	 * @return the text contained.
 	 */
-	String getLabel() {
+	protected String getLabel() {
 		return label;
 	}
 

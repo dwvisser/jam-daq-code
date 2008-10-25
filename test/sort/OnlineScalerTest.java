@@ -2,11 +2,11 @@ package test.sort;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import jam.Script;
 import jam.data.Scaler;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
+import jam.script.Session;
 
 import java.util.List;
 import java.util.Observable;
@@ -27,7 +27,7 @@ import test.sort.mockfrontend.MessageSender;
  */
 public class OnlineScalerTest implements Observer {
 
-	private static Script script = OnlineTestCommon.script;
+	private static Session session = OnlineTestCommon.session;
 
 	private transient final CountDownLatch latch = new CountDownLatch(1);
 
@@ -48,7 +48,7 @@ public class OnlineScalerTest implements Observer {
 	@After
 	public void tearDown() {
 		this.BROADCASTER.deleteObserver(this);
-		script.cancelOnline();
+		session.cancelOnline();
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class OnlineScalerTest implements Observer {
 		assertScalerValue(scaler, 0);
 		assertTrue("Expected status to be online.", JamStatus
 				.getSingletonInstance().isOnline());
-		script.readScalers();
+		session.readScalers();
 		latch.await(500, TimeUnit.MILLISECONDS);
 		assertTrue(
 				"Expected front end to have received a 'list scaler' command.",
