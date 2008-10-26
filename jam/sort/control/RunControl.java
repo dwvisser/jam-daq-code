@@ -1,7 +1,7 @@
 package jam.sort.control;
 
 import jam.comm.FrontEndCommunication;
-import jam.comm.VMECommunication;
+import jam.comm.ScalerCommunication;
 import jam.global.JamException;
 import jam.global.JamStatus;
 import jam.global.RunInfo;
@@ -119,7 +119,9 @@ public final class RunControl extends JDialog implements Controller,
 
 	private transient final JTextField tRunNumber, textRunTitle, textExptName;
 
-	private transient final FrontEndCommunication vmeComm;
+	private transient final FrontEndCommunication frontEnd;
+
+	private transient final ScalerCommunication scaler;
 
 	private transient final JCheckBox zeroScalers;
 
@@ -131,7 +133,8 @@ public final class RunControl extends JDialog implements Controller,
 	 */
 	private RunControl(final Frame frame) {
 		super(frame, "Run", false);
-		vmeComm = VMECommunication.getSingletonInstance();
+		frontEnd = jam.comm.Factory.createFrontEndCommunication();
+		scaler = jam.comm.Factory.createScalerCommunication();
 		RunInfo.getInstance().runNumber = 100;
 		setResizable(false);
 		setLocation(20, 50);
@@ -276,7 +279,7 @@ public final class RunControl extends JDialog implements Controller,
 			jam.data.Histogram.setZeroAll();
 		}
 		if (zeroScalers.isSelected()) {// should we zero scalers
-			vmeComm.clearScalers();
+			scaler.clearScalers();
 		}
 		if (device != Device.FRONT_END) {
 			// tell net daemon to write events to storage daemon
@@ -297,7 +300,7 @@ public final class RunControl extends JDialog implements Controller,
 		setRunOn(true);
 		netDaemon.setEmptyBefore(false);// fresh slate
 		netDaemon.setState(State.RUN);
-		vmeComm.startAcquisition();// VME start last because other thread have
+		frontEnd.startAcquisition();// VME start last because other thread have
 
 		// higher priority
 	}
@@ -312,8 +315,8 @@ public final class RunControl extends JDialog implements Controller,
 	 */
 	public void endRun() {
 		RunInfo.getInstance().runEndTime = new Date();
-		vmeComm.end(); // stop acquisition, flush buffer
-		vmeComm.readScalers(); // read scalers
+		frontEnd.end(); // stop acquisition, flush buffer
+		scaler.readScalers(); // read scalers
 
 		STATUS.setRunState(RunState.ACQ_OFF);
 		LOGGER.info("Ending run " + RunInfo.getInstance().runNumber
@@ -330,8 +333,8 @@ public final class RunControl extends JDialog implements Controller,
 									+ " seconds for "
 									+ "sorter and file writer to finish. Sending commands to "
 									+ "front end again.");
-					vmeComm.end();
-					vmeComm.readScalers();
+					frontEnd.end();
+					scaler.readScalers();
 				}
 			} catch (InterruptedException ie) {
 				LOGGER.log(Level.SEVERE, getClass().getName()
@@ -364,7 +367,7 @@ public final class RunControl extends JDialog implements Controller,
 	 * flush the vme buffer
 	 */
 	public void flushAcq() {
-		vmeComm.flush();
+		frontEnd.flush();
 	}
 
 	private boolean isRunOn() {
@@ -431,7 +434,7 @@ public final class RunControl extends JDialog implements Controller,
 	public void startAcq() {
 
 		netDaemon.setState(State.RUN);
-		vmeComm.startAcquisition();
+		frontEnd.startAcquisition();
 		// if we are in a run, display run number
 		if (isRunOn()) {// runOn is true if the current state is a run
 			STATUS.setRunState(RunState
@@ -453,7 +456,7 @@ public final class RunControl extends JDialog implements Controller,
 	 * Tells VME to stop acquisition, and suspends the net listener.
 	 */
 	public void stopAcq() {
-		vmeComm.stopAcquisition();
+		frontEnd.stopAcquisition();
 		/*
 		 * Commented out next line to see if this stops our problem of
 		 * "leftover" buffers DWV 15 Nov 2001

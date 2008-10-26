@@ -4,6 +4,8 @@ import static jam.global.GoodThread.State.STOP;
 import static java.util.logging.Level.SEVERE;
 import static javax.swing.SwingConstants.RIGHT;
 import jam.comm.CommunicationsException;
+import jam.comm.FrontEndCommunication;
+import jam.comm.ScalerCommunication;
 import jam.global.JamException;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
@@ -110,8 +112,11 @@ public final class SetupSortOn extends AbstractSetup {
 	/* strings of data entered */
 	private transient String exptName;
 
-	private transient final jam.comm.FrontEndCommunication frontEnd = jam.comm.VMECommunication
-			.getSingletonInstance();
+	private transient final FrontEndCommunication frontEnd = jam.comm.Factory
+			.createFrontEndCommunication();
+
+	private transient final ScalerCommunication scaler = jam.comm.Factory
+			.createScalerCommunication();
 
 	private transient String hostDataIP;
 
@@ -578,7 +583,7 @@ public final class SetupSortOn extends AbstractSetup {
 		frontEnd.setupAcquisition();
 		final jam.sort.VME_Map map = sortChooser.getSortRoutine().getVMEmap();
 		frontEnd.setupVMEmap(map);
-		frontEnd.sendScalerInterval(map.getScalerInterval());
+		scaler.sendScalerInterval(map.getScalerInterval());
 	}
 
 	/**

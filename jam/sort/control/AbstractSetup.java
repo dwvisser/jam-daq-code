@@ -398,7 +398,7 @@ abstract class AbstractSetup {
 	}
 
 	/**
-	 * Provided so setup offline sort can be scriptable.
+	 * Provided so setup offline sort can be scripted.
 	 * 
 	 * @param classPath
 	 *            path to sort routine classpath base

@@ -6,9 +6,6 @@ import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
-import jam.sort.CamacCommands;
-import jam.sort.VME_Channel;
-import jam.sort.VME_Map;
 import jam.sort.CamacCommands.CNAF;
 import jam.util.StringUtilities;
 
@@ -21,13 +18,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Observable;
 import java.util.logging.Level;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.Preferences;
 
 /**
  * Class to communicate with VME crate using UDP packets Two UDP sockets can be
@@ -38,8 +30,7 @@ import java.util.prefs.Preferences;
  * @author Ken Swartz and Dale Visser
  * @since JDK1.1
  */
-public final class VMECommunication extends GoodThread implements
-		FrontEndCommunication {
+final class VMECommunication extends GoodThread {
 
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
@@ -55,19 +46,13 @@ public final class VMECommunication extends GoodThread implements
 	 * 
 	 * @return the one unique instance of this class
 	 */
-	public static VMECommunication getSingletonInstance() {
+	protected static VMECommunication getSingletonInstance() {
 		return INSTANCE;
 	}
 
 	private transient boolean active;
 
 	private transient InetAddress addressVME;
-
-	// counter values, loaded when a counter packet is received.
-	private transient final List<Integer> counterValues = new ArrayList<Integer>();
-
-	// scaler values, loaded when a scaler packet is received.
-	private transient final List<Integer> scalerValues = new ArrayList<Integer>();
 
 	private transient DatagramSocket socketSend, socketReceive;
 
@@ -79,7 +64,7 @@ public final class VMECommunication extends GoodThread implements
 	 */
 	private VMECommunication() {
 		super();
-		BROADCASTER.addObserver(this);
+		new CounterVMECommunicator(this);
 		this.setName("Front End Communication");
 		this.setDaemon(true);
 		this.setPriority(jam.sort.ThreadPriorities.MESSAGING);
@@ -95,146 +80,74 @@ public final class VMECommunication extends GoodThread implements
 	 * @param vmeInternetAddress
 	 * @throws CommunicationsException
 	 */
-	private void bindSocketsAndSetActive(
+	protected void bindSocketsAndSetActive(
 			final String localInternetAddress,// NOPMD
 			final int portSend, final int portRecv,
 			final String vmeInternetAddress) throws CommunicationsException {// NOPMD
-		InetAddress addressLocal;
-		try {// create a ports to send and receive
-			addressLocal = InetAddress.getByName(localInternetAddress);
-		} catch (UnknownHostException ue) {
-			throw new CommunicationsException("Unknown local host: "
-					+ localInternetAddress, ue);
-		}
-		try {
-			addressVME = InetAddress.getByName(vmeInternetAddress);
-		} catch (UnknownHostException ue) {
-			throw new CommunicationsException("Unknown VME host: "
-					+ vmeInternetAddress, ue);
-		}
-		try {
-			socketSend = new DatagramSocket(portSend, addressLocal);
-		} catch (BindException be) {
-			throw new CommunicationsException(
-					"Problem binding send socket. (Is another copy of Jam running online?)",
-					be);
-		} catch (SocketException se) {
-			throw new CommunicationsException("Problem creating send socket.",
-					se);
-		}
-		try {
-			socketReceive = new DatagramSocket(portRecv, addressLocal);
-		} catch (BindException be) {
-			throw new CommunicationsException(
-					getClass().getName()
-							+ "Problem binding receive socket. (Is another Jam running online?)",
-					be);
-		} catch (SocketException se) {
-			throw new CommunicationsException(
-					"Problem creating receive socket.", se);
-		}
-		// Setup and start receiving daemon.
-		this.setState(State.RUN);
-		active = true;
-		final Preferences prefs = CommunicationPreferences.PREFS;
-		debug(prefs.getBoolean(CommunicationPreferences.DEBUG, false));
-		verbose(prefs.getBoolean(CommunicationPreferences.VERBOSE, false));
-	}
-
-	/**
-	 * Tells the VME to clear the scalers and send a reply: OK or ERROR.
-	 */
-	public void clearScalers() {
-		final String RUN_CLEAR = "list clear";
-		sendToVME(RUN_CLEAR);
-	}
-
-	/**
-	 * Tells the VME whether to print out debugging statements.
-	 * 
-	 * @param state
-	 *            true if we want debug messages from the VME
-	 */
-	public void debug(final boolean state) {
-		final String DEBUG_ON = "debug on";
-		final String DEBUG_OFF = "debug off";
-		if (state) {
-			sendToVME(DEBUG_ON);
-		} else {
-			sendToVME(DEBUG_OFF);
+		this.setVMEport();
+		if (!active) {
+			InetAddress addressLocal;
+			try {// create a ports to send and receive
+				addressLocal = InetAddress.getByName(localInternetAddress);
+			} catch (UnknownHostException ue) {
+				throw new CommunicationsException("Unknown local host: "
+						+ localInternetAddress, ue);
+			}
+			try {
+				addressVME = InetAddress.getByName(vmeInternetAddress);
+			} catch (UnknownHostException ue) {
+				throw new CommunicationsException("Unknown VME host: "
+						+ vmeInternetAddress, ue);
+			}
+			try {
+				socketSend = new DatagramSocket(portSend, addressLocal);
+			} catch (BindException be) {
+				throw new CommunicationsException(
+						"Problem binding send socket. (Is another copy of Jam running online?)",
+						be);
+			} catch (SocketException se) {
+				throw new CommunicationsException(
+						"Problem creating send socket.", se);
+			}
+			try {
+				socketReceive = new DatagramSocket(portRecv, addressLocal);
+			} catch (BindException be) {
+				throw new CommunicationsException(
+						getClass().getName()
+								+ "Problem binding receive socket. (Is another Jam running online?)",
+						be);
+			} catch (SocketException se) {
+				throw new CommunicationsException(
+						"Problem creating receive socket.", se);
+			}
+			// Setup and start receiving daemon.
+			this.setState(State.RUN);
+			active = true;
 		}
 	}
 
-	/**
-	 * Tells the front end to stop acquisiton and end the run, which flushes out
-	 * the data buffer with an appended end-run marker.
-	 */
-	public void end() {
-		final String END = "END";
-		this.sendToVME(END);
+	protected void close() {
+		this.setState(State.SUSPEND);
+
+		if (null != this.socketReceive) {
+			socketReceive.close();
+		}
+
+		if (null != this.socketSend) {
+			this.socketSend.close();
+		}
+
+		active = false;
 	}
 
-	/**
-	 * Tells the front end to flush out the data buffer, and send the contents.
-	 */
-	public void flush() {
-		final String FLUSH = "FLUSH";
-		this.sendToVME(FLUSH);
-	}
-
-	/**
-	 * Get the scaler values from the last read.
-	 * 
-	 * @return the values of the scalers
-	 */
-	public List<Integer> getScalers() {
-		return Collections.unmodifiableList(scalerValues);
-	}
-
-	/**
-	 * Method for opening a file for event storage on the VME host. (not used
-	 * yet)
-	 * 
-	 * @param file
-	 *            the filename to open
-	 */
-	public void openFile(final String file) {
-		final String OPENFILE = "OPENFILE ";// add filename as an argument
-		sendToVME(OPENFILE + file);
-	}
-
-	/**
-	 * @see java.util.prefs.PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
-	 */
-	public void preferenceChange(final PreferenceChangeEvent pce) {
-		final String key = pce.getKey();
-		final String newValue = pce.getNewValue();
-		final boolean state = Boolean.parseBoolean(newValue);
-		if (key.equals(CommunicationPreferences.DEBUG)) {
-			debug(state);
-		} else if (key.equals(CommunicationPreferences.VERBOSE)) {
-			verbose(state);
+	protected boolean isActive() {
+		synchronized (LOCK) {
+			return this.active;
 		}
 	}
 
-	/**
-	 * Tells the VME to read the counters, and send back two packets: the packet
-	 * with the counter values, and a status packet (read OK or ERROR) with a
-	 * message.
-	 */
-	public void readCounters() {
-		final String COUNT_READ = "count read";
-		sendToVME(COUNT_READ);
-	}
-
-	/**
-	 * Tell the VME to read the scalers, and send back two packets: the packet
-	 * with the scaler values, and a status packet (read OK or ERROR) with a
-	 * message.
-	 */
-	public void readScalers() {
-		final String RUN_SCALER = "list scaler";
-		this.sendToVME(RUN_SCALER);
+	protected void log(final String message) {
+		GoodThread.LOGGER.info(message);
 	}
 
 	/**
@@ -248,6 +161,8 @@ public final class VMECommunication extends GoodThread implements
 		try {
 			final DatagramPacket packetIn = new DatagramPacket(bufferIn,
 					bufferIn.length);
+			/* 8 is a typical scaler unit size */
+			final List<Integer> unpackedValues = new ArrayList<Integer>(8);
 			while (checkState()) {// loop forever receiving packets
 				try {
 					synchronized (LOCK) {
@@ -260,13 +175,13 @@ public final class VMECommunication extends GoodThread implements
 						LOGGER.info(getClass().getName() + ": "
 								+ unPackMessage(byteBuffer));
 					} else if (status == PacketTypes.SCALER.intValue()) {
-						unPackScalers(byteBuffer);
-						Scaler.update(scalerValues);
+						unPackCounters(byteBuffer, unpackedValues);
+						Scaler.update(unpackedValues);
 					} else if (status == PacketTypes.COUNTER.intValue()) {
-						unPackCounters(byteBuffer);
+						unPackCounters(byteBuffer, unpackedValues);
 						BROADCASTER.broadcast(
 								BroadcastEvent.Command.COUNTERS_UPDATE,
-								counterValues);
+								unpackedValues);
 					} else if (status == PacketTypes.ERROR.intValue()) {
 						LOGGER.severe(getClass().getName() + ": "
 								+ unPackMessage(byteBuffer));
@@ -288,22 +203,22 @@ public final class VMECommunication extends GoodThread implements
 	}
 
 	/**
-	 * Method to send a cnaf list to the VME crate
+	 * Method to send a CNAF list to the VME crate
 	 * 
-	 * packet structure 16 bytes name 4 bytes number of cnafs 4 bytes for each
-	 * cnaf
+	 * packet structure 16 bytes name 4 bytes number of CNAF's 4 bytes for each
+	 * CNAF
 	 * 
 	 * @param listName
-	 *            name of cnaf list to send
+	 *            name of CNAF list to send
 	 * @param cnafList
 	 *            the CAMAC commands
 	 * @throws IOException
 	 *             if there's a problem
 	 */
-	private void sendCNAFList(final String listName, final List<CNAF> cnafList)
+	protected void sendCNAFList(final String listName, final List<CNAF> cnafList)
 			throws IOException {
-		LOGGER.entering(VMECommunication.class.getName(), "sendCNAFList",
-				listName);
+		GoodThread.LOGGER.entering(VMECommunication.class.getName(),
+				"sendCNAFList", listName);
 		final int COMMAND_SIZE = 16;
 		final int CNAF_SIZE = 9;
 		if (listName.length() > (COMMAND_SIZE - 1)) {
@@ -319,9 +234,9 @@ public final class VMECommunication extends GoodThread implements
 		for (int i = COMMAND_SIZE; i > asciiListName.length; i--) {
 			byteBuff.put(Constants.STRING_NULL);
 		}
-		// put length of cnaf list in packet
+		// put length of CNAF list in packet
 		byteBuff.putInt(cnafList.size());
-		// put list of cnaf commands into packet
+		// put list of CNAF commands into packet
 		for (int i = 0; i < cnafList.size(); i++) {
 			final CNAF cnaf = cnafList.get(i);
 			byteBuff.put(cnaf.getParamID());
@@ -333,36 +248,13 @@ public final class VMECommunication extends GoodThread implements
 		}
 		// add a null character
 		byteBuff.put(Constants.STRING_NULL);
-		sendPacket(byteMessage);// send it
-		LOGGER.exiting(VMECommunication.class.getName(), "sendCNAFList");
-	}
-
-	/**
-	 * Send out a packet of the given bytes.
-	 * 
-	 * @param byteMessage
-	 *            the message to send
-	 * @throws IOException
-	 *             if there's a problem
-	 */
-	private void sendPacket(final byte[] byteMessage) throws IOException {
 		final DatagramPacket packetMessage = new DatagramPacket(byteMessage,
 				byteMessage.length, addressVME, vmePort);
 		if (socketSend == null) {
 			throw new IllegalStateException("Send socket not setup.");
 		}
 		socketSend.send(packetMessage);
-	}
-
-	/**
-	 * Send the interval in seconds between scaler blocks in the event stream.
-	 * 
-	 * @param seconds
-	 *            the interval between scaler blocks
-	 */
-	public void sendScalerInterval(final int seconds) {
-		final String message = seconds + "\n";
-		sendToVME(PacketTypes.INTERVAL, message);
+		LOGGER.exiting(VMECommunication.class.getName(), "sendCNAFList");
 	}
 
 	/**
@@ -379,7 +271,7 @@ public final class VMECommunication extends GoodThread implements
 	 * @throws IllegalStateException
 	 *             if we haven't established a connection yet
 	 */
-	private void sendToVME(final PacketTypes status, final String message) {
+	protected void sendToVME(final PacketTypes status, final String message) {
 		final Object[] params = { status, message };
 		LOGGER.entering(VMECommunication.class.getName(), "sendToVME", params);
 		if (socketSend == null) {
@@ -406,121 +298,23 @@ public final class VMECommunication extends GoodThread implements
 	 * @param message
 	 *            string to send
 	 */
-	private void sendToVME(final String message) {
+	protected void sendToVME(final String message) {
 		sendToVME(PacketTypes.OK_MESSAGE, message);
 	}
 
-	/**
-	 * Sets up networking. Two UDP sockets are created: one for receiving and
-	 * one for sending. A daemon is also set up for receiving.
-	 * 
-	 * @throws CommunicationsException
-	 *             if something goes wrong
-	 */
-	public void setupAcquisition() throws CommunicationsException {
+	private void setVMEport() {
 		synchronized (LOCK) {
-			final String LOCAL_IP = JamProperties
-					.getPropString(PropertyKeys.HOST_IP);
-			final int portSend = JamProperties
-					.getPropInt(PropertyKeys.HOST_PORT_SEND);
-			final int portRecv = JamProperties
-					.getPropInt(PropertyKeys.HOST_PORT_RECV);
-			final String VME_IP = JamProperties
-					.getPropString(PropertyKeys.TARGET_IP);
 			final int PORT_VME_SEND = JamProperties
 					.getPropInt(PropertyKeys.TARGET_PORT);
 			vmePort = PORT_VME_SEND;
-			if (!active) {
-				bindSocketsAndSetActive(LOCAL_IP, portSend, portRecv, VME_IP);
-			}
 		}
-	}
-
-	/**
-	 * New version uploads CAMAC CNAF commands with udp pakets, and sets up the
-	 * camac crate.
-	 * 
-	 * @param camacCommands
-	 *            object containing CAMAC CNAF commands
-	 * @throws IOException
-	 *             if there's a problem
-	 */
-	public void setupCamac(final CamacCommands camacCommands)
-			throws IOException {
-		final String RUN_INIT = "list init";
-		final String CNAF_INIT = "cnaf init";
-		final String CNAF_EVENT = "cnaf event";
-		final String CNAF_SCALER = "cnaf scaler";
-		final String CNAF_CLEAR = "cnaf clear";
-		// load CNAF's
-		sendCNAFList(CNAF_INIT, camacCommands.getInitCommands());
-		sendCNAFList(CNAF_EVENT, camacCommands.getEventCommands());
-		sendCNAFList(CNAF_SCALER, camacCommands.getScalerCommands());
-		sendCNAFList(CNAF_CLEAR, camacCommands.getClearCommands());
-		this.sendToVME(RUN_INIT); // initialize camac
-		LOGGER.info("Loaded CAMAC command lists, and initialized VME.");
-	}
-
-	/**
-	 * Send the message specifying how to use ADC's and TDC's.
-	 * 
-	 * @param vmeMap
-	 *            the map of channels to use and TDC ranges
-	 * @throws IllegalStateException
-	 *             if there are no parameters in the map
-	 */
-	public void setupVMEmap(final VME_Map vmeMap) {
-		final StringBuffer temp = new StringBuffer();
-		final List<VME_Channel> eventParams = vmeMap.getEventParameters();
-		final Map<Integer, Byte> hRanges = vmeMap.getV775Ranges();
-		if (eventParams.isEmpty()) {
-			throw new IllegalStateException("No event parameters in map.");
-		}
-		final int totalParams = eventParams.size();
-		final char endl = '\n';
-		final char space = ' ';
-		final String hex = "0x";
-		temp.append(totalParams).append(endl);
-		for (VME_Channel channel : eventParams) {
-			temp.append(channel.getSlot()).append(space).append(hex).append(
-					Integer.toHexString(channel.getBaseAddress()))
-					.append(space).append(channel.getChannel()).append(space)
-					.append(channel.getThreshold()).append(endl);
-		}
-		final int numRanges = hRanges.size();
-		temp.append(numRanges).append(endl);
-		if (numRanges > 0) {
-			for (Map.Entry<Integer, Byte> entry : hRanges.entrySet()) {
-				final int base = entry.getKey();
-				temp.append(hex).append(Integer.toHexString(base))
-						.append(space).append(entry.getValue()).append(endl);
-			}
-		}
-		temp.append('\0');
-		sendToVME(PacketTypes.VME_ADDRESS, temp.toString());
-	}
-
-	/**
-	 * Tells the front end to start acquisiton.
-	 */
-	public void startAcquisition() {
-		final String START = "START";
-		sendToVME(START);
-	}
-
-	/**
-	 * Tells the front end to stop acquisiton, which also flushes out a buffer.
-	 */
-	public void stopAcquisition() {
-		final String STOPACQ = "STOP";
-		sendToVME(STOPACQ);
 	}
 
 	/**
 	 * Unpacks counters from udp packet. Packet format:
 	 * <dl>
 	 * <dt>int type
-	 * <dd>SCALER (which is already read)
+	 * <dd>SCALER or COUNTER (which is already read)
 	 * <dt>int numScaler
 	 * <dd>number of scalers
 	 * <dt>int [] values
@@ -530,13 +324,14 @@ public final class VMECommunication extends GoodThread implements
 	 * @param buffer
 	 *            message in readable form
 	 */
-	private void unPackCounters(final ByteBuffer buffer) {
+	private void unPackCounters(final ByteBuffer buffer,
+			final List<Integer> destination) {
 		synchronized (LOCK) {
 			final int numCounter = buffer.getInt(); // number of
 			// counters
-			counterValues.clear();
+			destination.clear();
 			for (int i = 0; i < numCounter; i++) {
-				counterValues.add(buffer.getInt());
+				destination.add(buffer.getInt());
 			}
 		}
 	}
@@ -565,88 +360,5 @@ public final class VMECommunication extends GoodThread implements
 			throw exception;
 		}
 		return rval.substring(0, len);
-	}
-
-	/**
-	 * Unpack scalers from udp packet. Packet format:
-	 * <ul>
-	 * <li>int type SCALER (which is already read)
-	 * <li>int numScaler number of scalers
-	 * <li>int [] values scaler values
-	 * </ul>
-	 * 
-	 * @param buffer
-	 *            message in readable form
-	 */
-	private void unPackScalers(final ByteBuffer buffer) {
-		synchronized (LOCK) {
-			final int numScaler = buffer.getInt();// number of scalers
-			scalerValues.clear();
-			for (int i = 0; i < numScaler; i++) {
-				scalerValues.add(buffer.getInt());
-			}
-		}
-	}
-
-	/**
-	 * Receives distributed events. Can listen for broadcasted event.
-	 * Implementation of Observable interface.
-	 * 
-	 * @param observable
-	 *            object being observed
-	 * @param message
-	 *            additional parameter from <CODE>Observable</CODE> object
-	 */
-	public void update(final Observable observable, final Object message) {
-		final BroadcastEvent event = (BroadcastEvent) message;
-		final BroadcastEvent.Command command = event.getCommand();
-		if (command == BroadcastEvent.Command.SCALERS_READ) {
-			readScalers();
-		} else if (command == BroadcastEvent.Command.SCALERS_CLEAR) {
-			clearScalers();
-		} else if (command == BroadcastEvent.Command.COUNTERS_READ) {
-			readCounters();
-		} else if (command == BroadcastEvent.Command.COUNTERS_ZERO) {
-			zeroCounters();
-		}
-	}
-
-	/**
-	 * Tells the VME whether to send verbose verbose status messages, which Jam
-	 * automatically prints on the console.
-	 * 
-	 * @param state
-	 *            true if user wants VME to be verbose
-	 */
-	public void verbose(final boolean state) {
-		final String VERBOSE_ON = "verbose on";
-		final String VERBOSE_OFF = "verbose off";
-		if (state) {
-			sendToVME(VERBOSE_ON);
-		} else {
-			sendToVME(VERBOSE_OFF);
-		}
-	}
-
-	/**
-	 * Tells the VME to zero its counters and send a reply: OK or ERROR.
-	 */
-	public void zeroCounters() {
-		final String COUNT_ZERO = "count zero";
-		sendToVME(COUNT_ZERO);
-	}
-
-	public void close() {
-		this.setState(State.SUSPEND);
-
-		if (null != this.socketReceive) {
-			socketReceive.close();
-		}
-
-		if (null != this.socketSend) {
-			this.socketSend.close();
-		}
-
-		active = false;
 	}
 }
