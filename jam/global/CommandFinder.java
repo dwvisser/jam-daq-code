@@ -19,11 +19,10 @@ public interface CommandFinder {
 	 *            <code>true</code> means only return enabled commands
 	 * @return list of similar commands
 	 */
-	Collection<String> getSimilarCommnands(final String string,
-			final boolean onlyEnabled);
+	Collection<String> getSimilar(final String string, final boolean onlyEnabled);
 
 	/**
 	 * @return all commands in the map in alphabetical order
 	 */
-	Collection<String> getAllCommands();
+	Collection<String> getAll();
 }

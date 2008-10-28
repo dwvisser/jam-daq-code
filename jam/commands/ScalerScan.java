@@ -23,16 +23,13 @@
  **************************************************************/
 package jam.commands;
 
-import static jam.io.hdf.JamFileFields.SCALER_SECT;
 import static javax.swing.SwingConstants.RIGHT;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.PropertyKeys;
-import jam.io.hdf.AbstractData;
 import jam.io.hdf.HDFException;
-import jam.io.hdf.HDFile;
-import jam.io.hdf.VData;
-import jam.io.hdf.VDataDescription;
+import jam.io.hdf.ProgressUpdater;
+import jam.io.hdf.ScanForScalers;
 import jam.ui.PanelOKApplyCancelButtons;
 import jam.util.TextDisplayDialog;
 
@@ -44,7 +41,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,12 +59,10 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
-public final class ScalerScan {
+public final class ScalerScan implements ProgressUpdater {
 
 	private static final Logger LOGGER = Logger.getLogger(ScalerScan.class
 			.getPackage().getName());
-
-	private static final char TAB = '\t';
 
 	private transient final JTextField txtFirst, txtLast;
 
@@ -137,7 +131,7 @@ public final class ScalerScan {
 				final String command = event.getActionCommand();
 				if ("browse".equals(command)) {
 					final File temp = getFile(true);
-					if (temp != null) {
+					if (temp.getPath().length() > 0) {
 						txtPath.setText(temp.getAbsolutePath());
 						pathToRuns = temp;
 					}
@@ -190,11 +184,7 @@ public final class ScalerScan {
 		chooser.setFileSelectionMode(dir ? JFileChooser.DIRECTORIES_ONLY
 				: JFileChooser.FILES_ONLY);
 		final boolean approved = chooser.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION;
-		File rval = null;
-		if (approved) {
-			rval = chooser.getSelectedFile();
-		}
-		return rval;
+		return approved ? chooser.getSelectedFile() : new File("");
 	}
 
 	private void doIt() {
@@ -207,12 +197,14 @@ public final class ScalerScan {
 					"Scanning HDF Files for scaler values", "Initializing",
 					firstRun, lastRun);
 			if (pathToRuns.exists() && pathToRuns.isDirectory()) {
+				final ScanForScalers scanner = new ScanForScalers(this);
 				for (int i = firstRun; i <= lastRun && !pBstatus.isCanceled(); i++) {
 					final String runText = txtRunName.getText().trim();
 					final String filename = runText + i + ".hdf";
 					final File infile = new File(pathToRuns, filename);// NOPMD
 					if (infile.exists()) {
-						processFile(carriage, outText, firstRun, i, infile);
+						scanner.processFile(carriage, outText, firstRun, i,
+								infile);
 					} else {
 						LOGGER.warning(infile.getPath()
 								+ " does not exist.  Skipping.");
@@ -232,94 +224,7 @@ public final class ScalerScan {
 		}
 	}
 
-	/**
-	 * @param carriage
-	 * @param outText
-	 * @param firstRun
-	 * @param index
-	 * @param infile
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws HDFException
-	 */
-	private void processFile(final char carriage, final StringBuffer outText,
-			final int firstRun, final int index, final File infile)
-			throws FileNotFoundException, IOException, HDFException {
-		updateProgressBar("Processing " + infile.getName(), index);
-		final HDFile inHDF = new HDFile(infile, "r");// NOPMD
-		inHDF.seek(0);
-		inHDF.readFile();
-		if (index == firstRun) {
-			writeHeaderLine(carriage, outText);
-		}
-		outText.append(index);
-		final int[] values = getScalerValues();
-		for (int j = 0; j < values.length; j++) {
-			outText.append(TAB).append(values[j]);
-		}
-		outText.append(carriage);
-	}
-
-	/**
-	 * @param carriage
-	 * @param outText
-	 */
-	private void writeHeaderLine(final char carriage, final StringBuffer outText) {
-		outText.append("Run");
-		final String[] names = getScalerNames();
-		for (int j = 0; j < names.length; j++) {
-			outText.append(TAB).append(names[j]);
-		}
-		outText.append(carriage);
-	}
-
-	private String[] getScalerNames() {
-		String[] sname = null;
-		final VDataDescription dataDesc = VDataDescription.ofName(AbstractData
-				.ofType(VDataDescription.class), SCALER_SECT);
-		// only the "scalers" VH (only one element) in the file
-		if (dataDesc == null) {
-			LOGGER.warning("No Scalers section in HDF file.");
-		} else {
-			final VData data = AbstractData.getObject(VData.class, dataDesc
-					.getRef());
-			final int numScalers = dataDesc.getNumRows();
-			sname = new String[numScalers];
-			for (int i = 0; i < numScalers; i++) {
-				sname[i] = data.getString(i, 1).trim();
-				final char space = ' ';
-				while (sname[i].indexOf(space) != -1) {
-					final int tmp = sname[i].indexOf(space);
-					final String temp1 = sname[i].substring(0, tmp);
-					final String temp2 = sname[i].substring(tmp + 1);
-					sname[i] = temp1 + temp2;
-				}
-			}
-		}
-		return sname;
-	}
-
-	private int[] getScalerValues() {
-		int[] values = null;
-		final VDataDescription dataDesc = VDataDescription.ofName(AbstractData
-				.ofType(VDataDescription.class), SCALER_SECT);
-		// only the "scalers" VH (only one element) in the file
-		if (dataDesc == null) {
-			LOGGER.warning("No Scalers section in HDF file.");
-		} else {
-			final VData data = AbstractData.getObject(VData.class, dataDesc
-					.getRef());
-			// corresponding VS
-			final int numScalers = dataDesc.getNumRows();
-			values = new int[numScalers];
-			for (int i = 0; i < numScalers; i++) {
-				values[i] = data.getInteger(i, 2);
-			}
-		}
-		return values;
-	}
-
-	private void updateProgressBar(final String text, final int value) {
+	public void updateProgressBar(final String text, final int value) {
 		pBstatus.setNote(text);
 		pBstatus.setProgress(value);
 	}

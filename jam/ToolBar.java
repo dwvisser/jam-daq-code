@@ -3,6 +3,7 @@ package jam;
 import jam.commands.CommandManager;
 import jam.commands.CommandNames;
 
+import javax.swing.Action;
 import javax.swing.JButton;
 
 /**
@@ -35,8 +36,13 @@ final class ToolBar extends javax.swing.JToolBar {
 
 	private JButton createButton(final String command) {
 		final CommandManager commands = CommandManager.getInstance();
-		final JButton rval = new JButton();
-		rval.setAction(commands.getAction(command));
+		final Action action = commands.getAction(command);
+		if (null == action) {
+			throw new IllegalArgumentException("Couldn't find action for '"
+					+ command + "'.");
+		}
+
+		final JButton rval = new JButton(action);
 		rval.setText("");
 		return rval;
 	}

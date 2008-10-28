@@ -21,7 +21,7 @@ public final class Factory {
 	 */
 	public static Console createConsole(final String packageName) {
 		final CommandManager manager = CommandManager.getInstance();
-		final Console result = new Console(manager, manager);
+		final Console result = new Console(manager.getCommandFinder(), manager);
 		new LoggerConfig(packageName, result.getLog());
 		return result;
 	}

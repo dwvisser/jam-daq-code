@@ -201,7 +201,12 @@ final class MenuBar implements Observer {
 	 * @return JMenuItem that invokes the associated action
 	 */
 	protected static JMenuItem getMenuItem(final String name) {
-		return new JMenuItem(CommandManager.getInstance().getAction(name));
+		final Action action = CommandManager.getInstance().getAction(name);
+		if (null == action) {
+			throw new IllegalArgumentException("Couldn't find action for '"
+					+ name + "'.");
+		}
+		return new JMenuItem(action);
 	}
 
 	/**

@@ -44,12 +44,13 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 		hdfio = new HDFIO(frame);
 		final Icon iOpen = loadToolbarIcon("jam/ui/OpenHDF.png");
 		putValue(Action.SMALL_ICON, iOpen);
-		putValue(Action.SHORT_DESCRIPTION, "Open a hdf data file");
+		putValue(Action.SHORT_DESCRIPTION, "Open an hdf data file");
 	}
 
 	/*
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		File file = null;
 		if (cmdParams != null && cmdParams.length > 0) {
@@ -94,6 +95,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 	 * 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
+	@Override
 	protected void executeParse(final String[] cmdTokens) {
 		Object[] cmdParams = new Object[1];
 		if (cmdTokens.length == 0) {

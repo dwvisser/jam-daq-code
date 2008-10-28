@@ -11,6 +11,7 @@ import jam.sort.stream.YaleOutputStream;
 import java.io.File;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -21,17 +22,27 @@ import org.junit.Test;
  */
 public class SortOfflineTest {// NOPMD
 
-	private static final Session session = new Session();
+	private transient Session session;
 
 	private static void assertHistogramZeroed(final Histogram histogram) {
 		assertEquals("Expected '" + histogram.getName() + "' to be zeroed.",
 				histogram.getArea(), 0.0);
 	}
 
-	private static void sortEventFile(final String eventFileName) {
+	private void sortEventFile(final String eventFileName) {
 		final File eventFile = session.defineFile(eventFileName);
 		session.addEventFile(eventFile);
 		session.beginSort();
+	}
+
+	/**
+	 * Set up session.
+	 */
+	@Before
+	public void setUp() {
+		if (null == session) {
+			session = new Session();
+		}
 	}
 
 	/**
@@ -39,7 +50,9 @@ public class SortOfflineTest {// NOPMD
 	 */
 	@After
 	public void tearDown() {
-		session.resetOfflineSorting();
+		if (null != session) {
+			session.resetOfflineSorting();
+		}
 	}
 
 	/**

@@ -54,7 +54,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 
 	static {
 		final CommandManager manager = CommandManager.getInstance();
-		console = new Console(20, manager, manager);
+		console = new Console(20, manager.getCommandFinder(), manager);
 		final String packageName = HistApplet.class.getPackage().getName();
 		new LoggerConfig(packageName, console.getLog());
 		LOGGER = Logger.getLogger(packageName);
@@ -198,7 +198,8 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 		/* output console at bottome */
 		this.add(BorderLayout.SOUTH, console);
 		/* display in middle */
-		display = new PlotDisplay(console, CommandManager.getInstance());
+		display = new PlotDisplay(console, CommandManager.getInstance()
+				.getCommandFinder());
 		this.add(display);
 		addToolbarSelect(ptop);// tool bar for selecting
 		/*

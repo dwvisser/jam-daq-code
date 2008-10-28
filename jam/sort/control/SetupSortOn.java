@@ -91,6 +91,13 @@ public final class SetupSortOn extends AbstractSetup {
 		}
 	}
 
+	/**
+	 * @return whether the instance exists yet.
+	 */
+	public static boolean exists() {
+		return null != instance;
+	}
+
 	private transient final AbstractButton bbrowseh, bbrowsed, bbrowsel;
 
 	/* stuff for dialog box */

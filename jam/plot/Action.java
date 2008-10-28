@@ -746,7 +746,7 @@ final class Action {
 		final StringBuffer buffer = new StringBuffer(240);
 		buffer
 				.append("Commands:\tli - Linear Scale\tlo - Log Scale\ta  - Auto Scale\tra - Range\tex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\td  - Display\to  - Overlay\tu  - Update\tg  - GoTo\tar - Area\tn  - Net Area\tre - Rebin\tc  - Bin\t");
-		final Collection<String> commands = commandFinder.getAllCommands();
+		final Collection<String> commands = commandFinder.getAll();
 		for (String command : commands) {
 			buffer.append(command).append('\t');
 		}

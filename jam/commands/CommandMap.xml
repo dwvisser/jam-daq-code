@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package name="jam.commands">
+  <Action class="OpenHDFCmd" name="open"></Action>
+  <Action class="OpenAdditionalHDF" name="openadditional"></Action>
+  <Action class="OpenMultipleHDFCmd" name="openmultiple"></Action>
+  <Action class="SaveHDFCmd" name="save"></Action>
+  <Action class="SaveAsHDFCmd" name="saveas"></Action>
+  <Action class="SaveGatesCmd" name="savegates"></Action>
+  <Action class="SaveGroupHDFCmd" name="savegroup"></Action>
+  <Action class="SaveSortGroupHDFCmd" name="savesort"></Action>
+  <Action class="SaveSelectHistogramsHDFCmd" name="savehistograms"></Action>
+  <Action class="AddHDF" name="addfile"></Action>
+  <Action class="ReloadHDFCmd" name="reload"></Action>
+  <Action class="ShowDialogNewGroup" name="shownewgroup"></Action>
+  <Action class="ShowDialogRenameGroup" name="showrenamegroup"></Action>
+  <Action class="DeleteGroup" name="deletegroup"></Action>
+  <Action name="shownewhist" class="ShowDialogNewHistogramCmd"></Action>
+  <Action name="showhistzero" class="ShowDialogZeroHistogram"></Action>
+  <Action class="ShowDialogHistManipulationsCmd" name="showcombine"></Action>
+  <Action name="showproject" class="ShowDialogHistProjectionCmd" />
+  <Action name="showfit" class="ShowDialogCalibrationFitCmd" />
+  <Action name="showgainshift" class="ShowDialogGainShiftCmd" />
+  <Action name="gateshownew" class="ShowDialogNewGateCmd" />
+  <Action name="gateshowset" class="ShowDialogSetGate" />
+  <Action name="gateshowadd" class="ShowDialogAddGate" />
+  <Action name="showruncontrol" class="ShowRunControl" />
+  <Action name="showsortcontrol" class="ShowSortControl" />
+  <Action name="start" class="StartAcquisition" />
+  <Action name="stop" class="StopAcquisition" />
+  <Action name="flush" class="FlushAcquisition" />
+  <Action name="exit" class="ShowExitDialog" />
+  <Action name="clear" class="FileNewClearCmd" />
+  <Action name="parameters" class="ShowDialogParametersCmd" />
+  <Action name="displayscalers" class="ShowDialogScalersCmd" />
+  <Action name="showzeroscalers" class="ShowDialogZeroScalersCmd" />
+  <Action name="scalers" class="ScalersCmd" />
+  <Action name="exporttable" class="ExportSummaryTableCmd" />
+  <Action name="exporttext" class="ExportTextFileCmd" />
+  <Action name="exportdamm" class="ExportDamm" />
+  <Action name="exportspe" class="ExportRadware" />
+  <Action name="print" class="Print" />
+  <Action name="pagesetup" class="PageSetupCmd" />
+  <Action name="importtext" class="ImportTextFile" />
+  <Action name="importdamm" class="ImportDamm" />
+  <Action name="importspe" class="ImportRadware" />
+  <Action name="importxsys" class="ImportXSYS" />
+  <Action name="importban" class="ImportORNLban" />
+  <Action name="openscalers" class="OpenScalersYaleCAEN" />
+  <Action name="showscalerscan" class="ShowDialogScalerScan" />
+  <Action name="delhist" class="DeleteHistogram" />
+  <Action name="helpabout" class="ShowDialogAbout" />
+  <Action name="helplicense" class="ShowDialogLicense" />
+  <Action name="helpuserguide" class="ShowUserGuide" />
+  <Action name="opensel" class="OpenSelectedHistogram" />
+  <Action name="displaymonitors" class="ShowMonitorDisplay" />
+  <Action name="displaymonitorconfig" class="ShowMonitorConfig" />
+  <Action name="showbatchexport" class="ShowBatchExport" />
+  <Action name="showsetuponline" class="ShowSetupOnline" />
+  <Action name="showsetupoffline" class="ShowSetupOffline" />
+  <Action name="showcounters" class="ShowDialogCounters" />
+  <Action name="showconfiguration" class="ShowDialogConfiguration" />
+  <Action name="showviewnew" class="ShowDialogAddView" />
+  <Action name="showviewdelete" class="ShowDialogDeleteView" />
+  <Action name="showfitnew" class="ShowDialogAddFit" />
+  <Action name="AutoIgnoreZero" class="SetAutoScaleIgnoreZero" />
+  <Action name="AutoIgnoreFull" class="SetAutoScaleIgnoreFull" />
+  <Action name="BlackBackground" class="SetBlackBackground" />
+  <Action name="AutoPeakFind" class="SetAutoPeakFind" />
+  <Action name="ContinuousColorScale" class="SetSmoothColorScale" />
+  <Action name="showgradient" class="ShowGradientSettings" />
+  <Action name="AutoOnExpand" class="SetAutoScaleOnExpand" />
+  <Action name="HighlightGatedChannels" class="SetGatedChannelsHighlight" />
+  <Action name="EnableScrollingTiled" class="SetEnableScrolling" />
+  <Action name="DisplayAxisLabels" class="SetAxisLabels" />
+  <Action name="Write Empty Histograms/Gates" class="SetHDFSuppressSaveEmpty" />
+  <Action name="verbose" class="SetVerbose" />
+  <Action name="debug" class="SetDebug" />
+  <Action name="showPeakFind" class="ShowDialogPeakFind" />
+  <Action name="showSetupRemote" class="ShowSetupRemote" />
+</Package>

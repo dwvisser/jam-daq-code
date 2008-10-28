@@ -21,6 +21,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Logger;
 
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -46,8 +47,8 @@ public final class JamMain extends JFrame {
 	static {
 		Utility.setLookAndFeel();
 		final String packageName = JamMain.class.getPackage().getName();
-		console = jam.ui.Factory.createConsole(packageName);
 		LOGGER = Logger.getLogger(packageName);
+		console = jam.ui.Factory.createConsole(packageName);
 	}
 
 	/**
@@ -118,12 +119,14 @@ public final class JamMain extends JFrame {
 		contents.setLayout(new BorderLayout());
 		/* Output/Input text console */
 		LOGGER.info("Welcome to Jam v" + Version.getInstance().getName());
-		SetupSortOn.createInstance(console.getLog());
+		if (!SetupSortOn.exists()) {
+			SetupSortOn.createInstance(console.getLog());
+		}
 		final ToolBar jamToolBar = new ToolBar();
 		contents.add(jamToolBar, BorderLayout.NORTH);
 		/* histogram displayer */
 		final PlotDisplay plotDisplay = new PlotDisplay(console, CommandManager
-				.getInstance());
+				.getInstance().getCommandFinder());
 		PlotDisplay.setDisplay(plotDisplay);
 		summaryTable = new SummaryTable();
 		SummaryTable.setTable(summaryTable);
@@ -167,8 +170,13 @@ public final class JamMain extends JFrame {
 	}
 
 	private void exit() {
-		final JButton temp = new JButton(CommandManager.getInstance()
-				.getAction(CommandNames.EXIT));
+		final Action exit = CommandManager.getInstance().getAction(
+				CommandNames.EXIT);
+		if (null == exit) {
+			throw new IllegalStateException("Couldn't find exit action.");
+		}
+
+		final JButton temp = new JButton();
 		temp.doClick();
 	}
 
