@@ -1,7 +1,8 @@
 package jam.commands;
 
-import jam.data.Histogram;
+import jam.data.Factory;
 import jam.data.Group;
+import jam.data.HistogramType;
 
 /**
  * Command to create a histogram
@@ -18,34 +19,36 @@ final class NewHistogramCmd extends AbstractCommand {
 	/**
 	 * Execute the command
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		final String name = (String) cmdParams[0];
 		final String title = (String) cmdParams[1];
 		final int type = ((Integer) cmdParams[2]).intValue();
-		final Histogram.Type hType = type == 1 ? Histogram.Type.ONE_D_DOUBLE
-				: Histogram.Type.TWO_D_DOUBLE;
+		final HistogramType hType = type == 1 ? HistogramType.ONE_D_DOUBLE
+				: HistogramType.TWO_D_DOUBLE;
 		final int sizeX = ((Integer) cmdParams[3]).intValue();
 		final int sizeY = ((Integer) cmdParams[4]).intValue();
 		final Group currentGroup = (Group) STATUS.getCurrentGroup();
-		currentGroup.createHistogram(hType.getSampleArray(sizeX, sizeY), name,
-				title);
+		Factory.createHistogram(currentGroup, hType.getSampleArray(sizeX, sizeY),
+				name, title);
 	}
 
 	/**
 	 * Execute the command
 	 */
+	@Override
 	protected void executeParse(final String[] cmdParams) {
 		final String name = cmdParams[0];
 		final String title = cmdParams[1];
 		final int type = Integer.parseInt(cmdParams[2]);
-		final Histogram.Type hType = type == 1 ? Histogram.Type.ONE_D_DOUBLE
-				: Histogram.Type.TWO_D_DOUBLE;
+		final HistogramType hType = type == 1 ? HistogramType.ONE_D_DOUBLE
+				: HistogramType.TWO_D_DOUBLE;
 		final int sizeX = Integer.parseInt(cmdParams[3]);
 		final int sizeY = Integer.parseInt(cmdParams[4]);
-		final Group workingGroup = Group
-				.createGroup("Working", Group.Type.FILE);
-		workingGroup.createHistogram(hType.getSampleArray(sizeX, sizeY), name,
-				title);
+		final Group workingGroup = Factory.createGroup("Working",
+				Group.Type.FILE);
+		Factory.createHistogram(workingGroup, hType.getSampleArray(sizeX, sizeY),
+				name, title);
 	}
 
 }

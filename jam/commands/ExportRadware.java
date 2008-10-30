@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
 import jam.io.ImpExpSPE;
@@ -34,8 +34,8 @@ final class ExportRadware extends AbstractExportFile implements Observer {
 
 	private void enable() {
 		final Nameable histogram = SelectionTree.getCurrentHistogram();
-		if (histogram instanceof Histogram) {
-			setEnabled(((Histogram) histogram).getDimensionality() == 1);
+		if (histogram instanceof AbstractHistogram) {
+			setEnabled(((AbstractHistogram) histogram).getDimensionality() == 1);
 		}
 	}
 }

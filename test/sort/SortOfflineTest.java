@@ -2,7 +2,7 @@ package test.sort;
 
 import static org.junit.Assert.assertEquals;
 import jam.data.HistInt1D;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.script.Session;
 import jam.sort.stream.YaleCAEN_InputStream;
 import jam.sort.stream.YaleInputStream;
@@ -24,7 +24,7 @@ public class SortOfflineTest {// NOPMD
 
 	private transient Session session;
 
-	private static void assertHistogramZeroed(final Histogram histogram) {
+	private static void assertHistogramZeroed(final AbstractHistogram histogram) {
 		assertEquals("Expected '" + histogram.getName() + "' to be zeroed.",
 				histogram.getArea(), 0.0);
 	}

@@ -1,8 +1,12 @@
 package jam.data.control;
 
 import static javax.swing.SwingConstants.RIGHT;
+import jam.data.AbstractHistogram;
+import jam.data.Factory;
 import jam.data.Group;
-import jam.data.Histogram;
+import jam.data.HistogramType;
+import jam.data.NameValueCollection;
+import jam.data.Warehouse;
 import jam.global.BroadcastEvent;
 import jam.global.JamStatus;
 import jam.ui.SelectionTree;
@@ -37,6 +41,9 @@ import javax.swing.border.EmptyBorder;
  * @version 0.5
  */
 public class HistogramNew extends AbstractControl {
+
+	private static final NameValueCollection<Group> GROUPS = Warehouse
+			.getGroupCollection();
 
 	private static final int CHOOSER_SIZE = 200;
 
@@ -105,10 +112,10 @@ public class HistogramNew extends AbstractControl {
 		pTitle.add(textTitle);
 		final Panel pradio = new Panel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		final ButtonGroup cbg = new ButtonGroup();
-		coneInt = new JCheckBox(Histogram.Type.ONE_DIM_INT.toString(), true);
-		coneDbl = new JCheckBox(Histogram.Type.ONE_D_DOUBLE.toString(), false);
-		ctwoInt = new JCheckBox(Histogram.Type.TWO_DIM_INT.toString(), false);
-		ctwoDbl = new JCheckBox(Histogram.Type.TWO_D_DOUBLE.toString(), false);
+		coneInt = new JCheckBox(HistogramType.ONE_DIM_INT.toString(), true);
+		coneDbl = new JCheckBox(HistogramType.ONE_D_DOUBLE.toString(), false);
+		ctwoInt = new JCheckBox(HistogramType.TWO_DIM_INT.toString(), false);
+		ctwoDbl = new JCheckBox(HistogramType.TWO_D_DOUBLE.toString(), false);
 		cbg.add(coneInt);
 		cbg.add(coneDbl);
 		cbg.add(ctwoInt);
@@ -148,6 +155,7 @@ public class HistogramNew extends AbstractControl {
 		bottom.add(bcancel);
 		pack();
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
@@ -157,6 +165,7 @@ public class HistogramNew extends AbstractControl {
 	/**
 	 * Show the dialog.
 	 */
+	@Override
 	public void setVisible(final boolean show) {
 		if (show) {
 			doSetup();
@@ -167,11 +176,12 @@ public class HistogramNew extends AbstractControl {
 	/**
 	 * Initializes chooser properly.
 	 */
+	@Override
 	public void doSetup() {
 		comboGroupModel.removeAllElements();
 		/* Add working group first */
 		comboGroupModel.addElement(Group.WORKING_NAME);
-		for (Group group : Group.getGroupList()) {
+		for (Group group : GROUPS.getList()) {
 			/* Don't add sort group or working group that was already added */
 			if (group.getType() != Group.Type.SORT
 					&& !Group.WORKING_NAME.equals(group.getName())) {
@@ -200,13 +210,14 @@ public class HistogramNew extends AbstractControl {
 		} else {
 			array = new double[size][size];
 		}
-		if (null == Group.getGroup(groupName)) {
-			histGroup = Group.createGroup(groupName, Group.Type.TEMP);
+		if (null == GROUPS.get(groupName)) {
+			histGroup = Factory.createGroup(groupName, Group.Type.TEMP);
 		} else {
-			histGroup = Group.getGroup(groupName);
+			histGroup = GROUPS.get(groupName);
 			STATUS.setCurrentGroup(histGroup);
 		}
-		final Histogram hist = histGroup.createHistogram(array, name, title);
+		final AbstractHistogram hist = Factory.createHistogram(histGroup,
+				array, name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		final JamStatus status = JamStatus.getSingletonInstance();
 		SelectionTree.setCurrentHistogram(hist);

@@ -1,6 +1,6 @@
 package jam.plot;
 
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.global.Nameable;
 import jam.util.StringUtilities;
 
@@ -158,8 +158,8 @@ public final class View {
 	 *            which plot
 	 * @return histogram for the given plot
 	 */
-	protected Histogram getHistogram(final int num) {
-		return Histogram.getHistogram(histogramNames[num]);
+	protected AbstractHistogram getHistogram(final int num) {
+		return AbstractHistogram.getHistogram(histogramNames[num]);
 	}
 
 	/**
@@ -174,7 +174,7 @@ public final class View {
 		if (histIn == null) {
 			histogramNames[num] = "";
 		} else {
-			histogramNames[num] = histIn instanceof Histogram ? ((Histogram) histIn)
+			histogramNames[num] = histIn instanceof AbstractHistogram ? ((AbstractHistogram) histIn)
 					.getFullName()
 					: histIn.getName();
 		}

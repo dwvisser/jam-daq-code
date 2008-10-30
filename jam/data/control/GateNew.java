@@ -1,7 +1,7 @@
 package jam.data.control;
 
 import jam.data.Gate;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
@@ -80,7 +80,7 @@ public class GateNew extends AbstractControl {
 	 *             if there's a problem
 	 */
 	private void makeGate() {
-		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
+		final AbstractHistogram hist = (AbstractHistogram) SelectionTree.getCurrentHistogram();
 		new Gate(textNew.getText(), hist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
 		LOGGER.info("New gate " + textNew.getText() + " created for histogram "

@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.data.control.GateNew;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
@@ -32,8 +32,8 @@ final class ShowDialogNewGateCmd extends AbstractShowDialog implements Observer 
 		} else if ((command == BroadcastEvent.Command.HISTOGRAM_SELECT)
 				|| (command == BroadcastEvent.Command.GATE_SELECT)) {
 			final Nameable hist = SelectionTree.getCurrentHistogram();
-			setEnabled(!Histogram.getHistogramList().isEmpty()
-					&& hist instanceof Histogram);
+			setEnabled(!AbstractHistogram.getHistogramList().isEmpty()
+					&& hist instanceof AbstractHistogram);
 		}
 	}
 }

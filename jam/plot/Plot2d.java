@@ -5,7 +5,8 @@ import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.HistDouble2D;
 import jam.data.HistInt2D;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
+import jam.data.HistogramType;
 import jam.plot.color.ColorPrefs;
 import jam.plot.color.DiscreteColorScale;
 import jam.plot.color.PlotColorMap;
@@ -88,11 +89,11 @@ final class Plot2d extends AbstractPlot {
 	}
 
 	@Override
-	protected void copyCounts(final Histogram hist) {
-		final Histogram.Type type = hist.getType();
+	protected void copyCounts(final AbstractHistogram hist) {
+		final HistogramType type = hist.getType();
 		size = new Size(hist.getSizeX(), hist.getSizeY());
 		counts2d = new double[size.getSizeX()][size.getSizeY()];
-		if (type == Histogram.Type.TWO_DIM_INT) {
+		if (type == HistogramType.TWO_DIM_INT) {
 			copyCounts2dInt((HistInt2D) hist);
 		} else {// must be floating point
 			final double[][] counts2dDble = ((HistDouble2D) hist).getCounts();
@@ -120,7 +121,7 @@ final class Plot2d extends AbstractPlot {
 	}
 
 	@Override
-	protected void displayHistogram(final Histogram hist) {
+	protected void displayHistogram(final AbstractHistogram hist) {
 		synchronized (this) {
 			if (hist == null) {
 				counts2d = EMPTY;
@@ -461,7 +462,7 @@ final class Plot2d extends AbstractPlot {
 	 */
 	@Override
 	public void paintHistogram(final Graphics context) {
-		final Histogram plotHist = getHistogram();
+		final AbstractHistogram plotHist = getHistogram();
 		final Scale scale = limits.getScale();
 		context.setColor(plotColorMap.getHistogram());
 		context.getClipBounds(clipBounds);

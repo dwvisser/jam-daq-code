@@ -11,10 +11,12 @@ import static jam.io.hdf.JamFileFields.SCALER_SECT;
 import static jam.io.hdf.JamFileFields.Calibration.TYPE_COEFF;
 import static jam.io.hdf.JamFileFields.Calibration.TYPE_POINTS;
 import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
 import jam.data.DataParameter;
+import jam.data.Factory;
 import jam.data.Gate;
 import jam.data.Group;
-import jam.data.Histogram;
+import jam.data.HistogramType;
 import jam.data.Scaler;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.CalibrationFitException;
@@ -43,10 +45,11 @@ final class ConvertHDFObjToJamObj {
 		super();
 	}
 
-	private Histogram addHistogram(final Group group, final String name,
-			final Object histData) {
-		final Histogram histogram = group.getHistogram(STRING_UTIL.makeLength(
-				name, Histogram.NAME_LENGTH));
+	private AbstractHistogram addHistogram(final Group group,
+			final String name, final Object histData) {
+		final AbstractHistogram histogram = group.histograms
+				.getHistogram(STRING_UTIL.makeLength(name,
+						AbstractHistogram.NAME_LENGTH));
 		if (histogram != null) {
 			histogram.addCounts(histData);
 		}
@@ -91,7 +94,7 @@ final class ConvertHDFObjToJamObj {
 	}
 
 	protected AbstractCalibrationFunction convertCalibration(
-			final Histogram hist, final VDataDescription vdd)
+			final AbstractHistogram hist, final VDataDescription vdd)
 			throws HDFException {
 		final VData data = AbstractData.getObject(VData.class, vdd.getRef());
 		final String funcName = vdd.getName();
@@ -134,7 +137,7 @@ final class ConvertHDFObjToJamObj {
 		return calFunc;
 	}
 
-	protected Gate convertGate(final Histogram hist,
+	protected Gate convertGate(final AbstractHistogram hist,
 			final VDataDescription vdd, final String gateName,
 			final FileOpenMode mode) {
 		final Gate gate;
@@ -168,8 +171,9 @@ final class ConvertHDFObjToJamObj {
 		return gate;
 	}
 
-	protected Gate convertGate(final Histogram hist, final VirtualGroup currVG,
-			final FileOpenMode mode) throws HDFException {
+	protected Gate convertGate(final AbstractHistogram hist,
+			final VirtualGroup currVG, final FileOpenMode mode)
+			throws HDFException {
 		// Get VDD member of Virtual group
 		final VDataDescription vdd = AbstractData.ofType(currVG.getObjects(),
 				VDataDescription.class).get(0);
@@ -205,9 +209,12 @@ final class ConvertHDFObjToJamObj {
 				final String hname = DataIDAnnotation.withTagRef(annotations,
 						VirtualGroup.class, currVG.getRef()).getNote();
 				final String groupName = currentGroup.getName();
-				final String histFullName = groupName + "/"
-						+ STRING_UTIL.makeLength(hname, Histogram.NAME_LENGTH);
-				final Histogram hist = Histogram.getHistogram(histFullName);
+				final String histFullName = groupName
+						+ "/"
+						+ STRING_UTIL.makeLength(hname,
+								AbstractHistogram.NAME_LENGTH);
+				final AbstractHistogram hist = AbstractHistogram
+						.getHistogram(histFullName);
 				final Gate gate = convertGate(hist, currVG, mode);
 				if (gate != null) {
 					numGates++;
@@ -233,7 +240,7 @@ final class ConvertHDFObjToJamObj {
 		if (hasHistogramsInList(virtualGroup, groupName, histAttributeList)) {
 			/* Don't use file name for group name for open. */
 			final String fname = mode == FileOpenMode.OPEN ? null : fileName;
-			group = Group.createGroup(groupName, fname, Group.Type.FILE);
+			group = Factory.createGroup(groupName, fname, Group.Type.FILE);
 		}
 		return group;
 	}
@@ -279,11 +286,11 @@ final class ConvertHDFObjToJamObj {
 		return histAttributes;
 	}
 
-	protected Histogram convertHistogram(final Group group,
+	protected AbstractHistogram convertHistogram(final Group group,
 			final VirtualGroup histGroup,
 			final List<HistogramAttributes> histAttributes,
 			final FileOpenMode mode) throws HDFException {
-		Histogram rval = null;
+		AbstractHistogram rval = null;
 		final DataIDLabel dataLabel = DataIDLabel.withTagRef(
 				VirtualGroup.class, histGroup.getRef());
 		final String name = dataLabel.getLabel();
@@ -320,19 +327,19 @@ final class ConvertHDFObjToJamObj {
 		} else {
 			// Can reload without this histogram
 			if (mode == FileOpenMode.RELOAD) {
-				rval = group.getHistogram(STRING_UTIL.makeLength(name,
-						Histogram.NAME_LENGTH));
+				rval = group.histograms.getHistogram(STRING_UTIL.makeLength(
+						name, AbstractHistogram.NAME_LENGTH));
 			}
 		}
 		return rval;
 	}
 
-	private Histogram extractHistData(final Group group,
+	private AbstractHistogram extractHistData(final Group group,
 			final FileOpenMode mode,
 			final List<HistogramAttributes> histAttributes,
 			final NumericalDataGroup ndg, final NumericalDataGroup ndgErr,
 			final String name, final String title) throws HDFException {
-		Histogram rval = null;
+		AbstractHistogram rval = null;
 		final DataIDLabel numLabel = DataIDLabel.withTagRef(
 				NumericalDataGroup.class, ndg.getRef());
 		final int number = Integer.parseInt(numLabel.getLabel());
@@ -359,13 +366,14 @@ final class ConvertHDFObjToJamObj {
 		return rval;
 	}
 
-	private Histogram generateHistogram(final HistogramAttributes attr,
+	private AbstractHistogram generateHistogram(final HistogramAttributes attr,
 			final FileOpenMode mode, final ScientificData sciData,
 			final ScientificData sdErr, final int histDim,
 			final byte histNumType, final int sizeX, final int sizeY)
 			throws HDFException {
-		final Histogram rval;
-		final Group group = Group.getGroup(attr.getGroupName());
+		final AbstractHistogram rval;
+		final Group group = jam.data.Warehouse.getGroupCollection().get(
+				attr.getGroupName());
 		final String name = attr.getName();
 		final String title = attr.getTitle();
 		final int number = attr.getNumber();
@@ -412,8 +420,8 @@ final class ConvertHDFObjToJamObj {
 		if (hists != null) {
 			for (AbstractData data : hists.getObjects()) {
 				final VirtualGroup currHistGrp = (VirtualGroup) data;
-				final Histogram hist = convertHistogram(group, currHistGrp,
-						histAttributes, mode);
+				final AbstractHistogram hist = convertHistogram(group,
+						currHistGrp, histAttributes, mode);
 				if (hist != null) {
 					numHists++;
 				}
@@ -511,11 +519,11 @@ final class ConvertHDFObjToJamObj {
 	}
 
 	protected List<VirtualGroup> findGates(final VirtualGroup vgHists,
-			final Histogram.Type type) throws HDFException {
+			final HistogramType type) throws HDFException {
 		String gateType;
-		if (type.getDimensionality() == Histogram.Type.ONE_D) {
+		if (type.getDimensionality() == HistogramType.ONE_D) {
 			gateType = GATE_1D_TYPE;
-		} else if (type.getDimensionality() == Histogram.Type.TWO_D) {
+		} else if (type.getDimensionality() == HistogramType.TWO_D) {
 			gateType = GATE_2D_TYPE;
 		} else {
 			throw new HDFException("Unkown Histogram type in finding gates");
@@ -702,15 +710,15 @@ final class ConvertHDFObjToJamObj {
 		return calFunc;
 	}
 
-	private Gate makeGate(final Histogram hist, final String name) {
+	private Gate makeGate(final AbstractHistogram hist, final String name) {
 		return hist == null ? null : new Gate(name, hist);
 	}
 
-	protected Histogram openHistogram(final Group group, final String name,
-			final String title, final int number, final Object histData,
-			final Object histErrorData) {
-		final Histogram histogram = group
-				.createHistogram(histData, name, title);
+	protected AbstractHistogram openHistogram(final Group group,
+			final String name, final String title, final int number,
+			final Object histData, final Object histErrorData) {
+		final AbstractHistogram histogram = Factory.createHistogram(group,
+				histData, name, title);
 		histogram.setNumber(number);
 		if (histErrorData != null) {
 			((AbstractHist1D) histogram).setErrors((double[]) histErrorData);
@@ -742,8 +750,8 @@ final class ConvertHDFObjToJamObj {
 		// FIXME check works for unique name and
 		// create unique name should be a utility
 		final String uniqueName = group.getName() + "/" + name;
-		return mode.isOpenMode() ? group.createScaler(name, number) : Scaler
-				.getScaler(uniqueName);
+		return mode.isOpenMode() ? Factory.createScaler(group, name, number)
+				: Scaler.getScaler(uniqueName);
 	}
 
 	protected String readVirtualGroupName(final VirtualGroup group) {
@@ -758,10 +766,11 @@ final class ConvertHDFObjToJamObj {
 		return rval;
 	}
 
-	private Histogram reloadHistogram(final Group group, final String name,
-			final Object histData) {
-		final Histogram histogram = group.getHistogram(STRING_UTIL.makeLength(
-				name, Histogram.NAME_LENGTH));
+	private AbstractHistogram reloadHistogram(final Group group,
+			final String name, final Object histData) {
+		final AbstractHistogram histogram = group.histograms
+				.getHistogram(STRING_UTIL.makeLength(name,
+						AbstractHistogram.NAME_LENGTH));
 		if (histogram != null) {
 			histogram.setCounts(histData);
 		}

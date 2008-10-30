@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.io.ImpExpException;
 import jam.ui.SelectionTree;
 
@@ -38,7 +38,7 @@ class AbstractExportFile extends AbstractImportExport {
 	protected final void execute(final Object[] cmdParams)
 			throws CommandException {
 		try {
-			final Histogram histogram = (Histogram) SelectionTree
+			final AbstractHistogram histogram = (AbstractHistogram) SelectionTree
 					.getCurrentHistogram();
 			if (cmdParams == null) { // No file given
 				importExport.saveFile(histogram);

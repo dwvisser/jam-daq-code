@@ -1,11 +1,13 @@
 package jam.commands;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
+import jam.data.DataBase;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
+import jam.global.Nameable;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  * Delete a group
@@ -25,13 +27,15 @@ public class DeleteGroup extends AbstractCommand {
 	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) throws CommandException {
 		final JFrame frame = STATUS.getFrame();
-		final Group group = (Group) STATUS.getCurrentGroup();
-		if (!Group.isValid(group)) {
+		final Nameable nameable = STATUS.getCurrentGroup();
+		if (!DataBase.getInstance().isValid(nameable)) {
 			LOGGER.severe("Need to select a group.");
 			return;
 		}
+		final Group group = (Group) nameable;
 		final Group.Type type = group.getType();
 		final String name = group.getName();
 		/* Cannot delete sort histograms */
@@ -41,7 +45,7 @@ public class DeleteGroup extends AbstractCommand {
 			if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(frame,
 					"Delete " + name + "?", "Delete group",
 					JOptionPane.YES_NO_OPTION)) {
-				Group.clearGroup(group);
+				jam.data.Warehouse.getGroupCollection().remove(group);
 				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			}
 		}
@@ -53,6 +57,7 @@ public class DeleteGroup extends AbstractCommand {
 	 * 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
+	@Override
 	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
 		// TODO Auto-generated method stub

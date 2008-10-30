@@ -1,5 +1,6 @@
 package jam.applet;
 
+import jam.data.Factory;
 import jam.data.Group;
 import jam.data.Monitor;
 import jam.data.RemoteData;
@@ -38,7 +39,7 @@ import javax.swing.SwingConstants;
  * @author Ken Swartz
  * @version 0.5
  */
-public class MonitorApplet extends JApplet implements ActionListener,// NOPMD
+public class MonitorApplet extends JApplet implements ActionListener,
 		ItemListener, Runnable {
 
 	static private final boolean DEBUG = false;
@@ -78,6 +79,7 @@ public class MonitorApplet extends JApplet implements ActionListener,// NOPMD
 	 * Initializes the applet. You never need to call this directly; it is
 	 * called automatically by the system once the applet is created.
 	 */
+	@Override
 	public void init() {
 		LOGGER.info("MonitorApplet init");
 		String expname = "";
@@ -154,6 +156,7 @@ public class MonitorApplet extends JApplet implements ActionListener,// NOPMD
 	 * Called to start the applet. You never need to call this directly; it is
 	 * called when the applet's document is visited.
 	 */
+	@Override
 	public void start() {
 		LOGGER.info("start");
 		if (DEBUG) {
@@ -213,7 +216,7 @@ public class MonitorApplet extends JApplet implements ActionListener,// NOPMD
 	 */
 	private void setupDisplay() {
 		pMonitors.removeAll();
-		// widgets for dislay page
+		// widgets for display page
 		final int numberMonitors = monitorList.size();
 		final JPanel[] pmon = new JPanel[numberMonitors];
 		final JLabel[] labelDisp = new JLabel[numberMonitors];
@@ -276,14 +279,14 @@ public class MonitorApplet extends JApplet implements ActionListener,// NOPMD
 	}
 
 	/**
-	 * creat a set of example monitors for debugging
+	 * Create a set of example monitors for debugging
 	 */
 	private void createExample() {
-		final Group testGroup = Group.createGroup("Test", Group.Type.TEMP);
+		final Group testGroup = Factory.createGroup("Test", Group.Type.TEMP);
 		final int numberMonitors = 3;
 		monitorList = new ArrayList<Monitor>(numberMonitors);
 		monitorValues.clear();
-		final Scaler scal = testGroup.createScaler("ex", 0);
+		final Scaler scal = Factory.createScaler(testGroup, "ex", 0);
 		Monitor monitor = new Monitor("test", scal);
 		monitor.setThreshold(10);
 		monitorList.add(0, monitor);

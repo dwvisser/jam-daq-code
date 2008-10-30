@@ -8,7 +8,7 @@ package jam.data;
  * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
  */
-public abstract class AbstractHist2D extends Histogram {
+public abstract class AbstractHist2D extends AbstractHistogram {
 
 	/**
 	 * Called by implementing subclasses.
@@ -30,8 +30,9 @@ public abstract class AbstractHist2D extends Histogram {
 	 * @param axisLabelY
 	 *            y-axis label
 	 */
-	protected AbstractHist2D(final Type type, final int sizeX, final int sizeY,
-			final String title, final String axisLabelX, final String axisLabelY) {
+	protected AbstractHist2D(final jam.data.HistogramType type, final int sizeX,
+			final int sizeY, final String title, final String axisLabelX,
+			final String axisLabelY) {
 		super(type, sizeX, sizeY, title, axisLabelX, axisLabelY);
 	}
 

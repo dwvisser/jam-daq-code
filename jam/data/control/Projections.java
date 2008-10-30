@@ -7,7 +7,8 @@ import jam.data.DataUtility;
 import jam.data.Gate;
 import jam.data.HistDouble2D;
 import jam.data.HistInt2D;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
+import jam.data.HistogramType;
 import jam.global.BroadcastEvent;
 import jam.ui.PanelOKApplyCancelButtons;
 import jam.ui.SelectionTree;
@@ -58,7 +59,7 @@ public final class Projections extends AbstractManipulation implements
 
 	private transient String hfromname;
 
-	private transient Histogram hto;
+	private transient AbstractHistogram hto;
 
 	/**
 	 * Constructs a new projections dialog.
@@ -173,7 +174,7 @@ public final class Projections extends AbstractManipulation implements
 					hfromname = "";
 					buttons.setButtonsEnabled(false, false, true);
 				} else {
-					hfromname = ((Histogram) selected).getFullName();
+					hfromname = ((AbstractHistogram) selected).getFullName();
 					buttons.setButtonsEnabled(true, true, true);
 					setupCuts(FULL);
 				}
@@ -237,7 +238,7 @@ public final class Projections extends AbstractManipulation implements
 	public void doSetup() {
 		cfrom.setSelectedIndex(0);
 		setUseHist(NEW_HIST); // default use new histogram
-		loadAllHists(cto, true, Histogram.Type.ONE_D);// setup "to" histogram
+		loadAllHists(cto, true, HistogramType.ONE_D);// setup "to" histogram
 		final String lastCut = (String) cchan.getSelectedItem();
 		setupCuts(lastCut);// default setup channels
 	}
@@ -251,7 +252,7 @@ public final class Projections extends AbstractManipulation implements
 		cchan.addItem(FULL);
 		cchan.addItem(BETWEEN);
 		/* add gates to chooser */
-		final Histogram hfrom = Histogram.getHistogram(hfromname);
+		final AbstractHistogram hfrom = AbstractHistogram.getHistogram(hfromname);
 		if (hfrom != null) {
 			for (DataElement gate : hfrom.getGateCollection().getGates()) {
 				if (((Gate) gate).isDefined()) {
@@ -298,9 +299,9 @@ public final class Projections extends AbstractManipulation implements
 	 */
 	private void project() throws DataException {
 		final double[][] counts2d;
-		final Histogram hfrom = Histogram.getHistogram(hfromname);
+		final AbstractHistogram hfrom = AbstractHistogram.getHistogram(hfromname);
 		final NumberUtilities numbers = NumberUtilities.getInstance();
-		counts2d = (hfrom.getType() == Histogram.Type.TWO_D_DOUBLE) ? ((HistDouble2D) hfrom)
+		counts2d = (hfrom.getType() == HistogramType.TWO_D_DOUBLE) ? ((HistDouble2D) hfrom)
 				.getCounts()
 				: numbers.intToDouble2DArray(((HistInt2D) hfrom).getCounts());
 		final String name = (String) cto.getSelectedItem();
@@ -315,7 +316,7 @@ public final class Projections extends AbstractManipulation implements
 	}
 
 	private void internalProject(final double[][] counts2d,
-			final Histogram hfrom, final NumberUtilities numbers,
+			final AbstractHistogram hfrom, final NumberUtilities numbers,
 			final int[] limits, final boolean gateSelected, final Gate gate)
 			throws DataException {
 		double[] countsDouble;
@@ -366,9 +367,9 @@ public final class Projections extends AbstractManipulation implements
 
 	private void setProjectionCounts(final double[] countsDouble,
 			final NumberUtilities numbers) throws DataException {
-		if (hto.getType() == Histogram.Type.ONE_D_DOUBLE) {
+		if (hto.getType() == HistogramType.ONE_D_DOUBLE) {
 			hto.setCounts(countsDouble);
-		} else if (hto.getType() == Histogram.Type.ONE_DIM_INT) {
+		} else if (hto.getType() == HistogramType.ONE_DIM_INT) {
 			hto.setCounts(numbers.doubleToIntArray(countsDouble));
 		} else {
 			throw new DataException("Need to project to 1 dimension histogram");
@@ -388,7 +389,7 @@ public final class Projections extends AbstractManipulation implements
 	 * @param hfrom
 	 * @param name
 	 */
-	private void getDestinationHistogram(final Histogram hfrom,
+	private void getDestinationHistogram(final AbstractHistogram hfrom,
 			final String name) {
 		if (isNewHistogram(name)) {
 			final int size = cdown.isSelected() ? hfrom.getSizeX() : hfrom
@@ -399,7 +400,7 @@ public final class Projections extends AbstractManipulation implements
 			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
 					+ "'");
 		} else {
-			hto = Histogram.getHistogram(name);
+			hto = AbstractHistogram.getHistogram(name);
 		}
 	}
 

@@ -8,6 +8,9 @@ package jam.data;
  */
 public final class DataUtility {
 
+	private static final NameValueCollection<Group> GROUPS = Warehouse
+			.getGroupCollection();
+
 	private DataUtility() {
 		// make no instances
 	}
@@ -16,9 +19,10 @@ public final class DataUtility {
 	 * @param histogram
 	 *            histogram to delete
 	 */
-	public static void delete(final Histogram histogram) {
+	public static void delete(final AbstractHistogram histogram) {
 		histogram.delete();
-		Group.getGroup(histogram.getGroupName()).removeHistogram(histogram);
+		GROUPS.get(histogram.getGroupName()).histograms
+				.removeHistogram(histogram);
 	}
 
 	/**
@@ -26,8 +30,8 @@ public final class DataUtility {
 	 *            to get the group for
 	 * @return the group containing the given histogram
 	 */
-	public static Group getGroup(final Histogram histogram) {
-		return Group.getGroup(histogram.getGroupName());
+	public static Group getGroup(final AbstractHistogram histogram) {
+		return GROUPS.get(histogram.getGroupName());
 	}
 
 }

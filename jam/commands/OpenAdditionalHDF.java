@@ -1,7 +1,7 @@
 package jam.commands;
 
 import jam.data.Group;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.io.FileOpenMode;
@@ -95,7 +95,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 
 	private void notifyApp() {
 		Group firstGroup;
-		Histogram firstHist = null;
+		AbstractHistogram firstHist = null;
 
 		// Update app status
 		AbstractControl.setupAll();
@@ -107,8 +107,8 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 			STATUS.setCurrentGroup(firstGroup);
 		
 			/* Set the current histogram to the first opened histogram. */
-			if (firstGroup.getHistogramList().size() > 0) {
-				firstHist = firstGroup.getHistogramList().get(0);
+			if (firstGroup.histograms.getList().size() > 0) {
+				firstHist = firstGroup.histograms.getList().get(0);
 			}
 			SelectionTree.setCurrentHistogram(firstHist);
 			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,

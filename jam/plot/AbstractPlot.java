@@ -11,7 +11,7 @@ import static javax.swing.SwingConstants.TOP;
 import jam.data.AbstractHist1D;
 import jam.data.Dimensional;
 import jam.data.Gate;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.global.RunInfo;
 import jam.plot.color.PlotColorMap;
 import jam.plot.common.Scale;
@@ -132,7 +132,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * counts before refreshing.
 	 */
 	protected final void autoCounts() {
-		final Histogram plotHist = getHistogram();
+		final AbstractHistogram plotHist = getHistogram();
 		copyCounts(plotHist);
 		limits.setMinimumCounts(110 * findMinimumCounts() / 100);
 		if (findMaximumCounts() > 5) {
@@ -161,7 +161,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * @param plotHistogram
 	 *            for which to paint
 	 */
-	protected void paintTextAndTicks(final Histogram plotHistogram) {
+	protected void paintTextAndTicks(final AbstractHistogram plotHistogram) {
 		painter.drawTitle(plotHistogram.getTitle(), TOP);
 		painter.drawNumber(plotHistogram.getNumber(), new int[0]);
 		painter.drawTicks(BOTTOM);
@@ -170,7 +170,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 		painter.drawLabels(LEFT);
 	}
 
-	protected abstract void copyCounts(Histogram hist);
+	protected abstract void copyCounts(AbstractHistogram hist);
 
 	protected abstract void displayFit(double[][] signals, double[] background,
 			double[] residuals, int lowerLimit);
@@ -183,7 +183,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 */
 	protected void displayGate(final Gate gate) {
 		synchronized (this) {
-			final Histogram plotHist = getHistogram();
+			final AbstractHistogram plotHist = getHistogram();
 			if (plotHist != null && plotHist.getGateCollection().hasGate(gate)) {
 				panel.setDisplayingGate(true);
 				setCurrentGate(gate);
@@ -200,7 +200,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 * one save all neccessary histogram parameters to local variables. Allows
 	 * general use of data set.
 	 */
-	protected void displayHistogram(final Histogram hist) {
+	protected void displayHistogram(final AbstractHistogram hist) {
 		synchronized (this) {
 			limits = Limits.getLimits(hist);
 			if (hist == null) {// we have a null histogram so fake it
@@ -329,9 +329,9 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	 */
 	protected abstract double getEnergy(double channel);
 
-	public Histogram getHistogram() {
+	public AbstractHistogram getHistogram() {
 		synchronized (this) {
-			return plotHistNum < 0 ? null : Histogram.getHistogram(plotHistNum);// NOPMD
+			return plotHistNum < 0 ? null : AbstractHistogram.getHistogram(plotHistNum);// NOPMD
 		}
 	}
 
@@ -522,7 +522,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 
 	private final boolean plotDataExists() {
 		synchronized (this) {
-			final Histogram plotHist = getHistogram();
+			final AbstractHistogram plotHist = getHistogram();
 			return plotHist != null && !plotHist.isClear();
 		}
 	}
@@ -557,7 +557,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 		if (scrollbars != null) {
 			scrollbars.update();
 		}
-		final Histogram plotHist = getHistogram();
+		final AbstractHistogram plotHist = getHistogram();
 		copyCounts(plotHist);
 		panel.repaint();
 	}

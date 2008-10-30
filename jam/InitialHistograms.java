@@ -1,8 +1,9 @@
 package jam;
 
+import jam.data.Factory;
 import jam.data.Gate;
 import jam.data.Group;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 
@@ -16,7 +17,7 @@ import jam.global.Broadcaster;
 
 public final class InitialHistograms {
 
-	private transient final Histogram histInitial;
+	private transient final AbstractHistogram histInitial;
 
 	private transient final Group groupInitial;
 
@@ -25,15 +26,16 @@ public final class InitialHistograms {
 	 */
 	public InitialHistograms() {
 		super();
-		final Group group = Group.createGroup("Initial", Group.Type.FILE);
+		final Group group = jam.data.Factory.createGroup("Initial",
+				Group.Type.FILE);
 		/* histogram with Jam name 2d */
-		final Histogram histJam2d = group.createHistogram(histNameJam2d(),
-				"Histogram2D", "Jam Name 2D");
+		final AbstractHistogram histJam2d = Factory.createHistogram(group,
+				histNameJam2d(), "Histogram2D", "Jam Name 2D");
 		/* histogram with Jam name */
-		final Histogram histJam1d = group.createHistogram(histNameJam1d(),
-				"Histogram1D", "Jam Name 1D");
+		final AbstractHistogram histJam1d = Factory.createHistogram(group,
+				histNameJam1d(), "Histogram1D", "Jam Name 1D");
 		/* histogram with triangles */
-		group.createHistogram(histTriangle(), "Triangle");
+		Factory.createHistogram(group, histTriangle(), "Triangle");
 		new Gate("Letter A", histJam1d); // gate
 		new Gate("Letter B", histJam1d); // gate
 		new Gate("Letter C", histJam1d); // gate
@@ -50,7 +52,7 @@ public final class InitialHistograms {
 		return groupInitial;
 	}
 
-	protected Histogram getInitialHist() {
+	protected AbstractHistogram getInitialHist() {
 		return histInitial;
 	}
 

@@ -1,8 +1,10 @@
 package jam.io;
 
+import jam.data.Factory;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
+import jam.data.HistogramType;
 import jam.ui.ExtensionFileFilter;
 
 import java.io.DataInputStream;
@@ -67,7 +69,7 @@ public final class ImpExpSPE extends AbstractImpExp {// NOPMD
 	 *                display on the MessageHandler
 	 */
 	@Override
-	public void saveFile(final Histogram hist) throws ImpExpException {
+	public void saveFile(final AbstractHistogram hist) throws ImpExpException {
 		if (hist.getDimensionality() == 2) {
 			if (!silent) {
 				LOGGER.severe("Cannot write out 2 dimensional spe files");
@@ -116,7 +118,7 @@ public final class ImpExpSPE extends AbstractImpExp {// NOPMD
 			dis.readInt(); // should read a hex 2000 dec 8192
 			/* parameters of histogram */
 			final String nameHist = String.valueOf(cName);
-			importGroup.createHistogram(counts, nameHist);
+			Factory.createHistogram(importGroup, counts, nameHist);
 			dis.close();
 		} catch (IOException ioe) {
 			throw new ImpExpException("Problem reading spectrum file.", ioe);
@@ -124,7 +126,7 @@ public final class ImpExpSPE extends AbstractImpExp {// NOPMD
 	}
 
 	@Override
-	public void writeHist(final OutputStream outStream, final Histogram hist)
+	public void writeHist(final OutputStream outStream, final AbstractHistogram hist)
 			throws ImpExpException {
 		try {
 			final DataOutputStream dos = new DataOutputStream(outStream);
@@ -134,13 +136,13 @@ public final class ImpExpSPE extends AbstractImpExp {// NOPMD
 				name.append(' ');
 			}
 			final int size = hist.getSizeX();
-			final Histogram.Type type = hist.getType();
+			final HistogramType type = hist.getType();
 			/* put data into a float array */
 			final float[] countsFlt;
-			if (type == Histogram.Type.ONE_DIM_INT) {
+			if (type == HistogramType.ONE_DIM_INT) {
 				final int[] countsInt = ((HistInt1D) hist).getCounts();
 				countsFlt = copyIntToFloat(countsInt, size);
-			} else if (type == Histogram.Type.ONE_D_DOUBLE) {
+			} else if (type == HistogramType.ONE_D_DOUBLE) {
 				final double[] countsDbl = ((HistDouble1D) hist).getCounts();
 				countsFlt = new float[size];
 				for (int i = 0; i < size; i++) {

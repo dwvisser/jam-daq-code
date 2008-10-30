@@ -27,16 +27,16 @@ public final class DataBase implements Validator {
 	/**
 	 * Calls the <code>clearList</code> methods of the various data classes.
 	 * 
-	 * @see Histogram#clearList()
+	 * @see AbstractHistogram#clearList()
 	 * @see Gate#clearList()
 	 * @see Scaler#clearList()
 	 * @see Monitor#clearList()
 	 * @see DataParameter#clearList()
-	 * @see Group#clearList()
+	 * @see GroupCollection#clear()
 	 */
 	public void clearAllLists() {
-		Group.clearList();
-		Histogram.clearList();
+		Warehouse.getGroupCollection().clear();
+		AbstractHistogram.clearList();
 		Gate.clearList();
 		Scaler.clearList();
 		Monitor.clearList();
@@ -46,9 +46,9 @@ public final class DataBase implements Validator {
 	public boolean isValid(final Nameable candidate) {
 		boolean rval = false;
 		if (candidate instanceof Group) {
-			rval = Group.isValid((Group) candidate);
-		} else if (candidate instanceof Histogram) {
-			rval = Histogram.isValid((Histogram) candidate);
+			rval = ((Group) candidate).isValid();
+		} else if (candidate instanceof AbstractHistogram) {
+			rval = AbstractHistogram.isValid((AbstractHistogram) candidate);
 		} else if (candidate instanceof Gate) {
 			rval = Gate.isValid((Gate) candidate);
 		}

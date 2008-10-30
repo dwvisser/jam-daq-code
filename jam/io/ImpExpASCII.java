@@ -1,10 +1,12 @@
 package jam.io;
 
+import jam.data.Factory;
 import jam.data.HistDouble1D;
 import jam.data.HistDouble2D;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
+import jam.data.HistogramType;
 import jam.ui.ExtensionFileFilter;
 
 import java.io.File;
@@ -83,7 +85,7 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 	 *                the msgHandler
 	 */
 	@Override
-	public void saveFile(final Histogram hist) throws ImpExpException {
+	public void saveFile(final AbstractHistogram hist) throws ImpExpException {
 		saveFile("Export text file ", hist);
 	}
 
@@ -155,7 +157,7 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 		for (int i = 0; i < counts.length; i++) {
 			counts[i] = scanner.nextDouble();
 		}
-		importGroup.createHistogram(counts, name, title);
+		Factory.createHistogram(importGroup, counts, name, title);
 	}
 
 	private transient int maxX, maxY;
@@ -212,7 +214,7 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 			final int channel = (int) scanner.nextDouble();
 			counts[channel] = scanner.nextDouble();
 		}
-		importGroup.createHistogram(counts, name, title);
+		Factory.createHistogram(importGroup, counts, name, title);
 	}
 
 	private void readHistXYZ(final InputStream inputStream, final String name,
@@ -229,7 +231,7 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 			final int channelY = (int) scanner.nextDouble();
 			counts[channelX][channelY] = scanner.nextDouble();
 		}
-		importGroup.createHistogram(counts, name, title);
+		Factory.createHistogram(importGroup, counts, name, title);
 	}
 
 	private void readHistMatrix(final InputStream inputStream,
@@ -246,7 +248,7 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 				counts[i][j] = scanner.nextDouble();
 			}
 		}
-		importGroup.createHistogram(counts, name, title);
+		Factory.createHistogram(importGroup, counts, name, title);
 	}
 
 	private String getHistTitle() throws IOException {
@@ -340,14 +342,14 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 	 *                the msgHandler
 	 */
 	@Override
-	protected void writeHist(final OutputStream buffout, final Histogram hist)
+	protected void writeHist(final OutputStream buffout, final AbstractHistogram hist)
 			throws ImpExpException {
 		try {
 			final PrintWriter writer = new PrintWriter(buffout);
-			if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
+			if (hist.getType() == HistogramType.ONE_DIM_INT) {
 				final int[] counts = ((HistInt1D) hist).getCounts();
 				writeHist(writer, counts, hist.getSizeX());
-			} else if (hist.getType() == Histogram.Type.ONE_D_DOUBLE) {
+			} else if (hist.getType() == HistogramType.ONE_D_DOUBLE) {
 				final double[] countsD = ((HistDouble1D) hist).getCounts();
 				for (int i = 0; i < hist.getSizeX(); i++) {
 					// output a row of data channel counts
@@ -355,10 +357,10 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 					writer.print("   ");
 					writer.println(countsD[i]);
 				}
-			} else if (hist.getType() == Histogram.Type.TWO_DIM_INT) {
+			} else if (hist.getType() == HistogramType.TWO_DIM_INT) {
 				final int[][] counts = ((HistInt2D) hist).getCounts();
 				writeHist(writer, counts, hist.getSizeX(), hist.getSizeY());
-			} else if (hist.getType() == Histogram.Type.TWO_D_DOUBLE) {
+			} else if (hist.getType() == HistogramType.TWO_D_DOUBLE) {
 				final double[][] counts = ((HistDouble2D) hist).getCounts();
 				for (int x = 0; x < hist.getSizeX(); x++) {
 					for (int y = 0; y < hist.getSizeY(); y++) {

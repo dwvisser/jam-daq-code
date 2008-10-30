@@ -4,7 +4,7 @@ import jam.InitialHistograms;
 import jam.commands.CommandManager;
 import jam.data.DataElement;
 import jam.data.Gate;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.data.RemoteData;
 import jam.global.JamException;
 import jam.global.LoggerConfig;
@@ -211,10 +211,10 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 			documentHost = "hostname";
 		}
 		textHost.setText("rmi://" + documentHost + "/" + expname);
-		Histogram.clearList();
+		AbstractHistogram.clearList();
 		try {
 			new InitialHistograms();// load initial histograms
-			setHistogramList(Histogram.getHistogramList());
+			setHistogramList(AbstractHistogram.getHistogramList());
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Error create histograms ", e);
 		}
@@ -230,7 +230,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	 */
 	public void itemStateChanged(final ItemEvent itemEvent) {
 
-		Histogram hist;
+		AbstractHistogram hist;
 		Gate gate;
 		double area;
 		int lowerLimit;
@@ -244,7 +244,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 						"Error: no item in histogram chooser "
 								+ itemEvent.getItem());
 			} else {
-				hist = Histogram.getHistogram((String) itemEvent.getItem());
+				hist = AbstractHistogram.getHistogram((String) itemEvent.getItem());
 				if (hist == null) {
 					// error no such histogram
 					LOGGER.log(Level.WARNING, "Error: histogram null");
@@ -278,7 +278,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	private void link(final String stringURL) throws JamException {
 		LOGGER.fine("open a link to " + stringURL);
 		String[] histogramNames;
-		List<Histogram> histogramList;
+		List<AbstractHistogram> histogramList;
 		List<Gate> gateList;
 		RemoteData remoteData;
 		try {
@@ -300,7 +300,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 			LOGGER.fine("names 0 " + histogramNames[0]);
 			// load histogram list
 			histogramList = remoteData.getHistogramList();
-			Histogram.setHistogramList(histogramList);
+			AbstractHistogram.setHistogramList(histogramList);
 			// load gate list
 			gateList = remoteData.getGateList();
 			Gate.setGateList(gateList);
@@ -336,11 +336,11 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	 * @param histogramList
 	 *            the list of histograms.
 	 */
-	public void setHistogramList(final List<Histogram> histogramList) {
+	public void setHistogramList(final List<AbstractHistogram> histogramList) {
 		histogramChooser.removeAll();
 		histogramChooser.setModel(new DefaultComboBoxModel(
-				new Vector<Histogram>(histogramList)));// NOPMD
-		Histogram firstHist = null;
+				new Vector<AbstractHistogram>(histogramList)));// NOPMD
+		AbstractHistogram firstHist = null;
 		if (!histogramList.isEmpty()) {
 			firstHist = histogramList.get(0);
 		}

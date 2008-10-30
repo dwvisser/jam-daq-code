@@ -27,7 +27,7 @@ public class ScalerVMECommunicator implements ScalerCommunication, Observer {
 	 */
 	public void readScalers() {
 		final String RUN_SCALER = "list scaler";
-		this.vme.sendToVME(RUN_SCALER);
+		this.vme.sendMessage(RUN_SCALER);
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class ScalerVMECommunicator implements ScalerCommunication, Observer {
 	 */
 	public void clearScalers() {
 		final String RUN_CLEAR = "list clear";
-		this.vme.sendToVME(RUN_CLEAR);
+		this.vme.sendMessage(RUN_CLEAR);
 	}
 
 	/**

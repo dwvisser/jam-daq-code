@@ -8,9 +8,9 @@ import java.util.Observer;
 
 final class CounterVMECommunicator implements Observer {
 
-	private transient final VMECommunication vme;
+	private transient final VmeSender vme;
 
-	CounterVMECommunicator(final VMECommunication vme) {
+	CounterVMECommunicator(final VmeSender vme) {
 		this.vme = vme;
 		Broadcaster.getSingletonInstance().addObserver(this);
 	}
@@ -39,7 +39,7 @@ final class CounterVMECommunicator implements Observer {
 	 */
 	private void zeroCounters() {
 		final String COUNT_ZERO = "count zero";
-		this.vme.sendToVME(COUNT_ZERO);
+		this.vme.sendMessage(COUNT_ZERO);
 	}
 
 	/**
@@ -49,6 +49,6 @@ final class CounterVMECommunicator implements Observer {
 	 */
 	private void readCounters() {
 		final String COUNT_READ = "count read";
-		this.vme.sendToVME(COUNT_READ);
+		this.vme.sendMessage(COUNT_READ);
 	}
 }

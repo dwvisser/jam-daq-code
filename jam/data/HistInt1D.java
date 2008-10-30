@@ -39,7 +39,8 @@ public final class HistInt1D extends AbstractHist1D {
 	 */
 	HistInt1D(final String title, final String axisLabelX,
 			final String axisLabelY, final int[] countsIn) {
-		super(Type.ONE_DIM_INT, countsIn.length, title, axisLabelX, axisLabelY);
+		super(jam.data.HistogramType.ONE_DIM_INT, countsIn.length, title, axisLabelX,
+				axisLabelY);
 		initCounts(countsIn);
 	}
 
@@ -53,7 +54,7 @@ public final class HistInt1D extends AbstractHist1D {
 	 */
 	@Override
 	public void addCounts(final Object add) {
-		if (Type.getArrayType(add) != getType()) {
+		if (jam.data.HistogramType.getArrayType(add) != getType()) {
 			throw new IllegalArgumentException("Expected array for type "
 					+ getType());
 		}
@@ -217,7 +218,7 @@ public final class HistInt1D extends AbstractHist1D {
 	 */
 	@Override
 	public void setCounts(final Object countsIn) {
-		if (Type.getArrayType(countsIn) != getType()) {
+		if (jam.data.HistogramType.getArrayType(countsIn) != getType()) {
 			throw new IllegalArgumentException("Expected array for type "
 					+ getType());
 		}

@@ -6,7 +6,7 @@ import jam.data.HistDouble1D;
 import jam.data.HistDouble2D;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.plot.common.Scale;
 
 import java.util.Collections;
@@ -83,7 +83,7 @@ final class Limits {
 	 * @param ignoreFull
 	 *            ignores the last channel for auto scaling histogram
 	 */
-	private Limits(final Histogram hist, final boolean ignoreZero,
+	private Limits(final AbstractHistogram hist, final boolean ignoreZero,
 			final boolean ignoreFull) {
 		super();
 		if (hist == null) {
@@ -121,7 +121,7 @@ final class Limits {
 	 *            true if the last channel is ignored for auto-scaling
 	 */
 	private void init(final boolean ignoreZero, final boolean ignoreFull) {
-		final Histogram histogram = Histogram.getHistogram(histName);
+		final AbstractHistogram histogram = AbstractHistogram.getHistogram(histName);
 		final int dim = histogram.getDimensionality();
 		final int sizex = histogram.getSizeX();
 		final int sizey = histogram.getSizeY();
@@ -158,7 +158,7 @@ final class Limits {
 
 		final int scaleUp = 110;
 		final int scaleBackDown = 100;
-		final Histogram histogram = Histogram.getHistogram(histName);
+		final AbstractHistogram histogram = AbstractHistogram.getHistogram(histName);
 		if (histogram.getDimensionality() == 1) {
 			maxCounts = getMaxCounts1D((AbstractHist1D) histogram, chminX,
 					chmaxX);
@@ -216,7 +216,7 @@ final class Limits {
 	 *            Histogram to retrieve the limits for
 	 * @return display limits for the specified histogram
 	 */
-	protected static Limits getLimits(final Histogram hist) {
+	protected static Limits getLimits(final AbstractHistogram hist) {
 		final Limits rval;
 		if (hist == null) {
 			rval = LIMITS_NULL;

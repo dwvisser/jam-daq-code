@@ -163,7 +163,7 @@ public final class Gate implements DataElement {
 	 * @param hist
 	 *            the <code>Histogram</code> to which the gate will belong.
 	 */
-	public Gate(final String nameIn, final Histogram hist) {
+	public Gate(final String nameIn, final AbstractHistogram hist) {
 		super();
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		histUniqueName = hist.getFullName();
@@ -199,10 +199,10 @@ public final class Gate implements DataElement {
 	}
 
 	private double getArea1d() {
-		final Histogram histogram = Histogram.getHistogram(histUniqueName);
-		final Histogram.Type htype = histogram.getType();
+		final AbstractHistogram histogram = AbstractHistogram.getHistogram(histUniqueName);
+		final jam.data.HistogramType htype = histogram.getType();
 		double rval = 0.0;
-		if (htype == Histogram.Type.ONE_D_DOUBLE) {
+		if (htype == jam.data.HistogramType.ONE_D_DOUBLE) {
 			final double[] counts = ((HistDouble1D) histogram).getCounts();
 			for (int i = lowerLimit; i <= upperLimit; i++) {
 				rval += counts[i];
@@ -217,10 +217,10 @@ public final class Gate implements DataElement {
 	}
 
 	private double getArea2d() {
-		final Histogram histogram = Histogram.getHistogram(histUniqueName);
-		final Histogram.Type htype = histogram.getType();
+		final AbstractHistogram histogram = AbstractHistogram.getHistogram(histUniqueName);
+		final jam.data.HistogramType htype = histogram.getType();
 		double rval = 0.0;
-		if (htype == Histogram.Type.TWO_DIM_INT) {
+		if (htype == jam.data.HistogramType.TWO_DIM_INT) {
 			int intSum = 0;
 			final int[][] counts2d = ((HistInt2D) histogram).getCounts();
 			for (int i = 0; i < sizeX; i++) {
@@ -271,8 +271,8 @@ public final class Gate implements DataElement {
 		double centroid = 0.0;
 		double area = 0.0;
 		if (dimensions == 1) {
-			final Histogram histogram = Histogram.getHistogram(histUniqueName);
-			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
+			final AbstractHistogram histogram = AbstractHistogram.getHistogram(histUniqueName);
+			if (histogram.getType() == jam.data.HistogramType.ONE_DIM_INT) {
 				final int[] counts = ((HistInt1D) histogram).getCounts();
 				// sum up counts and weight
 				for (int i = lowerLimit; i <= upperLimit; i++) {
@@ -314,7 +314,7 @@ public final class Gate implements DataElement {
 	 * as its associated <code>Histogram</code>.
 	 * 
 	 * @return either 1 or 2
-	 * @see Histogram#getDimensionality()
+	 * @see AbstractHistogram#getDimensionality()
 	 */
 	public int getDimensionality() {
 		return dimensions;
@@ -333,8 +333,8 @@ public final class Gate implements DataElement {
 	 * 
 	 * @return the <code>Histogram</code> this <code>Gate</code> belongs to
 	 */
-	public Histogram getHistogram() {
-		return Histogram.getHistogram(histUniqueName);
+	public AbstractHistogram getHistogram() {
+		return AbstractHistogram.getHistogram(histUniqueName);
 	}
 
 	/**
@@ -343,7 +343,7 @@ public final class Gate implements DataElement {
 	 * @return the number of the associated <code>Histogram</code>
 	 */
 	public int getHistogramNumber() {
-		return Histogram.getHistogram(histUniqueName).getNumber();
+		return AbstractHistogram.getHistogram(histUniqueName).getNumber();
 	}
 
 	/**

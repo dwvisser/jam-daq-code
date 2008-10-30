@@ -1,8 +1,10 @@
 package jam.commands;
 
+import jam.data.AbstractHistogram;
+import jam.data.DataBase;
 import jam.data.Group;
-import jam.data.Histogram;
 import jam.global.BroadcastEvent;
+import jam.global.Nameable;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
@@ -80,17 +82,19 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
 	 * 
 	 */
 	private void notifyApp() {
-		Histogram firstHist = null;
+		AbstractHistogram firstHist = null;
 		/*
 		 * Set to sort group. Set the current histogram to the first opened
 		 * histogram.
 		 */
-		if (loadGroup.getHistogramList().size() > 0) {
-			final Group group = (Group) STATUS.getCurrentGroup();
-			if (Group.isValid(group)) {
-				final List<Histogram> histList = group.getHistogramList();
+		if (loadGroup.histograms.getList().size() > 0) {
+			final Nameable nameable = STATUS.getCurrentGroup();
+			if (DataBase.getInstance().isValid(nameable)) {
+				final Group group = (Group) nameable;
+				final List<AbstractHistogram> histList = group.histograms
+						.getList();
 				if (!histList.isEmpty()) {
-					firstHist = group.getHistogramList().get(0);
+					firstHist = group.histograms.getList().get(0);
 				}
 			}
 		}

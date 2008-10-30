@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 final class LicenseReader {
-	private static final Logger LOGGER = Logger.getLogger(Help.class
+	private static final Logger LOGGER = Logger.getLogger(LicenseReader.class
 			.getPackage().getName());
 
 	LicenseReader() {

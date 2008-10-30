@@ -1,12 +1,15 @@
 package jam.sort;
 
 import jam.data.DataParameter;
+import jam.data.Factory;
 import jam.data.Group;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
-import jam.data.Histogram;
+import jam.data.HistogramType;
 import jam.data.Scaler;
+import jam.data.SortGroupGetter;
 import jam.data.Sorter;
+import jam.data.Warehouse;
 import jam.sort.stream.EventWriter;
 
 import java.io.IOException;
@@ -38,7 +41,7 @@ import java.io.IOException;
  * @since 1.0
  * @see VME_Map
  * @see CamacCommands
- * @see jam.data.Histogram
+ * @see jam.data.AbstractHistogram
  * @see jam.data.Monitor
  * @see jam.data.Gate
  */
@@ -48,32 +51,35 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	/**
 	 * constant to define a 1d histogram type int
 	 */
-	protected final static Histogram.Type HIST_1D = Histogram.Type.ONE_DIM_INT;
+	protected final static HistogramType HIST_1D = HistogramType.ONE_DIM_INT;
 
 	/**
 	 * constant to define a 1d histogram type double
 	 */
-	protected final static Histogram.Type HIST_1D_DBL = Histogram.Type.ONE_D_DOUBLE;
+	protected final static HistogramType HIST_1D_DBL = HistogramType.ONE_D_DOUBLE;
 
 	/**
 	 * constant to define a 1d histogram type int
 	 */
-	protected final static Histogram.Type HIST_1D_INT = Histogram.Type.ONE_DIM_INT;
+	protected final static HistogramType HIST_1D_INT = HistogramType.ONE_DIM_INT;
 
 	/**
 	 * constant to define a 2d histogram type int
 	 */
-	protected final static Histogram.Type HIST_2D = Histogram.Type.TWO_DIM_INT;
+	protected final static HistogramType HIST_2D = HistogramType.TWO_DIM_INT;
 
 	/**
 	 * constant to define a 1d histogram type double
 	 */
-	protected final static Histogram.Type HIST_2D_DBL = Histogram.Type.TWO_D_DOUBLE;
+	protected final static HistogramType HIST_2D_DBL = HistogramType.TWO_D_DOUBLE;
 
 	/**
 	 * constant to define a 2d histogram type int
 	 */
-	protected final static Histogram.Type HIST_2D_INT = Histogram.Type.TWO_DIM_INT;
+	protected final static HistogramType HIST_2D_INT = HistogramType.TWO_DIM_INT;
+
+	private static final SortGroupGetter SORT_GROUP_GETTER = Warehouse
+			.getSortGroupGetter();
 
 	/**
 	 * Creates a one-dimensional, integer-valued, histogram.
@@ -85,8 +91,9 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	 * @return a newly allocated histogram
 	 */
 	protected static HistInt1D createHist1D(final int numCh, final String name) {
-		final Group sortGroup = Group.getSortGroup();
-		return (HistInt1D) sortGroup.createHistogram(new int[numCh], name);
+		final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
+		return (HistInt1D) Factory.createHistogram(sortGroup, new int[numCh],
+				name);
 	}
 
 	/**
@@ -102,9 +109,9 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	 */
 	protected static HistInt1D createHist1D(final int numCh, final String name,
 			final String title) {
-		final Group sortGroup = Group.getSortGroup();
-		return (HistInt1D) sortGroup.createHistogram(new int[numCh], name,
-				title);
+		final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
+		return (HistInt1D) Factory.createHistogram(sortGroup, new int[numCh],
+				name, title);
 	}
 
 	/**
@@ -124,9 +131,9 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	 */
 	protected static HistInt1D createHist1D(final int numCh, final String name,
 			final String title, final String labelX, final String labelY) {
-		final Group sortGroup = Group.getSortGroup();
-		return (HistInt1D) sortGroup.createHistogram(new int[numCh], name,
-				title, labelX, labelY);
+		final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
+		return (HistInt1D) jam.data.Factory.createHistogram(sortGroup,
+				new int[numCh], name, title, labelX, labelY);
 	}
 
 	/**
@@ -142,8 +149,9 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	 */
 	protected static HistInt2D createHist2D(final int chX, final int chY,
 			final String name) {
-		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D) sortGroup.createHistogram(new int[chX][chY], name);
+		final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
+		return (HistInt2D) Factory.createHistogram(sortGroup,
+				new int[chX][chY], name);
 	}
 
 	/**
@@ -161,9 +169,9 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	 */
 	protected static HistInt2D createHist2D(final int chX, final int chY,
 			final String name, final String title) {
-		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D) sortGroup.createHistogram(new int[chX][chY], name,
-				title);
+		final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
+		return (HistInt2D) Factory.createHistogram(sortGroup,
+				new int[chX][chY], name, title);
 	}
 
 	/**
@@ -186,9 +194,9 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	protected static HistInt2D createHist2D(final int chX, final int chY,
 			final String name, final String title, final String labelX,
 			final String labelY) {
-		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D) sortGroup.createHistogram(new int[chX][chY], name,
-				title, labelX, labelY);
+		final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
+		return (HistInt2D) jam.data.Factory.createHistogram(sortGroup,
+				new int[chX][chY], name, title, labelX, labelY);
 	}
 
 	/**
@@ -201,9 +209,9 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	 * @return a newly allocated histogram
 	 */
 	protected static HistInt2D createHist2D(final int chans, final String name) {
-		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D) sortGroup.createHistogram(new int[chans][chans],
-				name);
+		final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
+		return (HistInt2D) Factory.createHistogram(sortGroup,
+				new int[chans][chans], name);
 	}
 
 	/**
@@ -219,9 +227,9 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	 */
 	protected static HistInt2D createHist2D(final int chans, final String name,
 			final String title) {
-		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D) sortGroup.createHistogram(new int[chans][chans],
-				name, title);
+		final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
+		return (HistInt2D) Factory.createHistogram(sortGroup,
+				new int[chans][chans], name, title);
 	}
 
 	/**
@@ -241,9 +249,9 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	 */
 	protected static HistInt2D createHist2D(final int chans, final String name,
 			final String title, final String labelX, final String labelY) {
-		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D) sortGroup.createHistogram(new int[chans][chans],
-				name, title, labelX, labelY);
+		final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
+		return (HistInt2D) jam.data.Factory.createHistogram(sortGroup,
+				new int[chans][chans], name, title, labelX, labelY);
 	}
 
 	/**
@@ -267,8 +275,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	 * @return a newly allocated scaler
 	 */
 	protected static Scaler createScaler(final String name, final int number) {
-		final Group sortGroup = Group.getSortGroup();
-		return sortGroup.createScaler(name, number);
+		final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
+		return Factory.createScaler(sortGroup, name, number);
 	}
 
 	/**

@@ -14,7 +14,7 @@ import java.util.List;
  * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
-public abstract class AbstractHist1D extends Histogram {
+public abstract class AbstractHist1D extends AbstractHistogram {
 
 	/**
 	 * The calibration function. Set to <code>null</code> if there is none.
@@ -36,7 +36,7 @@ public abstract class AbstractHist1D extends Histogram {
 	 */
 	protected transient boolean errorsSet;
 
-	AbstractHist1D(final Type type, final int len, final String title,
+	AbstractHist1D(final jam.data.HistogramType type, final int len, final String title,
 			final String axisLabelX, final String axisLabelY) {
 		super(type, len, title, axisLabelX, axisLabelY);
 		unsetErrors();

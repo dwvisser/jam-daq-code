@@ -1,5 +1,6 @@
 package jam.data.control;
 
+import jam.data.Factory;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.ui.PanelOKApplyCancelButtons;
@@ -39,13 +40,14 @@ public class GroupNew extends AbstractControl {
 	 * 
 	 */
 	private void createGroup() {
-		Group.createGroup(textName.getText(), Group.Type.TEMP);
+		Factory.createGroup(textName.getText(), Group.Type.TEMP);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 	}
 
 	/**
 	 * Does nothing. It is here to match other contollers.
 	 */
+	@Override
 	public void doSetup() {
 		// NOOP
 	}

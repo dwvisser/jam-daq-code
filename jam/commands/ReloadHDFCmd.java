@@ -1,7 +1,9 @@
 package jam.commands;
 
+import jam.data.AbstractHistogram;
 import jam.data.Group;
-import jam.data.Histogram;
+import jam.data.SortGroupGetter;
+import jam.data.Warehouse;
 import jam.global.BroadcastEvent;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
@@ -26,6 +28,7 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 		super();
 	}
 
+	@Override
 	public void initCommand() {
 		putValue(NAME, "Reload\u2026");
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O,
@@ -33,12 +36,16 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 		fileOpenMode = FileOpenMode.RELOAD;
 	}
 
+	private static final SortGroupGetter SORT_GROUP_GETTER = Warehouse
+			.getSortGroupGetter();
+
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		/*
 		 * FIXME KBS parse correctly if (cmdParams!=null) { file
 		 * =(File)cmdParams[0]; //loadGroup=(Group)cmdParams[1]; }
 		 */
-		final Group load = Group.getSortGroup();
+		final Group load = SORT_GROUP_GETTER.getSortGroup();
 		loadHDFFile(null, load);
 	}
 
@@ -60,14 +67,14 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 	}
 
 	private void notifyApp() {
-		Histogram firstHist = null;
+		AbstractHistogram firstHist = null;
 		/* Set to sort group. */
-		final Group currentGroup = Group.getSortGroup();
+		final Group currentGroup = SORT_GROUP_GETTER.getSortGroup();
 		if (currentGroup != null) {
 			STATUS.setCurrentGroup(currentGroup);
 			/* Set the current histogram to the first opened histogram. */
-			if (currentGroup.getHistogramList().size() > 0) {
-				firstHist = currentGroup.getHistogramList().get(0);
+			if (currentGroup.histograms.getList().size() > 0) {
+				firstHist = currentGroup.histograms.getList().get(0);
 			}
 			SelectionTree.setCurrentHistogram(firstHist);
 			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
@@ -78,6 +85,7 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 	/**
 	 * Called by HDFIO when asynchronized IO is completed
 	 */
+	@Override
 	public void completedIO(final String message, final String errorMessage) {
 		hdfio.removeListener();
 		notifyApp();

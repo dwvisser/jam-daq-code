@@ -1,10 +1,12 @@
 package jam.io;
 
+import jam.data.Factory;
 import jam.data.HistDouble1D;
 import jam.data.HistDouble2D;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
+import jam.data.HistogramType;
 import jam.ui.ExtensionFileFilter;
 import jam.util.FileUtilities;
 import jam.util.NumberUtilities;
@@ -31,8 +33,8 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * Imports and exports Oak Ridge (Milner) formatted files, as used by
- * <code>DAMM</code> and <code>SORT</code>. A set of histograms consists of
- * 2 files:
+ * <code>DAMM</code> and <code>SORT</code>. A set of histograms consists of 2
+ * files:
  * <UL>
  * <LI>Data file-- <code><i>filename</i>.his</code></li>
  * <li>Directory file-- <code><i>filename</i>.drr</code></li>
@@ -115,7 +117,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	 *                display on the MessageHandler
 	 */
 	@Override
-	public void saveFile(final Histogram hist) throws ImpExpException {
+	public void saveFile(final AbstractHistogram hist) throws ImpExpException {
 		saveFile("Export ORNL", hist);
 	}
 
@@ -128,7 +130,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	@Override
 	public void readData(final InputStream buffin) throws ImpExpException {
 		try {
-			Histogram.clearList(); // clear current list of histograms
+			AbstractHistogram.clearList(); // clear current list of histograms
 			readDrr(buffin); // read the drr file
 			final FileUtilities fileUtil = FileUtilities.getInstance();
 			final String fileNameHis = fileUtil.changeExtension(
@@ -378,7 +380,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			throw new IOException("File uses " + wordCh
 					+ " words/channel, which can't be read.");
 		}
-		final Histogram hist = importGroup.createHistogram(counts, name);
+		final AbstractHistogram hist = Factory.createHistogram(importGroup, counts, name);
 		hist.setNumber(number);
 	}
 
@@ -427,7 +429,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			throw new IOException("File uses " + wordCh
 					+ " words/channel, which I don't know how to read.");
 		}
-		final Histogram hist = importGroup.createHistogram(counts2d, name);
+		final AbstractHistogram hist = Factory.createHistogram(importGroup, counts2d,
+				name);
 		hist.setNumber(number);
 	}
 
@@ -439,7 +442,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	 *                display on the msgHandler
 	 */
 	@Override
-	public void writeHist(final OutputStream ignored, final Histogram hist)
+	public void writeHist(final OutputStream ignored, final AbstractHistogram hist)
 			throws ImpExpException {
 		try {
 			final FileUtilities fileUtil = FileUtilities.getInstance();
@@ -474,9 +477,9 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		final StringUtilities util = StringUtilities.getInstance();
 		int diskOffSet = 0;
 		final DataOutputStream dosDrr = new DataOutputStream(buffout);
-		final List<Histogram> allHists = Histogram.getHistogramList();
+		final List<AbstractHistogram> allHists = AbstractHistogram.getHistogramList();
 		/* number of histograms */
-		totalHist = Histogram.getHistogramList().size(); // number of
+		totalHist = AbstractHistogram.getHistogramList().size(); // number of
 		// histograms
 		/*
 		 * total number of 1/2 words need in file size of file needed? in 16 bit
@@ -484,7 +487,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		 */
 		numHalfWords = 0;
 		for (int i = 0; i < allHists.size(); i++) {
-			final Histogram hist = allHists.get(i);
+			final AbstractHistogram hist = allHists.get(i);
 			final int sizeX = hist.getSizeX();
 			final int sizeY = hist.getSizeY(); // will be zero for 1-d
 			final int histDim = hist.getDimensionality();
@@ -512,7 +515,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		dosDrr.writeInt(calendar.get(Calendar.SECOND)); // time
 		dosDrr.writeBytes(util.makeLength("File Created by Jam", 80));
 		/* text from chill file */
-		for (Histogram hist : allHists) {
+		for (AbstractHistogram hist : allHists) {
 			final short sizeX = (short) (hist.getSizeX());
 			final short sizeY = (short) (hist.getSizeY()); // will be zero for
 			// 1-d
@@ -562,7 +565,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			}
 		}
 		/* write out id numbers */
-		for (Histogram hist : allHists) {
+		for (AbstractHistogram hist : allHists) {
 			dosDrr.writeInt(hist.getNumber());
 		}
 		dosDrr.flush();
@@ -574,16 +577,16 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	 */
 	private void writeHis(final OutputStream outputStream) throws IOException {
 		final DataOutputStream dosHis = new DataOutputStream(outputStream);
-		for (Histogram hist : Histogram.getHistogramList()) {
-			final Histogram.Type type = hist.getType();
+		for (AbstractHistogram hist : AbstractHistogram.getHistogramList()) {
+			final HistogramType type = hist.getType();
 			/* write as determined by type */
-			if (type == Histogram.Type.ONE_DIM_INT) {
+			if (type == HistogramType.ONE_DIM_INT) {
 				writeHist1dInt(dosHis, (HistInt1D) hist);
-			} else if (type == Histogram.Type.ONE_D_DOUBLE) {
+			} else if (type == HistogramType.ONE_D_DOUBLE) {
 				writeHist1dDouble(dosHis, (HistDouble1D) hist);
-			} else if (type == Histogram.Type.TWO_DIM_INT) {
+			} else if (type == HistogramType.TWO_DIM_INT) {
 				writeHist2dInt(dosHis, (HistInt2D) hist);
-			} else if (type == Histogram.Type.TWO_D_DOUBLE) {
+			} else if (type == HistogramType.TWO_D_DOUBLE) {
 				writeHist2dDouble(dosHis, (HistDouble2D) hist);
 			} else {
 				LOGGER.severe("Unrecognized histogram type [ImpExpORNL]");

@@ -1,13 +1,17 @@
 package jam.io.hdf;
 
 import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
 import jam.data.DataElement;
 import jam.data.DataParameter;
 import jam.data.DataUtility;
+import jam.data.Factory;
 import jam.data.Gate;
 import jam.data.Group;
-import jam.data.Histogram;
+import jam.data.NameValueCollection;
 import jam.data.Scaler;
+import jam.data.SortGroupGetter;
+import jam.data.Warehouse;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.NoFunction;
 import jam.global.JamStatus;
@@ -97,6 +101,9 @@ public final class HDFIO implements DataIO {
 		lastGoodFile = new File(PREFS.get(LFILE_KEY, System
 				.getProperty("user.dir")));
 	}
+
+	private static final NameValueCollection<Group> GROUPS = Warehouse
+			.getGroupCollection();
 
 	/**
 	 * @return last file successfully read from or written to.
@@ -287,7 +294,7 @@ public final class HDFIO implements DataIO {
 	 * writeParams whether to write out gates, calibration and parameters
 	 */
 	private void asyncWriteFile(final File file, final List<Group> groups,
-			final List<Histogram> histograms, final boolean writeData,
+			final List<AbstractHistogram> histograms, final boolean writeData,
 			final boolean writeSettings) {
 		synchronized (this) {
 			final StringBuilder message = new StringBuilder(60);
@@ -403,7 +410,7 @@ public final class HDFIO implements DataIO {
 			final List<HistogramAttributes> histAttributeList,
 			final Group currentGroup, final VirtualGroup histVGroup)
 			throws HDFException {
-		final Histogram hist = hdfToJam.convertHistogram(currentGroup,
+		final AbstractHistogram hist = hdfToJam.convertHistogram(currentGroup,
 				histVGroup, histAttributeList, mode);
 		if (hist != null) {
 			histCount++;
@@ -421,7 +428,7 @@ public final class HDFIO implements DataIO {
 	 * @throws HDFException
 	 */
 	private void loadGatesAndCalibration(final FileOpenMode mode,
-			final VirtualGroup histVGroup, final Histogram hist)
+			final VirtualGroup histVGroup, final AbstractHistogram hist)
 			throws HDFException {
 		final List<VirtualGroup> gateList = hdfToJam.findGates(histVGroup, hist
 				.getType());
@@ -441,8 +448,9 @@ public final class HDFIO implements DataIO {
 	 * @param gateList
 	 * @throws HDFException
 	 */
-	private void countGates(final FileOpenMode mode, final Histogram hist,
-			final List<VirtualGroup> gateList) throws HDFException {
+	private void countGates(final FileOpenMode mode,
+			final AbstractHistogram hist, final List<VirtualGroup> gateList)
+			throws HDFException {
 		for (VirtualGroup gateVGroup : gateList) {
 			final Gate gate = hdfToJam.convertGate(hist, gateVGroup, mode);
 			if (gate != null) {
@@ -475,11 +483,14 @@ public final class HDFIO implements DataIO {
 			final String groupName = hdfToJam
 					.readVirtualGroupName(currentVGroup);
 			if (hdfToJam.containsGroup(groupName, existingGroupList)) {
-				currentGroup = Group.getGroup(groupName);
+				currentGroup = GROUPS.get(groupName);
 			}
 		}
 		return currentGroup;
 	}
+
+	private static final SortGroupGetter SORT_GROUP_GETTER = Warehouse
+			.getSortGroupGetter();
 
 	/* --------------------- End DataIO Interface Methods ------------------ */
 
@@ -503,17 +514,17 @@ public final class HDFIO implements DataIO {
 		Group currentGroup = null;
 		// Set group
 		if ((mode == FileOpenMode.OPEN)) {
-			currentGroup = Group.createGroup(Group.DEFAULT_NAME, null,
+			currentGroup = Factory.createGroup(Group.DEFAULT_NAME, null,
 					Group.Type.FILE);
 		} else if (mode == FileOpenMode.OPEN_MORE) {
-			currentGroup = Group.createGroup(Group.DEFAULT_NAME, fileName,
+			currentGroup = Factory.createGroup(Group.DEFAULT_NAME, fileName,
 					Group.Type.FILE);
 		} else if (mode == FileOpenMode.ADD) {
 			currentGroup = groups.get(0);
 			// so use current group
 		} else if (mode == FileOpenMode.RELOAD) {
 			final JamStatus status = JamStatus.getSingletonInstance();
-			final Group sortGroup = Group.getSortGroup();
+			final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
 			status.setCurrentGroup(sortGroup);
 			currentGroup = (Group) status.getCurrentGroup();
 		}
@@ -557,7 +568,7 @@ public final class HDFIO implements DataIO {
 	 * @param suppressEmpty
 	 */
 	private void convertJamToHDF(final List<Group> groups,
-			final List<Histogram> histList, final boolean writeData,
+			final List<AbstractHistogram> histList, final boolean writeData,
 			final boolean wrtSettings, final boolean suppressEmpty) {
 		final VirtualGroup globalGroups = jamToHDF.addGroupSection();
 		final VirtualGroup globalHists = jamToHDF.addHistogramSection();
@@ -569,7 +580,7 @@ public final class HDFIO implements DataIO {
 			final VirtualGroup vgGroup = jamToHDF.convertGroup(group);
 			globalGroups.add(vgGroup);
 			/* Loop for all histograms */
-			for (Histogram hist : group.getHistogramList()) {
+			for (AbstractHistogram hist : group.histograms.getList()) {
 				// Histogram is in histogram list
 				if (histList.contains(hist)) {
 					final VirtualGroup histVGroup = jamToHDF
@@ -599,7 +610,7 @@ public final class HDFIO implements DataIO {
 					final VirtualGroup vgParams = jamToHDF
 							.addParameterSection();
 					vgGroup.add(vgParams);
-					if (group == Group.getSortGroup()) {
+					if (group == SORT_GROUP_GETTER.getSortGroup()) {
 						final VDataDescription vddParams = jamToHDF
 								.convertParameters(paramList);
 						vgParams.add(vddParams);
@@ -638,7 +649,7 @@ public final class HDFIO implements DataIO {
 	 */
 	private void addScalers(final VirtualGroup globalScaler, final Group group,
 			final VDataDescription vddScalers) {
-		if (group == Group.getSortGroup()) {
+		if (group == SORT_GROUP_GETTER.getSortGroup()) {
 			/* here for backwards compatibility */
 			globalScaler.add(vddScalers);
 		}
@@ -651,7 +662,7 @@ public final class HDFIO implements DataIO {
 	 * @param histVGroup
 	 */
 	private void addGates(final boolean wrtSettings,
-			final VirtualGroup globalGates, final Histogram hist,
+			final VirtualGroup globalGates, final AbstractHistogram hist,
 			final VirtualGroup histVGroup) {
 		/* Loop for all gates */
 		for (DataElement gate : hist.getGateCollection().getGates()) {
@@ -666,7 +677,7 @@ public final class HDFIO implements DataIO {
 	 * @param histVGroup
 	 */
 	private void addCalibration(final boolean writeData,
-			final boolean wrtSettings, final Histogram hist,
+			final boolean wrtSettings, final AbstractHistogram hist,
 			final VirtualGroup histVGroup) {
 		if ((writeData || wrtSettings) && hist.getDimensionality() == 1) {
 			final AbstractCalibrationFunction calFunc = ((AbstractHist1D) hist)
@@ -713,7 +724,7 @@ public final class HDFIO implements DataIO {
 	 * @param histDefined
 	 */
 	private void convertHistogram(final boolean writeData,
-			final Histogram hist, final VirtualGroup histVGroup,
+			final AbstractHistogram hist, final VirtualGroup histVGroup,
 			final boolean histDefined) {
 		if (writeData && histDefined) {
 			jamToHDF.convertHistogram(histVGroup, hist);
@@ -997,8 +1008,8 @@ public final class HDFIO implements DataIO {
 								asyncReadFileGroup(infile, FileOpenMode.OPEN,
 										groupList, histAttributeList);
 							} else {
-								final List<Group> groupListOpen = Group
-										.getGroupList();
+								final List<Group> groupListOpen = GROUPS
+										.getList();
 								asyncReadFileGroup(infile, FileOpenMode.ADD,
 										groupListOpen, histAttributeList);
 							}
@@ -1035,7 +1046,7 @@ public final class HDFIO implements DataIO {
 	 * non-javadoc: Asynchronized write
 	 */
 	private void spawnAsyncWriteFile(final File file, final List<Group> groups,
-			final List<Histogram> histograms, final boolean writeData,
+			final List<AbstractHistogram> histograms, final boolean writeData,
 			final boolean wrtSettings) {
 		this.uiMessage = "";
 		this.uiErrorMsg = "";
@@ -1059,8 +1070,8 @@ public final class HDFIO implements DataIO {
 		worker.execute();
 	}
 
-	private static final List<Histogram> EMPTY_HIST_LIST = Collections
-			.unmodifiableList(new ArrayList<Histogram>());
+	private static final List<AbstractHistogram> EMPTY_HIST_LIST = Collections
+			.unmodifiableList(new ArrayList<AbstractHistogram>());
 
 	private static final List<Group> EMPTY_GROUP_LIST = Collections
 			.unmodifiableList(new ArrayList<Group>());
@@ -1091,7 +1102,8 @@ public final class HDFIO implements DataIO {
 		writeFile(file, groupList, EMPTY_HIST_LIST, true, true);
 	}
 
-	public void writeFile(final File file, final List<Histogram> histograms) {
+	public void writeFile(final File file,
+			final List<AbstractHistogram> histograms) {
 		writeFile(file, EMPTY_GROUP_LIST, histograms, true, true);
 	}
 
@@ -1112,24 +1124,24 @@ public final class HDFIO implements DataIO {
 	 *            whether to write gates and parameters
 	 */
 	private void writeFile(final File file, final List<Group> groups,
-			final List<Histogram> histograms, final boolean writeData,
+			final List<AbstractHistogram> histograms, final boolean writeData,
 			final boolean wrtSettings) {
 		/* Groups specified determines histograms */
 		final List<Group> groupsToUse;
-		final List<Histogram> histsToUse;
+		final List<AbstractHistogram> histsToUse;
 		final boolean haveGroups = !groups.isEmpty();
 		final boolean haveHists = !histograms.isEmpty();
 		if (haveGroups) {
 			groupsToUse = groups;
-			histsToUse = new ArrayList<Histogram>();
+			histsToUse = new ArrayList<AbstractHistogram>();
 			for (Group currGroup : groups) {
-				histsToUse.addAll(currGroup.getHistogramList());
+				histsToUse.addAll(currGroup.histograms.getList());
 			}
 		} else if (haveHists) {
 			/* Histograms specified determines groups. */
 			groupsToUse = new ArrayList<Group>();
 			histsToUse = histograms;
-			for (Histogram hist : histsToUse) {
+			for (AbstractHistogram hist : histsToUse) {
 				final Group group = DataUtility.getGroup(hist);
 				if (!groupsToUse.contains(group)) {
 					groupsToUse.add(group);
@@ -1137,10 +1149,10 @@ public final class HDFIO implements DataIO {
 			}
 		} else {
 			/* Neither groups nor histograms specified */
-			groupsToUse = Group.getGroupList();
-			histsToUse = new ArrayList<Histogram>();
+			groupsToUse = GROUPS.getList();
+			histsToUse = new ArrayList<AbstractHistogram>();
 			for (Group currGroup : groupsToUse) {
-				histsToUse.addAll(currGroup.getHistogramList());
+				histsToUse.addAll(currGroup.histograms.getList());
 			}
 		}
 		// Append .hdf to file name

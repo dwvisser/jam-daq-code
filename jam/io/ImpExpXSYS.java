@@ -29,7 +29,8 @@ import static jam.io.XsysHeader.XSYSEVAL;
 import static jam.io.XsysHeader.XSYS_BUFFER_SIZE;
 import jam.data.AbstractHist1D;
 import jam.data.DataBase;
-import jam.data.Histogram;
+import jam.data.Factory;
+import jam.data.AbstractHistogram;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.PolynomialFunction;
 import jam.global.BroadcastEvent;
@@ -116,7 +117,7 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	 *             always
 	 */
 	@Override
-	public void saveFile(final Histogram hist) {
+	public void saveFile(final AbstractHistogram hist) {
 		throw new UnsupportedOperationException("Still not implemented.");
 	}
 
@@ -145,8 +146,9 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 							+ "  " + areaName + " ";
 					final int[] counts = unPackData1d(dis, areaSizeX,
 							areaLengthPage);
-					final AbstractHist1D hist = (AbstractHist1D) importGroup
-							.createHistogram(counts, areaName, areaTitle);
+					final AbstractHist1D hist = (AbstractHist1D) Factory
+							.createHistogram(importGroup, counts, areaName,
+									areaTitle);
 					hist.setNumber(areaNumber);
 
 					// calibrate histogram if flag set
@@ -160,7 +162,7 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 					final String areaTitle = areaNumber + "  " + areaName + " ";
 					final int[][] counts2d = unPackData2d(dis, areaSizeX,
 							areaSizeY, areaLengthPage);
-					final Histogram hist = importGroup.createHistogram(
+					final AbstractHistogram hist = Factory.createHistogram(importGroup,
 							counts2d, areaName, areaTitle);
 					hist.setNumber(areaNumber);
 					specRead++;
@@ -196,7 +198,7 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	 *                display on the MessageHandler
 	 */
 	@Override
-	protected void writeHist(final OutputStream outStream, final Histogram hist)
+	protected void writeHist(final OutputStream outStream, final AbstractHistogram hist)
 			throws ImpExpException {
 		/* someday maybe if someone asks */
 	}
@@ -263,7 +265,7 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	 * @param scalerId
 	 */
 	private void createScaler(final String scalerTitle, final int scalerId) {
-		importGroup.createScaler(scalerTitle, scalerId);
+		Factory.createScaler(importGroup, scalerTitle, scalerId);
 	}
 
 	/**

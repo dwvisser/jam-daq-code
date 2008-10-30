@@ -3,8 +3,8 @@ package test.io;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import jam.data.AbstractHistogram;
 import jam.data.Group;
-import jam.data.Histogram;
 import jam.io.ImpExpASCII;
 import jam.io.ImpExpException;
 import jam.util.FileUtilities;
@@ -53,7 +53,7 @@ public final class ImpExpASCIITest {// NOPMD
 	/**
 	 * @param hist
 	 */
-	private void assertCorrectHistogramProperties(final Histogram hist) {
+	private void assertCorrectHistogramProperties(final AbstractHistogram hist) {
 		assertNotNull("Expected to read a histogram.", hist);
 		assertEquals("Expecting a certain number of channels.", HIST_SIZE, hist
 				.getSizeX());
@@ -67,8 +67,9 @@ public final class ImpExpASCIITest {// NOPMD
 		impExp.openFile(file);
 		final String groupName = FileUtilities.getInstance()
 				.removeExtensionFileName(file.getName());
-		final Group importGroup = Group.getGroup(groupName);
-		final Histogram hist = importGroup.getHistogramList().get(0);
+		final Group importGroup = jam.data.Warehouse.getGroupCollection().get(
+				groupName);
+		final AbstractHistogram hist = importGroup.histograms.getList().get(0);
 		this.assertCorrectHistogramProperties(hist);
 	}
 
@@ -77,7 +78,7 @@ public final class ImpExpASCIITest {// NOPMD
 	 */
 	@Before
 	public void setUp() {
-		Histogram.clearList();
+		AbstractHistogram.clearList();
 		try {
 			temp1 = File.createTempFile(ASCIITEST, ".txt");
 			final FileWriter writer = new FileWriter(temp1);
@@ -97,7 +98,7 @@ public final class ImpExpASCIITest {// NOPMD
 	 */
 	@After
 	public void tearDown() {
-		Histogram.clearList();
+		AbstractHistogram.clearList();
 	}
 
 	/**

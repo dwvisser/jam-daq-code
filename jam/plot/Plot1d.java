@@ -3,7 +3,8 @@ package jam.plot;
 import jam.data.AbstractHist1D;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
+import jam.data.HistogramType;
 import jam.plot.color.PlotColorMap;
 import jam.util.NumberUtilities;
 
@@ -128,10 +129,10 @@ final class Plot1d extends AbstractPlot {
 	}
 
 	@Override
-	protected void copyCounts(final Histogram hist) {
-		final Histogram.Type type = hist.getType();
+	protected void copyCounts(final AbstractHistogram hist) {
+		final HistogramType type = hist.getType();
 		size = new Size(hist.getSizeX(), hist.getSizeY());
-		if (type == Histogram.Type.ONE_DIM_INT) {
+		if (type == HistogramType.ONE_DIM_INT) {
 			final int[] temp = ((HistInt1D) hist).getCounts();
 			counts = NumberUtilities.getInstance().intToDoubleArray(temp);
 		} else {// must be floating point
@@ -179,7 +180,7 @@ final class Plot1d extends AbstractPlot {
 	}
 
 	@Override
-	protected void displayHistogram(final Histogram hist) {
+	protected void displayHistogram(final AbstractHistogram hist) {
 		synchronized (LOCK) {
 			if (hist == null) {
 				counts = new double[100];
@@ -349,8 +350,8 @@ final class Plot1d extends AbstractPlot {
 	private double[] getOverlayCounts(final AbstractHist1D hOver) {
 		final int sizex = hOver.getSizeX();
 		double[] ctOver;
-		final Histogram.Type hoType = hOver.getType();
-		if (hoType == Histogram.Type.ONE_DIM_INT) {
+		final HistogramType hoType = hOver.getType();
+		if (hoType == HistogramType.ONE_DIM_INT) {
 			final int[] countsInt = ((HistInt1D) hOver).getCounts();
 			ctOver = NumberUtilities.getInstance().intToDoubleArray(countsInt);
 		} else {// (hoType == Histogram.Type.ONE_D_DOUBLE)
@@ -517,7 +518,7 @@ final class Plot1d extends AbstractPlot {
 	 */
 	@Override
 	public void paintHistogram(final Graphics graphics) {
-		final Histogram plotHist = getHistogram();
+		final AbstractHistogram plotHist = getHistogram();
 		if (plotHist.getDimensionality() == 1) {
 			if (getBinWidth() > plotHist.getSizeX()) {
 				setBinWidth(1.0);
@@ -582,7 +583,7 @@ final class Plot1d extends AbstractPlot {
 				painter.drawHist(overlayCounts.get(index), getBinWidth());
 				index++;
 			}
-			final Histogram plotHist = getHistogram();
+			final AbstractHistogram plotHist = getHistogram();
 			painter.drawNumber(plotHist.getNumber(), overlayInts);
 		}
 

@@ -55,7 +55,7 @@ public final class FrontEndVMECommunicator implements FrontEndCommunication,
 		this.vme.sendCNAFList(CNAF_EVENT, camacCommands.getEventCommands());
 		this.vme.sendCNAFList(CNAF_SCALER, camacCommands.getScalerCommands());
 		this.vme.sendCNAFList(CNAF_CLEAR, camacCommands.getClearCommands());
-		this.vme.sendToVME(RUN_INIT); // initialize camac
+		this.vme.sendMessage(RUN_INIT); // initialize camac
 		this.vme.log("Loaded CAMAC command lists, and initialized VME.");
 	}
 
@@ -69,9 +69,9 @@ public final class FrontEndVMECommunicator implements FrontEndCommunication,
 		final String DEBUG_ON = "debug on";
 		final String DEBUG_OFF = "debug off";
 		if (state) {
-			this.vme.sendToVME(DEBUG_ON);
+			this.vme.sendMessage(DEBUG_ON);
 		} else {
-			this.vme.sendToVME(DEBUG_OFF);
+			this.vme.sendMessage(DEBUG_OFF);
 		}
 	}
 
@@ -81,7 +81,7 @@ public final class FrontEndVMECommunicator implements FrontEndCommunication,
 	 */
 	public void end() {
 		final String END = "END";
-		this.vme.sendToVME(END);
+		this.vme.sendMessage(END);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public final class FrontEndVMECommunicator implements FrontEndCommunication,
 	 */
 	public void flush() {
 		final String FLUSH = "FLUSH";
-		this.vme.sendToVME(FLUSH);
+		this.vme.sendMessage(FLUSH);
 	}
 
 	/**
@@ -103,9 +103,9 @@ public final class FrontEndVMECommunicator implements FrontEndCommunication,
 		final String VERBOSE_ON = "verbose on";
 		final String VERBOSE_OFF = "verbose off";
 		if (state) {
-			this.vme.sendToVME(VERBOSE_ON);
+			this.vme.sendMessage(VERBOSE_ON);
 		} else {
-			this.vme.sendToVME(VERBOSE_OFF);
+			this.vme.sendMessage(VERBOSE_OFF);
 		}
 	}
 
@@ -197,7 +197,7 @@ public final class FrontEndVMECommunicator implements FrontEndCommunication,
 	 */
 	public void startAcquisition() {
 		final String START = "START";
-		this.vme.sendToVME(START);
+		this.vme.sendMessage(START);
 	}
 
 	/**
@@ -205,7 +205,7 @@ public final class FrontEndVMECommunicator implements FrontEndCommunication,
 	 */
 	public void stopAcquisition() {
 		final String STOPACQ = "STOP";
-		this.vme.sendToVME(STOPACQ);
+		this.vme.sendMessage(STOPACQ);
 	}
 
 }

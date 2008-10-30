@@ -306,13 +306,15 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 		jam.data.control.AbstractControl.setupAll();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		/* Set the current histogram to the first opened histogram. */
-		final List<jam.data.Group> groupList = jam.data.Group.getGroupList();
+		final List<jam.data.Group> groupList = jam.data.Warehouse
+				.getGroupCollection().getList();
 		if (!groupList.isEmpty()) {
 			final jam.data.Group firstGroup = groupList.get(0);
 			STATUS.setCurrentGroup(firstGroup);
-			final List<jam.data.Histogram> list = firstGroup.getHistogramList();
+			final List<jam.data.AbstractHistogram> list = firstGroup.histograms
+					.getList();
 			if (!list.isEmpty()) {
-				final jam.data.Histogram firstHist = list.get(0);
+				final jam.data.AbstractHistogram firstHist = list.get(0);
 				SelectionTree.setCurrentHistogram(firstHist);
 				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 						firstHist);

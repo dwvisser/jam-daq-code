@@ -5,7 +5,8 @@ import jam.data.DataException;
 import jam.data.DataUtility;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
+import jam.data.HistogramType;
 import jam.global.BroadcastEvent;
 import jam.ui.PanelOKApplyCancelButtons;
 import jam.ui.SelectionTree;
@@ -230,13 +231,13 @@ public class Combine extends AbstractManipulation implements Observer {
 		final double[] out, errOut;
 		String operation = "";
 		validateFactors();
-		final AbstractHist1D hfrom1 = (AbstractHist1D) Histogram
+		final AbstractHist1D hfrom1 = (AbstractHist1D) AbstractHistogram
 				.getHistogram((String) cfrom1.getSelectedItem());
 		AbstractHist1D hfrom2 = null;
 		in1 = doubleCountsArray(hfrom1);
 		err1 = hfrom1.getErrors();
 		if (cfrom2.isEnabled()) {
-			hfrom2 = (AbstractHist1D) Histogram.getHistogram((String) cfrom2
+			hfrom2 = (AbstractHist1D) AbstractHistogram.getHistogram((String) cfrom2
 					.getSelectedItem());
 			in2 = doubleCountsArray(hfrom2);
 			err2 = hfrom2.getErrors();
@@ -264,7 +265,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		hto.setErrors(errOut);
 
 		/* cast to int array if needed */
-		if (hto.getType() == Histogram.Type.ONE_DIM_INT) {
+		if (hto.getType() == HistogramType.ONE_DIM_INT) {
 			hto.setCounts(NumberUtilities.getInstance().doubleToIntArray(out));
 		} else {
 			hto.setCounts(out);
@@ -310,7 +311,7 @@ public class Combine extends AbstractManipulation implements Observer {
 			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
 					+ "'");
 		} else {
-			hto = (AbstractHist1D) Histogram.getHistogram(name);
+			hto = (AbstractHist1D) AbstractHistogram.getHistogram(name);
 		}
 	}
 
@@ -441,15 +442,15 @@ public class Combine extends AbstractManipulation implements Observer {
 		lto = (String) cto.getSelectedItem();
 
 		cfrom1.removeAllItems();
-		loadAllHists(cfrom1, false, Histogram.Type.ONE_D);
+		loadAllHists(cfrom1, false, HistogramType.ONE_D);
 		cfrom1.setSelectedItem(lfrom1);
 		cfrom2.removeAllItems();
-		loadAllHists(cfrom2, false, Histogram.Type.ONE_D);
+		loadAllHists(cfrom2, false, HistogramType.ONE_D);
 
 		cfrom2.setSelectedItem(lfrom2);
 		cto.removeAllItems();
 		cto.addItem(NEW_HIST);
-		loadAllHists(cto, true, Histogram.Type.ONE_D);
+		loadAllHists(cto, true, HistogramType.ONE_D);
 		cto.setSelectedItem(lto);
 		setUseHist((String) cto.getSelectedItem());
 
@@ -458,7 +459,7 @@ public class Combine extends AbstractManipulation implements Observer {
 
 	private double[] doubleCountsArray(final AbstractHist1D hist) {
 		double[] dCounts;
-		if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
+		if (hist.getType() == HistogramType.ONE_DIM_INT) {
 			dCounts = NumberUtilities.getInstance().intToDoubleArray(
 					((HistInt1D) hist).getCounts());
 		} else {

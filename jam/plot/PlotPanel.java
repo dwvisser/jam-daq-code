@@ -3,7 +3,7 @@
  */
 package jam.plot;
 
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.plot.color.Mode;
 import jam.plot.color.PlotColorMap;
 
@@ -173,7 +173,7 @@ final class PlotPanel extends JPanel implements CountsContainer {
 		 * give graph all pertinent info, draw outline, tickmarks, labels, and
 		 * title
 		 */
-		final Histogram plotHist = plot.getHistogram();
+		final AbstractHistogram plotHist = plot.getHistogram();
 		if (plotHist != null) {
 			plot.paintHeader(graphics);
 			plot.paintHistogram(graphics);

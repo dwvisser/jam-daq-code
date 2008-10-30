@@ -1,6 +1,6 @@
 package jam.io.control;
 
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 import jam.ui.WindowCancelAction;
@@ -110,10 +110,10 @@ public final class SaveSelectedHistogram {
 	// dialog.dispose();
 	// }
 	private void loadHistogramList() {
-		final List<Histogram> histList = Histogram.getHistogramList();
+		final List<AbstractHistogram> histList = AbstractHistogram.getHistogramList();
 		final String[] histNames = new String[histList.size()];
 		int index = 0;
-		for (Histogram hist : histList) {
+		for (AbstractHistogram hist : histList) {
 			histNames[index] = hist.getFullName();
 			index++;
 		}
@@ -126,12 +126,12 @@ public final class SaveSelectedHistogram {
 	 */
 	private void saveHistListToFile() {
 		final HDFIO hdfio = new HDFIO(frame);
-		final List<Histogram> listSelected = new ArrayList<Histogram>();
+		final List<AbstractHistogram> listSelected = new ArrayList<AbstractHistogram>();
 		File file = null;
 		/* Add selected histgrams to a list. */
 		final Object[] selected = listHist.getSelectedValues();
 		for (int i = 0; i < selected.length; i++) {
-			listSelected.add(Histogram.getHistogram((String) selected[i]));
+			listSelected.add(AbstractHistogram.getHistogram((String) selected[i]));
 		}
 		/* Select file */
 		final JFileChooser chooser = new JFileChooser(HDFIO.getLastValidFile());

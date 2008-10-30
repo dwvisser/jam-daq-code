@@ -2,7 +2,7 @@ package jam.plot;
 
 import jam.data.AbstractHist1D;
 import jam.data.Gate;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -162,7 +162,7 @@ public final class PlotContainer implements PlotSelectListener {
 	 * @param hist
 	 *            histogram to display
 	 */
-	protected void displayHistogram(final Histogram hist) {
+	protected void displayHistogram(final AbstractHistogram hist) {
 		synchronized (plotLock) {
 			select(true);
 			if (hist == null) {
@@ -204,7 +204,7 @@ public final class PlotContainer implements PlotSelectListener {
 	 *            the number of the hist to overlay
 	 */
 	public void overlayHistogram(final int num) {
-		final Histogram hist = Histogram.getHistogram(num);
+		final AbstractHistogram hist = AbstractHistogram.getHistogram(num);
 		/* Check we can overlay. */
 		if (getDimensionality() != 1) {
 			throw new UnsupportedOperationException(
@@ -229,7 +229,7 @@ public final class PlotContainer implements PlotSelectListener {
 	 * 
 	 * @return the histogram displayed in the current subplot
 	 */
-	protected Histogram getHistogram() {
+	protected AbstractHistogram getHistogram() {
 		return getPlot().getHistogram();
 	}
 

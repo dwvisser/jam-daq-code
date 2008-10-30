@@ -6,13 +6,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import jam.data.DataBase;
+import jam.data.Factory;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.HistDouble1D;
 import jam.data.HistDouble2D;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.data.func.LinearFunction;
 import junit.framework.TestCase;
 
@@ -24,7 +25,7 @@ import org.junit.Test;
  * JUnit tests for <code>jam.data.Histogram</data>.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @see Histogram
+ * @see AbstractHistogram
  */
 public final class HistogramTest {// NOPMD
 
@@ -44,12 +45,14 @@ public final class HistogramTest {// NOPMD
 	 * Create a new instance of this test class.
 	 */
 	public HistogramTest() {
-		final Group group = Group.createGroup(GROUP_NAME, Group.Type.FILE);
-		hist1 = (HistInt1D) group.createHistogram(new int[100], "h1");
-		hist1f = (HistDouble1D) group.createHistogram(new double[100], "h1f");
-		hist2 = (HistInt2D) group.createHistogram(new int[100][100], "h2");
-		hist2f = (HistDouble2D) group.createHistogram(new double[100][100],
-				"h2f");
+		final Group group = Factory.createGroup(GROUP_NAME, Group.Type.FILE);
+		hist1 = (HistInt1D) Factory.createHistogram(group, new int[100], "h1");
+		hist1f = (HistDouble1D) Factory.createHistogram(group, new double[100],
+				"h1f");
+		hist2 = (HistInt2D) Factory.createHistogram(group, new int[100][100],
+				"h2");
+		hist2f = (HistDouble2D) Factory.createHistogram(group,
+				new double[100][100], "h2f");
 	}
 
 	/**
@@ -114,7 +117,7 @@ public final class HistogramTest {// NOPMD
 	 * @param area1before
 	 * @param should
 	 */
-	private void assertAreaDoubled(final Histogram histogram,
+	private void assertAreaDoubled(final AbstractHistogram histogram,
 			final double area1before) {
 		final String should = "should be double before.";
 		assertEquals(histogram.getName() + should, histogram.getArea(),
@@ -124,7 +127,7 @@ public final class HistogramTest {// NOPMD
 	/**
 	 * Test for <code>getGates</code>.
 	 * 
-	 * @see Histogram#getGates
+	 * @see AbstractHistogram#getGates
 	 */
 	@Test
 	public void testGetGates() {
@@ -137,23 +140,23 @@ public final class HistogramTest {// NOPMD
 	/**
 	 * Test for <code>getHistogram(String)</code>.
 	 * 
-	 * @see Histogram#getHistogram(String)
+	 * @see AbstractHistogram#getHistogram(String)
 	 */
 	@Test
 	public void testGetHistogram() {
 		assertNotNull("h1 nonexistent here", hist1);
 		assertNotNull("Couldn't find histogram named \"" + hist1.getFullName()
-				+ "\"", Histogram.getHistogram(hist1.getFullName()));
+				+ "\"", AbstractHistogram.getHistogram(hist1.getFullName()));
 		assertNotNull("Couldn't find histogram named \"" + hist2.getFullName()
-				+ "\"", Histogram.getHistogram(hist2.getFullName()));
-		assertNull("Found nonexistent histogram named \"notreal\"", Histogram
+				+ "\"", AbstractHistogram.getHistogram(hist2.getFullName()));
+		assertNull("Found nonexistent histogram named \"notreal\"", AbstractHistogram
 				.getHistogram("notreal"));
 	}
 
 	/**
 	 * Test for <code>hasGate(Gate)</code>.
 	 * 
-	 * @see Histogram#hasGate(Gate)
+	 * @see AbstractHistogram#hasGate(Gate)
 	 */
 	@Test
 	public void testHasGate() {
@@ -164,7 +167,7 @@ public final class HistogramTest {// NOPMD
 	}
 
 	private void assertHasGate(final boolean hasGate,
-			final Histogram histogram, final Gate gate) {
+			final AbstractHistogram histogram, final Gate gate) {
 		final StringBuilder message = new StringBuilder(52);
 		message.append("Expected ");
 		message.append(histogram.getName()).append(" to ");

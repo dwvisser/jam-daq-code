@@ -1,5 +1,6 @@
 package jam.sort.control;
 
+import jam.data.Factory;
 import jam.data.Group;
 import jam.global.JamException;
 import jam.global.RuntimeSubclassIdentifier;
@@ -64,9 +65,9 @@ final class SortChooser extends JComboBox {
 			throw new JamException("No sort routine has been selected.");
 		}
 		// FIXME maybe we should do DataBase.clearAll(); here
-		Group.clearList();
+		jam.data.Warehouse.getGroupCollection().clear();
 		final String sortName = Group.parseSortClassName(sortClass.getName());
-		Group.createGroup(sortName, Group.Type.SORT);
+		Factory.createGroup(sortName, Group.Type.SORT);
 		try {
 			if (userSpecifiedPath) {
 				synchronized (this) {

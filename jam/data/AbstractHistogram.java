@@ -33,162 +33,24 @@ import java.util.TreeMap;
  * @version 0.5, 1.0
  * @since JDK 1.1
  */
-public abstract class Histogram implements DataElement {
+public abstract class AbstractHistogram implements DataElement {
 
-	/**
-	 * Encapsulates the 4 different types a histogram may have.
-	 * 
-	 * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
-	 */
-	public static class Type {
-		private final static int[] DIM = { 1, 2, 1, 2 };
-
-		private final static boolean[] INT = { true, true, false, false };
-
-		/**
-		 * Histogram dimensionality compare to <code>getDimensionality()</code>
-		 */
-		public final static int ONE_D = 1;
-
-		/**
-		 * Value of histogram type for one dimensional <code>double</code>
-		 * histograms.
-		 * 
-		 * @see #getType()
-		 */
-		public static final Type ONE_D_DOUBLE = new Type(2);
-
-		/**
-		 * Value of histogram type for one dimensional <code>int</code>
-		 * histograms.
-		 * 
-		 * @see #getType()
-		 */
-		public static final Type ONE_DIM_INT = new Type(0);
-
-		private final static String[] STRING = { "1D int", "2D int",
-				"1D double", "2D double" };
-
-		/**
-		 * Histogram dimensionality compare to <code>getDimensionality()</code>
-		 */
-		public final static int TWO_D = 2;
-
-		/**
-		 * Value of histogram type for two dimensional <code>double</code>
-		 * histograms.
-		 * 
-		 * @see #getType()
-		 */
-		public static final Type TWO_D_DOUBLE = new Type(3);
-
-		/**
-		 * Value of histogram type for two dimensional <code>int</code>
-		 * histograms.
-		 * 
-		 * @see #getType()
-		 */
-		public static final Type TWO_DIM_INT = new Type(1);
-
-		/**
-		 * Gives the counts array type of the given object.
-		 * 
-		 * @param array
-		 *            a 1-d or 2-d int or double array
-		 * @return which type the array corresponds to
-		 */
-		protected final static Type getArrayType(final Object array) {
-			final Type rval;
-			final String error = "You may pass int or double arrays of up to two dimensions as histogram counts.";
-			final Class<?> type = array.getClass();
-			if (!type.isArray()) {
-				throw new IllegalArgumentException(error);
-			}
-			final Class<?> componentA = type.getComponentType();
-			if (componentA.equals(int.class)) {
-				rval = Type.ONE_DIM_INT;
-			} else if (componentA.equals(double.class)) {
-				rval = Type.ONE_D_DOUBLE;
-			} else {
-				/* Two-D, componentA assumed to be array. */
-				final Class<?> componentB = componentA.getComponentType();
-				if (componentB.equals(int.class)) {
-					rval = Type.TWO_DIM_INT;
-				} else if (componentB.equals(double.class)) {
-					rval = Type.TWO_D_DOUBLE;
-				} else {
-					throw new IllegalArgumentException(error);
-				}
-			}
-			return rval;
-		}
-
-		private transient final int typeNum;
-
-		private Type(final int num) {
-			super();
-			typeNum = num;
-		}
-
-		/**
-		 * @return 1 or 2
-		 */
-		public int getDimensionality() {
-			return DIM[typeNum];
-		}
-
-		/**
-		 * @param sizeX
-		 *            horizontal channels
-		 * @param sizeY
-		 *            vertical channels
-		 * @return array of the appropriate type and size
-		 */
-		public Object getSampleArray(final int sizeX, final int sizeY) {
-			final Object rval;
-			if (sizeY == 0) {
-				rval = isInteger() ? (Object) new int[sizeX]
-						: (Object) new double[sizeX];
-			} else {
-				rval = isInteger() ? (Object) new int[sizeX][sizeY]
-						: (Object) new double[sizeX][sizeY];
-			}
-			return rval;
-		}
-
-		/**
-		 * 
-		 * @return <code>true</true> if counts are integer, not floating point
-		 */
-		public boolean isInteger() {
-			return INT[typeNum];
-		}
-
-		/**
-		 * @see Object#toString()
-		 */
-		@Override
-		public String toString() {
-			return STRING[typeNum];
-		}
-	}
-
-	private final static List<List<Histogram>> DIM_LIST = new ArrayList<List<Histogram>>(
+	private final static List<List<AbstractHistogram>> DIM_LIST = new ArrayList<List<AbstractHistogram>>(
 			2);
 
 	private static final String EMPTY_STRING = "";
 
 	/* histogramList is ordered by the creation of the histograms */
-	private final static List<Histogram> LIST = new ArrayList<Histogram>();
+	private final static List<AbstractHistogram> LIST = new ArrayList<AbstractHistogram>();
 
 	/**
 	 * Maximum number of characters in the histogram name.
 	 */
 	public static final int NAME_LENGTH = 20;
 
-	private final static Map<String, Histogram> NAME_MAP = new HashMap<String, Histogram>();
+	private final static Map<String, AbstractHistogram> NAME_MAP = new HashMap<String, AbstractHistogram>();
 
-	private final static SortedMap<Integer, Histogram> NUMBER_MAP = new TreeMap<Integer, Histogram>();
+	private final static SortedMap<Integer, AbstractHistogram> NUMBER_MAP = new TreeMap<Integer, AbstractHistogram>();
 
 	/**
 	 * default axis labels
@@ -200,8 +62,8 @@ public abstract class Histogram implements DataElement {
 	private static final String Y_LABEL_2D = "Channels";
 
 	static {
-		DIM_LIST.add(0, new ArrayList<Histogram>());
-		DIM_LIST.add(1, new ArrayList<Histogram>());
+		DIM_LIST.add(0, new ArrayList<AbstractHistogram>());
+		DIM_LIST.add(1, new ArrayList<AbstractHistogram>());
 	}
 
 	private transient final GateCollection gates;
@@ -210,13 +72,13 @@ public abstract class Histogram implements DataElement {
 	 * Clears the list of histograms.
 	 */
 	public static void clearList() {
-		for (Histogram his : LIST) {
+		for (AbstractHistogram his : LIST) {
 			his.clearInfo();
 		}
 		LIST.clear();
 		NAME_MAP.clear();
 		NUMBER_MAP.clear();
-		for (List<Histogram> list : DIM_LIST) {
+		for (List<AbstractHistogram> list : DIM_LIST) {
 			list.clear();
 		}
 	}
@@ -228,7 +90,7 @@ public abstract class Histogram implements DataElement {
 	 *            of the histogram
 	 * @return the histogram, if it exists, null otherwise
 	 */
-	public static Histogram getHistogram(final int num) {
+	public static AbstractHistogram getHistogram(final int num) {
 		return NUMBER_MAP.get(num);
 	}
 
@@ -239,8 +101,8 @@ public abstract class Histogram implements DataElement {
 	 *            name of histogram to retrieve
 	 * @return the histogram with the given name, null if name doesn't exist.
 	 */
-	public static Histogram getHistogram(final String name) {
-		final Histogram rval = name == null ? null : (Histogram) NAME_MAP
+	public static AbstractHistogram getHistogram(final String name) {
+		final AbstractHistogram rval = name == null ? null : (AbstractHistogram) NAME_MAP
 				.get(name);
 		return rval;
 	}
@@ -250,7 +112,7 @@ public abstract class Histogram implements DataElement {
 	 * 
 	 * @return all histograms
 	 */
-	public static List<Histogram> getHistogramList() {
+	public static List<AbstractHistogram> getHistogramList() {
 		return Collections.unmodifiableList(LIST);
 	}
 
@@ -259,7 +121,7 @@ public abstract class Histogram implements DataElement {
 	 *            1 or 2
 	 * @return list of all histograms with the given dimensionality
 	 */
-	public static List<Histogram> getHistogramList(final int dim) {
+	public static List<AbstractHistogram> getHistogramList(final int dim) {
 		if (dim < 1 || dim > 2) {
 			throw new IllegalArgumentException(
 					"Expect 1 or 2, the possible numbers of dimensions.");
@@ -276,12 +138,12 @@ public abstract class Histogram implements DataElement {
 	 *            how the type gets specified
 	 * @return all histograms that have names matching the given list
 	 */
-	public static <T extends Histogram> List<T> getHistogramList(
+	public static <T extends AbstractHistogram> List<T> getHistogramList(
 			final List<String> names, final Class<T> type) {
 		final List<T> rval = new ArrayList<T>();
 		for (String name : names) {
 			if (NAME_MAP.containsKey(name)) {
-				final Histogram hist = getHistogram(name);
+				final AbstractHistogram hist = getHistogram(name);
 				if (type.isInstance(hist)) {
 					rval.add(type.cast(hist));
 				}
@@ -296,7 +158,7 @@ public abstract class Histogram implements DataElement {
 	/**
 	 * @return list of all histograms sorted by number
 	 */
-	public static Collection<Histogram> getListSortedByNumber() {
+	public static Collection<AbstractHistogram> getListSortedByNumber() {
 		return Collections.unmodifiableCollection(NUMBER_MAP.values());
 	}
 
@@ -306,7 +168,7 @@ public abstract class Histogram implements DataElement {
 	 * @param hist
 	 * @return <code>true</code> if this histogram remains in the name mapping
 	 */
-	public static boolean isValid(final Histogram hist) {
+	public static boolean isValid(final AbstractHistogram hist) {
 		return NAME_MAP.containsValue(hist);
 	}
 
@@ -316,9 +178,9 @@ public abstract class Histogram implements DataElement {
 	 * @param inHistList
 	 *            must contain all histogram objects
 	 */
-	public static void setHistogramList(final List<Histogram> inHistList) {
+	public static void setHistogramList(final List<AbstractHistogram> inHistList) {
 		clearList();
-		for (Histogram hist : inHistList) {
+		for (AbstractHistogram hist : inHistList) {
 			NAME_MAP.put(hist.getFullName(), hist);
 			LIST.add(hist);
 			NUMBER_MAP.put(hist.getNumber(), hist);
@@ -331,8 +193,8 @@ public abstract class Histogram implements DataElement {
 	 * @see #setZero()
 	 */
 	public static void setZeroAll() {
-		synchronized (Histogram.class) {
-			for (Histogram histogram : getHistogramList()) {
+		synchronized (AbstractHistogram.class) {
+			for (AbstractHistogram histogram : getHistogramList()) {
 				histogram.setZero();
 			}
 		}
@@ -365,7 +227,7 @@ public abstract class Histogram implements DataElement {
 	/** title of histogram */
 	private transient String title;
 
-	private transient final Type type; // one or two dimension
+	private transient final jam.data.HistogramType type; // one or two dimension
 
 	/** unique name amongst all histograms */
 	private transient String uniqueName;
@@ -393,8 +255,8 @@ public abstract class Histogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(final Type type, final int sizeX, final int sizeY,
-			final String title) {
+	protected AbstractHistogram(final jam.data.HistogramType type, final int sizeX,
+			final int sizeY, final String title) {
 		super();
 		this.type = type;
 		this.sizeX = sizeX;
@@ -440,8 +302,9 @@ public abstract class Histogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(final Type type, final int sizeX, final int sizeY,
-			final String title, final String axisLabelX, final String axisLabelY) {
+	protected AbstractHistogram(final jam.data.HistogramType type, final int sizeX,
+			final int sizeY, final String title, final String axisLabelX,
+			final String axisLabelY) {
 		this(type, sizeX, sizeY, title);
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
@@ -466,7 +329,8 @@ public abstract class Histogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(final Type type, final int size, final String title) {
+	protected AbstractHistogram(final jam.data.HistogramType type, final int size,
+			final String title) {
 		this(type, size, size, title);
 	}
 
@@ -493,8 +357,8 @@ public abstract class Histogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(final Type type, final int size, final String title,
-			final String axisLabelX, final String axisLabelY) {
+	protected AbstractHistogram(final jam.data.HistogramType type, final int size,
+			final String title, final String axisLabelX, final String axisLabelY) {
 		this(type, size, size, title);
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
@@ -664,7 +528,7 @@ public abstract class Histogram implements DataElement {
 	 * @return the type
 	 * @see Type
 	 */
-	public Type getType() {
+	public jam.data.HistogramType getType() {
 		return type;
 	}
 
@@ -736,7 +600,7 @@ public abstract class Histogram implements DataElement {
 	 */
 	public void setNumber(final int num) {
 		if (NUMBER_MAP.containsKey(num)) {
-			final Histogram collider = NUMBER_MAP.get(num);
+			final AbstractHistogram collider = NUMBER_MAP.get(num);
 			if (!collider.equals(this)) {
 				collider.assignNewNumber();
 			}
@@ -779,7 +643,7 @@ public abstract class Histogram implements DataElement {
 		LIST.remove(this);
 		NAME_MAP.remove(getFullName());
 		NUMBER_MAP.remove(getNumber());
-		final List<Histogram> dimList = DIM_LIST.get(getDimensionality() - 1);
+		final List<AbstractHistogram> dimList = DIM_LIST.get(getDimensionality() - 1);
 		dimList.remove(this);
 	}
 }

@@ -29,8 +29,9 @@ import jam.data.HistDouble1D;
 import jam.data.HistDouble2D;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.data.Scaler;
+import jam.data.HistogramType;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.global.JamProperties;
 import jam.global.Nameable;
@@ -168,7 +169,7 @@ final class ConvertJamObjToHDFObj {
 	/*
 	 * non-javadoc: Adds group object for the a histogram
 	 */
-	protected VirtualGroup addHistogramGroup(final Histogram hist) {
+	protected VirtualGroup addHistogramGroup(final AbstractHistogram hist) {
 		final VirtualGroup histVGroup = new VirtualGroup(hist.getName(),
 				HIST_TYPE);
 		/* vGroup label is Histogram name */
@@ -193,7 +194,7 @@ final class ConvertJamObjToHDFObj {
 	 * @return VirtualGroup for the histogram @throws HDFException
 	 */
 	protected NumericalDataGroup convertHistogram(
-			final VirtualGroup histVGroup, final Histogram hist) {
+			final VirtualGroup histVGroup, final AbstractHistogram hist) {
 		/* vGroup Annotation is Histogram title */
 		final NumericalDataGroup ndg = new NumericalDataGroup();
 
@@ -206,18 +207,18 @@ final class ConvertJamObjToHDFObj {
 		/* add to specific histogram vGroup (other info maybe later) */
 		final ScientificDataDimension sdd = getSDD(hist);
 		ndg.addDataObject(sdd); // use new SDD
-		final Histogram.Type type = hist.getType();
+		final HistogramType type = hist.getType();
 		ScientificData sciData;
 		AbstractHist1D hist1d = null;
-		if (type == Histogram.Type.ONE_DIM_INT) {
+		if (type == HistogramType.ONE_DIM_INT) {
 			sciData = new ScientificData(((HistInt1D) hist).getCounts());
 			hist1d = (AbstractHist1D) hist;
-		} else if (type == Histogram.Type.ONE_D_DOUBLE) {
+		} else if (type == HistogramType.ONE_D_DOUBLE) {
 			sciData = new ScientificData(((HistDouble1D) hist).getCounts());
 			hist1d = (AbstractHist1D) hist;
-		} else if (type == Histogram.Type.TWO_DIM_INT) {
+		} else if (type == HistogramType.TWO_DIM_INT) {
 			sciData = new ScientificData(((HistInt2D) hist).getCounts());
-		} else if (type == Histogram.Type.TWO_D_DOUBLE) {
+		} else if (type == HistogramType.TWO_D_DOUBLE) {
 			sciData = new ScientificData(((HistDouble2D) hist).getCounts());
 		} else {
 			throw new IllegalArgumentException(
@@ -226,9 +227,9 @@ final class ConvertJamObjToHDFObj {
 		ndg.addDataObject(sciData);
 		if (hist1d != null && hist1d.hasErrorsSet()) {// Add errors
 			ScientificDataDimension sddErr = null;
-			if (type == Histogram.Type.ONE_DIM_INT) {
+			if (type == HistogramType.ONE_DIM_INT) {
 				sddErr = getSDD(hist, NumberType.DOUBLE);
-			} else if (type == Histogram.Type.ONE_D_DOUBLE) {
+			} else if (type == HistogramType.ONE_D_DOUBLE) {
 				sddErr = sdd;
 			}
 			final NumericalDataGroup ndgErr = new NumericalDataGroup();
@@ -415,7 +416,7 @@ final class ConvertJamObjToHDFObj {
 	 * non-javadoc: @return the existing valid SDD type for the histogram,
 	 * creating a new one if necessary. @param h that type is needed for
 	 */
-	private ScientificDataDimension getSDD(final Histogram hist) {
+	private ScientificDataDimension getSDD(final AbstractHistogram hist) {
 		byte type = NumberType.DOUBLE;
 		if (hist.getType().isInteger()) {
 			type = NumberType.INT;
@@ -432,7 +433,7 @@ final class ConvertJamObjToHDFObj {
 	 * indicate the type @return the SDD object representing the histogram size
 	 * and number type
 	 */
-	private ScientificDataDimension getSDD(final Histogram hist,
+	private ScientificDataDimension getSDD(final AbstractHistogram hist,
 			final byte numberType) {
 		final short rank = (short) hist.getDimensionality();
 		final int sizeX = hist.getSizeX();

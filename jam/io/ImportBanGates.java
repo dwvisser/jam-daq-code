@@ -1,7 +1,7 @@
 package jam.io;
 
 import jam.data.Gate;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.ui.ExtensionFileFilter;
 
 import java.awt.Polygon;
@@ -39,10 +39,10 @@ public final class ImportBanGates extends AbstractImpExp {
 	}
 
 	/**
-	 * @see jam.io.AbstractImpExp#saveFile(jam.data.Histogram)
+	 * @see jam.io.AbstractImpExp#saveFile(jam.data.AbstractHistogram)
 	 */
 	@Override
-	public void saveFile(final Histogram hist) throws ImpExpException {
+	public void saveFile(final AbstractHistogram hist) throws ImpExpException {
 		LOGGER.warning("Save BAN not implemented.");
 	}
 
@@ -111,7 +111,7 @@ public final class ImportBanGates extends AbstractImpExp {
 		parser.nextToken(); // hisfilename
 		parser.nextToken(); // hist #
 		final int hisNum = (int) parser.nval;
-		final Histogram his = Histogram.getHistogram(hisNum);
+		final AbstractHistogram his = AbstractHistogram.getHistogram(hisNum);
 		parser.nextToken(); // gate number
 		final int gateNum = (int) parser.nval;
 		parser.nextToken(); // 0
@@ -146,10 +146,10 @@ public final class ImportBanGates extends AbstractImpExp {
 
 	/**
 	 * @see jam.io.AbstractImpExp#writeHist(java.io.OutputStream,
-	 *      jam.data.Histogram)
+	 *      jam.data.AbstractHistogram)
 	 */
 	@Override
-	protected void writeHist(final OutputStream outStream, final Histogram hist)
+	protected void writeHist(final OutputStream outStream, final AbstractHistogram hist)
 			throws ImpExpException {
 		// not implementing
 	}

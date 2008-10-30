@@ -1,7 +1,7 @@
 package jam.io;
 
 import jam.data.Group;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.global.JamStatus;
 import jam.util.FileUtilities;
 
@@ -125,7 +125,7 @@ public abstract class AbstractImpExp {
 	 *                all exceptions given to <code>ImpExpException</code> go to
 	 *                the msgHandler
 	 */
-	public abstract void saveFile(Histogram hist) throws ImpExpException;
+	public abstract void saveFile(AbstractHistogram hist) throws ImpExpException;
 
 	/**
 	 * Gets a short description of the file format this class works with.
@@ -160,7 +160,7 @@ public abstract class AbstractImpExp {
 	 *                all exceptions given to <code>ImpExpException</code> go to
 	 *                the msgHandler
 	 */
-	abstract protected void writeHist(OutputStream outStream, Histogram hist)
+	abstract protected void writeHist(OutputStream outStream, AbstractHistogram hist)
 			throws ImpExpException;
 
 	/**
@@ -184,7 +184,8 @@ public abstract class AbstractImpExp {
 				final FileUtilities fileUtil = FileUtilities.getInstance();
 				final String groupName = fileUtil
 						.removeExtensionFileName(inFile.getName());
-				importGroup = Group.createGroup(groupName, Group.Type.FILE);
+				importGroup = jam.data.Factory.createGroup(groupName,
+						Group.Type.FILE);
 				setLastFile(inFile);
 				final FileInputStream inStream = new FileInputStream(inFile);
 				inBuffStream = new BufferedInputStream(inStream, BUFFER_SIZE);
@@ -228,12 +229,12 @@ public abstract class AbstractImpExp {
 	 *            text to go on title bar of dialog box
 	 * @param hist
 	 *            histogram to be saved
-	 * @see #saveFile(Histogram)
+	 * @see #saveFile(AbstractHistogram)
 	 * @exception ImpExpException
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the msgHandler
 	 */
-	protected void saveFile(final String msg, final Histogram hist)
+	protected void saveFile(final String msg, final AbstractHistogram hist)
 			throws ImpExpException {
 		final File outFile = getFileSave(msg);
 		try {// open file dialog
@@ -265,7 +266,7 @@ public abstract class AbstractImpExp {
 	 * @param hist
 	 * @throws ImpExpException
 	 */
-	public void saveFile(final File outFile, final Histogram hist)
+	public void saveFile(final File outFile, final AbstractHistogram hist)
 			throws ImpExpException {
 		try {
 			final FileOutputStream outStream = new FileOutputStream(outFile);

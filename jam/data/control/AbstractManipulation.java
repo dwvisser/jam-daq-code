@@ -1,7 +1,9 @@
 package jam.data.control;
 
+import jam.data.AbstractHistogram;
+import jam.data.Factory;
 import jam.data.Group;
-import jam.data.Histogram;
+import jam.data.NameValueCollection;
 import jam.global.BroadcastEvent;
 
 import java.awt.FontMetrics;
@@ -35,6 +37,9 @@ abstract class AbstractManipulation extends AbstractControl {
 	/** String to append to new histogram group in combo box */
 	private final static String WILD_CARD = "/.";
 
+	private static final NameValueCollection<Group> groups = jam.data.Warehouse
+			.getGroupCollection();
+
 	/**
 	 * Constructs a dialog box for manipulation of histograms.
 	 * 
@@ -57,7 +62,7 @@ abstract class AbstractManipulation extends AbstractControl {
 			// Add working group new
 			comboBox.addItem(NEW_HIST + Group.WORKING_NAME + WILD_CARD);
 			// Add new histograms
-			for (Group group : Group.getGroupList()) {
+			for (Group group : groups.getList()) {
 				if (group.getType() != Group.Type.SORT
 						&& !Group.WORKING_NAME.equals(group.getName())) {
 					comboBox.addItem(NEW_HIST + group.getName() + WILD_CARD);
@@ -65,8 +70,8 @@ abstract class AbstractManipulation extends AbstractControl {
 			}
 		}
 		/* Add Existing hisograms */
-		for (Group group : Group.getGroupList()) {
-			for (Histogram hist : group.getHistogramList()) {
+		for (Group group : groups.getList()) {
+			for (AbstractHistogram hist : group.histograms.getList()) {
 				if (hist.getType().getDimensionality() == histDim) {
 					comboBox.addItem(hist.getFullName());
 				}
@@ -107,15 +112,15 @@ abstract class AbstractManipulation extends AbstractControl {
 	 *            number of channels in histogram
 	 * @return a 1D double histogram
 	 */
-	protected static final Histogram createNewDoubleHistogram(
+	protected static final AbstractHistogram createNewDoubleHistogram(
 			final String groupName, final String histName, final int size) {
 		Group group;
-		Histogram hist;
-		group = Group.getGroup(groupName);
+		AbstractHistogram hist;
+		group = groups.get(groupName);
 		if (group == null) {
-			group = Group.createGroup(groupName, Group.Type.FILE);
+			group = Factory.createGroup(groupName, Group.Type.FILE);
 		}
-		hist = group.createHistogram(new double[size], histName);
+		hist = Factory.createHistogram(group, new double[size], histName);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		return hist;
 	}

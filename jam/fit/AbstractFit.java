@@ -4,7 +4,8 @@ import static javax.swing.SwingConstants.RIGHT;
 import jam.data.AbstractHist1D;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
+import jam.data.HistogramType;
 import jam.global.MessageHandler;
 import jam.plot.PlotDisplay;
 import jam.ui.Canceller;
@@ -231,7 +232,7 @@ public abstract class AbstractFit implements Fit {
 			private void getCounts() {
 				final AbstractHist1D hist1d = (AbstractHist1D) SelectionTree
 						.getCurrentHistogram();
-				if (hist1d.getType() == Histogram.Type.ONE_DIM_INT) {
+				if (hist1d.getType() == HistogramType.ONE_DIM_INT) {
 					final int[] temp = ((HistInt1D) hist1d).getCounts();
 					AbstractFit.this.counts = NumberUtilities.getInstance()
 							.intToDoubleArray(temp);
@@ -340,13 +341,13 @@ public abstract class AbstractFit implements Fit {
 	 * Update the name of the displayed histogram in the dialog box.
 	 */
 	private void updateHist() {
-		final Histogram histogram = (Histogram) SelectionTree
+		final AbstractHistogram histogram = (AbstractHistogram) SelectionTree
 				.getCurrentHistogram();
 		if (histogram != null && histogram.getDimensionality() == 1) {
-			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
+			if (histogram.getType() == HistogramType.ONE_DIM_INT) {
 				final int[] temp = ((HistInt1D) histogram).getCounts();
 				counts = NumberUtilities.getInstance().intToDoubleArray(temp);
-			} else if (histogram.getType() == Histogram.Type.ONE_D_DOUBLE) {
+			} else if (histogram.getType() == HistogramType.ONE_D_DOUBLE) {
 				counts = ((HistDouble1D) histogram).getCounts();
 			}
 			textHistName.setText(histogram.getFullName());

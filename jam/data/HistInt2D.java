@@ -38,8 +38,8 @@ public final class HistInt2D extends AbstractHist2D {
 	 */
 	HistInt2D(final String title, final String axisLabelX,
 			final String axisLabelY, final int[][] countsIn) {
-		super(Type.TWO_DIM_INT, countsIn.length, countsIn[0].length, title,
-				axisLabelX, axisLabelY);
+		super(jam.data.HistogramType.TWO_DIM_INT, countsIn.length, countsIn[0].length,
+				title, axisLabelX, axisLabelY);
 		initCounts(countsIn);
 	}
 
@@ -138,8 +138,8 @@ public final class HistInt2D extends AbstractHist2D {
 	 */
 	@Override
 	public void setCounts(final Object countsIn) {
-		final Type givenType = Type.getArrayType(countsIn);
-		final Type expectedType = getType();
+		final jam.data.HistogramType givenType = jam.data.HistogramType.getArrayType(countsIn);
+		final jam.data.HistogramType expectedType = getType();
 		if (!givenType.equals(expectedType)) {
 			throw new IllegalArgumentException(getName() + ": setCounts()"
 					+ " expected array for type " + expectedType
@@ -158,7 +158,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 */
 	@Override
 	public void addCounts(final Object countsIn) {
-		if (Type.getArrayType(countsIn) != getType()) {
+		if (jam.data.HistogramType.getArrayType(countsIn) != getType()) {
 			throw new IllegalArgumentException("Expected array for type "
 					+ getType());
 		}

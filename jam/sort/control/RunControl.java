@@ -2,6 +2,7 @@ package jam.sort.control;
 
 import jam.comm.FrontEndCommunication;
 import jam.comm.ScalerCommunication;
+import jam.data.Warehouse;
 import jam.global.JamException;
 import jam.global.JamStatus;
 import jam.global.RunInfo;
@@ -276,7 +277,7 @@ public final class RunControl extends JDialog implements Controller,
 		}
 		sortDaemon.userBegin();
 		if (cHistZero.isSelected()) {// should we zero histograms
-			jam.data.Histogram.setZeroAll();
+			jam.data.AbstractHistogram.setZeroAll();
 		}
 		if (zeroScalers.isSelected()) {// should we zero scalers
 			scaler.clearScalers();
@@ -354,7 +355,8 @@ public final class RunControl extends JDialog implements Controller,
 				+ histFile.getPath());
 		final Frame jamMain = STATUS.getFrame();
 		final DataIO dataio = new jam.io.hdf.HDFIO(jamMain);
-		dataio.writeFile(histFile, jam.data.Group.getSortGroup());
+		dataio.writeFile(histFile, Warehouse.getSortGroupGetter()
+				.getSortGroup());
 		RunInfo.getInstance().runNumber++;// increment run number
 		tRunNumber.setText(Integer.toString(RunInfo.getInstance().runNumber));
 		setRunOn(false);

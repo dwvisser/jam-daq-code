@@ -3,8 +3,9 @@
  */
 package jam.sort.control;
 
+import jam.data.AbstractHistogram;
 import jam.data.Group;
-import jam.data.Histogram;
+import jam.data.Warehouse;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -347,11 +348,11 @@ abstract class AbstractSetup {
 	 */
 	public void selectFirstSortHistogram() {
 		// Select first histogram
-		final Group sortGroup = Group.getSortGroup();
+		final Group sortGroup = Warehouse.getSortGroupGetter().getSortGroup();
 		STATUS.setCurrentGroup(sortGroup);
-		final List<Histogram> histList = sortGroup.getHistogramList();
+		final List<AbstractHistogram> histList = sortGroup.histograms.getList();
 		if (!histList.isEmpty()) {
-			final Histogram firstHist = histList.get(0);
+			final AbstractHistogram firstHist = histList.get(0);
 			SelectionTree.setCurrentHistogram(firstHist);
 		}
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);

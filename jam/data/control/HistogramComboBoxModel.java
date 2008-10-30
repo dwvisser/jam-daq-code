@@ -1,6 +1,6 @@
 package jam.data.control;
 
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -48,7 +48,7 @@ final class HistogramComboBoxModel extends DefaultComboBoxModel {
 	/**
 	 * Unmodifiable Collection.
 	 */
-	private transient final Collection<Histogram> histograms;
+	private transient final Collection<AbstractHistogram> histograms;
 
 	/**
 	 * Create a data model for any JComboBox wishing to display the available
@@ -67,11 +67,11 @@ final class HistogramComboBoxModel extends DefaultComboBoxModel {
 	HistogramComboBoxModel(final Mode mode) {
 		super();
 		if (Mode.ALL.equals(mode)) {
-			histograms = Histogram.getListSortedByNumber();
+			histograms = AbstractHistogram.getListSortedByNumber();
 		} else if (Mode.ONE_D.equals(mode)) {
-			histograms = Histogram.getHistogramList(1);
+			histograms = AbstractHistogram.getHistogramList(1);
 		} else {// TWO_D
-			histograms = Histogram.getHistogramList(2);
+			histograms = AbstractHistogram.getHistogramList(2);
 		}
 	}
 
@@ -155,7 +155,7 @@ final class HistogramComboBoxModel extends DefaultComboBoxModel {
 	private Object getHistogram(final int index) {
 		Object rval = null;
 		int countDown = index;
-		for (final Iterator<Histogram> it = histograms.iterator(); countDown >= 0
+		for (final Iterator<AbstractHistogram> it = histograms.iterator(); countDown >= 0
 				&& it.hasNext(); countDown--) {
 			rval = it.next();
 		}

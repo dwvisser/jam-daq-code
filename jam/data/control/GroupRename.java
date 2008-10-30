@@ -1,8 +1,10 @@
 package jam.data.control;
 
+import jam.data.DataBase;
 import jam.data.DataException;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
+import jam.global.Nameable;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
@@ -41,6 +43,7 @@ public class GroupRename extends AbstractControl {
 	/**
 	 * Does nothing. It is here to match other contollers.
 	 */
+	@Override
 	public void doSetup() {
 		// do-nothing implementation of AbstractControl method
 	}
@@ -60,10 +63,12 @@ public class GroupRename extends AbstractControl {
 		}
 	}
 
+	@Override
 	public void setVisible(final boolean show) {
 		if (show) {
-			currentGroup = (Group) STATUS.getCurrentGroup();
-			if (Group.isValid(currentGroup)) {
+			final Nameable nameable = STATUS.getCurrentGroup();
+			if (DataBase.getInstance().isValid(nameable)) {
+				currentGroup = (Group) nameable;
 				if (currentGroup.getType() == Group.Type.SORT) {
 					LOGGER.severe("Cannot rename sort groups, selected group "
 							+ currentGroup.getName() + ".");
@@ -72,6 +77,7 @@ public class GroupRename extends AbstractControl {
 					super.setVisible(true);
 				}
 			} else {
+				currentGroup = null; // NOPMD
 				LOGGER.severe("Need to select a group.");
 			}
 		} else {

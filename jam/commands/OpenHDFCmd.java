@@ -1,8 +1,8 @@
 package jam.commands;
 
+import jam.data.AbstractHistogram;
 import jam.data.DataBase;
 import jam.data.Group;
-import jam.data.Histogram;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.QuerySortMode;
@@ -15,6 +15,7 @@ import jam.ui.SelectionTree;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -109,7 +110,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 
 	private void notifyApp(final File file) {
 		Group firstGroup;
-		Histogram firstHist = null;
+		AbstractHistogram firstHist = null;
 		/* Set general status. */
 		STATUS.setOpenFile(file);
 		AbstractControl.setupAll();
@@ -118,12 +119,14 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 		 * Set selection of group and histogram. Set to first group and first
 		 * histogram
 		 */
-		if (Group.getGroupList().size() > 0) {
-			firstGroup = Group.getGroupList().get(0);
+		final List<Group> groups = jam.data.Warehouse.getGroupCollection()
+				.getList();
+		if (!groups.isEmpty()) {
+			firstGroup = groups.get(0);
 			STATUS.setCurrentGroup(firstGroup);
 			/* Set the current histogram to the first opened histogram. */
-			if (firstGroup.getHistogramList().size() > 0) {
-				firstHist = firstGroup.getHistogramList().get(0);
+			if (firstGroup.histograms.getList().size() > 0) {
+				firstHist = firstGroup.histograms.getList().get(0);
 				SelectionTree.setCurrentHistogram(firstHist);
 			}
 		}

@@ -1,7 +1,7 @@
 package jam.ui;
 
 import jam.data.Gate;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.data.Group;
 
 import java.awt.Color;
@@ -44,8 +44,8 @@ public final class SelectionTreeCellRender extends DefaultTreeCellRenderer {
 				.getUserObject();
 		if (nodeObject instanceof Group) {
 			renderGroup((Group) nodeObject);
-		} else if (nodeObject instanceof Histogram) {
-			renderHistogram((Histogram) nodeObject);
+		} else if (nodeObject instanceof AbstractHistogram) {
+			renderHistogram((AbstractHistogram) nodeObject);
 		} else if (nodeObject instanceof Gate) {
 			renderGate((Gate) nodeObject);
 		} else {//must be String
@@ -85,7 +85,7 @@ public final class SelectionTreeCellRender extends DefaultTreeCellRenderer {
 		}
 	}
 	
-	private void renderHistogram(final Histogram hist) {
+	private void renderHistogram(final AbstractHistogram hist) {
 		setBackgroundSelectionColor(defaultBackground);
 		final StringBuffer tip = new StringBuffer();
 		tip.append(hist.getNumber()).append(". ").append(hist.getTitle());

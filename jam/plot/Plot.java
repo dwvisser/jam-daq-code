@@ -1,6 +1,6 @@
 package jam.plot;
 
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -8,7 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 
 interface Plot extends CountsContainer {
-	Histogram getHistogram();
+	AbstractHistogram getHistogram();
 
 	boolean isPrinting();
 

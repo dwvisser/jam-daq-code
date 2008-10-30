@@ -6,7 +6,7 @@ import static jam.plot.PlotPrefs.PREFS;
 import jam.data.AbstractHist1D;
 import jam.data.DataUtility;
 import jam.data.Gate;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandFinder;
@@ -184,7 +184,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param hist
 	 *            the histogram to display
 	 */
-	public void displayHistogram(final Histogram hist) {
+	public void displayHistogram(final AbstractHistogram hist) {
 		if (hist != null) {
 			currentPlot.removeAllPlotMouseListeners();
 			currentPlot.addPlotMouseListener(action.mouseListener);
@@ -211,7 +211,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * 
 	 * @return histogram
 	 */
-	public Histogram getHistogram() {
+	public AbstractHistogram getHistogram() {
 		return getPlotContainer().getHistogram();
 	}
 
@@ -251,7 +251,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		final PlotContainer selectedPlot = (PlotContainer) selectedObject;
 		if (selectedPlot != getPlotContainer()) {
 			setPlotContainer(selectedPlot);
-			final Histogram hist = selectedPlot.getHistogram();
+			final AbstractHistogram hist = selectedPlot.getHistogram();
 			/* Tell the framework the current hist */
 			SelectionTree.setCurrentHistogram(hist);
 			if (hist != null) {
@@ -396,7 +396,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			plotContainer.select(false);
 			plotContainer.reset();
 			gridPanel.add(plotContainer.getComponent());
-			final Histogram hist = currentView.getHistogram(i);
+			final AbstractHistogram hist = currentView.getHistogram(i);
 			plotContainer.displayHistogram(hist);
 		}
 		updateLayout();
@@ -445,10 +445,10 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			histogramsCleared();
 		} else if (command == Command.HISTOGRAM_SELECT) {
 			final Nameable named = SelectionTree.getCurrentHistogram();
-			if (named instanceof Histogram) {
-				final Histogram hist = (Histogram) named;
+			if (named instanceof AbstractHistogram) {
+				final AbstractHistogram hist = (AbstractHistogram) named;
 				displayHistogram(hist);
-				final List<AbstractHist1D> overHists = Histogram
+				final List<AbstractHist1D> overHists = AbstractHistogram
 						.getHistogramList(status.getOverlayHistograms(),
 								AbstractHist1D.class);
 				overlayHistogram(overHists);

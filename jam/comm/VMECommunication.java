@@ -30,7 +30,7 @@ import java.util.logging.Level;
  * @author Ken Swartz and Dale Visser
  * @since JDK1.1
  */
-final class VMECommunication extends GoodThread {
+final class VMECommunication extends GoodThread implements VmeSender {
 
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
@@ -291,14 +291,10 @@ final class VMECommunication extends GoodThread {
 		}
 	}
 
-	/**
-	 * Method which is used to send all packets containing a string to the VME
-	 * crate.
-	 * 
-	 * @param message
-	 *            string to send
+	/* (non-Javadoc)
+	 * @see jam.comm.VmeSender#sendToVME(java.lang.String)
 	 */
-	protected void sendToVME(final String message) {
+	public void sendMessage(final String message) {
 		sendToVME(PacketTypes.OK_MESSAGE, message);
 	}
 

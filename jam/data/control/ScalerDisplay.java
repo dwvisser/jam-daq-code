@@ -1,11 +1,13 @@
 package jam.data.control;
 
+import jam.data.DataBase;
 import jam.data.DataElement;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.BroadcastUtilities;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
+import jam.global.Nameable;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -169,8 +171,9 @@ public final class ScalerDisplay extends AbstractControl {
 	 */
 	public void displayScalers() {
 		synchronized (monitor) {
-			final Group currentGroup = (Group) status.getCurrentGroup();
-			if (Group.isValid(currentGroup)) {
+			final Nameable nameable = status.getCurrentGroup();
+			if (DataBase.getInstance().isValid(nameable)) {
+				final Group currentGroup = (Group) nameable;
 				final List<? extends DataElement> scalerList = currentGroup
 						.getScalerList();
 				if (textScaler.size() != scalerList.size()) {
@@ -199,8 +202,9 @@ public final class ScalerDisplay extends AbstractControl {
 	@Override
 	public void doSetup() {
 		synchronized (monitor) {
-			final Group currentGroup = (Group) status.getCurrentGroup();
-			if (Group.isValid(currentGroup)) {
+			final Nameable nameable = status.getCurrentGroup();
+			if (DataBase.getInstance().isValid(nameable)) {
+				final Group currentGroup = (Group) nameable;
 				JPanel panelS = null;
 				final List<? extends DataElement> scalerList = currentGroup
 						.getScalerList();

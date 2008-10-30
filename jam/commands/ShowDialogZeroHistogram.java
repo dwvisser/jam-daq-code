@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.data.control.HistogramZero;
 import jam.global.BroadcastEvent;
 
@@ -38,7 +38,7 @@ final class ShowDialogZeroHistogram extends AbstractShowDialog implements
 			setEnabled(false);
 		} else if ((command == BroadcastEvent.Command.HISTOGRAM_SELECT)
 				|| (command == BroadcastEvent.Command.GATE_SELECT)) {
-			setEnabled(!Histogram.getHistogramList().isEmpty());
+			setEnabled(!AbstractHistogram.getHistogramList().isEmpty());
 		}
 	}
 }

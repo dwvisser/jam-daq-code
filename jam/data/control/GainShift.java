@@ -3,7 +3,8 @@ package jam.data.control;
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.DataUtility;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
+import jam.data.HistogramType;
 import jam.global.BroadcastEvent;
 import jam.ui.SelectionTree;
 
@@ -291,7 +292,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 		final jam.util.NumberUtilities numbers = jam.util.NumberUtilities
 				.getInstance();
 		/* Get input histogram. */
-		final Histogram.Type oneDi = Histogram.Type.ONE_DIM_INT;
+		final HistogramType oneDi = HistogramType.ONE_DIM_INT;
 		final double[] countsIn = (hfrom.getType() == oneDi) ? numbers
 				.intToDoubleArray(((jam.data.HistInt1D) hfrom).getCounts())
 				: ((jam.data.HistDouble1D) hfrom).getCounts();
@@ -328,7 +329,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
 					+ "'");
 		} else {
-			hto = (AbstractHist1D) Histogram.getHistogram(name);
+			hto = (AbstractHist1D) AbstractHistogram.getHistogram(name);
 		}
 	}
 
@@ -341,7 +342,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 	public void doSetup() {
 		final String lto = (String) cto.getSelectedItem();
 		cto.removeAllItems();
-		loadAllHists(cto, true, Histogram.Type.ONE_D);
+		loadAllHists(cto, true, HistogramType.ONE_D);
 		cto.setSelectedItem(lto);
 		setUseHist((String) cto.getSelectedItem());
 		cfrom.setSelectedIndex(0);

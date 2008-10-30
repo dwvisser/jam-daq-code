@@ -2,7 +2,7 @@ package jam.commands;
 
 import jam.data.DataUtility;
 import jam.data.Group;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
@@ -37,7 +37,7 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 	@Override
 	protected void execute(final Object[] cmdParams) {
 		final JFrame frame = STATUS.getFrame();
-		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
+		final AbstractHistogram hist = (AbstractHistogram) SelectionTree.getCurrentHistogram();
 		final String name = hist.getFullName().trim();
 		final Group.Type type = DataUtility.getGroup(hist).getType();
 		/* Cannot delete sort histograms */
@@ -69,7 +69,7 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 		} else if ((command == BroadcastEvent.Command.HISTOGRAM_SELECT)
 				|| (command == BroadcastEvent.Command.GATE_SELECT)) {
 			final Nameable hist = SelectionTree.getCurrentHistogram();
-			setEnabled(hist instanceof Histogram);
+			setEnabled(hist instanceof AbstractHistogram);
 		}
 	}
 

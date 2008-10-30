@@ -1,6 +1,7 @@
 package jam.commands;
 
 import jam.data.Group;
+import jam.data.Warehouse;
 import jam.global.BroadcastEvent;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
@@ -30,6 +31,7 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		File file = null;
 		if (cmdParams != null && cmdParams.length > 0) {
@@ -45,7 +47,8 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK
 				|| mode == SortMode.OFFLINE) {
 			/* find sort group */
-			final Group sortGroup = Group.getSortGroup();
+			final Group sortGroup = Warehouse.getSortGroupGetter()
+					.getSortGroup();
 			if (sortGroup != null) {
 				if (file == null) { // No file given
 					final JFileChooser jfile = new JFileChooser(HDFIO
@@ -73,6 +76,7 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 	 * 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
+	@Override
 	protected void executeParse(final String[] cmdTokens) {
 		execute(null);
 	}

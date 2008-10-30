@@ -1,6 +1,6 @@
 package jam.io;
 
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.JamStatus;
 import jam.ui.ExtensionFileFilter;
@@ -109,16 +109,16 @@ public final class BatchExport extends JDialog implements Observer {
 		}
 
 		private void show() {
-			final Set<Histogram> histSet = new HashSet<Histogram>();
+			final Set<AbstractHistogram> histSet = new HashSet<AbstractHistogram>();
 			CollectionsUtil.getSingletonInstance().addConditional(
-					Histogram.getHistogramList(), histSet, HIST_COND_1D);
+					AbstractHistogram.getHistogramList(), histSet, HIST_COND_1D);
 			histList.setListData(histSet.toArray());
 			dialog.setVisible(true);
 		}
 	}
 
-	private static final CollectionsUtil.Condition<Histogram> HIST_COND_1D = new CollectionsUtil.Condition<Histogram>() {
-		public boolean accept(final Histogram hist) {
+	private static final CollectionsUtil.Condition<AbstractHistogram> HIST_COND_1D = new CollectionsUtil.Condition<AbstractHistogram>() {
+		public boolean accept(final AbstractHistogram hist) {
 			return hist.getDimensionality() == 1;
 		}
 	};
@@ -164,9 +164,9 @@ public final class BatchExport extends JDialog implements Observer {
 	 * 
 	 */
 	private void addAllHists() {
-		final Set<Histogram> histSet = new HashSet<Histogram>();
+		final Set<AbstractHistogram> histSet = new HashSet<AbstractHistogram>();
 		CollectionsUtil.getSingletonInstance().addConditional(
-				Histogram.getHistogramList(), histSet, HIST_COND_1D);
+				AbstractHistogram.getHistogramList(), histSet, HIST_COND_1D);
 		lstHists.setListData(histSet.toArray());
 	}
 
@@ -344,7 +344,7 @@ public final class BatchExport extends JDialog implements Observer {
 		// final File exportDirFile = new File(exportDir);
 		// Create list of export histograms and files
 		final ListModel model = lstHists.getModel();
-		Histogram[] exportHistograms = new Histogram[model.getSize()];
+		AbstractHistogram[] exportHistograms = new AbstractHistogram[model.getSize()];
 		File[] exportFiles = new File[model.getSize()];
 		// Create array of histograms and files
 		for (int i = 0; i < exportHistograms.length; i++) {
@@ -490,7 +490,7 @@ public final class BatchExport extends JDialog implements Observer {
 	 * 
 	 */
 	private void loadList() {
-		Histogram listItem;
+		AbstractHistogram listItem;
 		final JFileChooser chooser = new JFileChooser(lastListFile);
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		chooser.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
@@ -501,12 +501,12 @@ public final class BatchExport extends JDialog implements Observer {
 				&& chooser.getSelectedFile() != null) {
 			lastListFile = chooser.getSelectedFile(); // save current
 			// directory
-			final List<Histogram> list = new ArrayList<Histogram>();
+			final List<AbstractHistogram> list = new ArrayList<AbstractHistogram>();
 			try {
 				final java.io.BufferedReader reader = new java.io.BufferedReader(
 						new java.io.FileReader(lastListFile));
 				do {
-					listItem = Histogram.getHistogram(reader.readLine());
+					listItem = AbstractHistogram.getHistogram(reader.readLine());
 					if (listItem != null) {
 						list.add(listItem);
 					}
@@ -601,7 +601,7 @@ public final class BatchExport extends JDialog implements Observer {
 	private void setupHistChooser() {
 		cbHist.removeActionListener(cbHistListen);
 		cbHist.removeAllItems();
-		for (Histogram hist : Histogram.getHistogramList()) {
+		for (AbstractHistogram hist : AbstractHistogram.getHistogramList()) {
 			if (hist.getDimensionality() == 1) {
 				cbHist.addItem(hist.getFullName());
 			}

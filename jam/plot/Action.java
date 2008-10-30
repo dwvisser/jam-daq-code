@@ -23,7 +23,7 @@ import static jam.plot.PlotCommands.ZOOMOUT;
 import static jam.plot.PlotCommands.ZOOMVERT;
 import jam.data.AbstractHist1D;
 import jam.data.DataUtility;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.data.peaks.GaussianConstants;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -122,7 +122,7 @@ final class Action {
 		}
 	}
 
-	private static boolean existsAndIsCalibrated(final Histogram hist) {
+	private static boolean existsAndIsCalibrated(final AbstractHistogram hist) {
 		return hist != null && hist instanceof AbstractHist1D ? ((AbstractHist1D) hist)
 				.isCalibrated()
 				: false;
@@ -209,7 +209,7 @@ final class Action {
 		} else {
 			cursorCommand = true;
 			init();
-			final String name = ((Histogram) SelectionTree
+			final String name = ((AbstractHistogram) SelectionTree
 					.getCurrentHistogram()).getFullName().trim();
 			textOut.messageOut("Area for " + name + " from channel ",
 					MessageHandler.NEW);
@@ -294,7 +294,7 @@ final class Action {
 		final double count;
 		final int xch, ych;
 		/* check that a histogram is defined */
-		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
+		final AbstractHistogram hist = (AbstractHistogram) SelectionTree.getCurrentHistogram();
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
 		synchronized (cursorBin) {
 			xch = cursorBin.getX();
@@ -342,7 +342,7 @@ final class Action {
 		if (!hist.isEmpty()) {
 			final double dNum = hist.get(0);
 			final int num = (int) dNum;
-			final Histogram histogram = Histogram.getHistogram(num);
+			final AbstractHistogram histogram = AbstractHistogram.getHistogram(num);
 			if (histogram == null) {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);
 				LOGGER.severe("There is no histogram numbered " + num + ".");
@@ -527,7 +527,7 @@ final class Action {
 	 * @param centroid
 	 */
 	private void getCalibratedPeakStatistics(final PlotContainer currentPlot,
-			final Histogram hist, final double[] fwhm,
+			final AbstractHistogram hist, final double[] fwhm,
 			final double[] centroidError, final double[] centroid) {
 		if (existsAndIsCalibrated(hist)) {
 			centroid[0] = currentPlot.getEnergy(centroid[0]);
@@ -619,7 +619,7 @@ final class Action {
 		final String intro = "Goto (click on spectrum or type the ";
 		final char leftParen = ')';
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
-		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
+		final AbstractHistogram hist = (AbstractHistogram) SelectionTree.getCurrentHistogram();
 		if (commandPresent) {
 			if (clicks.isEmpty()) {
 				goNoClicks(currentPlot, hist);
@@ -642,7 +642,7 @@ final class Action {
 	}
 
 	private void goNoClicks(final PlotContainer currentPlot,
-			final Histogram hist) {
+			final AbstractHistogram hist) {
 		final String sep = ", ";
 		final String equal = " = ";
 		synchronized (cursorBin) {
@@ -692,7 +692,7 @@ final class Action {
 	 * @param crt
 	 */
 	private void handleClick6(final PlotContainer currentPlot,
-			final Histogram hist) {
+			final AbstractHistogram hist) {
 		final double[] netArea = new double[1];
 		final double[] netAreaError = new double[1];
 		final double[] fwhm = new double[2];
@@ -876,7 +876,7 @@ final class Action {
 	@SuppressWarnings(UNUSED)
 	private void netarea() {// NOPMD
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
-		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
+		final AbstractHistogram hist = (AbstractHistogram) SelectionTree.getCurrentHistogram();
 		final int nclicks = clicks.size();
 		if (!commandPresent) {// NOPMD
 			cursorCommand = true;
@@ -951,7 +951,7 @@ final class Action {
 		final boolean areHists = !hist.isEmpty();
 		for (double dNum : hist) {
 			final int num = (int) dNum;
-			final Histogram histogram = Histogram.getHistogram(num);
+			final AbstractHistogram histogram = AbstractHistogram.getHistogram(num);
 			if (histogram == null) {
 				LOGGER.warning("There is no histogram numbered " + num + ".");
 			} else {
@@ -1058,7 +1058,7 @@ final class Action {
 			textOut.messageOut("Rebin ", MessageHandler.NEW);
 		}
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
-		final Histogram hist = (Histogram) SelectionTree.getCurrentHistogram();
+		final AbstractHistogram hist = (AbstractHistogram) SelectionTree.getCurrentHistogram();
 		if (!parameters.isEmpty()) {
 			final double binWidth = parameters.get(0);
 			if (binWidth >= 1.0 && binWidth < hist.getSizeX()) {

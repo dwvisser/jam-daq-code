@@ -1,7 +1,7 @@
 package jam.io.control;
 
 import jam.data.Group;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -229,8 +229,8 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 		if (firstGroup != null) {
 			STATUS.setCurrentGroup(firstGroup);
 			/* Set the current histogram to the first opened histogram. */
-			if (firstGroup.getHistogramList().size() > 0) {
-				final Histogram firstHist = firstGroup.getHistogramList()
+			if (firstGroup.histograms.getList().size() > 0) {
+				final AbstractHistogram firstHist = firstGroup.histograms.getList()
 						.get(0);
 				SelectionTree.setCurrentHistogram(firstHist);
 				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,

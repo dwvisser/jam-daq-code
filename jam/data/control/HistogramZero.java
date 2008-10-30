@@ -1,6 +1,6 @@
 package jam.data.control;
 
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.ui.SelectionTree;
 
@@ -43,7 +43,7 @@ public class HistogramZero extends AbstractControl {
 		final JButton one = new JButton("Displayed");
 		one.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent actionEvent) {
-				final Histogram currentHistogram = (Histogram) SelectionTree
+				final AbstractHistogram currentHistogram = (AbstractHistogram) SelectionTree
 						.getCurrentHistogram();
 				currentHistogram.setZero();
 				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
@@ -84,8 +84,8 @@ public class HistogramZero extends AbstractControl {
 		final String methname = "zeroAll";
 		LOGGER.entering(classname, methname);
 		LOGGER.info("Zero All");
-		final List<Histogram> allHistograms = Histogram.getHistogramList();
-		for (Histogram hist : allHistograms) {
+		final List<AbstractHistogram> allHistograms = AbstractHistogram.getHistogramList();
+		for (AbstractHistogram hist : allHistograms) {
 			hist.setZero();
 		}
 		BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);

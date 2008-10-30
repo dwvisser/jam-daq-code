@@ -3,7 +3,7 @@ package jam.script;
 import jam.JamMain;
 import jam.commands.CommandManager;
 import jam.commands.CommandNames;
-import jam.data.Group;
+import jam.data.Warehouse;
 import jam.data.control.HistogramZero;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -276,7 +276,8 @@ public final class Session implements Observer {
 			throw new IllegalStateException(
 					"You may not call loadHDF() before calling setupOffline().");
 		}
-		hdfio.readFile(FileOpenMode.RELOAD, hdf, Group.getSortGroup());
+		hdfio.readFile(FileOpenMode.RELOAD, hdf, Warehouse.getSortGroupGetter()
+				.getSortGroup());
 		LOGGER.log(Level.INFO, "Loaded HDF file: " + hdf);
 	}
 
@@ -467,8 +468,8 @@ public final class Session implements Observer {
 		public void setup(final String sortName,
 				final Class<? extends AbstractEventInputStream> inStream,
 				final Class<? extends AbstractEventOutputStream> outStream) {
-			Session.this.setupSortOnline
-					.setupSort(sortName, inStream, outStream);
+			Session.this.setupSortOnline.setupSort(sortName, inStream,
+					outStream);
 			Session.LOGGER.log(Level.INFO, "Setup online sorting:");
 			Session.LOGGER.log(Level.INFO, "\t" + sortName);
 			this.internalSetup(inStream, outStream);

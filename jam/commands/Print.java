@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 import jam.plot.ComponentPrintable;
@@ -56,7 +56,7 @@ final class Print extends AbstractPrintingCommand implements Observer {
 		final ComponentPrintable printable = display.getComponentPrintable();
 		job.setPrintable(printable, mPageFormat);
 		if (job.printDialog()) {
-			final String name = ((Histogram) SelectionTree
+			final String name = ((AbstractHistogram) SelectionTree
 					.getCurrentHistogram()).getFullName();
 			LOGGER.info("Preparing to send histogram '" + name
 					+ "' to printer\u2026");

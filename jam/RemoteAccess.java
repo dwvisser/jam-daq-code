@@ -4,7 +4,7 @@ package jam;
 
 import jam.data.DataElement;
 import jam.data.Gate;
-import jam.data.Histogram;
+import jam.data.AbstractHistogram;
 import jam.data.Monitor;
 import jam.data.RemoteData;
 import jam.data.Scaler;
@@ -58,8 +58,8 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 * @throws RemoteException
 	 *             if there's a problem
 	 */
-	public List<Histogram> getHistogramList() throws RemoteException {
-		return Histogram.getHistogramList();
+	public List<AbstractHistogram> getHistogramList() throws RemoteException {
+		return AbstractHistogram.getHistogramList();
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 *             if there's a problem
 	 */
 	public String[] getHistogramNames() throws RemoteException {
-		final List<Histogram> hists = Histogram.getHistogramList();
+		final List<AbstractHistogram> hists = AbstractHistogram.getHistogramList();
 		final String[] names = new String[hists.size()];
 		for (int i = 0; i < hists.size(); i++) {
 			names[i] = hists.get(i).getFullName();
@@ -83,8 +83,8 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 * @throws RemoteException
 	 *             if there's a problem
 	 */
-	public Histogram getHistogram(final String name) throws RemoteException {
-		return Histogram.getHistogram(name);
+	public AbstractHistogram getHistogram(final String name) throws RemoteException {
+		return AbstractHistogram.getHistogram(name);
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 */
 	public List<String> getGateNames(final String histName)
 			throws RemoteException {
-		final Histogram hist = Histogram.getHistogram(histName);
+		final AbstractHistogram hist = AbstractHistogram.getHistogram(histName);
 		final List<DataElement> gates = hist.getGateCollection().getGates();
 		final List<String> names = new ArrayList<String>();
 		for (Nameable gate : gates) {

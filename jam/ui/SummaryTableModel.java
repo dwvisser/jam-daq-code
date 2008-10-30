@@ -1,8 +1,8 @@
 package jam.ui;
 
+import jam.data.AbstractHistogram;
 import jam.data.DataElement;
 import jam.data.Group;
-import jam.data.Histogram;
 import jam.data.Scaler;
 
 import java.text.NumberFormat;
@@ -107,7 +107,7 @@ final class SummaryTableModel implements TableModel {
 					dataList.add(new RowDataElement(gname, scaler));// NOPMD
 				}
 			}
-			for (Histogram hist : group.getHistogramList()) {
+			for (AbstractHistogram hist : group.histograms.getList()) {
 				if (showHistograms) {
 					dataList.add(new RowDataElement(gname, hist));// NOPMD
 				}
@@ -217,7 +217,7 @@ final class SummaryTableModel implements TableModel {
 				&& (selectedGroup != null)) {
 			createGroupDataList(selectedGroup);
 		} else {
-			for (Group group : Group.getGroupList()) {
+			for (Group group : jam.data.Warehouse.getGroupCollection().getList()) {
 				createGroupDataList(group);
 			}
 		}

@@ -1,12 +1,12 @@
 package jam.ui;
 
 import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
 import jam.data.DataBase;
 import jam.data.DataElement;
 import jam.data.DataUtility;
 import jam.data.Gate;
 import jam.data.Group;
-import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -156,14 +156,14 @@ public final class SelectionTree extends JPanel implements Observer {
 		final DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(
 				group);
 		// Loop through histograms and load them
-		for (Histogram hist : group.getHistogramList()) {
+		for (AbstractHistogram hist : group.histograms.getList()) {
 			addHistNodes(groupNode, hist);
 		}
 		rootNode.add(groupNode);
 	}
 
 	private void addHistNodes(final DefaultMutableTreeNode groupNode,
-			final Histogram hist) {
+			final AbstractHistogram hist) {
 		final DefaultMutableTreeNode histNode = new DefaultMutableTreeNode(hist);
 		groupNode.add(histNode);
 		// Loop through gates and load them
@@ -183,12 +183,12 @@ public final class SelectionTree extends JPanel implements Observer {
 		tree.addSelectionPath(gateTreePath);
 	}
 
-	private Histogram getAssociatedHist(final TreePath path) {
+	private AbstractHistogram getAssociatedHist(final TreePath path) {
 		if (!isGate(path)) {
 			throw new IllegalArgumentException("Only call with a gate path.");
 		}
-		return (Histogram) ((DefaultMutableTreeNode) path.getPathComponent(path
-				.getPathCount() - 2)).getUserObject();
+		return (AbstractHistogram) ((DefaultMutableTreeNode) path
+				.getPathComponent(path.getPathCount() - 2)).getUserObject();
 	}
 
 	private boolean isGate(final TreePath path) {
@@ -222,7 +222,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		}
 		treeModel.setRoot(rootNode);
 		// Loop through all groups
-		for (Group group : Group.getGroupList()) {
+		for (Group group : jam.data.Warehouse.getGroupCollection().getList()) {
 			addGroupNodes(group);
 		}
 		tree.expandRow(tree.getRowCount() - 1);
@@ -275,9 +275,9 @@ public final class SelectionTree extends JPanel implements Observer {
 			final DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) nodeEnum
 					.nextElement();
 			final Object currentObj = currentNode.getUserObject();
-			if (currentObj instanceof Histogram) {
+			if (currentObj instanceof AbstractHistogram) {
 				// Loop over histograms
-				for (Histogram hist : overlayHists) {
+				for (AbstractHistogram hist : overlayHists) {
 					if (currentObj == hist) {
 						addSelectionPath(currentNode);
 					}
@@ -292,8 +292,9 @@ public final class SelectionTree extends JPanel implements Observer {
 	private void refreshSelection() {
 		final Nameable hist = getCurrentHistogram();
 		final Nameable gate = getCurrentGate();
-		final List<AbstractHist1D> overlayHists = Histogram.getHistogramList(
-				STATUS.getOverlayHistograms(), AbstractHist1D.class);
+		final List<AbstractHist1D> overlayHists = AbstractHistogram
+				.getHistogramList(STATUS.getOverlayHistograms(),
+						AbstractHist1D.class);
 		final TreePath histTreePath = pathForDataObject(hist);
 		tree.setSelectionPath(histTreePath);
 		if (gate instanceof Gate) {
@@ -335,9 +336,9 @@ public final class SelectionTree extends JPanel implements Observer {
 					STATUS.setCurrentGroup(group);
 					BROADCASTER.broadcast(BroadcastEvent.Command.GROUP_SELECT,
 							group);
-				} else if (firstNodeObject instanceof Histogram) {
+				} else if (firstNodeObject instanceof AbstractHistogram) {
 					/* Histogram selected */
-					final Histogram hist = (Histogram) firstNodeObject;
+					final AbstractHistogram hist = (AbstractHistogram) firstNodeObject;
 					STATUS.setCurrentGroup(DataUtility.getGroup(hist));
 					setCurrentHistogram(hist);
 					setCurrentGate(null);
@@ -356,7 +357,7 @@ public final class SelectionTree extends JPanel implements Observer {
 				} else if (firstNodeObject instanceof Gate) {
 					/* Gate selected */
 					final Gate gate = (Gate) firstNodeObject;
-					final Histogram hist = getAssociatedHist(prime);
+					final AbstractHistogram hist = getAssociatedHist(prime);
 					tree.addSelectionPath(pathForDataObject(hist));
 					STATUS.setCurrentGroup(DataUtility.getGroup(hist));
 					setCurrentHistogram(hist);
@@ -410,7 +411,7 @@ public final class SelectionTree extends JPanel implements Observer {
 	private void selectOverlay(final TreePath[] paths) {
 		DefaultMutableTreeNode overlayNode = null;
 		Object overlayObj = null;
-		Histogram overlayHist;
+		AbstractHistogram overlayHist;
 		STATUS.clearOverlays();
 		/* Loop from 2nd element to the end. */
 		for (int i = 1; i < paths.length; i++) {
@@ -418,8 +419,8 @@ public final class SelectionTree extends JPanel implements Observer {
 					.getLastPathComponent());
 			overlayObj = overlayNode.getUserObject();
 			/* Ignore any gates in the selection paths here. */
-			if (overlayObj instanceof Histogram) {
-				overlayHist = (Histogram) (overlayObj);
+			if (overlayObj instanceof AbstractHistogram) {
+				overlayHist = (AbstractHistogram) (overlayObj);
 				if (overlayHist.getDimensionality() == 1) {
 					STATUS.addOverlayHistogramName(overlayHist.getFullName());
 				} else {
