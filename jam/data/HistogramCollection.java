@@ -13,24 +13,13 @@ import java.util.Set;
  * @author Dale Visser
  * 
  */
-public final class HistogramCollection {
+public final class HistogramCollection implements
+		NameValueCollection<AbstractHistogram> {
 
 	/** children of group */
 	private transient final Map<String, AbstractHistogram> histogramMap = new HashMap<String, AbstractHistogram>();
 	/** children histograms of group */
 	private transient final List<AbstractHistogram> histList = new ArrayList<AbstractHistogram>();
-
-	/**
-	 * Add a histogram to the group
-	 * 
-	 * @param group
-	 *            TODO
-	 * @param hist
-	 */
-	protected void add(final AbstractHistogram hist) {
-		this.histList.add(hist);
-		this.histogramMap.put(hist.getName(), hist);
-	}
 
 	/**
 	 * @return list of histograms in this group
@@ -42,11 +31,9 @@ public final class HistogramCollection {
 	/**
 	 * Remove a histogram from the group
 	 * 
-	 * @param group
-	 *            TODO
 	 * @param hist
 	 */
-	public void removeHistogram(final AbstractHistogram hist) {
+	public void remove(final AbstractHistogram hist) {
 		this.histList.remove(hist);
 		this.histogramMap.remove(hist.getName());
 	}
@@ -59,11 +46,27 @@ public final class HistogramCollection {
 	 * 
 	 * @return the histogram
 	 */
-	public AbstractHistogram getHistogram(final String name) {
+	public AbstractHistogram get(final String name) {
 		return this.histogramMap.get(name);
 	}
 
-	protected Set<String> getNameSet() {
+	public Set<String> getNameSet() {
 		return this.histogramMap.keySet();
+	}
+
+	public void add(final AbstractHistogram nameable, final String uniqueName) {
+		this.histList.add(nameable);
+		this.histogramMap.put(uniqueName, nameable);
+	}
+
+	public void clear() {
+		throw new UnsupportedOperationException(
+				"HistogramCollection does not support clear().");
+	}
+
+	public void remap(final AbstractHistogram nameable, final String oldName,
+			final String newName) {
+		throw new UnsupportedOperationException(
+				"HistogramCollection does not support remap().");
 	}
 }

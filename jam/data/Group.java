@@ -46,7 +46,8 @@ public final class Group implements Nameable {
 	/**
 	 * The histograms in this group.
 	 */
-	public transient final HistogramCollection histograms = new HistogramCollection();
+	public transient final NameValueCollection<AbstractHistogram> histograms = Factory
+			.createHistogramCollection();
 
 	/**
 	 * Get just the class name from the full name
@@ -199,7 +200,7 @@ public final class Group implements Nameable {
 				AbstractHistogram.NAME_LENGTH));
 		hist.updateNames(this);// puts in name map as well
 		/* Add to group */
-		this.histograms.add(hist);
+		this.histograms.add(hist, hist.getName());
 		/* Make a unique name in the group */
 	}
 

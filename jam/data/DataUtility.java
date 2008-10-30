@@ -17,16 +17,6 @@ public final class DataUtility {
 
 	/**
 	 * @param histogram
-	 *            histogram to delete
-	 */
-	public static void delete(final AbstractHistogram histogram) {
-		histogram.delete();
-		GROUPS.get(histogram.getGroupName()).histograms
-				.removeHistogram(histogram);
-	}
-
-	/**
-	 * @param histogram
 	 *            to get the group for
 	 * @return the group containing the given histogram
 	 */

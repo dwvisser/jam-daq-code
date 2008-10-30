@@ -151,4 +151,8 @@ public final class Factory {
 			final Object array, final String name, final String title) {
 		return createHistogram(group, array, name, title, null, null);
 	}
+
+	protected static NameValueCollection<AbstractHistogram> createHistogramCollection() {
+		return new HistogramCollection();
+	}
 }

@@ -47,9 +47,8 @@ final class ConvertHDFObjToJamObj {
 
 	private AbstractHistogram addHistogram(final Group group,
 			final String name, final Object histData) {
-		final AbstractHistogram histogram = group.histograms
-				.getHistogram(STRING_UTIL.makeLength(name,
-						AbstractHistogram.NAME_LENGTH));
+		final AbstractHistogram histogram = group.histograms.get(STRING_UTIL
+				.makeLength(name, AbstractHistogram.NAME_LENGTH));
 		if (histogram != null) {
 			histogram.addCounts(histData);
 		}
@@ -327,8 +326,8 @@ final class ConvertHDFObjToJamObj {
 		} else {
 			// Can reload without this histogram
 			if (mode == FileOpenMode.RELOAD) {
-				rval = group.histograms.getHistogram(STRING_UTIL.makeLength(
-						name, AbstractHistogram.NAME_LENGTH));
+				rval = group.histograms.get(STRING_UTIL.makeLength(name,
+						AbstractHistogram.NAME_LENGTH));
 			}
 		}
 		return rval;
@@ -768,9 +767,8 @@ final class ConvertHDFObjToJamObj {
 
 	private AbstractHistogram reloadHistogram(final Group group,
 			final String name, final Object histData) {
-		final AbstractHistogram histogram = group.histograms
-				.getHistogram(STRING_UTIL.makeLength(name,
-						AbstractHistogram.NAME_LENGTH));
+		final AbstractHistogram histogram = group.histograms.get(STRING_UTIL
+				.makeLength(name, AbstractHistogram.NAME_LENGTH));
 		if (histogram != null) {
 			histogram.setCounts(histData);
 		}
