@@ -30,10 +30,14 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Class to control the offline sort process Allows you to enter the list of
@@ -42,32 +46,16 @@ import javax.swing.filechooser.FileFilter;
  * @author Dale Visser and Ken Swartz
  * @version 1.0
  */
+@Singleton
 public final class SortControl extends javax.swing.JDialog implements
 		OfflineController {
 
-	private static final Object CLASS_MONITOR = new Object();
-
-	private static SortControl instance = null;
-
 	private static final Logger LOGGER = Logger.getLogger("jam");
 
-	private final static JamStatus STATUS = JamStatus.getSingletonInstance();
+	private transient final JamStatus STATUS;
 
 	/**
-	 * 
-	 * @return the only instance of this class
-	 */
-	public static SortControl getInstance() {
-		synchronized (CLASS_MONITOR) {
-			if (instance == null) {
-				instance = new SortControl();
-			}
-			return instance;
-		}
-	}
-
-	/**
-	 * button to get file brower
+	 * button to get file browser
 	 */
 	private transient final JButton bbrowse;
 
@@ -117,8 +105,13 @@ public final class SortControl extends javax.swing.JDialog implements
 
 	private transient boolean writeEvents;
 
-	private SortControl() {
-		super(STATUS.getFrame(), "Sorting", false);
+	private transient final JFrame frame;
+
+	@Inject
+	protected SortControl(final JFrame frame, final JamStatus status) {
+		super(frame, "Sorting", false);
+		this.frame = frame;
+		this.STATUS = status;
 		final String eventDefault = JamProperties.getPropString(EVENT_OUTPATH);
 		final String outDefault = JamProperties.getPropString(EVENT_OUTFILE);
 		setResizable(true);// sometimes there are long paths to files
@@ -133,7 +126,7 @@ public final class SortControl extends javax.swing.JDialog implements
 		ptop.add(new javax.swing.JLabel("Event Files to Sort",
 				javax.swing.SwingConstants.RIGHT));
 		/* List Panel */
-		multiFile = new MultipleFileChooser(STATUS.getFrame());
+		multiFile = new MultipleFileChooser(frame);
 		multiFile.showListSaveLoadButtons(true);
 		multiFile.setFileFilter(new ExtensionFileFilter("evn", "Event Files"));
 		contents.add(multiFile, BorderLayout.CENTER);
@@ -435,7 +428,7 @@ public final class SortControl extends javax.swing.JDialog implements
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileChooser.setFileFilter(new ExtensionFileFilter(
 				new String[] { "evn" }, "Event Files (*.evn)"));
-		final int option = fileChooser.showOpenDialog(STATUS.getFrame());
+		final int option = fileChooser.showOpenDialog(this.frame);
 		/* save current values */
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fileChooser.getSelectedFile() != null) {

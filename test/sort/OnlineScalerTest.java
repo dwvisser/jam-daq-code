@@ -2,10 +2,10 @@ package test.sort;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import injection.GuiceInjector;
 import jam.data.Scaler;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.JamStatus;
 import jam.script.Session;
 
 import java.util.List;
@@ -66,8 +66,8 @@ public class OnlineScalerTest implements Observer {
 		assertEquals("Expected list to have one element.", 1, scalerList.size());
 		final Scaler scaler = scalerList.get(0);
 		assertScalerValue(scaler, 0);
-		assertTrue("Expected status to be online.", JamStatus
-				.getSingletonInstance().isOnline());
+		assertTrue("Expected status to be online.", GuiceInjector
+				.getJamStatus().isOnline());
 		session.readScalers();
 		latch.await(500, TimeUnit.MILLISECONDS);
 		assertTrue(

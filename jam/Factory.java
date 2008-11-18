@@ -1,6 +1,6 @@
 package jam;
 
-import jam.global.JamStatus;
+import injection.GuiceInjector;
 
 /**
  * Factory methods for jam package.
@@ -20,7 +20,6 @@ public final class Factory {
 	 * @return help dialog
 	 */
 	public static Help createHelp() {
-		return new Help(JamStatus.getSingletonInstance().getFrame(),
-				new LicenseReader());
+		return new Help(GuiceInjector.getFrame(), new LicenseReader());
 	}
 }

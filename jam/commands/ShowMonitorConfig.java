@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.data.control.MonitorControl;
 
 import java.util.Observable;
@@ -19,6 +20,6 @@ final class ShowMonitorConfig extends AbstractShowDialog implements Observer {
 	}
 
 	public void update(final Observable observe, final Object obj) {
-		setEnabled(STATUS.isOnline());
+		setEnabled(GuiceInjector.getJamStatus().isOnline());
 	}
 }

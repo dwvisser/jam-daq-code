@@ -1,5 +1,7 @@
 package jam.commands;
 
+import injection.GuiceInjector;
+
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
@@ -25,7 +27,7 @@ final class ShowExitDialog extends AbstractCommand {
 	@Override
 	protected void execute(final Object[] cmdParams) {
 		boolean confirm = true;
-		final JFrame frame = STATUS.getFrame();
+		final JFrame frame = GuiceInjector.getFrame();
 		if (cmdParams != null && !((Boolean) cmdParams[0]).booleanValue()) {
 			confirm = false;
 		}

@@ -1,8 +1,8 @@
 package jam.data.control;
 
+import injection.GuiceInjector;
 import jam.data.Monitor;
 import jam.global.BroadcastEvent;
-import jam.global.JamStatus;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -91,7 +91,7 @@ public class MonitorDisplay extends AbstractControl {
 		for (Monitor monitor : Monitor.getMonitorList()) {
 			// If the audio on and are we taking data
 			if (checkAudio.isSelected()
-					&& JamStatus.getSingletonInstance().isAcqOn()
+					&& GuiceInjector.getAcquisitionStatus().isAcqOn()
 					&& monitor.isAlarmActivated() && (!monitor.isAcceptable())) {
 				Toolkit.getDefaultToolkit().beep();
 				break;
@@ -104,6 +104,7 @@ public class MonitorDisplay extends AbstractControl {
 	/**
 	 * Setup the display of monitors, inherited for AbstractControl
 	 */
+	@Override
 	public void doSetup() {
 		JPanel monitorPanel = null;
 		final List<Monitor> mlist = Monitor.getMonitorList();
@@ -114,8 +115,8 @@ public class MonitorDisplay extends AbstractControl {
 		}
 		pack();
 		if (numberMonitors > 0) {
-			final Dimension dialogDim = calculateScrollDialogSize(this, monitorPanel,
-					BORDER_HEIGHT, numberMonitors);
+			final Dimension dialogDim = calculateScrollDialogSize(this,
+					monitorPanel, BORDER_HEIGHT, numberMonitors);
 			setSize(dialogDim);
 		}
 	}
@@ -133,6 +134,7 @@ public class MonitorDisplay extends AbstractControl {
 	 * @param object
 	 *            not sure
 	 */
+	@Override
 	public void update(final Observable observable, final Object object) {
 		final BroadcastEvent event = (BroadcastEvent) object;
 		if (event.getCommand() == BroadcastEvent.Command.MONITORS_UPDATE) {

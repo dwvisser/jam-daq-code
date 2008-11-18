@@ -1,7 +1,8 @@
 package jam.commands;
 
-import jam.data.Group;
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
+import jam.data.Group;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.io.FileOpenMode;
@@ -30,8 +31,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 	OpenAdditionalHDF() {
 		super();
 		putValue(NAME, "Open Additional\u2026");
-		final Frame frame = STATUS.getFrame();
-		hdfio = new HDFIO(frame);
+		hdfio = new HDFIO(GuiceInjector.getFrame());
 		final Icon iOpenAdd = loadToolbarIcon("jam/ui/OpenAddHDF.png");
 		putValue(Action.SMALL_ICON, iOpenAdd);
 		putValue(Action.SHORT_DESCRIPTION, "Open an additional hdf data file");
@@ -40,6 +40,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 	/*
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		File file = null;
 		if (cmdParams != null && cmdParams.length > 0) {
@@ -52,7 +53,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 	 * Read in an HDF file
 	 */
 	private void readAdditionalHDFFile(final File file) {
-		final Frame frame = STATUS.getFrame();
+		final Frame frame = GuiceInjector.getFrame();
 		hdfio.setListener(this);
 		final boolean isReading;
 		if (file == null) {// No file given
@@ -82,6 +83,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 	 * 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
+	@Override
 	protected void executeParse(final String[] cmdTokens) {
 		Object[] cmdParams = new Object[1];
 		if (cmdTokens.length == 0) {
@@ -104,8 +106,8 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 		// Set the current histogram to the first opened histogram
 		firstGroup = hdfio.getFirstLoadGroup();
 		if (firstGroup != null) {
-			STATUS.setCurrentGroup(firstGroup);
-		
+			GuiceInjector.getJamStatus().setCurrentGroup(firstGroup);
+
 			/* Set the current histogram to the first opened histogram. */
 			if (firstGroup.histograms.getList().size() > 0) {
 				firstHist = firstGroup.histograms.getList().get(0);

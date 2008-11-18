@@ -3,6 +3,7 @@
  */
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.QuerySortMode;
 import jam.global.RunState;
@@ -14,24 +15,25 @@ import java.util.Observer;
 
 /**
  * Flush the acquisition's currently filling buffer to Jam.
- *  
+ * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 7, 2004
  */
 final class FlushAcquisition extends AbstractCommand implements Observer {
 
-	private transient final RunControl control;
+	private transient final RunControl control = GuiceInjector.getRunControl();
 
-	FlushAcquisition(){
+	FlushAcquisition() {
 		super("Flush");
-		putValue(SHORT_DESCRIPTION, "Flush the current data acquisition buffer.");
-		control=RunControl.getInstance();
+		putValue(SHORT_DESCRIPTION,
+				"Flush the current data acquisition buffer.");
 		setEnabled(false);
 	}
-	
+
 	/**
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		control.flushAcq();
 	}
@@ -39,6 +41,7 @@ final class FlushAcquisition extends AbstractCommand implements Observer {
 	/**
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
+	@Override
 	protected void executeParse(final String[] cmdTokens) {
 		execute(null);
 	}
@@ -47,19 +50,18 @@ final class FlushAcquisition extends AbstractCommand implements Observer {
 	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
 	 */
 	public void update(final Observable observable, final Object arg) {
-		final BroadcastEvent event=(BroadcastEvent)arg;
-		final BroadcastEvent.Command command=event.getCommand();
+		final BroadcastEvent event = (BroadcastEvent) arg;
+		final BroadcastEvent.Command command = event.getCommand();
 		boolean enable = online();
-		if (command==BroadcastEvent.Command.RUN_STATE_CHANGED){
-			final RunState state=(RunState)event.getContent();
+		if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
+			final RunState state = (RunState) event.getContent();
 			enable &= state.isAcqOn();
 		}
 		setEnabled(enable);
 	}
 
 	private boolean online() {
-		final QuerySortMode mode=STATUS.getSortMode();
-		return mode == SortMode.ONLINE_DISK || 
-		mode == SortMode.ON_NO_DISK;
+		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
+		return mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK;
 	}
 }

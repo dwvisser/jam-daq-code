@@ -15,6 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import com.google.inject.Inject;
+
 /**
  * Create a summary table for a group
  * 
@@ -72,12 +74,16 @@ public class SummaryTable extends JPanel implements Observer {
 
 	private transient final SummaryTableModel summaryTableModel = new SummaryTableModel();
 
+	private transient final JamStatus status;
+
 	/**
 	 * Default constructor.
 	 * 
 	 */
-	public SummaryTable() {
+	@Inject
+	public SummaryTable(final JamStatus status) {
 		super();
+		this.status = status;
 		setLayout(new BorderLayout());
 		final JTable table = new JTable(summaryTableModel);
 		final JScrollPane scrollPane = new JScrollPane(table);
@@ -103,8 +109,7 @@ public class SummaryTable extends JPanel implements Observer {
 			summaryTableModel.setSelectionType(Selection.ALL_GROUPS);
 		} else if (event.getCommand() == BroadcastEvent.Command.GROUP_SELECT) {
 			summaryTableModel.setSelectionType(Selection.SINGLE_GROUP);
-			summaryTableModel.setGroup((Group) JamStatus.getSingletonInstance()
-					.getCurrentGroup());
+			summaryTableModel.setGroup((Group) status.getCurrentGroup());
 		}
 	}
 

@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.CommandListenerException;
 import jam.io.control.SaveSelectedHistogram;
 
@@ -18,9 +19,10 @@ final class SaveSelectHistogramsHDFCmd extends AbstractCommand {
 	/**
 	 * Show dialog to select histogram
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
-		final SaveSelectedHistogram saveDlg = new SaveSelectedHistogram(STATUS
-				.getFrame());
+		final SaveSelectedHistogram saveDlg = new SaveSelectedHistogram(
+				GuiceInjector.getFrame());
 		saveDlg.show();
 
 	}
@@ -30,6 +32,7 @@ final class SaveSelectHistogramsHDFCmd extends AbstractCommand {
 	 * 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
+	@Override
 	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
 		execute(null);

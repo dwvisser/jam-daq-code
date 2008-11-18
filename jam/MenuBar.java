@@ -17,6 +17,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import com.google.inject.Inject;
+
 /**
  * 
  * Jam's menu bar. Separated from JamMain to reduce its size and separate
@@ -32,8 +34,6 @@ final class MenuBar implements Observer {
 	final transient private JMenu fitting = new JMenu("Fitting");
 
 	final transient private JMenuBar menus = new JMenuBar();
-
-	private static final MenuBar INSTANCE = new MenuBar();
 
 	/**
 	 * Jam's menu bar. It has the following menus:
@@ -52,7 +52,8 @@ final class MenuBar implements Observer {
 	 * @author Dale Visser
 	 * @author Ken Swartz
 	 */
-	private MenuBar() {
+	@Inject
+	protected MenuBar(final ViewMenu viewMenu) {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		menus.add(createFileMenu());
@@ -64,7 +65,6 @@ final class MenuBar implements Observer {
 		menus.add(createMenu("Gate", CommandNames.SHOW_NEW_GATE,
 				CommandNames.SHOW_ADD_GATE, CommandNames.SHOW_SET_GATE));
 		menus.add(createScalerMenu());
-		final ViewMenu viewMenu = new ViewMenu();
 		menus.add(viewMenu.getMenu());
 		menus.add(createPreferencesMenu());
 		menus.add(createFitMenu());
@@ -224,7 +224,7 @@ final class MenuBar implements Observer {
 	/**
 	 * @return the only menubar created by this class
 	 */
-	protected static JMenuBar getMenuBar() {
-		return INSTANCE.menus;
+	protected JMenuBar getMenuBar() {
+		return menus;
 	}
 }

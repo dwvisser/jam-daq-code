@@ -1,7 +1,8 @@
 package jam.io;
 
-import jam.data.Group;
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
+import jam.data.Group;
 import jam.global.JamStatus;
 import jam.util.FileUtilities;
 
@@ -52,7 +53,7 @@ public abstract class AbstractImpExp {
 
 	private static final int SAVE = 314;
 
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
+	private static final JamStatus STATUS = GuiceInjector.getJamStatus();
 
 	/**
 	 * so the programmer may set display options
@@ -85,7 +86,7 @@ public abstract class AbstractImpExp {
 		lastFileKey = getClass().getName() + "_LastValidFile";
 		lastFile = new File(PREFS.get(lastFileKey, System
 				.getProperty("user.dir")));
-		frame = STATUS.getFrame();
+		frame = GuiceInjector.getFrame();
 	}
 
 	/**
@@ -125,7 +126,8 @@ public abstract class AbstractImpExp {
 	 *                all exceptions given to <code>ImpExpException</code> go to
 	 *                the msgHandler
 	 */
-	public abstract void saveFile(AbstractHistogram hist) throws ImpExpException;
+	public abstract void saveFile(AbstractHistogram hist)
+			throws ImpExpException;
 
 	/**
 	 * Gets a short description of the file format this class works with.
@@ -160,8 +162,8 @@ public abstract class AbstractImpExp {
 	 *                all exceptions given to <code>ImpExpException</code> go to
 	 *                the msgHandler
 	 */
-	abstract protected void writeHist(OutputStream outStream, AbstractHistogram hist)
-			throws ImpExpException;
+	abstract protected void writeHist(OutputStream outStream,
+			AbstractHistogram hist) throws ImpExpException;
 
 	/**
 	 * Opens a file with a specified dialog box title bar and file extension. It

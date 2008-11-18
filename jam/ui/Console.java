@@ -32,7 +32,7 @@ import javax.swing.JTextField;
 public class Console extends JPanel {
 
 	/**
-	 * Number of lines in scrollback log.
+	 * Number of lines in scroll-back log.
 	 */
 	private final static int NUM_LINES = 100;
 

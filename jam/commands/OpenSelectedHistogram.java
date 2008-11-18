@@ -6,8 +6,11 @@
  */
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
+
+import javax.swing.JFrame;
 
 /**
  * 
@@ -23,17 +26,20 @@ final class OpenSelectedHistogram extends AbstractCommand {
 	/**
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
+		final JFrame frame = GuiceInjector.getFrame();
 		final jam.io.control.OpenSelectedHistogram osh = new jam.io.control.OpenSelectedHistogram(
-				STATUS.getFrame());
+				frame);
 		osh.open();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		STATUS.getFrame().repaint();
+		frame.repaint();
 	}
 
 	/**
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
+	@Override
 	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
 		execute(null);

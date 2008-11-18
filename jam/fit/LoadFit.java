@@ -1,9 +1,9 @@
 package jam.fit;
 
+import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamException;
-import jam.global.JamStatus;
 import jam.global.RuntimeSubclassIdentifier;
 import jam.plot.PlotDisplay;
 import jam.ui.PanelOKApplyCancelButtons;
@@ -54,9 +54,8 @@ public class LoadFit {
 	public LoadFit() {
 		super();
 		broadcaster = Broadcaster.getSingletonInstance();
-		final JamStatus jamStatus = JamStatus.getSingletonInstance();
-		jamMain = jamStatus.getFrame();
-		display = PlotDisplay.getDisplay();
+		jamMain = GuiceInjector.getFrame();
+		display = GuiceInjector.getPlotDisplay();
 		final String dialogName = "Load Fit Routine";
 		dialog = new JDialog(jamMain, dialogName, false);
 		final Container contents = dialog.getContentPane();
@@ -102,10 +101,9 @@ public class LoadFit {
 		final String package2 = "fit";
 		final RuntimeSubclassIdentifier rtsi = RuntimeSubclassIdentifier
 				.getSingletonInstance();
-		final Set<Class<? extends AbstractFit>> set = rtsi
-				.find(package1, AbstractFit.class, false);
-		set.addAll(rtsi.find(package2, AbstractFit.class,
-				false));
+		final Set<Class<? extends AbstractFit>> set = rtsi.find(package1,
+				AbstractFit.class, false);
+		set.addAll(rtsi.find(package2, AbstractFit.class, false));
 		return set.toArray();
 	}
 

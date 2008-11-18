@@ -1,10 +1,11 @@
 package jam.applet;//NOPMD
 
+import injection.GuiceInjector;
 import jam.InitialHistograms;
 import jam.commands.CommandManager;
+import jam.data.AbstractHistogram;
 import jam.data.DataElement;
 import jam.data.Gate;
-import jam.data.AbstractHistogram;
 import jam.data.RemoteData;
 import jam.global.JamException;
 import jam.global.LoggerConfig;
@@ -195,11 +196,11 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 		blink.setActionCommand("link");
 		blink.addActionListener(this);
 		pHost.add(blink);
-		/* output console at bottome */
+		/* output console at bottom */
 		this.add(BorderLayout.SOUTH, console);
 		/* display in middle */
 		display = new PlotDisplay(console, CommandManager.getInstance()
-				.getCommandFinder());
+				.getCommandFinder(), GuiceInjector.getJamStatus());
 		this.add(display);
 		addToolbarSelect(ptop);// tool bar for selecting
 		/*
@@ -244,7 +245,8 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 						"Error: no item in histogram chooser "
 								+ itemEvent.getItem());
 			} else {
-				hist = AbstractHistogram.getHistogram((String) itemEvent.getItem());
+				hist = AbstractHistogram.getHistogram((String) itemEvent
+						.getItem());
 				if (hist == null) {
 					// error no such histogram
 					LOGGER.log(Level.WARNING, "Error: histogram null");

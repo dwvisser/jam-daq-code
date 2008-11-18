@@ -1,5 +1,6 @@
 package jam;
 
+import injection.GuiceInjector;
 import jam.plot.PlotDisplay;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -22,7 +23,7 @@ import javax.swing.border.EmptyBorder;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
 public class PeakFindDialog extends JDialog {
-	
+
 	private static final Logger LOGGER = Logger.getLogger(PeakFindDialog.class
 			.getPackage().getName());
 
@@ -34,7 +35,7 @@ public class PeakFindDialog extends JDialog {
 	 */
 	public PeakFindDialog() {
 		super();
-		display = PlotDisplay.getDisplay();
+		display = GuiceInjector.getPlotDisplay();
 		createDialog();
 	}
 
@@ -78,7 +79,7 @@ public class PeakFindDialog extends JDialog {
 		pack();
 	}
 
-private void setPeakFindProperties() {
+	private void setPeakFindProperties() {
 		final double dWidth = Double.parseDouble(width.getText().trim());
 		final double dSense = Double.parseDouble(sensitivity.getText().trim());
 		final boolean cal = calibrate.isSelected();
@@ -86,7 +87,9 @@ private void setPeakFindProperties() {
 		final StringBuilder msg = new StringBuilder(
 				"Peak Find Properties Set: Width=");
 		msg.append(dWidth).append(", Sensitivity=").append(dSense);
-		msg.append(cal ? ", calibrated value displayed if available, centroid channel if not."
-				: ", centroid channel displayed.");
+		msg
+				.append(cal ? ", calibrated value displayed if available, centroid channel if not."
+						: ", centroid channel displayed.");
 		LOGGER.info(msg.toString());
-	}}
+	}
+}

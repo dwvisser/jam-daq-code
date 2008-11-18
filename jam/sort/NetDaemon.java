@@ -1,7 +1,7 @@
 package jam.sort;
 
+import injection.GuiceInjector;
 import jam.global.GoodThread;
-import jam.global.JamStatus;
 
 import java.io.IOException;
 import java.net.BindException;
@@ -129,7 +129,7 @@ public final class NetDaemon extends GoodThread {
 			if (!emptyBefore && state) {
 				final String mesg = "The sorting process lost a buffer. Click 'OK' to\nend the current run, 'Cancel' to have Jam attempt to\ncontinue automatically sampling events in order to keep\nup with the acquisition with no further warnings.\n";
 				final boolean confirmed = JOptionPane.showConfirmDialog(
-						JamStatus.getSingletonInstance().getFrame(), mesg,
+						GuiceInjector.getFrame(), mesg,
 						"Buffer lost. End run?", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
 				if (confirmed) {

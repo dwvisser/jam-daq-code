@@ -1,8 +1,8 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
-import jam.sort.control.SortControl;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -17,24 +17,23 @@ import javax.swing.Icon;
  * @version 2004-06-04
  */
 final class ShowSortControl extends AbstractShowDialog implements Observer {
-	
-	ShowSortControl(){
+
+	ShowSortControl() {
 		super("Sort\u2026");
-	    final Icon iPlayBack = loadToolbarIcon("jam/ui/PlayBack.png");
-	    putValue(Action.SMALL_ICON, iPlayBack);
+		final Icon iPlayBack = loadToolbarIcon("jam/ui/PlayBack.png");
+		putValue(Action.SMALL_ICON, iPlayBack);
 		putValue(Action.SHORT_DESCRIPTION, "Sort Control.");
-		dialog=SortControl.getInstance();
+		dialog = GuiceInjector.getSortControl();
 		enable();
 	}
 
 	private void enable() {
-		final QuerySortMode mode=STATUS.getSortMode();
+		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
 		setEnabled(mode == SortMode.OFFLINE);
 	}
 
-	public void update(final Observable observe, final Object obj){
+	public void update(final Observable observe, final Object obj) {
 		enable();
 	}
-	
 
 }

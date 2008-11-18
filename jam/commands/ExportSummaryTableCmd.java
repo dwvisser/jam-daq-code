@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 import jam.ui.ExtensionFileFilter;
@@ -36,7 +37,7 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 		final JFileChooser jfile = new JFileChooser();
 
 		jfile.setFileFilter(FILTER);
-		final int option = jfile.showSaveDialog(STATUS.getFrame());
+		final int option = jfile.showSaveDialog(GuiceInjector.getFrame());
 		/* don't do anything if it was cancel */
 		if (option == JFileChooser.APPROVE_OPTION
 				&& jfile.getSelectedFile() != null) {
@@ -46,6 +47,7 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 		return file;
 	}
 
+	@Override
 	protected void execute(final Object[] cmdParams) throws CommandException {
 		File file = null;
 		if (cmdParams != null && cmdParams.length > 0) {
@@ -61,6 +63,7 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 		}
 	}
 
+	@Override
 	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
 		// TODO Auto-generated method stub

@@ -31,6 +31,7 @@ import java.util.prefs.PreferenceChangeListener;
 import javax.swing.JPanel;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * This class is a display routine for plots. It is implemented by
@@ -42,6 +43,7 @@ import com.google.inject.Inject;
  * @see java.awt.Graphics
  * @since JDK1.1
  */
+@Singleton
 public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		PreferenceChangeListener, Observer, CurrentPlotAccessor {
 
@@ -70,7 +72,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 
 	private transient final Object plotLock = new Object();
 
-	private transient final JamStatus status = JamStatus.getSingletonInstance();
+	private transient final JamStatus status;
 
 	/** Tool bar with plot controls (zoom...) */
 	private transient final Toolbar toolbar;
@@ -82,10 +84,14 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 *            the class to call to print out messages
 	 * @param finder
 	 *            finds commands
+	 * @param status
+	 *            application status
 	 */
 	@Inject
-	public PlotDisplay(final Console console, final CommandFinder finder) {
+	public PlotDisplay(final Console console, final CommandFinder finder,
+			final JamStatus status) {
 		super();
+		this.status = status;
 		Broadcaster.getSingletonInstance().addObserver(this);
 		/* display event handler */
 		action = new Action(this, console, finder);
@@ -98,35 +104,8 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		setView(View.SINGLE);
 	}
 
-	private static final Object DISPLAY_LOCK = new Object();
-
-	private static PlotDisplay display;
-
 	/**
-	 * Sets the display.
-	 * 
-	 * @param plotDisplay
-	 *            the display
-	 */
-	public static void setDisplay(final PlotDisplay plotDisplay) {
-		synchronized (DISPLAY_LOCK) {
-			display = plotDisplay;
-		}
-	}
-
-	/**
-	 * Gets the display.
-	 * 
-	 * @return the display
-	 */
-	public static PlotDisplay getDisplay() {
-		synchronized (DISPLAY_LOCK) {
-			return display;
-		}
-	}
-
-	/**
-	 * Adds a plot mouse listner, plot mouse is a mouse which is calibrated to
+	 * Adds a plot mouse listener, plot mouse is a mouse which is calibrated to
 	 * the current display.
 	 * 
 	 * @param listener
@@ -147,7 +126,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		final int minsize = 200;
 		setMinimumSize(new Dimension(minsize, minsize));
 		setLayout(new BorderLayout());
-		/* Create imbedded grid panel */
+		/* Create embedded grid panel */
 		gridPanel = new JPanel(new GridLayout(1, 1));
 		add(gridPanel, BorderLayout.CENTER);
 	};

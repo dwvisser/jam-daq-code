@@ -36,6 +36,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import com.google.inject.Inject;
+
 /**
  * Implements a <code>JTree</code> for selecting <code>Histogram</code>'s and
  * <code>Gate</code>'s to display.
@@ -55,7 +57,7 @@ public final class SelectionTree extends JPanel implements Observer {
 	private static final Logger LOGGER = Logger.getLogger(SelectionTree.class
 			.getPackage().getName());
 
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
+	private transient final JamStatus status;
 
 	private static final Validator validator = DataBase.getInstance();
 
@@ -133,9 +135,13 @@ public final class SelectionTree extends JPanel implements Observer {
 	/**
 	 * Constructs a new <code>SelectionTree</code>.
 	 * 
+	 * @param status
+	 *            application status
 	 */
-	public SelectionTree() {
+	@Inject
+	public SelectionTree(final JamStatus status) {
 		super(new BorderLayout());
+		this.status = status;
 		BROADCASTER.addObserver(this);
 		final Dimension dim = getMinimumSize();
 		dim.width = 160;
@@ -206,9 +212,9 @@ public final class SelectionTree extends JPanel implements Observer {
 	 * Load the tree for the data objects.
 	 */
 	private void loadTree() {
-		final QuerySortMode sortMode = STATUS.getSortMode();
+		final QuerySortMode sortMode = status.getSortMode();
 		if (sortMode == SortMode.FILE) {
-			final String fileName = STATUS.getSortName();
+			final String fileName = status.getSortName();
 			rootNode = new DefaultMutableTreeNode("File: " + fileName);
 		} else if (sortMode == SortMode.OFFLINE) {
 			rootNode = new DefaultMutableTreeNode("Offline Sort");
@@ -293,7 +299,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		final Nameable hist = getCurrentHistogram();
 		final Nameable gate = getCurrentGate();
 		final List<AbstractHist1D> overlayHists = AbstractHistogram
-				.getHistogramList(STATUS.getOverlayHistograms(),
+				.getHistogramList(status.getOverlayHistograms(),
 						AbstractHist1D.class);
 		final TreePath histTreePath = pathForDataObject(hist);
 		tree.setSelectionPath(histTreePath);
@@ -333,13 +339,13 @@ public final class SelectionTree extends JPanel implements Observer {
 				} else if (firstNodeObject instanceof Group) {
 					final Group group = (Group) firstNodeObject;
 					// Group.setCurrentGroup(group);
-					STATUS.setCurrentGroup(group);
+					status.setCurrentGroup(group);
 					BROADCASTER.broadcast(BroadcastEvent.Command.GROUP_SELECT,
 							group);
 				} else if (firstNodeObject instanceof AbstractHistogram) {
 					/* Histogram selected */
 					final AbstractHistogram hist = (AbstractHistogram) firstNodeObject;
-					STATUS.setCurrentGroup(DataUtility.getGroup(hist));
+					status.setCurrentGroup(DataUtility.getGroup(hist));
 					setCurrentHistogram(hist);
 					setCurrentGate(null);
 					/* Do we have overlays ? */
@@ -350,7 +356,7 @@ public final class SelectionTree extends JPanel implements Observer {
 							LOGGER.severe("Cannot overlay on a 2D histogram.");
 						}
 					} else {
-						STATUS.clearOverlays();
+						status.clearOverlays();
 					}
 					BROADCASTER.broadcast(
 							BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
@@ -359,10 +365,10 @@ public final class SelectionTree extends JPanel implements Observer {
 					final Gate gate = (Gate) firstNodeObject;
 					final AbstractHistogram hist = getAssociatedHist(prime);
 					tree.addSelectionPath(pathForDataObject(hist));
-					STATUS.setCurrentGroup(DataUtility.getGroup(hist));
+					status.setCurrentGroup(DataUtility.getGroup(hist));
 					setCurrentHistogram(hist);
 					setCurrentGate(gate);
-					STATUS.clearOverlays();
+					status.clearOverlays();
 					BROADCASTER.broadcast(
 							BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 					selectGate(gate);
@@ -412,7 +418,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		DefaultMutableTreeNode overlayNode = null;
 		Object overlayObj = null;
 		AbstractHistogram overlayHist;
-		STATUS.clearOverlays();
+		status.clearOverlays();
 		/* Loop from 2nd element to the end. */
 		for (int i = 1; i < paths.length; i++) {
 			overlayNode = ((DefaultMutableTreeNode) paths[i]
@@ -422,7 +428,7 @@ public final class SelectionTree extends JPanel implements Observer {
 			if (overlayObj instanceof AbstractHistogram) {
 				overlayHist = (AbstractHistogram) (overlayObj);
 				if (overlayHist.getDimensionality() == 1) {
-					STATUS.addOverlayHistogramName(overlayHist.getFullName());
+					status.addOverlayHistogramName(overlayHist.getFullName());
 				} else {
 					tree.removeSelectionPath(paths[i]);
 					LOGGER.warning("Cannot overlay 2D histograms.");

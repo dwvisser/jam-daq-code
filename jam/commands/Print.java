@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
@@ -44,8 +45,9 @@ final class Print extends AbstractPrintingCommand implements Observer {
 	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
-		final PlotDisplay display = PlotDisplay.getDisplay();
+		final PlotDisplay display = GuiceInjector.getPlotDisplay();
 		if (firstTime) {
 			LOGGER
 					.warning("On some systems, it will be necessary to first "
@@ -80,6 +82,7 @@ final class Print extends AbstractPrintingCommand implements Observer {
 	 * 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
+	@Override
 	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
 		execute(null);

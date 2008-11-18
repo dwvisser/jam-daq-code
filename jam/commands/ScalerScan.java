@@ -24,8 +24,8 @@
 package jam.commands;
 
 import static javax.swing.SwingConstants.RIGHT;
+import injection.GuiceInjector;
 import jam.global.JamProperties;
-import jam.global.JamStatus;
 import jam.global.PropertyKeys;
 import jam.io.hdf.HDFException;
 import jam.io.hdf.ProgressUpdater;
@@ -36,7 +36,6 @@ import jam.util.TextDisplayDialog;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,6 +47,7 @@ import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -68,7 +68,7 @@ public final class ScalerScan implements ProgressUpdater {
 
 	private transient ProgressMonitor pBstatus;
 
-	private transient final Frame frame;
+	private transient final JFrame frame = GuiceInjector.getFrame();
 
 	private transient final JDialog dialog;
 
@@ -79,8 +79,6 @@ public final class ScalerScan implements ProgressUpdater {
 
 	private transient final JTextField txtRunName;
 
-	private final static JamStatus STATUS = JamStatus.getSingletonInstance();
-
 	private transient final PanelOKApplyCancelButtons buttons;
 
 	/**
@@ -88,8 +86,7 @@ public final class ScalerScan implements ProgressUpdater {
 	 */
 	public ScalerScan() {
 		super();
-		dialog = new JDialog(STATUS.getFrame(), "HDF Scaler Values Scan", false);
-		frame = STATUS.getFrame();
+		dialog = new JDialog(frame, "HDF Scaler Values Scan", false);
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 5));
 

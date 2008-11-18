@@ -24,7 +24,7 @@ final class ShowSetupOnline extends AbstractShowDialog implements Observer {
 	}
 
 	private void enable() {
-		final QuerySortMode mode = STATUS.getSortMode();
+		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
 		setEnabled(!(mode == SortMode.OFFLINE || mode == SortMode.REMOTE));
 	}
 

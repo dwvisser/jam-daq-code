@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 import jam.global.QuerySortMode;
@@ -24,7 +25,7 @@ public class OpenMultipleHDFCmd extends AbstractCommand implements Observer {
 
 	OpenMultipleHDFCmd() {
 		super("Open Multiple\u2026");
-		openMultiple = new OpenMultipleFiles(STATUS.getFrame());
+		openMultiple = new OpenMultipleFiles(GuiceInjector.getFrame());
 		final Icon iOpen = loadToolbarIcon("jam/ui/OpenMultiHDF.png");
 		putValue(Action.SMALL_ICON, iOpen);
 		putValue(Action.SHORT_DESCRIPTION, "Open multiple hdf files.");
@@ -56,7 +57,7 @@ public class OpenMultipleHDFCmd extends AbstractCommand implements Observer {
 	}
 
 	private void enable() {
-		final QuerySortMode mode = STATUS.getSortMode();
+		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
 		setEnabled(mode == SortMode.FILE || mode == SortMode.NO_SORT);
 	}
 

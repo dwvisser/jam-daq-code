@@ -1,5 +1,6 @@
 package jam.sort.control;
 
+import injection.GuiceInjector;
 import jam.comm.FrontEndCommunication;
 import jam.comm.ScalerCommunication;
 import jam.data.Warehouse;
@@ -34,6 +35,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 /**
  * Class for data acquistion and run control. This class
  * <ul>
@@ -59,6 +63,7 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  */
+@Singleton
 public final class RunControl extends JDialog implements Controller,
 		RunController {
 
@@ -79,21 +84,7 @@ public final class RunControl extends JDialog implements Controller,
 	private static final Logger LOGGER = Logger.getLogger(RunControl.class
 			.getPackage().getName());
 
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
-
-	private static final Object instanceMonitor = new Object();
-
-	/**
-	 * @return the only instance of this class
-	 */
-	static public RunControl getInstance() {
-		synchronized (instanceMonitor) {
-			if (instance == null) {
-				instance = new RunControl(STATUS.getFrame());
-			}
-			return instance;
-		}
-	}
+	private transient final JamStatus STATUS;
 
 	private transient final Begin begin;
 
@@ -132,8 +123,10 @@ public final class RunControl extends JDialog implements Controller,
 	 * @param frame
 	 *            parent frame
 	 */
-	private RunControl(final Frame frame) {
+	@Inject
+	private RunControl(final Frame frame, final JamStatus status) {
 		super(frame, "Run", false);
+		this.STATUS = status;
 		frontEnd = jam.comm.Factory.createFrontEndCommunication();
 		scaler = jam.comm.Factory.createScalerCommunication();
 		RunInfo.getInstance().runNumber = 100;
@@ -353,7 +346,7 @@ public final class RunControl extends JDialog implements Controller,
 		final File histFile = new File(histPath, histFileName);
 		LOGGER.info("Sorting finished writing out histogram file: "
 				+ histFile.getPath());
-		final Frame jamMain = STATUS.getFrame();
+		final Frame jamMain = GuiceInjector.getFrame();
 		final DataIO dataio = new jam.io.hdf.HDFIO(jamMain);
 		dataio.writeFile(histFile, Warehouse.getSortGroupGetter()
 				.getSortGroup());

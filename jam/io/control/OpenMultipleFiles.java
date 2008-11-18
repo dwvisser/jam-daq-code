@@ -1,5 +1,6 @@
 package jam.io.control;
 
+import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -64,7 +65,7 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	/** Broadcaster */
 	private transient final Broadcaster broadcaster;
 
-	private transient final JamStatus STATUS = JamStatus.getSingletonInstance();
+	private transient final JamStatus STATUS = GuiceInjector.getJamStatus();
 
 	/**
 	 * Constructs an object which uses a dialog to open a selected histogram out

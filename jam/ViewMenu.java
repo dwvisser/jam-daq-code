@@ -13,11 +13,17 @@ import java.util.Observer;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import com.google.inject.Inject;
+
 final class ViewMenu implements Observer {
 	/** Fit menu needed as members so we can add a fit */
 	private final transient JMenu view = new JMenu("View");
 
-	ViewMenu() {
+	private transient final PlotDisplay display;
+
+	@Inject
+	ViewMenu(final PlotDisplay display) {
+		this.display = display;
 		this.updateViews();
 	}
 
@@ -39,7 +45,7 @@ final class ViewMenu implements Observer {
 		final JMenuItem rval = new JMenuItem(name);
 		rval.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				PlotDisplay.getDisplay().setView(View.getView(name));
+				ViewMenu.this.display.setView(View.getView(name));
 			}
 		});
 		return rval;

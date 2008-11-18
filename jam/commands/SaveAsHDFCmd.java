@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
@@ -9,6 +10,7 @@ import java.io.File;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 
 /**
@@ -38,6 +40,7 @@ final class SaveAsHDFCmd extends AbstractCommand {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 * @see java.io.File
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		File file = null;
 		if (cmdParams != null && cmdParams.length > 0) {
@@ -47,12 +50,13 @@ final class SaveAsHDFCmd extends AbstractCommand {
 	}
 
 	private void saveHDFFile(final File file) {
-		final HDFIO hdfio = new HDFIO(STATUS.getFrame());
+		final JFrame frame = GuiceInjector.getFrame();
+		final HDFIO hdfio = new HDFIO(frame);
 		if (file == null) { // No file given
 			final JFileChooser jfile = new JFileChooser(HDFIO
 					.getLastValidFile());
 			jfile.setFileFilter(new HDFileFilter(true));
-			final int option = jfile.showSaveDialog(STATUS.getFrame());
+			final int option = jfile.showSaveDialog(frame);
 			/* don't do anything if it was cancel */
 			if (option == JFileChooser.APPROVE_OPTION
 					&& jfile.getSelectedFile() != null) {
@@ -69,11 +73,12 @@ final class SaveAsHDFCmd extends AbstractCommand {
 	 * Save to an hdf file.
 	 * 
 	 * @param cmdTokens
-	 *            empty array or <code>null</code> to use a file dialog, or
-	 *            the name of a <code>File</code> as the first element
+	 *            empty array or <code>null</code> to use a file dialog, or the
+	 *            name of a <code>File</code> as the first element
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 * @see java.io.File
 	 */
+	@Override
 	protected void executeParse(final String[] cmdTokens) {
 		if (cmdTokens == null || cmdTokens.length == 0) {
 			execute(null);

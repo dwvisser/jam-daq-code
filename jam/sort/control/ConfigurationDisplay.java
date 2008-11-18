@@ -1,8 +1,8 @@
 package jam.sort.control;
 
+import injection.GuiceInjector;
 import jam.global.Help;
 import jam.global.JamProperties;
-import jam.global.JamStatus;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -37,7 +37,7 @@ public class ConfigurationDisplay extends JDialog {
 	 * Constructor.
 	 */
 	public ConfigurationDisplay() {
-		super(JamStatus.getSingletonInstance().getFrame(), "Configuration");
+		super(GuiceInjector.getFrame(), "Configuration");
 		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout(10, 10));
 		setSize(400, 400);

@@ -1,7 +1,8 @@
 package jam;
 
-import jam.data.Gate;
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
+import jam.data.Gate;
 import jam.data.RemoteData;
 import jam.global.JamException;
 import jam.global.JamStatus;
@@ -15,7 +16,7 @@ final class RemoteSnapshot {
 	private static final Logger LOGGER = Logger.getLogger(RemoteSnapshot.class
 			.getPackage().getName());
 
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
+	private static final JamStatus STATUS = GuiceInjector.getJamStatus();
 
 	/**
 	 * Get a snap shot of data.

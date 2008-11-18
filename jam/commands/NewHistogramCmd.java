@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.data.Factory;
 import jam.data.Group;
 import jam.data.HistogramType;
@@ -28,9 +29,10 @@ final class NewHistogramCmd extends AbstractCommand {
 				: HistogramType.TWO_D_DOUBLE;
 		final int sizeX = ((Integer) cmdParams[3]).intValue();
 		final int sizeY = ((Integer) cmdParams[4]).intValue();
-		final Group currentGroup = (Group) STATUS.getCurrentGroup();
-		Factory.createHistogram(currentGroup, hType.getSampleArray(sizeX, sizeY),
-				name, title);
+		final Group currentGroup = (Group) GuiceInjector.getJamStatus()
+				.getCurrentGroup();
+		Factory.createHistogram(currentGroup, hType
+				.getSampleArray(sizeX, sizeY), name, title);
 	}
 
 	/**
@@ -47,8 +49,8 @@ final class NewHistogramCmd extends AbstractCommand {
 		final int sizeY = Integer.parseInt(cmdParams[4]);
 		final Group workingGroup = Factory.createGroup("Working",
 				Group.Type.FILE);
-		Factory.createHistogram(workingGroup, hType.getSampleArray(sizeX, sizeY),
-				name, title);
+		Factory.createHistogram(workingGroup, hType
+				.getSampleArray(sizeX, sizeY), name, title);
 	}
 
 }

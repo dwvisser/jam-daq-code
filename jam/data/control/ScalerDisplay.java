@@ -1,10 +1,10 @@
 package jam.data.control;
 
+import injection.GuiceInjector;
 import jam.data.DataBase;
 import jam.data.DataElement;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
-import jam.global.BroadcastUtilities;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.Nameable;
@@ -63,7 +63,7 @@ public final class ScalerDisplay extends AbstractControl {
 
 	private transient final JPanel pScalers;
 
-	private transient final JamStatus status = JamStatus.getSingletonInstance();
+	private transient final JamStatus status = GuiceInjector.getJamStatus();
 
 	private transient final List<JTextField> textScaler = new ArrayList<JTextField>();
 
@@ -121,7 +121,7 @@ public final class ScalerDisplay extends AbstractControl {
 			public void actionPerformed(final ActionEvent event) {
 				checkDisabled.setSelected(true);
 				bzero.setEnabled(false);
-				BroadcastUtilities.zeroScalers();
+				GuiceInjector.getBroadcastUtilitities().zeroScalers();
 			}
 		});
 		bzero.setEnabled(false);

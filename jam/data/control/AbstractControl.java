@@ -1,5 +1,6 @@
 package jam.data.control;
 
+import injection.GuiceInjector;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 
@@ -43,7 +44,7 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	/**
 	 * Reference to instance of JamStatus.
 	 */
-	protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
+	protected static final JamStatus STATUS = GuiceInjector.getJamStatus();
 
 	/**
 	 * Setup all instances of <code>AbstractControl</code>.
@@ -63,7 +64,7 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	 *            whether dialog is modal
 	 */
 	protected AbstractControl(final String title, final boolean modal) {
-		super(STATUS.getFrame(), title, modal);
+		super(GuiceInjector.getFrame(), title, modal);
 		controllers.add(this);
 		BROADCASTER.addObserver(this);
 	}

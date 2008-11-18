@@ -1,6 +1,8 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.io.hdf.HDFIO;
@@ -43,11 +45,12 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	 *            not used
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		// No command options used
-		final JFrame frame = STATUS.getFrame();
+		final JFrame frame = GuiceInjector.getFrame();
 		final HDFIO hdfio = new HDFIO(frame);
-		final File file = STATUS.getOpenFile();
+		final File file = GuiceInjector.getJamStatus().getOpenFile();
 		if (file == null) { // File null, shouldn't be.
 			throw new IllegalStateException(
 					"Expected a reference for the previously accessed file.");
@@ -62,12 +65,13 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	 *            not used
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
+	@Override
 	protected void executeParse(final String[] cmdTokens) {
 		execute(null);
 	}
 
 	/**
-	 * Listens to bradcaster messages to enable/disable this action.
+	 * Listens to messages to enable/disable this action.
 	 * 
 	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
 	 */
@@ -80,8 +84,9 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	}
 
 	private void enable() {
-		final QuerySortMode mode = STATUS.getSortMode();
-		final boolean file = STATUS.getOpenFile() != null;
+		final JamStatus status = GuiceInjector.getJamStatus();
+		final QuerySortMode mode = status.getSortMode();
+		final boolean file = status.getOpenFile() != null;
 		setEnabled(file && (mode == SortMode.FILE || mode == SortMode.NO_SORT));
 	}
 }

@@ -1,8 +1,8 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.plot.PlotDisplay;
 import jam.plot.View;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -66,10 +66,12 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 			/* panel for buttons */
 			cdnew.add(pbutton.getComponent(), BorderLayout.SOUTH);
 			addWindowListener(new WindowAdapter() {
+				@Override
 				public void windowActivated(final WindowEvent event) {
 					updateViewNames();
 				}
 
+				@Override
 				public void windowOpened(final WindowEvent event) {
 					updateViewNames();
 				}
@@ -88,7 +90,7 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 			}
 			Broadcaster.getSingletonInstance().broadcast(
 					BroadcastEvent.Command.VIEW_NEW);
-			PlotDisplay.getDisplay().setView(View.SINGLE);
+			GuiceInjector.getPlotDisplay().setView(View.SINGLE);
 			updateViewNames();
 		}
 

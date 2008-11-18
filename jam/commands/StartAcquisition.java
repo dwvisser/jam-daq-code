@@ -3,9 +3,9 @@
  */
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
-import jam.sort.control.RunControl;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -29,10 +29,12 @@ final class StartAcquisition extends AbstractCommand implements Observer {
 
 	}
 
+	@Override
 	protected void execute(final Object[] cmdParams) {
-		RunControl.getInstance().startAcq();
+		GuiceInjector.getRunControl().startAcq();
 	}
 
+	@Override
 	protected void executeParse(final String[] cmdTokens) {
 		execute(null);
 	}
@@ -42,7 +44,7 @@ final class StartAcquisition extends AbstractCommand implements Observer {
 	}
 
 	private void enable() {
-		final QuerySortMode mode = STATUS.getSortMode();
+		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
 		setEnabled(mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK);
 	}
 }

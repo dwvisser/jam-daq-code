@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.io.ImpExpException;
@@ -36,7 +37,8 @@ class AbstractImportFile extends AbstractImportExport {
 		try {
 			if (cmdParams == null) { // No file given
 				if (importExport.openFile(null)) {
-					STATUS.setOpenFile(importExport.getLastFile());
+					GuiceInjector.getJamStatus().setOpenFile(
+							importExport.getLastFile());
 					AbstractControl.setupAll();
 					BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 				}

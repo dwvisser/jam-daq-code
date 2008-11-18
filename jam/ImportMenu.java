@@ -1,9 +1,9 @@
 package jam;
 
+import injection.GuiceInjector;
 import jam.commands.CommandNames;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
 
@@ -28,8 +28,7 @@ final class ImportMenu implements Observer {
 	}
 
 	private void sortModeChanged() {
-		final JamStatus status = JamStatus.getSingletonInstance();
-		final QuerySortMode mode = status.getSortMode();
+		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
 		final boolean file = mode == SortMode.FILE || mode == SortMode.NO_SORT;
 		menu.setEnabled(file);
 	}

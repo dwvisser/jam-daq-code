@@ -2,12 +2,10 @@ package injection;
 
 import jam.JamInitialization;
 import jam.commands.CommandManager;
+import jam.global.AcquisitionStatus;
 import jam.global.Broadcaster;
 import jam.global.CommandFinder;
 import jam.global.JamStatus;
-import jam.sort.control.RunControl;
-import jam.sort.control.SetupSortOff;
-import jam.sort.control.SortControl;
 import jam.ui.Console;
 import jam.ui.ConsoleLog;
 
@@ -28,7 +26,6 @@ public final class Module extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		this.bind(JamStatus.class).toInstance(JamStatus.getSingletonInstance());
 		this.bind(Console.class).toInstance(
 				jam.ui.Factory.createConsole(JamInitialization.class
 						.getPackage().getName()));
@@ -37,11 +34,9 @@ public final class Module extends AbstractModule {
 		this.bind(JFrame.class).toInstance(new JFrame("Jam"));
 		this.bind(Frame.class).toProvider(FrameProvider.class);
 		this.bind(ConsoleLog.class).toProvider(ConsoleLogProvider.class);
-		this.bind(SetupSortOff.class).toInstance(SetupSortOff.getInstance());
-		this.bind(SortControl.class).toInstance(SortControl.getInstance());
-		this.bind(RunControl.class).toInstance(RunControl.getInstance());
 		this.bind(Broadcaster.class).toInstance(
 				Broadcaster.getSingletonInstance());
+		this.bind(AcquisitionStatus.class).to(JamStatus.class);
 	}
 
 	class FrameProvider implements Provider<Frame> {

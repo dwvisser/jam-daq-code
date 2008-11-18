@@ -1,9 +1,11 @@
 package jam.sort.control;
 
+import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.JamException;
+import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
@@ -26,6 +28,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Singleton;
+
 ;
 
 /**
@@ -35,23 +39,10 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  * @version 1.1
  */
+@Singleton
 public final class SetupSortOff extends AbstractSetup {
 
-	private static SetupSortOff instance = new SetupSortOff();
-
 	private final static String SETUP_LOCKED = "Setup Locked";
-
-	/**
-	 * Returns the only instance of this class.
-	 * 
-	 * @return the only instance of this class
-	 */
-	public static SetupSortOff getInstance() {
-		// if (instance == null) {
-		// instance = new SetupSortOff();
-		// }
-		return instance;
-	}
 
 	/* dialog box widgets */
 	private transient final JCheckBox checkLock = new JCheckBox(SETUP_LOCKED,
@@ -62,11 +53,11 @@ public final class SetupSortOff extends AbstractSetup {
 
 	private transient SortDaemon sortDaemon;
 
-	private SetupSortOff() {
+	protected SetupSortOff() {
 		super("Setup Offline");
 
 		// Build GUI
-		sortControl = SortControl.getInstance();
+		sortControl = GuiceInjector.getSortControl();
 		final java.awt.Container contents = dialog.getContentPane();
 		dialog.setResizable(false);
 		final int posx = 20;
@@ -143,7 +134,7 @@ public final class SetupSortOff extends AbstractSetup {
 	@Override
 	protected void doApply(final boolean dispose) {
 		try {
-			if (STATUS.canSetup()) {
+			if (GuiceInjector.getJamStatus().canSetup()) {
 				resetSort();// clear current data areas and kill daemons
 				sortChooser.loadSorter(btnSpecifyPath.isSelected());
 				loadEventInput();
@@ -227,12 +218,13 @@ public final class SetupSortOff extends AbstractSetup {
 		btnSpecifyPath.setEnabled(notLock);
 		btnDefaultPath.setEnabled(notLock);
 		sortChooser.setEnabled(notLock);
+		final JamStatus status = GuiceInjector.getJamStatus();
 		if (lock) {
-			STATUS.setSortMode(SortMode.OFFLINE, sortChooser.getSortRoutine()
+			status.setSortMode(SortMode.OFFLINE, sortChooser.getSortRoutine()
 					.getClass().getName());
 			bbrowsef.setEnabled(false);
 		} else {
-			STATUS.setSortMode(SortMode.NO_SORT, "No Sort");
+			status.setSortMode(SortMode.NO_SORT, "No Sort");
 			bbrowsef.setEnabled(btnSpecifyPath.isSelected());
 		}
 	}

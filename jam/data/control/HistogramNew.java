@@ -1,6 +1,7 @@
 package jam.data.control;
 
 import static javax.swing.SwingConstants.RIGHT;
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Factory;
 import jam.data.Group;
@@ -8,7 +9,6 @@ import jam.data.HistogramType;
 import jam.data.NameValueCollection;
 import jam.data.Warehouse;
 import jam.global.BroadcastEvent;
-import jam.global.JamStatus;
 import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
 
@@ -219,9 +219,8 @@ public class HistogramNew extends AbstractControl {
 		final AbstractHistogram hist = Factory.createHistogram(histGroup,
 				array, name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		final JamStatus status = JamStatus.getSingletonInstance();
 		SelectionTree.setCurrentHistogram(hist);
-		status.setCurrentGroup(histGroup);
+		GuiceInjector.getJamStatus().setCurrentGroup(histGroup);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		final StringBuffer msg = new StringBuffer("New histogram created, ");
 		msg.append(name).append(", type: ");

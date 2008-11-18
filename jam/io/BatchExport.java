@@ -1,8 +1,8 @@
 package jam.io;
 
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
-import jam.global.JamStatus;
 import jam.ui.ExtensionFileFilter;
 import jam.util.CollectionsUtil;
 import jam.util.FileUtilities;
@@ -60,8 +60,7 @@ public final class BatchExport extends JDialog implements Observer {
 
 		SelectHistogramDialog() {
 			super();
-			final java.awt.Frame frame = JamStatus.getSingletonInstance()
-					.getFrame();
+			final java.awt.Frame frame = GuiceInjector.getFrame();
 			dialog = new JDialog(frame, "Selected Histograms", false);
 			dialog.setLocation(frame.getLocation().x + 50,
 					frame.getLocation().y + 50);
@@ -110,8 +109,9 @@ public final class BatchExport extends JDialog implements Observer {
 
 		private void show() {
 			final Set<AbstractHistogram> histSet = new HashSet<AbstractHistogram>();
-			CollectionsUtil.getSingletonInstance().addConditional(
-					AbstractHistogram.getHistogramList(), histSet, HIST_COND_1D);
+			CollectionsUtil.getSingletonInstance()
+					.addConditional(AbstractHistogram.getHistogramList(),
+							histSet, HIST_COND_1D);
 			histList.setListData(histSet.toArray());
 			dialog.setVisible(true);
 		}
@@ -150,9 +150,7 @@ public final class BatchExport extends JDialog implements Observer {
 	 * Constructs a new batch histogram exporter.
 	 */
 	public BatchExport() {
-
-		super(JamStatus.getSingletonInstance().getFrame(),
-				"Batch Histogram Export");
+		super(GuiceInjector.getFrame(), "Batch Histogram Export");
 		jam.global.Broadcaster.getSingletonInstance().addObserver(this);
 		buildGUI();
 		setupHistChooser();
@@ -344,7 +342,8 @@ public final class BatchExport extends JDialog implements Observer {
 		// final File exportDirFile = new File(exportDir);
 		// Create list of export histograms and files
 		final ListModel model = lstHists.getModel();
-		AbstractHistogram[] exportHistograms = new AbstractHistogram[model.getSize()];
+		AbstractHistogram[] exportHistograms = new AbstractHistogram[model
+				.getSize()];
 		File[] exportFiles = new File[model.getSize()];
 		// Create array of histograms and files
 		for (int i = 0; i < exportHistograms.length; i++) {
@@ -400,10 +399,9 @@ public final class BatchExport extends JDialog implements Observer {
 		boolean rval = status;
 		// Check for overwrite
 		if (status && already) {
-			final int optionPaneRely = JOptionPane.showConfirmDialog(JamStatus
-					.getSingletonInstance().getFrame(),
-					"Overwrite existing files? \n", "File Exists",
-					JOptionPane.YES_NO_OPTION);
+			final int optionPaneRely = JOptionPane.showConfirmDialog(
+					GuiceInjector.getFrame(), "Overwrite existing files? \n",
+					"File Exists", JOptionPane.YES_NO_OPTION);
 			if (optionPaneRely == JOptionPane.NO_OPTION) {
 				rval = false;
 			}
@@ -506,7 +504,8 @@ public final class BatchExport extends JDialog implements Observer {
 				final java.io.BufferedReader reader = new java.io.BufferedReader(
 						new java.io.FileReader(lastListFile));
 				do {
-					listItem = AbstractHistogram.getHistogram(reader.readLine());
+					listItem = AbstractHistogram
+							.getHistogram(reader.readLine());
 					if (listItem != null) {
 						list.add(listItem);
 					}

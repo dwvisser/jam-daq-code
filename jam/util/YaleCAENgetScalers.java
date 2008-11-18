@@ -23,7 +23,7 @@
  **************************************************************/
 package jam.util;
 
-import jam.global.JamStatus;
+import injection.GuiceInjector;
 
 import java.awt.Frame;
 import java.io.BufferedInputStream;
@@ -59,7 +59,7 @@ public class YaleCAENgetScalers {
 	 */
 	public YaleCAENgetScalers() {
 		super();
-		frame = JamStatus.getSingletonInstance().getFrame();
+		frame = GuiceInjector.getFrame();
 	}
 
 	private void display() {

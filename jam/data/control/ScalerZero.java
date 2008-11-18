@@ -1,6 +1,6 @@
 package jam.data.control;
 
-import jam.global.BroadcastUtilities;
+import injection.GuiceInjector;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -69,6 +69,7 @@ public class ScalerZero extends AbstractControl {
 		pZero.add(chkDisable);
 
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
@@ -80,6 +81,7 @@ public class ScalerZero extends AbstractControl {
 	/**
 	 * @see jam.data.control.AbstractControl#doSetup()
 	 */
+	@Override
 	public void doSetup() {
 		/* nothing to set up */
 	}
@@ -89,6 +91,6 @@ public class ScalerZero extends AbstractControl {
 	 * zero the camac crate scalers.
 	 */
 	private void zero() {
-		BroadcastUtilities.zeroScalers();
+		GuiceInjector.getBroadcastUtilitities().zeroScalers();
 	}
 }

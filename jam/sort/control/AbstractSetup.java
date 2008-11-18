@@ -3,6 +3,7 @@
  */
 package jam.sort.control;
 
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Group;
 import jam.data.Warehouse;
@@ -11,7 +12,6 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamException;
 import jam.global.JamProperties;
-import jam.global.JamStatus;
 import jam.global.PropertyKeys;
 import jam.global.RuntimeSubclassIdentifier;
 import jam.sort.SortException;
@@ -87,13 +87,6 @@ abstract class AbstractSetup {
 	 */
 	protected static final Logger LOGGER = Logger.getLogger(AbstractSetup.class
 			.getPackage().getName());
-
-	/**
-	 * JamStatus instance.
-	 * 
-	 * @see jam.global.JamStatus
-	 */
-	protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	/**
 	 * Apply button.
@@ -176,7 +169,7 @@ abstract class AbstractSetup {
 		// Create GUI widgets
 		bok = new JButton(new ApplyAction(true));
 		bapply = new JButton(new ApplyAction(false));
-		dialog = new JDialog(STATUS.getFrame(), dialogName, false);
+		dialog = new JDialog(GuiceInjector.getFrame(), dialogName, false);
 		textSortPath = new JTextField(defSortPath);
 		textSortPath.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
@@ -254,7 +247,7 @@ abstract class AbstractSetup {
 		File rval = userClassPath;
 		final JFileChooser chooser = new JFileChooser(userClassPath);
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		final int option = chooser.showOpenDialog(STATUS.getFrame());
+		final int option = chooser.showOpenDialog(GuiceInjector.getFrame());
 		/* save current values */
 		if (option == JFileChooser.APPROVE_OPTION
 				&& chooser.getSelectedFile() != null) {
@@ -349,7 +342,7 @@ abstract class AbstractSetup {
 	public void selectFirstSortHistogram() {
 		// Select first histogram
 		final Group sortGroup = Warehouse.getSortGroupGetter().getSortGroup();
-		STATUS.setCurrentGroup(sortGroup);
+		GuiceInjector.getJamStatus().setCurrentGroup(sortGroup);
 		final List<AbstractHistogram> histList = sortGroup.histograms.getList();
 		if (!histList.isEmpty()) {
 			final AbstractHistogram firstHist = histList.get(0);

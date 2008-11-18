@@ -1,7 +1,7 @@
 package jam.plot.color;
 
 import static jam.plot.color.ColorPrefs.COLOR_PREFS;
-import jam.global.JamStatus;
+import injection.GuiceInjector;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.Container;
@@ -55,8 +55,7 @@ public final class ColorSettingsFrame extends JDialog implements ChangeListener 
 			aGSlider, aBSlider;
 
 	private ColorSettingsFrame() {
-		super(JamStatus.getSingletonInstance().getFrame(),
-				"Color Scale Settings");
+		super(GuiceInjector.getFrame(), "Color Scale Settings");
 		final Container contents = getContentPane();
 		contents.setLayout(new GridBagLayout());
 		final GridBagConstraints gbc = new GridBagConstraints();

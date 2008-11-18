@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.QuerySortMode;
@@ -20,14 +21,16 @@ final class AddHDF extends AbstractLoaderHDF {
 		super();
 	}
 
+	@Override
 	public void initCommand() {
 		putValue(NAME, "Add Group Counts\u2026");
 		fileOpenMode = FileOpenMode.ADD;
 	}
 
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		File file = null;
-		loadGroup = (Group) STATUS.getCurrentGroup();
+		loadGroup = (Group) GuiceInjector.getJamStatus().getCurrentGroup();
 		// Parse commad parameters if given
 		if (cmdParams != null) {
 			if (cmdParams.length > 0) {
@@ -46,7 +49,8 @@ final class AddHDF extends AbstractLoaderHDF {
 		final BroadcastEvent event = (BroadcastEvent) obj;
 		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
-			final QuerySortMode mode = STATUS.getSortMode();
+			final QuerySortMode mode = GuiceInjector.getJamStatus()
+					.getSortMode();
 			setEnabled(mode != SortMode.REMOTE);
 		}
 	}

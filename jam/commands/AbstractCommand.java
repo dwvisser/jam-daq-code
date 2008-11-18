@@ -2,7 +2,6 @@ package jam.commands;
 
 import jam.global.Broadcaster;
 import jam.global.CommandListenerException;
-import jam.global.JamStatus;
 
 import java.awt.event.ActionEvent;
 import java.net.URL;
@@ -28,12 +27,6 @@ public abstract class AbstractCommand extends AbstractAction implements
 	 */
 	protected static final Logger LOGGER = Logger
 			.getLogger(AbstractCommand.class.getPackage().getName());
-
-	/**
-	 * Reference to <code>JamStatus</code> singleton available to all
-	 * implementing classes.
-	 */
-	protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	/**
 	 * Reference to <code>Broadcaster</code> singleton available to all

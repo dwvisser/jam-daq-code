@@ -77,10 +77,9 @@ public final class JamInitialization {
 			final Console console, final JamProperties properties,
 			final PlotDisplay plotDisplay, final SummaryTable summaryTable,
 			final AcquisitionAndRunState aars, final SelectionTree selectTree,
-			final Broadcaster broadcaster) {
+			final Broadcaster broadcaster, final MenuBar menuBar) {
 		this.frame = frame;
 		this.properties = properties;
-		status.setFrame(this.frame);
 		this.summaryTable = summaryTable;
 		broadcaster.addObserver(aars);
 
@@ -96,7 +95,6 @@ public final class JamInitialization {
 		final ToolBar jamToolBar = new ToolBar();
 		contents.add(jamToolBar, BorderLayout.NORTH);
 		/* histogram displayer */
-		PlotDisplay.setDisplay(plotDisplay);
 		SummaryTable.setTable(summaryTable);
 		final Display display = new Display(plotDisplay, summaryTable);
 		final JSplitPane splitCenter = new JSplitPane(
@@ -104,7 +102,7 @@ public final class JamInitialization {
 		splitCenter.setResizeWeight(0.9);
 		/* fraction of resize space that goes to display */
 		contents.add(splitCenter, BorderLayout.CENTER);
-		this.frame.setJMenuBar(MenuBar.getMenuBar());
+		this.frame.setJMenuBar(menuBar.getMenuBar());
 		/* Histogram selection tree */
 		contents.add(selectTree, BorderLayout.WEST);
 		final JSplitPane splitTree = new JSplitPane(

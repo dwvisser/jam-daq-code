@@ -1,5 +1,6 @@
 package jam.io.hdf;
 
+import injection.GuiceInjector;
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
 import jam.data.DataElement;
@@ -526,7 +527,7 @@ public final class HDFIO implements DataIO {
 			currentGroup = groups.get(0);
 			// so use current group
 		} else if (mode == FileOpenMode.RELOAD) {
-			final JamStatus status = JamStatus.getSingletonInstance();
+			final JamStatus status = GuiceInjector.getJamStatus();
 			final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
 			status.setCurrentGroup(sortGroup);
 			currentGroup = (Group) status.getCurrentGroup();

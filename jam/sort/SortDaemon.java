@@ -1,10 +1,10 @@
 package jam.sort;
 
+import injection.GuiceInjector;
 import jam.data.Sorter;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
-import jam.global.JamStatus;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.EventException;
 import jam.sort.stream.AbstractEventInputStream.EventInputStatus;
@@ -296,7 +296,7 @@ public class SortDaemon extends GoodThread {
 	public void run() {
 		LOGGER.info("Sort daemon started.");
 		try {
-			if (JamStatus.getSingletonInstance().isOnline()) {// which type of
+			if (GuiceInjector.getJamStatus().isOnline()) {// which type of
 				// sort to do
 				sortOnline();
 			} else {

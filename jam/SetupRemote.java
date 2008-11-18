@@ -2,6 +2,7 @@
  */
 package jam;
 
+import injection.GuiceInjector;
 import jam.global.JamException;
 import jam.global.JamStatus;
 import jam.global.SortMode;
@@ -66,7 +67,7 @@ public class SetupRemote extends JDialog implements ActionListener,
 	private static final Logger LOGGER = Logger.getLogger(SetupRemote.class
 			.getPackage().getName());
 
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
+	private static final JamStatus STATUS = GuiceInjector.getJamStatus();
 
 	private static final Object classMonitor = new Object();
 
@@ -102,7 +103,7 @@ public class SetupRemote extends JDialog implements ActionListener,
 	 * application
 	 */
 	public SetupRemote() {
-		super(STATUS.getFrame(), "Remote Hookup ", false);
+		super(GuiceInjector.getFrame(), "Remote Hookup ", false);
 		// create dialog box
 		setResizable(false);
 		setLocation(20, 50);

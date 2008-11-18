@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.DataBase;
 import jam.data.Group;
@@ -41,7 +42,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 		super("Open\u2026");
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O,
 				CTRL_MASK));
-		final Frame frame = STATUS.getFrame();
+		final Frame frame = GuiceInjector.getFrame();
 		hdfio = new HDFIO(frame);
 		final Icon iOpen = loadToolbarIcon("jam/ui/OpenHDF.png");
 		putValue(Action.SMALL_ICON, iOpen);
@@ -69,7 +70,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 			final JFileChooser jfile = new JFileChooser(HDFIO
 					.getLastValidFile());
 			jfile.setFileFilter(new HDFileFilter(true));
-			final int option = jfile.showOpenDialog(STATUS.getFrame());
+			final int option = jfile.showOpenDialog(GuiceInjector.getFrame());
 			// dont do anything if it was cancel
 			if (option == JFileChooser.APPROVE_OPTION
 					&& jfile.getSelectedFile() != null) {
@@ -112,7 +113,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 		Group firstGroup;
 		AbstractHistogram firstHist = null;
 		/* Set general status. */
-		STATUS.setOpenFile(file);
+		GuiceInjector.getJamStatus().setOpenFile(file);
 		AbstractControl.setupAll();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		/*
@@ -123,7 +124,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 				.getList();
 		if (!groups.isEmpty()) {
 			firstGroup = groups.get(0);
-			STATUS.setCurrentGroup(firstGroup);
+			GuiceInjector.getJamStatus().setCurrentGroup(firstGroup);
 			/* Set the current histogram to the first opened histogram. */
 			if (firstGroup.histograms.getList().size() > 0) {
 				firstHist = firstGroup.histograms.getList().get(0);
@@ -143,7 +144,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 	}
 
 	private void enable() {
-		final QuerySortMode mode = STATUS.getSortMode();
+		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
 		setEnabled(mode == SortMode.FILE || mode == SortMode.NO_SORT);
 	}
 

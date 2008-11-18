@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JFrame;
+import com.google.inject.Singleton;
 
 /**
  * A global status class so that information is globally available.
@@ -15,30 +15,15 @@ import javax.swing.JFrame;
  * @author Ken Swartz
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
+@Singleton
 public final class JamStatus implements AcquisitionStatus, QuerySortMode {
 
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
 
-	/**
-	 * The one instance of JamStatus.
-	 */
-	static private final JamStatus INSTANCE = new JamStatus();
-
-	/**
-	 * Return the one instance of this class, creating it if necessary.
-	 * 
-	 * @return the only instance of this class
-	 */
-	static public JamStatus getSingletonInstance() {
-		return INSTANCE;
-	}
-
 	private transient AcquisitionStatus acqStatus;
 
 	private Nameable currentGroup;
-
-	private JFrame frame;
 
 	private File openFile = null;
 
@@ -48,11 +33,8 @@ public final class JamStatus implements AcquisitionStatus, QuerySortMode {
 
 	private transient String sortName = "";
 
-	/**
-	 * Never meant to be called by outside world.
-	 */
-	private JamStatus() {
-		super();
+	protected JamStatus() {
+		// needed for dependency injection
 	}
 
 	/**
@@ -94,17 +76,6 @@ public final class JamStatus implements AcquisitionStatus, QuerySortMode {
 	public Nameable getCurrentGroup() {
 		synchronized (this) {
 			return currentGroup;
-		}
-	}
-
-	/**
-	 * Get the application frame.
-	 * 
-	 * @return the frame of the current Jam application
-	 */
-	public JFrame getFrame() {
-		synchronized (this) {
-			return frame;
 		}
 	}
 
@@ -192,18 +163,6 @@ public final class JamStatus implements AcquisitionStatus, QuerySortMode {
 	public void setCurrentGroup(final Nameable group) {
 		synchronized (this) {
 			currentGroup = group;
-		}
-	}
-
-	/**
-	 * Set the application frame.
-	 * 
-	 * @param window
-	 *            the frame of the current Jam application
-	 */
-	public void setFrame(final JFrame window) {
-		synchronized (this) {
-			frame = window;
 		}
 	}
 

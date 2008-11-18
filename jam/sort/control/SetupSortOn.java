@@ -3,6 +3,7 @@ package jam.sort.control;
 import static jam.global.GoodThread.State.STOP;
 import static java.util.logging.Level.SEVERE;
 import static javax.swing.SwingConstants.RIGHT;
+import injection.GuiceInjector;
 import jam.comm.CommunicationsException;
 import jam.comm.FrontEndCommunication;
 import jam.comm.ScalerCommunication;
@@ -35,6 +36,7 @@ import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -113,12 +115,13 @@ public final class SetupSortOn extends AbstractSetup {
 	private transient final JTextField textPathHist, textPathData, textPathLog;
 
 	@Inject
-	private SetupSortOn(final ConsoleLog console) {
+	private SetupSortOn(final ConsoleLog console, final JFrame frame,
+			final RunControl runControl) {
 		super("Setup Online");
 		initCheckLock();
 		initDiskCheckbox();
 		readProperties();
-		runControl = RunControl.getInstance();
+		this.runControl = runControl;
 		consoleLog = console;
 		dialog.setResizable(false);
 		dialog.setLocation(20, 50);
@@ -204,11 +207,11 @@ public final class SetupSortOn extends AbstractSetup {
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
-		bbrowseh = new PathBrowseButton(histFolder, textPathHist);
+		bbrowseh = new PathBrowseButton(histFolder, textPathHist, frame);
 		pBrowse.add(bbrowseh);
-		bbrowsed = new PathBrowseButton(dataFolder, textPathData);
+		bbrowsed = new PathBrowseButton(dataFolder, textPathData, frame);
 		pBrowse.add(bbrowsed);
-		bbrowsel = new PathBrowseButton(logDirectory, textPathLog);
+		bbrowsel = new PathBrowseButton(logDirectory, textPathLog, frame);
 		pBrowse.add(bbrowsel);
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		/* panel for buttons */
@@ -302,7 +305,7 @@ public final class SetupSortOn extends AbstractSetup {
 			}
 
 			/* lock setup so fields can't be edited */
-			if (STATUS.canSetup()) {
+			if (GuiceInjector.getJamStatus().canSetup()) {
 				setup(dispose);
 			} else {
 				throw new JamException("Can't setup sorting, mode locked ");
@@ -397,7 +400,7 @@ public final class SetupSortOn extends AbstractSetup {
 		} else {
 			name = sortRoutine.getClass().getName();
 		}
-		STATUS.setSortMode(sortMode, name);
+		GuiceInjector.getJamStatus().setSortMode(sortMode, name);
 		bbrowsef.setEnabled(notlock && btnSpecifyPath.isSelected());
 		checkLock.setSelected(lock);
 	}

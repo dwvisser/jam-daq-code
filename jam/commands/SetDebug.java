@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.comm.CommunicationPreferences;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
@@ -26,7 +27,7 @@ final class SetDebug extends AbstractSetBooleanPreference implements Observer {
 	}
 
 	private void enable() {
-		final QuerySortMode mode = STATUS.getSortMode();
+		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
 		setEnabled(mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK);
 	}
 

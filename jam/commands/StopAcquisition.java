@@ -3,9 +3,9 @@
  */
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
-import jam.sort.control.RunControl;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -17,22 +17,24 @@ import javax.swing.Icon;
  * Stop data acquisition.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Jun 7, 2004
+ * @version June 7, 2004
  */
 final class StopAcquisition extends AbstractCommand implements Observer {
 
-	StopAcquisition(){
+	StopAcquisition() {
 		super("stop");
-	    final Icon iPause = loadToolbarIcon("jam/ui/Pause.png");
-	    putValue(Action.SMALL_ICON, iPause);
-		putValue(Action.SHORT_DESCRIPTION, "Pause data acquisition.");	    
+		final Icon iPause = loadToolbarIcon("jam/ui/Pause.png");
+		putValue(Action.SMALL_ICON, iPause);
+		putValue(Action.SHORT_DESCRIPTION, "Pause data acquisition.");
 		enable();
 	}
-	
+
+	@Override
 	protected void execute(final Object[] cmdParams) {
-		RunControl.getInstance().stopAcq();
+		GuiceInjector.getRunControl().stopAcq();
 	}
 
+	@Override
 	protected void executeParse(final String[] cmdTokens) {
 		execute(null);
 	}
@@ -42,8 +44,7 @@ final class StopAcquisition extends AbstractCommand implements Observer {
 	}
 
 	private void enable() {
-		final QuerySortMode mode=STATUS.getSortMode();
-		setEnabled(mode == SortMode.ONLINE_DISK || 
-		mode == SortMode.ON_NO_DISK);
+		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
+		setEnabled(mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK);
 	}
 }

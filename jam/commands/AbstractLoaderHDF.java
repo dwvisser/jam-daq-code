@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.DataBase;
 import jam.data.Group;
@@ -36,7 +37,7 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
 
 	AbstractLoaderHDF() {
 		super();
-		final Frame frame = STATUS.getFrame();
+		final Frame frame = GuiceInjector.getFrame();
 		hdfio = new HDFIO(frame);
 	}
 
@@ -55,7 +56,7 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
 			final JFileChooser jfile = new JFileChooser(HDFIO
 					.getLastValidFile());
 			jfile.setFileFilter(new HDFileFilter(true));
-			final int option = jfile.showOpenDialog(STATUS.getFrame());
+			final int option = jfile.showOpenDialog(GuiceInjector.getFrame());
 			/* Don't do anything if it was cancel. */
 			if (option == JFileChooser.APPROVE_OPTION
 					&& jfile.getSelectedFile() != null) {
@@ -88,7 +89,8 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
 		 * histogram.
 		 */
 		if (loadGroup.histograms.getList().size() > 0) {
-			final Nameable nameable = STATUS.getCurrentGroup();
+			final Nameable nameable = GuiceInjector.getJamStatus()
+					.getCurrentGroup();
 			if (DataBase.getInstance().isValid(nameable)) {
 				final Group group = (Group) nameable;
 				final List<AbstractHistogram> histList = group.histograms

@@ -1,7 +1,8 @@
 package jam.io.control;
 
-import jam.data.Group;
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
+import jam.data.Group;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -70,7 +71,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();;
 
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();;
+	private static final JamStatus STATUS = GuiceInjector.getJamStatus();
 
 	/**
 	 * Constructs an object which uses a dialog to open a selected histogram out
@@ -230,8 +231,8 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 			STATUS.setCurrentGroup(firstGroup);
 			/* Set the current histogram to the first opened histogram. */
 			if (firstGroup.histograms.getList().size() > 0) {
-				final AbstractHistogram firstHist = firstGroup.histograms.getList()
-						.get(0);
+				final AbstractHistogram firstHist = firstGroup.histograms
+						.getList().get(0);
 				SelectionTree.setCurrentHistogram(firstHist);
 				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 						firstHist);

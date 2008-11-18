@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.CommandListenerException;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
@@ -30,6 +31,7 @@ final class SaveGatesCmd extends AbstractCommand {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 * @see java.io.File
 	 */
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		File file = null;
 		if (cmdParams != null && cmdParams.length > 0) {
@@ -39,7 +41,7 @@ final class SaveGatesCmd extends AbstractCommand {
 	}
 
 	private void saveGates(final File file) {
-		final Frame frame = STATUS.getFrame();
+		final Frame frame = GuiceInjector.getFrame();
 		final HDFIO hdfio = new HDFIO(frame);
 		if (file == null) { // No file given
 			final JFileChooser jfile = new JFileChooser(HDFIO
@@ -60,11 +62,12 @@ final class SaveGatesCmd extends AbstractCommand {
 	 * Save to an hdf file.
 	 * 
 	 * @param cmdTokens
-	 *            empty array or <code>null</code> to use a file dialog, or
-	 *            the name of a <code>File</code> as the first element
+	 *            empty array or <code>null</code> to use a file dialog, or the
+	 *            name of a <code>File</code> as the first element
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 * @see java.io.File
 	 */
+	@Override
 	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
 		if (cmdTokens == null || cmdTokens.length == 0) {

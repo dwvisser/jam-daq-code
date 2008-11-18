@@ -1,8 +1,9 @@
 package jam.commands;
 
+import injection.GuiceInjector;
+import jam.data.AbstractHistogram;
 import jam.data.DataUtility;
 import jam.data.Group;
-import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
@@ -36,8 +37,9 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 	 */
 	@Override
 	protected void execute(final Object[] cmdParams) {
-		final JFrame frame = STATUS.getFrame();
-		final AbstractHistogram hist = (AbstractHistogram) SelectionTree.getCurrentHistogram();
+		final JFrame frame = GuiceInjector.getFrame();
+		final AbstractHistogram hist = (AbstractHistogram) SelectionTree
+				.getCurrentHistogram();
 		final String name = hist.getFullName().trim();
 		final Group.Type type = DataUtility.getGroup(hist).getType();
 		/* Cannot delete sort histograms */

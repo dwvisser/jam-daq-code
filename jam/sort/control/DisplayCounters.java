@@ -1,5 +1,6 @@
 package jam.sort.control;
 
+import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -34,7 +35,7 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 
 	static private DisplayCounters instance = null;
 
-	private final static JamStatus STATUS = JamStatus.getSingletonInstance();
+	private final static JamStatus STATUS = GuiceInjector.getJamStatus();
 
 	/**
 	 * @return the only instance of this class
@@ -86,7 +87,7 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 	private transient AbstractStorageDaemon storeDaemon;
 
 	private DisplayCounters() {
-		super(STATUS.getFrame(), "Buffer Counters", false);
+		super(GuiceInjector.getFrame(), "Buffer Counters", false);
 		final int xpos = 20;
 		final int ypos = 50;
 		final int maingap = 10;

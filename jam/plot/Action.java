@@ -21,9 +21,10 @@ import static jam.plot.PlotCommands.ZOOMHORZ;
 import static jam.plot.PlotCommands.ZOOMIN;
 import static jam.plot.PlotCommands.ZOOMOUT;
 import static jam.plot.PlotCommands.ZOOMVERT;
+import injection.GuiceInjector;
 import jam.data.AbstractHist1D;
-import jam.data.DataUtility;
 import jam.data.AbstractHistogram;
+import jam.data.DataUtility;
 import jam.data.peaks.GaussianConstants;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -294,7 +295,8 @@ final class Action {
 		final double count;
 		final int xch, ych;
 		/* check that a histogram is defined */
-		final AbstractHistogram hist = (AbstractHistogram) SelectionTree.getCurrentHistogram();
+		final AbstractHistogram hist = (AbstractHistogram) SelectionTree
+				.getCurrentHistogram();
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
 		synchronized (cursorBin) {
 			xch = cursorBin.getX();
@@ -342,12 +344,13 @@ final class Action {
 		if (!hist.isEmpty()) {
 			final double dNum = hist.get(0);
 			final int num = (int) dNum;
-			final AbstractHistogram histogram = AbstractHistogram.getHistogram(num);
+			final AbstractHistogram histogram = AbstractHistogram
+					.getHistogram(num);
 			if (histogram == null) {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);
 				LOGGER.severe("There is no histogram numbered " + num + ".");
 			} else {
-				final JamStatus status = JamStatus.getSingletonInstance();
+				final JamStatus status = GuiceInjector.getJamStatus();
 				SelectionTree.setCurrentHistogram(histogram);
 				status.setCurrentGroup(DataUtility.getGroup(histogram));
 				textOut.messageOut(Integer.toString(num) + " ",
@@ -619,7 +622,8 @@ final class Action {
 		final String intro = "Goto (click on spectrum or type the ";
 		final char leftParen = ')';
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
-		final AbstractHistogram hist = (AbstractHistogram) SelectionTree.getCurrentHistogram();
+		final AbstractHistogram hist = (AbstractHistogram) SelectionTree
+				.getCurrentHistogram();
 		if (commandPresent) {
 			if (clicks.isEmpty()) {
 				goNoClicks(currentPlot, hist);
@@ -876,7 +880,8 @@ final class Action {
 	@SuppressWarnings(UNUSED)
 	private void netarea() {// NOPMD
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
-		final AbstractHistogram hist = (AbstractHistogram) SelectionTree.getCurrentHistogram();
+		final AbstractHistogram hist = (AbstractHistogram) SelectionTree
+				.getCurrentHistogram();
 		final int nclicks = clicks.size();
 		if (!commandPresent) {// NOPMD
 			cursorCommand = true;
@@ -951,7 +956,8 @@ final class Action {
 		final boolean areHists = !hist.isEmpty();
 		for (double dNum : hist) {
 			final int num = (int) dNum;
-			final AbstractHistogram histogram = AbstractHistogram.getHistogram(num);
+			final AbstractHistogram histogram = AbstractHistogram
+					.getHistogram(num);
 			if (histogram == null) {
 				LOGGER.warning("There is no histogram numbered " + num + ".");
 			} else {
@@ -1058,7 +1064,8 @@ final class Action {
 			textOut.messageOut("Rebin ", MessageHandler.NEW);
 		}
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
-		final AbstractHistogram hist = (AbstractHistogram) SelectionTree.getCurrentHistogram();
+		final AbstractHistogram hist = (AbstractHistogram) SelectionTree
+				.getCurrentHistogram();
 		if (!parameters.isEmpty()) {
 			final double binWidth = parameters.get(0);
 			if (binWidth >= 1.0 && binWidth < hist.getSizeX()) {

@@ -1,7 +1,7 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
-import jam.global.BroadcastUtilities;
 
 /**
  * Command for scalers
@@ -34,7 +34,7 @@ public final class ScalersCmd extends AbstractCommand {
 		if (param == READ) {
 			readScalers();
 		} else if (param == ZERO) {
-			BroadcastUtilities.zeroScalers();
+			GuiceInjector.getBroadcastUtilitities().zeroScalers();
 		} else {
 			LOGGER
 					.severe("Incomplete command: need 'scaler zero' or 'scaler read'.");
@@ -56,7 +56,7 @@ public final class ScalersCmd extends AbstractCommand {
 	 * Does the scaler reading.
 	 */
 	private void readScalers() {
-		if (STATUS.isOnline()) {
+		if (GuiceInjector.getJamStatus().isOnline()) {
 			BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
 		}
 	}

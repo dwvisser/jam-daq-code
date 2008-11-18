@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.data.DataBase;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
@@ -29,8 +30,9 @@ public class DeleteGroup extends AbstractCommand {
 	 */
 	@Override
 	protected void execute(final Object[] cmdParams) throws CommandException {
-		final JFrame frame = STATUS.getFrame();
-		final Nameable nameable = STATUS.getCurrentGroup();
+		final JFrame frame = GuiceInjector.getFrame();
+		final Nameable nameable = GuiceInjector.getJamStatus()
+				.getCurrentGroup();
 		if (!DataBase.getInstance().isValid(nameable)) {
 			LOGGER.severe("Need to select a group.");
 			return;

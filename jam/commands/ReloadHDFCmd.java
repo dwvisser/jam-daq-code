@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Group;
 import jam.data.SortGroupGetter;
@@ -58,7 +59,7 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 	}
 
 	private void enable() {
-		final QuerySortMode mode = STATUS.getSortMode();
+		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
 		final boolean online = mode == SortMode.ONLINE_DISK
 				|| mode == SortMode.ON_NO_DISK;
 		final boolean offline = mode == SortMode.OFFLINE;
@@ -71,7 +72,7 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 		/* Set to sort group. */
 		final Group currentGroup = SORT_GROUP_GETTER.getSortGroup();
 		if (currentGroup != null) {
-			STATUS.setCurrentGroup(currentGroup);
+			GuiceInjector.getJamStatus().setCurrentGroup(currentGroup);
 			/* Set the current histogram to the first opened histogram. */
 			if (currentGroup.histograms.getList().size() > 0) {
 				firstHist = currentGroup.histograms.getList().get(0);

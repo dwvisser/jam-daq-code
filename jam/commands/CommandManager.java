@@ -31,8 +31,6 @@ public final class CommandManager implements CommandListener, ActionCreator {
 	private static final Logger LOGGER = Logger.getLogger(CommandManager.class
 			.getPackage().getName());
 
-	private static final Commandable NO_COMMAND = new NoCommand();
-
 	private transient final CommandMap commandMap = new CommandMap(this);
 
 	/**
@@ -73,7 +71,7 @@ public final class CommandManager implements CommandListener, ActionCreator {
 		if (exists) {
 			final Class<? extends Commandable> cmdClass = commandMap
 					.get(strCmd);
-			currentCom = NO_COMMAND;
+			currentCom = new NoCommand();
 			final boolean created = INSTANCES.containsKey(strCmd);
 			if (created) {
 				currentCom = INSTANCES.get(strCmd);
