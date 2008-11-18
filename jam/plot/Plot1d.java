@@ -1,9 +1,9 @@
 package jam.plot;
 
 import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
-import jam.data.AbstractHistogram;
 import jam.data.HistogramType;
 import jam.plot.color.PlotColorMap;
 import jam.util.NumberUtilities;
@@ -518,27 +518,29 @@ final class Plot1d extends AbstractPlot {
 	 */
 	@Override
 	public void paintHistogram(final Graphics graphics) {
-		final AbstractHistogram plotHist = getHistogram();
+		final AbstractHistogram plotHist = this.getHistogram();
 		if (plotHist.getDimensionality() == 1) {
-			if (getBinWidth() > plotHist.getSizeX()) {
-				setBinWidth(1.0);
-				warning("Bin width > hist size, so setting bin width back to 1.");
+			if (this.getBinWidth() > plotHist.getSizeX()) {
+				this.setBinWidth(1.0);
+				this
+						.warning("Bin width > hist size, so setting bin width back to 1.");
 			}
 			graphics.setColor(colorMap.getHistogram());
-			painter.drawHist(counts, getBinWidth());
-			if (autoPeakFind) {
-				painter.drawPeakLabels(((AbstractHist1D) plotHist).findPeaks(
-						sensitivity, width, pfcal));
+			this.painter.drawHist(counts, getBinWidth());
+			if (Plot1d.autoPeakFind) {
+				this.painter.drawPeakLabels(((AbstractHist1D) plotHist)
+						.findPeaks(Plot1d.sensitivity, Plot1d.width,
+								Plot1d.pfcal));
 			}
 			/* draw ticks after histogram so they are on top */
-			graphics.setColor(colorMap.getForeground());
-			paintTextAndTicks(plotHist);
+			graphics.setColor(this.colorMap.getForeground());
+			this.paintTextAndTicks(plotHist);
 			final String axisLabelX = plotHist.getLabelX();
-			painter.drawAxisLabel(axisLabelX == null ? X_LABEL_1D : axisLabelX,
-					javax.swing.SwingConstants.BOTTOM);
+			this.painter.drawAxisLabel(axisLabelX == null ? Plot1d.X_LABEL_1D
+					: axisLabelX, javax.swing.SwingConstants.BOTTOM);
 			final String axisLabelY = plotHist.getLabelY();
-			painter.drawAxisLabel(axisLabelY == null ? Y_LABEL_1D : axisLabelY,
-					javax.swing.SwingConstants.LEFT);
+			this.painter.drawAxisLabel(axisLabelY == null ? Plot1d.Y_LABEL_1D
+					: axisLabelY, javax.swing.SwingConstants.LEFT);
 		}
 	}
 

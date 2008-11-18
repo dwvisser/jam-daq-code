@@ -1,13 +1,11 @@
 package jam.script;
 
-import jam.JamMain;
 import jam.commands.CommandManager;
 import jam.commands.CommandNames;
 import jam.data.Warehouse;
 import jam.data.control.HistogramZero;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.JamStatus;
 import jam.global.RunState;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
@@ -25,6 +23,10 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JFrame;
+
+import com.google.inject.Inject;
 
 /**
  * Class which exposes an API for scripting offline sorting sessions. Using this
@@ -59,40 +61,56 @@ public final class Session implements Observer {
 
 	private static final String OUTSTREAM = "\tout: ";
 
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
-
 	private transient final File base;
 
 	private transient boolean filesGiven = false;
 
-	private transient HDFIO hdfio;
+	private transient final HDFIO hdfio;
 
 	private transient boolean isSetup = false;
 
-	private transient final JamMain jam;
-
 	private transient final Object lockObject = new Object();
 
-	private transient RunControl runControl;
+	private transient final RunControl runControl;
 
-	private transient SetupSortOff setupSortOffline;
+	private transient final SetupSortOff setupSortOffline;
 
-	private transient SetupSortOn setupSortOnline;
+	private transient final SetupSortOn setupSortOnline;
 
-	private transient SortControl sortControl;
+	private transient final SortControl sortControl;
 
 	private transient RunState state = RunState.NO_ACQ;
+
+	private transient final JFrame frame;
 
 	/**
 	 * Creates an instance, of which the user then invokes the methods to script
 	 * an offline sorting session. A non-trivial side-effect of invoking this
 	 * constructor is that an instance of Jam is started up in the background.
+	 * 
+	 * @param sortOffline
+	 *            sort offline setup dialog
+	 * @param sortOnline
+	 *            sort online setup dialog
+	 * @param sortControl
+	 *            offline sort control
+	 * @param runControl
+	 *            online run control
+	 * @param hdfio
+	 *            HDF I/O
 	 */
-	public Session() {
+	@Inject
+	protected Session(final JFrame frame, final SetupSortOff sortOffline,
+			final SetupSortOn sortOnline, final SortControl sortControl,
+			final RunControl runControl, final HDFIO hdfio) {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
-		jam = JamMain.getInstance(false);
-		initFields();
+		this.frame = frame;
+		this.setupSortOffline = sortOffline;
+		this.setupSortOnline = sortOnline;
+		this.sortControl = sortControl;
+		this.runControl = runControl;
+		this.hdfio = hdfio;
 		base = new File(System.getProperty("user.dir"));
 	}
 
@@ -234,7 +252,7 @@ public final class Session implements Observer {
 	 * Hide Jam's graphical interface.
 	 */
 	public void hideJam() {
-		jam.setVisible(false);
+		this.frame.setVisible(false);
 	}
 
 	/**
@@ -395,7 +413,7 @@ public final class Session implements Observer {
 	 * 
 	 */
 	public void showJam() {
-		jam.setVisible(true);
+		this.frame.setVisible(true);
 	}
 
 	/**
@@ -512,13 +530,5 @@ public final class Session implements Observer {
 		final String[] read = { "read" };
 		CommandManager.getInstance().performParseCommand(CommandNames.SCALERS,
 				read);
-	}
-
-	private void initFields() {
-		setupSortOffline = SetupSortOff.getInstance();
-		setupSortOnline = SetupSortOn.getInstance();
-		sortControl = SortControl.getInstance();
-		runControl = RunControl.getInstance();
-		hdfio = new HDFIO(STATUS.getFrame());
 	}
 }

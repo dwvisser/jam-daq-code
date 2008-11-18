@@ -1,8 +1,9 @@
 package test.sort;
 
 import static org.junit.Assert.assertEquals;
-import jam.data.HistInt1D;
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
+import jam.data.HistInt1D;
 import jam.script.Session;
 import jam.sort.stream.YaleCAEN_InputStream;
 import jam.sort.stream.YaleInputStream;
@@ -41,7 +42,7 @@ public class SortOfflineTest {// NOPMD
 	@Before
 	public void setUp() {
 		if (null == session) {
-			session = new Session();
+			session = GuiceInjector.getSession();
 		}
 	}
 

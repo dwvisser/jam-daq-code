@@ -4,9 +4,9 @@ import static jam.plot.PlotPrefs.DISPLAY_LABELS;
 import static jam.plot.PlotPrefs.ENABLE_SCROLLING;
 import static jam.plot.PlotPrefs.PREFS;
 import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
 import jam.data.DataUtility;
 import jam.data.Gate;
-import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandFinder;
@@ -29,6 +29,8 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
 import javax.swing.JPanel;
+
+import com.google.inject.Inject;
 
 /**
  * This class is a display routine for plots. It is implemented by
@@ -81,6 +83,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param finder
 	 *            finds commands
 	 */
+	@Inject
 	public PlotDisplay(final Console console, final CommandFinder finder) {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);

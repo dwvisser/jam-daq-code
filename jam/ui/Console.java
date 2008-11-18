@@ -179,8 +179,8 @@ public class Console extends JPanel {
 			final StringBuilder buffer = new StringBuilder();
 			buffer.append('\"').append(cmd)
 					.append("\" is an invalid command. ");
-			final Collection<String> offer = commandFinder.getSimilar(
-					cmd, true);
+			final Collection<String> offer = commandFinder
+					.getSimilar(cmd, true);
 			if (!offer.isEmpty()) {
 				buffer.append("Maybe you meant ");
 				if (offer.size() > 1) {

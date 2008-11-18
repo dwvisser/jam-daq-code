@@ -16,7 +16,7 @@ public final class Factory {
 
 	/**
 	 * @param packageName
-	 *            package name for logger config
+	 *            package name for logger configuration
 	 * @return a new console
 	 */
 	public static Console createConsole(final String packageName) {

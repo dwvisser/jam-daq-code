@@ -1,5 +1,6 @@
 package help.sortfiles;
 
+import injection.GuiceInjector;
 import jam.script.Session;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
@@ -18,7 +19,7 @@ public final class PreSort {
 
 	private PreSort(final String target, final int angle) {
 		super();
-		final Session scripter = new Session();
+		final Session scripter = GuiceInjector.getSession();
 		final File cpath = scripter.defineFile("");
 		final Class<? extends AbstractEventInputStream> inStream = YaleCAEN_InputStream.class;
 		final Class<? extends AbstractEventOutputStream> outStream = YaleOutputStream.class;

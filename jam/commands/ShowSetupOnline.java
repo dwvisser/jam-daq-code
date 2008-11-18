@@ -3,9 +3,9 @@
  */
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
-import jam.sort.control.SetupSortOn;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -16,20 +16,19 @@ import java.util.Observer;
  * @version Jun 4, 2004
  */
 final class ShowSetupOnline extends AbstractShowDialog implements Observer {
-	
-	ShowSetupOnline(){
+
+	ShowSetupOnline() {
 		super("Online sorting\u2026");
-		dialog=SetupSortOn.getInstance().getDialog();
+		dialog = GuiceInjector.getSetupSortOn().getDialog();
 		enable();
 	}
 
 	private void enable() {
-		final QuerySortMode mode=STATUS.getSortMode();
-		setEnabled(!(mode == SortMode.OFFLINE || 
-		mode == SortMode.REMOTE));
+		final QuerySortMode mode = STATUS.getSortMode();
+		setEnabled(!(mode == SortMode.OFFLINE || mode == SortMode.REMOTE));
 	}
 
-	public void update(final Observable observe, final Object obj){
+	public void update(final Observable observe, final Object obj) {
 		enable();
 	}
 }

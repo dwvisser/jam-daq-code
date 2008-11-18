@@ -9,11 +9,9 @@ import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.plot.PlotDisplay;
-import jam.sort.control.SetupSortOn;
 import jam.ui.Console;
 import jam.ui.SelectionTree;
 import jam.ui.SummaryTable;
-import jam.ui.Utility;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -27,6 +25,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Launcher and main window for Jam.
@@ -35,100 +37,66 @@ import javax.swing.SwingUtilities;
  * @author Ken Swartz
  * @since JDK1.1
  */
-public final class JamMain extends JFrame {
+@Singleton
+public final class JamInitialization {
 
-	/**
-	 * Message output and text input.
-	 */
-	private static final Console console;
-
-	private static final Logger LOGGER;
-
-	static {
-		Utility.setLookAndFeel();
-		final String packageName = JamMain.class.getPackage().getName();
-		LOGGER = Logger.getLogger(packageName);
-		console = jam.ui.Factory.createConsole(packageName);
-	}
-
-	/**
-	 * Main method that is run to start up full Jam process
-	 * 
-	 * @param args
-	 *            not used currently
-	 */
-	public static void main(final String args[]) {
-		new JamMain(true);
-	}
-
+	private static final Logger LOGGER = Logger
+			.getLogger(JamInitialization.class.getPackage().getName());
 	/**
 	 * Configuration information for Jam.
 	 */
 	private transient final JamProperties properties;
 
-	/**
-	 * Overall status of Jam.
-	 */
-	private transient final JamStatus status = JamStatus.getSingletonInstance();
-
 	private transient final SummaryTable summaryTable;
 
-	private static JamMain instance;
-
-	private static Object staticLock = new Object();
+	private transient final JFrame frame;
 
 	/**
-	 * Returns the singleton instance.
-	 * 
-	 * @param showGUI
-	 *            whether to have the window visible when returned
-	 * @return the singleton instance
+	 * @param frame
+	 *            the GUI frame
+	 * @param status
+	 *            global status
+	 * @param console
+	 *            text console
+	 * @param properties
+	 *            accessor for Jam's properties files
+	 * @param plotDisplay
+	 *            plot display internal frame
+	 * @param summaryTable
+	 *            displays summary statistics
+	 * @param aars
+	 *            injected by Guice, but don't need to do anything with it
+	 *            because it registers itself with the broadcaster
+	 * @param selectTree
+	 *            selection tree
+	 * @param broadcaster
+	 *            handles application-wide events
 	 */
-	public static JamMain getInstance(final boolean showGUI) {
-		synchronized (staticLock) {
-			if (null == instance) {
-				instance = new JamMain(showGUI);
-			} else {
-				instance.setVisible(showGUI);
-			}
-		}
-		return instance;
-	}
+	@Inject
+	public JamInitialization(final JFrame frame, final JamStatus status,
+			final Console console, final JamProperties properties,
+			final PlotDisplay plotDisplay, final SummaryTable summaryTable,
+			final AcquisitionAndRunState aars, final SelectionTree selectTree,
+			final Broadcaster broadcaster) {
+		this.frame = frame;
+		this.properties = properties;
+		status.setFrame(this.frame);
+		this.summaryTable = summaryTable;
+		broadcaster.addObserver(aars);
 
-	@Override
-	public void setVisible(final boolean show) {
-		super.setVisible(show);
-		status.setShowGUI(show);
-	}
-
-	private JamMain(final boolean showGUI) {
-		super("Jam");
-		status.setShowGUI(showGUI);
-		showSplashScreen(showGUI);
-
-		/* Application initialization */
-		properties = new JamProperties(); // class that has properties
-		status.setFrame(this);
-
-		/* this object rooted by Broadcaster and JamStatus */
-		new AcquisitionAndRunState(this);
 		/* class to distribute events to all listeners */
 		/* Create main window GUI */
 		loadIcon();
-		final Container contents = getContentPane();
+		final Container contents = this.frame.getContentPane();
 		contents.setLayout(new BorderLayout());
 		/* Output/Input text console */
 		LOGGER.info("Welcome to Jam v" + Version.getInstance().getName());
-		if (!SetupSortOn.exists()) {
-			SetupSortOn.createInstance(console.getLog());
-		}
+
+		/* For now, initializing ToolBar depends on status having the frame. */
 		final ToolBar jamToolBar = new ToolBar();
 		contents.add(jamToolBar, BorderLayout.NORTH);
 		/* histogram displayer */
-		final PlotDisplay plotDisplay = new PlotDisplay(console, CommandManager
-				.getInstance().getCommandFinder());
 		PlotDisplay.setDisplay(plotDisplay);
-		summaryTable = new SummaryTable();
 		SummaryTable.setTable(summaryTable);
 		final Display display = new Display(plotDisplay, summaryTable);
 		final JSplitPane splitCenter = new JSplitPane(
@@ -136,17 +104,17 @@ public final class JamMain extends JFrame {
 		splitCenter.setResizeWeight(0.9);
 		/* fraction of resize space that goes to display */
 		contents.add(splitCenter, BorderLayout.CENTER);
-		setJMenuBar(MenuBar.getMenuBar());
+		this.frame.setJMenuBar(MenuBar.getMenuBar());
 		/* Histogram selection tree */
-		final SelectionTree selectTree = new SelectionTree();
 		contents.add(selectTree, BorderLayout.WEST);
 		final JSplitPane splitTree = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT, true, selectTree, splitCenter);
 		splitTree.setResizeWeight(0.1);
 		contents.add(splitTree, BorderLayout.CENTER);
 		/* operations to close window */
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowAdapter() {
+		this.frame
+				.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		this.frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(final WindowEvent event) {
 				exit();
@@ -155,6 +123,18 @@ public final class JamMain extends JFrame {
 			@Override
 			public void windowClosing(final WindowEvent event) {
 				exit();
+			}
+
+			private void exit() {
+				final Action exit = CommandManager.getInstance().getAction(
+						CommandNames.EXIT);
+				if (null == exit) {
+					throw new IllegalStateException(
+							"Couldn't find exit action.");
+				}
+
+				final JButton temp = new JButton(exit);
+				temp.doClick();
 			}
 		});
 		/* Initial histograms and setup */
@@ -166,18 +146,6 @@ public final class JamMain extends JFrame {
 		Broadcaster.getSingletonInstance().broadcast(
 				BroadcastEvent.Command.HISTOGRAM_SELECT,
 				initHists.getInitialHist());
-		showMainWindow(showGUI);
-	}
-
-	private void exit() {
-		final Action exit = CommandManager.getInstance().getAction(
-				CommandNames.EXIT);
-		if (null == exit) {
-			throw new IllegalStateException("Couldn't find exit action.");
-		}
-
-		final JButton temp = new JButton();
-		temp.doClick();
 	}
 
 	/**
@@ -186,9 +154,8 @@ public final class JamMain extends JFrame {
 	private void loadIcon() {
 		final ClassLoader loader = Thread.currentThread()
 				.getContextClassLoader();
-		setIconImage((new ImageIcon(loader.getResource("jam/nukeicon.png"))
-				.getImage()));
-
+		this.frame.setIconImage((new ImageIcon(loader
+				.getResource("jam/nukeicon.png")).getImage()));
 	}
 
 	/**
@@ -197,37 +164,22 @@ public final class JamMain extends JFrame {
 	 * @param show
 	 *            true to show GUI
 	 */
-	private void showMainWindow(final boolean show) {
+	protected void showMainWindow() {
 		final int posx = 50;
 		final int posy = 0;
-		setLocation(posx, posy);
-		setResizable(true);
+		this.frame.setLocation(posx, posy);
+		this.frame.setResizable(true);
 		/* Important to initially display in the AWT/Swing thread. */
 		final Runnable showWindow = new Runnable() {
 			public void run() {
-				pack();
-				if (show) {
-					setVisible(true);
-				}
-				/* print out where config files were read from */
+				JamInitialization.this.frame.pack();
+				JamInitialization.this.frame.setVisible(true);
+
+				/* print out where configuration files were read from */
 				properties.outputMessages();
 				summaryTable.repaint();
 			}
 		};
 		SwingUtilities.invokeLater(showWindow);
 	}
-
-	/**
-	 * Show the splash screen
-	 * 
-	 * @param showGUI
-	 *            to to show splash screen
-	 */
-	private void showSplashScreen(final boolean showGUI) {
-		if (showGUI) {
-			final int displayTime = 10000; // milliseconds
-			new SplashWindow(this, displayTime);
-		}
-	}
-
 }

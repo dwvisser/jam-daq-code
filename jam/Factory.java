@@ -1,5 +1,7 @@
 package jam;
 
+import jam.global.JamStatus;
+
 /**
  * Factory methods for jam package.
  * 
@@ -18,6 +20,7 @@ public final class Factory {
 	 * @return help dialog
 	 */
 	public static Help createHelp() {
-		return new Help(new LicenseReader());
+		return new Help(JamStatus.getSingletonInstance().getFrame(),
+				new LicenseReader());
 	}
 }

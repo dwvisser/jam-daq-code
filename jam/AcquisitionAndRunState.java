@@ -2,7 +2,6 @@ package jam;
 
 import jam.global.AcquisitionStatus;
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.RunState;
@@ -12,26 +11,38 @@ import java.awt.Frame;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.inject.Inject;
+
+/**
+ * Updates the frame when run state or acquisition status changes.
+ * 
+ * @author Dale Visser
+ * 
+ */
 final class AcquisitionAndRunState implements Observer {
 	private transient final Frame frame;
 	private RunState runState = RunState.NO_ACQ;
-	private transient final JamStatus status = JamStatus.getSingletonInstance();
+	private transient final JamStatus status;
 
-	AcquisitionAndRunState(final Frame frame) {
+	/**
+	 * @param frame
+	 *            application frame
+	 */
+	@Inject
+	AcquisitionAndRunState(final Frame frame, final JamStatus status) {
 		this.frame = frame;
-		this.status.setAcqisitionStatus(new AcquisitionStatus() {
+		this.status = status;
+		this.status.setAcquisitionStatus(new AcquisitionStatus() {
 			public boolean isAcqOn() {
 				return AcquisitionAndRunState.this.getRunState().isAcqOn();
 			}
 		});
-		final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
-		broadcaster.addObserver(this);
 	}
 
 	/**
 	 * <p>
-	 * Sets run state when taking data online. The run state mostly determints
-	 * the state of control JMenu items. This method uses imformation set by
+	 * Sets run state when taking data online. The run state mostly determines
+	 * the state of control JMenu items. This method uses information set by
 	 * <code>setSortMode()</code>. In addition:
 	 * </p>
 	 * <ul>

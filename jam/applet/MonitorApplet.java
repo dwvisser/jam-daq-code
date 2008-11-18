@@ -13,8 +13,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.net.URL;
@@ -39,8 +37,7 @@ import javax.swing.SwingConstants;
  * @author Ken Swartz
  * @version 0.5
  */
-public class MonitorApplet extends JApplet implements ActionListener,
-		ItemListener, Runnable {
+public class MonitorApplet extends JApplet implements ItemListener, Runnable {
 
 	static private final boolean DEBUG = false;
 
@@ -116,7 +113,6 @@ public class MonitorApplet extends JApplet implements ActionListener,
 		textHost.setColumns(30);
 		textHost.setBackground(Color.white);
 		textHost.setEditable(false);
-		textHost.addActionListener(this);
 		pHost.add(textHost);
 
 		// alarm panel for display dialog
@@ -175,29 +171,7 @@ public class MonitorApplet extends JApplet implements ActionListener,
 	}
 
 	/**
-	 * Receive action frow awt widgets
-	 */
-	public void actionPerformed(final ActionEvent event) {
-		/*
-		 * String incommand; String hostName; String file; URL histogramURL;
-		 * 
-		 * incommand=e.getActionCommand();
-		 * 
-		 * 
-		 * if ((e.getSource()==textHost)) { incommand="link"; }
-		 * 
-		 * try {
-		 * 
-		 * if (incommand=="link"){ hostName=textHost.getText().trim();
-		 * textError.setText("Trying "+hostName); link(hostName); } } catch
-		 * (JamException je) { textError.setText(je.getMessage()); } catch
-		 * (SecurityException se){ textError.setText("Security Exception:
-		 * "+se.getMessage()); }
-		 */
-	}
-
-	/**
-	 * Recieves the inputs from the pull down menus that are choice changes
+	 * Receives the inputs from the pull down menus that are choice changes
 	 * 
 	 * @param itemEvent
 	 *            event from pull down menus

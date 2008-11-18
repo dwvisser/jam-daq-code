@@ -41,6 +41,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 /**
  * Class to setup online sorting. Loads a sort file and creates the daemons:
  * <ul>
@@ -55,41 +58,10 @@ import javax.swing.border.EmptyBorder;
  * @see jam.sort.NetDaemon
  * @see jam.sort.AbstractStorageDaemon
  */
+@Singleton
 public final class SetupSortOn extends AbstractSetup {
 
 	private static SetupSortOn instance = null;
-
-	private static final Object monitor = new Object();
-
-	/**
-	 * Creates the only instance of this class.
-	 * 
-	 * @param console
-	 *            the console to use
-	 */
-	public static void createInstance(final ConsoleLog console) {
-		synchronized (monitor) {
-			if (instance == null) {
-				instance = new SetupSortOn(console);
-			} else {
-				throw new IllegalStateException("Object already created.");
-			}
-		}
-	}
-
-	/**
-	 * Returns the only instance of this class.
-	 * 
-	 * @return the only instance of this class
-	 */
-	public static SetupSortOn getInstance() {
-		synchronized (monitor) {
-			if (instance == null) {
-				throw new IllegalStateException("Object not created yet.");
-			}
-			return instance;
-		}
-	}
 
 	/**
 	 * @return whether the instance exists yet.
@@ -140,6 +112,7 @@ public final class SetupSortOn extends AbstractSetup {
 
 	private transient final JTextField textPathHist, textPathData, textPathLog;
 
+	@Inject
 	private SetupSortOn(final ConsoleLog console) {
 		super("Setup Online");
 		initCheckLock();

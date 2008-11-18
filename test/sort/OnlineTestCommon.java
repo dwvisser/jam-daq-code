@@ -1,6 +1,7 @@
 package test.sort;
 
 import static org.junit.Assert.fail;
+import injection.GuiceInjector;
 import jam.script.Session;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
@@ -32,7 +33,7 @@ public final class OnlineTestCommon {
 	/**
 	 * Scripting object to be used by tests.
 	 */
-	public static Session session = new Session();
+	public static Session session = GuiceInjector.getSession();
 
 	/**
 	 * GUI mock front end application.

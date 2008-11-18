@@ -4,5 +4,7 @@
 	<classpathentry kind="lib" path="jh.jar"/>
 	<classpathentry kind="lib" path="junit-4.3.1.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/jdk1.6.0_07/jre/lib/rt.jar"/>
+	<classpathentry kind="lib" path="guice-1.0.jar"/>
+	<classpathentry kind="lib" path="aopalliance.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

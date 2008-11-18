@@ -33,6 +33,8 @@ import java.util.prefs.Preferences;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import com.google.inject.Inject;
+
 /**
  * Reads and writes HDF files containing spectra, scalers, gates, and additional
  * useful information.
@@ -165,6 +167,7 @@ public final class HDFIO implements DataIO {
 	 * @param parent
 	 *            the parent window
 	 */
+	@Inject
 	public HDFIO(final Frame parent) {
 		super();
 		asyncMonitor = new AsyncProgressMonitor(parent);

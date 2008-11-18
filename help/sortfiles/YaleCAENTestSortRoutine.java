@@ -20,20 +20,8 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 	// -----------------------------------------------
 
 	private static final String NA_I_TDC = "NaI TDC ";
-	// Set VME addresses for modules in VME crate
-	private static final int ADC_BASE_FIRST = 0xfaa00000;
-	private static final int ADC_BASE_SECOND = 0xfa800000;
-	private static final int TDC_BASE = 0xfac00000;
-
-	// Global thresholds for ADC and TDC
-	private static final int THRESHOLDS = 50;
-
-	// Time range for TDC(141 to 1200 ns)
-	private static final int TIME_RANGE = 1200; // ns
 
 	// Number of channels for spectra and per dimension in 2D spectra
-	private static final int SPC_CHANNELS = 4096;
-	private static final int TWO_D_CHANNELS = 512;
 
 	// IDs of signals read in by jam
 	private transient int idnE; // The neutron energy signal
@@ -51,42 +39,11 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 	private transient final int cSciADC[] = new int[5]; // NOPMD
 
 	// Some floating point variables for energies
-	private transient final double eNaIADC[] = new double[16]; // NOPMD
 
-	private transient DataParameter pcenNaI1;
-	private transient DataParameter pcenNaI2;
-	private transient DataParameter pcchNaI1_0;
-	private transient DataParameter pcchNaI2_0;
-	private transient DataParameter pcchNaI1_1;
-	private transient DataParameter pcchNaI2_1;
-	private transient DataParameter pcchNaI1_2;
-	private transient DataParameter pcchNaI2_2;
-	private transient DataParameter pcchNaI1_3;
-	private transient DataParameter pcchNaI2_3;
-	private transient DataParameter pcchNaI1_4;
-	private transient DataParameter pcchNaI2_4;
-	private transient DataParameter pcchNaI1_5;
-	private transient DataParameter pcchNaI2_5;
-	private transient DataParameter pcchNaI1_6;
-	private transient DataParameter pcchNaI2_6;
-	private transient DataParameter pcchNaI1_7;
-	private transient DataParameter pcchNaI2_7;
-	private transient DataParameter pcchNaI1_8;
-	private transient DataParameter pcchNaI2_8;
-	private transient DataParameter pcchNaI1_9;
-	private transient DataParameter pcchNaI2_9;
-	private transient DataParameter pcchNaI1_10;
-	private transient DataParameter pcchNaI2_10;
-	private transient DataParameter pcchNaI1_11;
-	private transient DataParameter pcchNaI2_11;
-	private transient DataParameter pcchNaI1_12;
-	private transient DataParameter pcchNaI2_12;
-	private transient DataParameter pcchNaI1_13;
-	private transient DataParameter pcchNaI2_13;
-	private transient DataParameter pcchNaI1_14;
-	private transient DataParameter pcchNaI2_14;
-	private transient DataParameter pcchNaI1_15;
-	private transient DataParameter pcchNaI2_15;
+	private transient DataParameter pcenNaI1sum;
+	private transient DataParameter pcenNaI2sum;
+	private transient final DataParameter pcchNaI1[] = new DataParameter[16];
+	private transient final DataParameter pcchNaI2[] = new DataParameter[16];
 
 	// -------------------------------------------------
 	// HISTOGRAMS
@@ -130,7 +87,7 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 	// BC523A spectrum gated on 2D capture peak
 	private transient HistInt1D hnE_ETDCGate;
 
-	// BC523A spectrum gated on NaI 477 kev gamma-ray
+	// BC523A spectrum gated on NaI 477 keV gamma-ray
 	private transient HistInt1D hnE_NaIE;
 
 	// ----------------------------------------------------
@@ -225,41 +182,13 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		// ------------------------------------------
 		// Sort parameters
 		// ------------------------------------------
-		pcenNaI1 = createParameter("cenNaI1");
-		pcenNaI2 = createParameter("cenNaI2");
+		pcenNaI1sum = createParameter("cenNaI1");
+		pcenNaI2sum = createParameter("cenNaI2");
 
-		pcchNaI1_0 = createParameter("cchNaI1_0");
-		pcchNaI2_0 = createParameter("cchNaI2_0");
-		pcchNaI1_1 = createParameter("cchNaI1_1");
-		pcchNaI2_1 = createParameter("cchNaI2_1");
-		pcchNaI1_2 = createParameter("cchNaI1_2");
-		pcchNaI2_2 = createParameter("cchNaI2_2");
-		pcchNaI1_3 = createParameter("cchNaI1_3");
-		pcchNaI2_3 = createParameter("cchNaI2_3");
-		pcchNaI1_4 = createParameter("cchNaI1_4");
-		pcchNaI2_4 = createParameter("cchNaI2_4");
-		pcchNaI1_5 = createParameter("cchNaI1_5");
-		pcchNaI2_5 = createParameter("cchNaI2_5");
-		pcchNaI1_6 = createParameter("cchNaI1_6");
-		pcchNaI2_6 = createParameter("cchNaI2_6");
-		pcchNaI1_7 = createParameter("cchNaI1_7");
-		pcchNaI2_7 = createParameter("cchNaI2_7");
-		pcchNaI1_8 = createParameter("cchNaI1_8");
-		pcchNaI2_8 = createParameter("cchNaI2_8");
-		pcchNaI1_9 = createParameter("cchNaI1_9");
-		pcchNaI2_9 = createParameter("cchNaI2_9");
-		pcchNaI1_10 = createParameter("cchNaI1_10");
-		pcchNaI2_10 = createParameter("cchNaI2_10");
-		pcchNaI1_11 = createParameter("cchNaI1_11");
-		pcchNaI2_11 = createParameter("cchNaI2_11");
-		pcchNaI1_12 = createParameter("cchNaI1_12");
-		pcchNaI2_12 = createParameter("cchNaI2_12");
-		pcchNaI1_13 = createParameter("cchNaI1_13");
-		pcchNaI2_13 = createParameter("cchNaI2_13");
-		pcchNaI1_14 = createParameter("cchNaI1_14");
-		pcchNaI2_14 = createParameter("cchNaI2_14");
-		pcchNaI1_15 = createParameter("cchNaI1_15");
-		pcchNaI2_15 = createParameter("cchNaI2_15");
+		for (int i = 0; i < 16; i++) {
+			pcchNaI1[i] = createParameter("cchNaI1_" + i);
+			pcchNaI2[i] = createParameter("cchNaI2_" + i);
+		}
 	}
 
 	private void setupHistograms() {
@@ -269,11 +198,13 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		// y-label)
 		// -----------------------------------------
 
+		final int SPC_CHANNELS = 4096;
 		hnE = createHist1D(SPC_CHANNELS, "Neutron E", "Neutron E Singles");
 		hnPSD = createHist1D(SPC_CHANNELS, "Neutron PSD", "Neutron PSD");
 		hnTDC = createHist1D(SPC_CHANNELS, "Capture Times",
 				"Neutron Capture Peak");
 
+		final int TWO_D_CHANNELS = 512;
 		h2dnEvsPSD = createHist2D(TWO_D_CHANNELS, "E vs PSD",
 				"Neutron E Singles vs PSD", "E", "PSD");
 		h2dnEvsTDC = createHist2D(TWO_D_CHANNELS, "E vs Cap Time",
@@ -327,6 +258,8 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		vmeMap.setScalerInterval(3);
 
 		// Set up time range of TDC
+		final int TDC_BASE = 0xfac00000;
+		final int TIME_RANGE = 1200; // ns
 		vmeMap.setV775Range(TDC_BASE, TIME_RANGE);
 
 		// --------------------------------------------------------------
@@ -335,6 +268,8 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		// args = (slot, base address, channel, threshold channel)
 		// --------------------------------------------------------------
 
+		final int ADC_BASE_FIRST = 0xfaa00000;
+		final int THRESHOLDS = 50;
 		idnE = vmeMap.eventParameter(3, ADC_BASE_FIRST, 14, THRESHOLDS);
 		idnPSD = vmeMap.eventParameter(3, ADC_BASE_FIRST, 13, THRESHOLDS);
 		idnTDC = vmeMap.eventParameter(3, ADC_BASE_FIRST, 12, THRESHOLDS);
@@ -347,6 +282,7 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		}
 
 		// NaI
+		final int ADC_BASE_SECOND = 0xfa800000;
 		for (int i = 0; i < 16; i++) {
 			idNaIADC[i] = vmeMap.eventParameter(5, ADC_BASE_SECOND, i,
 					THRESHOLDS);
@@ -373,115 +309,7 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 			cSciADC[i] = data[idSciADC[i]];
 		}
 
-		// Parameters for energy calibrations
-		final double cenNaI1 = pcenNaI1.getValue();
-		final double cenNaI2 = pcenNaI2.getValue();
-		final double cchNaI1x0 = pcchNaI1_0.getValue();
-		final double cchNaI2x0 = pcchNaI2_0.getValue();
-		final double cchNaI1x1 = pcchNaI1_1.getValue();
-		final double cchNaI2x1 = pcchNaI2_1.getValue();
-		final double cchNaI1x2 = pcchNaI1_2.getValue();
-		final double cchNaI2x2 = pcchNaI2_2.getValue();
-		final double cchNaI1x3 = pcchNaI1_3.getValue();
-		final double cchNaI2x3 = pcchNaI2_3.getValue();
-		final double cchNaI1x4 = pcchNaI1_4.getValue();
-		final double cchNaI2x4 = pcchNaI2_4.getValue();
-		final double cchNaI1x5 = pcchNaI1_5.getValue();
-		final double cchNaI2x5 = pcchNaI2_5.getValue();
-		final double cchNaI1x6 = pcchNaI1_6.getValue();
-		final double cchNaI2x6 = pcchNaI2_6.getValue();
-		final double cchNaI1x7 = pcchNaI1_7.getValue();
-		final double cchNaI2x7 = pcchNaI2_7.getValue();
-		final double cchNaI1x8 = pcchNaI1_8.getValue();
-		final double cchNaI2x8 = pcchNaI2_8.getValue();
-		final double cchNaI1x9 = pcchNaI1_9.getValue();
-		final double cchNaI2x9 = pcchNaI2_9.getValue();
-		final double cchNaI1x10 = pcchNaI1_10.getValue();
-		final double cchNaI2x10 = pcchNaI2_10.getValue();
-		final double cchNaI1x11 = pcchNaI1_11.getValue();
-		final double cchNaI2x11 = pcchNaI2_11.getValue();
-		final double cchNaI1x12 = pcchNaI1_12.getValue();
-		final double cchNaI2x12 = pcchNaI2_12.getValue();
-		final double cchNaI1x13 = pcchNaI1_13.getValue();
-		final double cchNaI2x13 = pcchNaI2_13.getValue();
-		final double cchNaI1x14 = pcchNaI1_14.getValue();
-		final double cchNaI2x14 = pcchNaI2_14.getValue();
-		final double cchNaI1x15 = pcchNaI1_15.getValue();
-		final double cchNaI2x15 = pcchNaI2_15.getValue();
-
-		// Compress Neutron energies by factor of 20 for 2D spectra
-		// Change cnE to enE once parameters have been found.
-		final int calibnE = (int) Math.round(cnE * 0.1);
-		final int calibnPSD = (int) Math.round(cnPSD * 0.1);
-		final int calibnTDC = (int) Math.round(cnTDC * 0.1);
-
-		// Calibrate NaI
-		eNaIADC[0] = ((cenNaI2 - cenNaI1) / (cchNaI2x0 - cchNaI1x0))
-				* cNaIADC[0]
-				+ (cenNaI1 - cchNaI1x0
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x0 - cchNaI1x0)));
-		eNaIADC[1] = ((cenNaI2 - cenNaI1) / (cchNaI2x1 - cchNaI1x1))
-				* cNaIADC[1]
-				+ (cenNaI1 - cchNaI1x1
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x1 - cchNaI1x1)));
-		eNaIADC[2] = ((cenNaI2 - cenNaI1) / (cchNaI2x2 - cchNaI1x2))
-				* cNaIADC[2]
-				+ (cenNaI1 - cchNaI1x2
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x2 - cchNaI1x2)));
-		eNaIADC[3] = ((cenNaI2 - cenNaI1) / (cchNaI2x3 - cchNaI1x3))
-				* cNaIADC[3]
-				+ (cenNaI1 - cchNaI1x3
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x3 - cchNaI1x3)));
-		eNaIADC[4] = ((cenNaI2 - cenNaI1) / (cchNaI2x4 - cchNaI1x4))
-				* cNaIADC[4]
-				+ (cenNaI1 - cchNaI1x4
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x4 - cchNaI1x4)));
-		eNaIADC[5] = ((cenNaI2 - cenNaI1) / (cchNaI2x5 - cchNaI1x5))
-				* cNaIADC[5]
-				+ (cenNaI1 - cchNaI1x5
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x5 - cchNaI1x5)));
-		eNaIADC[6] = ((cenNaI2 - cenNaI1) / (cchNaI2x6 - cchNaI1x6))
-				* cNaIADC[6]
-				+ (cenNaI1 - cchNaI1x6
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x6 - cchNaI1x6)));
-		eNaIADC[7] = ((cenNaI2 - cenNaI1) / (cchNaI2x7 - cchNaI1x7))
-				* cNaIADC[7]
-				+ (cenNaI1 - cchNaI1x7
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x7 - cchNaI1x7)));
-		eNaIADC[8] = ((cenNaI2 - cenNaI1) / (cchNaI2x8 - cchNaI1x8))
-				* cNaIADC[8]
-				+ (cenNaI1 - cchNaI1x8
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x8 - cchNaI1x8)));
-		eNaIADC[9] = ((cenNaI2 - cenNaI1) / (cchNaI2x9 - cchNaI1x9))
-				* cNaIADC[9]
-				+ (cenNaI1 - cchNaI1x9
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x9 - cchNaI1x9)));
-		eNaIADC[10] = ((cenNaI2 - cenNaI1) / (cchNaI2x10 - cchNaI1x10))
-				* cNaIADC[10]
-				+ (cenNaI1 - cchNaI1x10
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x10 - cchNaI1x10)));
-		eNaIADC[11] = ((cenNaI2 - cenNaI1) / (cchNaI2x11 - cchNaI1x11))
-				* cNaIADC[11]
-				+ (cenNaI1 - cchNaI1x11
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x11 - cchNaI1x11)));
-		eNaIADC[12] = ((cenNaI2 - cenNaI1) / (cchNaI2x12 - cchNaI1x12))
-				* cNaIADC[12]
-				+ (cenNaI1 - cchNaI1x12
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x12 - cchNaI1x12)));
-		eNaIADC[13] = ((cenNaI2 - cenNaI1) / (cchNaI2x13 - cchNaI1x13))
-				* cNaIADC[13]
-				+ (cenNaI1 - cchNaI1x13
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x13 - cchNaI1x13)));
-		eNaIADC[14] = ((cenNaI2 - cenNaI1) / (cchNaI2x14 - cchNaI1x14))
-				* cNaIADC[14]
-				+ (cenNaI1 - cchNaI1x14
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x14 - cchNaI1x14)));
-		eNaIADC[15] = ((cenNaI2 - cenNaI1) / (cchNaI2x15 - cchNaI1x15))
-				* cNaIADC[15]
-				+ (cenNaI1 - cchNaI1x15
-						* ((cenNaI2 - cenNaI1) / (cchNaI2x15 - cchNaI1x15)));
-
-		final double eNaISum = sumNaI();
+		final double eNaISum = sumNaI(calculateCalibratedEnergies());
 		// scale NaI sum
 		final int calibNaIsum1d = (int) Math.round(eNaISum * 0.1);
 
@@ -499,27 +327,15 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		incrementScintillator(cSciTAC);
 
 		// Increment the 2D Neutron spectra
+		// Compress Neutron energies by factor of 20 for 2D spectra
+		// Change cnE to enE once parameters have been found.
+		final int calibnE = (int) Math.round(cnE * 0.1);
+		final int calibnPSD = (int) Math.round(cnPSD * 0.1);
+		final int calibnTDC = (int) Math.round(cnTDC * 0.1);
 		h2dnEvsPSD.inc(calibnE, calibnPSD);
 		h2dnEvsTDC.inc(calibnE, calibnTDC);
 
-		// Define timing events for NaI Annulus
-		// do we make it through NaI TDC gates a?
-		final boolean goodTimeNaITDCa = gNaITDCa[0].inGate(cNaITDC[0])
-				|| gNaITDCa[1].inGate(cNaITDC[1])
-				|| gNaITDCa[2].inGate(cNaITDC[2])
-				|| gNaITDCa[3].inGate(cNaITDC[3])
-				|| gNaITDCa[4].inGate(cNaITDC[4])
-				|| gNaITDCa[5].inGate(cNaITDC[5])
-				|| gNaITDCa[6].inGate(cNaITDC[6])
-				|| gNaITDCa[7].inGate(cNaITDC[7])
-				|| gNaITDCa[8].inGate(cNaITDC[8])
-				|| gNaITDCa[9].inGate(cNaITDC[9])
-				|| gNaITDCa[10].inGate(cNaITDC[10])
-				|| gNaITDCa[11].inGate(cNaITDC[11])
-				|| gNaITDCa[12].inGate(cNaITDC[12])
-				|| gNaITDCa[13].inGate(cNaITDC[13])
-				|| gNaITDCa[14].inGate(cNaITDC[14])
-				|| gNaITDCa[15].inGate(cNaITDC[15]);
+		final boolean goodTimeNaITDCa = goodTimeNaITDCa();
 
 		// define veto events for Scintillator
 		// Energy
@@ -548,6 +364,45 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		if (goodTimeNaITDCa && gNaIsum.inGate(calibNaIsum1d)) {
 			hnE_NaIE.inc(cnE);
 		}
+	}
+
+	private double[] calculateCalibratedEnergies() {
+		final double eNaIADC[] = new double[16]; // NOPMD
+		// Parameters for energy calibrations
+		final double cenNaI1 = pcenNaI1sum.getValue();
+		final double cenNaI2 = pcenNaI2sum.getValue();
+		// Calibrate NaI
+		final double diff12 = (cenNaI2 - cenNaI1);
+		for (int i = 0; i < 16; i++) {
+			final double cchNaI1 = pcchNaI1[i].getValue();
+			final double cchNaI2 = pcchNaI2[i].getValue();
+			final double segmentDiff12 = cchNaI2 - cchNaI1;
+			eNaIADC[i] = (diff12 / segmentDiff12) * cNaIADC[i]
+					+ (cenNaI1 - cchNaI1 * (diff12 / segmentDiff12));
+		}
+		return eNaIADC;
+	}
+
+	private boolean goodTimeNaITDCa() {
+		// Define timing events for NaI Annulus
+		// do we make it through NaI TDC gates a?
+		final boolean goodTimeNaITDCa = gNaITDCa[0].inGate(cNaITDC[0])
+				|| gNaITDCa[1].inGate(cNaITDC[1])
+				|| gNaITDCa[2].inGate(cNaITDC[2])
+				|| gNaITDCa[3].inGate(cNaITDC[3])
+				|| gNaITDCa[4].inGate(cNaITDC[4])
+				|| gNaITDCa[5].inGate(cNaITDC[5])
+				|| gNaITDCa[6].inGate(cNaITDC[6])
+				|| gNaITDCa[7].inGate(cNaITDC[7])
+				|| gNaITDCa[8].inGate(cNaITDC[8])
+				|| gNaITDCa[9].inGate(cNaITDC[9])
+				|| gNaITDCa[10].inGate(cNaITDC[10])
+				|| gNaITDCa[11].inGate(cNaITDC[11])
+				|| gNaITDCa[12].inGate(cNaITDC[12])
+				|| gNaITDCa[13].inGate(cNaITDC[13])
+				|| gNaITDCa[14].inGate(cNaITDC[14])
+				|| gNaITDCa[15].inGate(cNaITDC[15]);
+		return goodTimeNaITDCa;
 	}
 
 	private void incrementWithin2Dgates(final int cnE, final int calibnE,
@@ -600,7 +455,7 @@ public class YaleCAENTestSortRoutine extends SortRoutine {
 		hNaIsumE.inc(calibNaIsum1d);
 	}
 
-	private double sumNaI() {
+	private double sumNaI(final double[] eNaIADC) {
 		double eNaISum = 0.0;
 		// Sum NaI energies only if they are within individual NaI gates
 		for (int i = 0; i < 16; i++) {

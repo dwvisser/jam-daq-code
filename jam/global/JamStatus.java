@@ -15,7 +15,7 @@ import javax.swing.JFrame;
  * @author Ken Swartz
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
-public final class JamStatus implements AcquisitionStatus,QuerySortMode{
+public final class JamStatus implements AcquisitionStatus, QuerySortMode {
 
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
@@ -43,8 +43,6 @@ public final class JamStatus implements AcquisitionStatus,QuerySortMode{
 	private File openFile = null;
 
 	private transient final Set<String> overlayNames = new HashSet<String>();
-
-	private boolean showGUI = true;
 
 	private QuerySortMode sortMode = SortMode.NO_SORT;
 
@@ -176,23 +174,12 @@ public final class JamStatus implements AcquisitionStatus,QuerySortMode{
 	}
 
 	/**
-	 * Returns whether a GUI is available.
-	 * 
-	 * @return <code>true</code> if the Jam window is showing
-	 */
-	public boolean isShowGUI() {
-		synchronized (this) {
-			return showGUI;
-		}
-	}
-
-	/**
 	 * Set the acquisition status.
 	 * 
 	 * @param status
 	 *            the current status of the Jam application
 	 */
-	public void setAcqisitionStatus(final AcquisitionStatus status) {
+	public void setAcquisitionStatus(final AcquisitionStatus status) {
 		acqStatus = status;
 	}
 
@@ -244,19 +231,6 @@ public final class JamStatus implements AcquisitionStatus,QuerySortMode{
 	public void setRunState(final RunState runState) {
 		BROADCASTER.broadcast(BroadcastEvent.Command.RUN_STATE_CHANGED,
 				runState);
-	}
-
-	/**
-	 * Set whether GUI components should be suppressed. Used in scripting mode
-	 * to quietly run behind the scenes.
-	 * 
-	 * @param state
-	 *            <code>false</code> if suppressin
-	 */
-	public void setShowGUI(final boolean state) {
-		synchronized (this) {
-			showGUI = state;
-		}
 	}
 
 	/**

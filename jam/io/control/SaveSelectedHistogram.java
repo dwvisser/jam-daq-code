@@ -110,7 +110,8 @@ public final class SaveSelectedHistogram {
 	// dialog.dispose();
 	// }
 	private void loadHistogramList() {
-		final List<AbstractHistogram> histList = AbstractHistogram.getHistogramList();
+		final List<AbstractHistogram> histList = AbstractHistogram
+				.getHistogramList();
 		final String[] histNames = new String[histList.size()];
 		int index = 0;
 		for (AbstractHistogram hist : histList) {
@@ -128,10 +129,11 @@ public final class SaveSelectedHistogram {
 		final HDFIO hdfio = new HDFIO(frame);
 		final List<AbstractHistogram> listSelected = new ArrayList<AbstractHistogram>();
 		File file = null;
-		/* Add selected histgrams to a list. */
+		/* Add selected histograms to a list. */
 		final Object[] selected = listHist.getSelectedValues();
 		for (int i = 0; i < selected.length; i++) {
-			listSelected.add(AbstractHistogram.getHistogram((String) selected[i]));
+			listSelected.add(AbstractHistogram
+					.getHistogram((String) selected[i]));
 		}
 		/* Select file */
 		final JFileChooser chooser = new JFileChooser(HDFIO.getLastValidFile());

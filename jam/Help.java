@@ -1,7 +1,5 @@
 package jam;
 
-import jam.global.JamStatus;
-
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -27,6 +25,8 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import com.google.inject.Inject;
+
 /**
  * Deals with JavaHelp-based User Guide and an "About" dialog.
  * 
@@ -36,8 +36,6 @@ import javax.swing.UIManager;
  */
 public class Help extends JDialog {
 	private final static int POS_X = 20;
-
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	/**
 	 * Launches the User Guide, with an Exit button in an auxiliary frame.
@@ -115,19 +113,21 @@ public class Help extends JDialog {
 	/**
 	 * Constructor.
 	 * 
+	 * @param frame
+	 *            parent
+	 * 
 	 * @param licenseReader
 	 *            responsible for getting the license text
 	 */
-	public Help(final LicenseReader licenseReader) {
-		super(STATUS.getFrame(),
-				"University of Illinois/NCSA Open Source License", true);
+	@Inject
+	public Help(final JFrame frame, final LicenseReader licenseReader) {
+		super(frame, "University of Illinois/NCSA Open Source License", true);
 		layoutLicenseDialog(licenseReader);
 		final String defaultVal = "notseen";
 		final String version = Version.getInstance().getName();
 		final String key = "license";
 		final Preferences helpnode = Preferences.userNodeForPackage(getClass());
-		if (STATUS.isShowGUI()
-				&& !version.equals(helpnode.get(key, defaultVal))) {
+		if (frame.isVisible() && !version.equals(helpnode.get(key, defaultVal))) {
 			setVisible(true);
 			helpnode.put(key, version);
 		}
