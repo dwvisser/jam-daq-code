@@ -6,21 +6,29 @@
  */
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 
-import javax.swing.JFrame;
+import java.awt.Frame;
+
+import com.google.inject.Inject;
 
 /**
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Jun 3, 2004
+ * @version June 3, 2004
  */
 final class OpenSelectedHistogram extends AbstractCommand {
 
-	OpenSelectedHistogram() {
+	private transient final Frame frame;
+	private transient final jam.io.control.OpenSelectedHistogram osh;
+
+	@Inject
+	OpenSelectedHistogram(final Frame frame,
+			final jam.io.control.OpenSelectedHistogram osh) {
 		super("Open Additional Select Histograms\u2026");
+		this.frame = frame;
+		this.osh = osh;
 	}
 
 	/**
@@ -28,9 +36,6 @@ final class OpenSelectedHistogram extends AbstractCommand {
 	 */
 	@Override
 	protected void execute(final Object[] cmdParams) {
-		final JFrame frame = GuiceInjector.getFrame();
-		final jam.io.control.OpenSelectedHistogram osh = new jam.io.control.OpenSelectedHistogram(
-				frame);
 		osh.open();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		frame.repaint();

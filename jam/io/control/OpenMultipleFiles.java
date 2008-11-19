@@ -1,6 +1,5 @@
 package jam.io.control;
 
-import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -34,6 +33,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.google.inject.Inject;
+
 /**
  * Class to open multiple files at the same time.
  * 
@@ -65,7 +66,7 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	/** Broadcaster */
 	private transient final Broadcaster broadcaster;
 
-	private transient final JamStatus STATUS = GuiceInjector.getJamStatus();
+	private transient final JamStatus status;
 
 	/**
 	 * Constructs an object which uses a dialog to open a selected histogram out
@@ -73,12 +74,16 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 * 
 	 * @param parent
 	 *            parent frame
+	 * @param status
+	 *            application status
 	 * @param console
 	 *            where to print messages
 	 */
-	public OpenMultipleFiles(final java.awt.Frame parent) {
+	@Inject
+	public OpenMultipleFiles(final java.awt.Frame parent, final JamStatus status) {
 		broadcaster = Broadcaster.getSingletonInstance();
 		hdfio = new HDFIO(parent);
+		this.status = status;
 		dialog = new JDialog(parent, "Open Multiple Files");
 		dialog.setLocation(parent.getLocation().x + 50,
 				parent.getLocation().y + 50);
@@ -266,11 +271,11 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 		if (chkBoxAdd.isSelected()) {
 			hdfio.readFile(jam.io.FileOpenMode.ADD_OPEN_ONE, files, null,
 					selectAttrib);
-			STATUS.setSortMode(jam.global.SortMode.FILE, "Multiple Sum");
+			status.setSortMode(jam.global.SortMode.FILE, "Multiple Sum");
 		} else {
 			hdfio.readFile(jam.io.FileOpenMode.OPEN_MORE, files, null,
 					selectAttrib);
-			STATUS.setSortMode(jam.global.SortMode.FILE, "Multiple");
+			status.setSortMode(jam.global.SortMode.FILE, "Multiple");
 		}
 	}
 
@@ -311,7 +316,7 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 				.getGroupCollection().getList();
 		if (!groupList.isEmpty()) {
 			final jam.data.Group firstGroup = groupList.get(0);
-			STATUS.setCurrentGroup(firstGroup);
+			status.setCurrentGroup(firstGroup);
 			final List<jam.data.AbstractHistogram> list = firstGroup.histograms
 					.getList();
 			if (!list.isEmpty()) {

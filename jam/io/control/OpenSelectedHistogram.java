@@ -1,6 +1,5 @@
 package jam.io.control;
 
-import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Group;
 import jam.data.control.AbstractControl;
@@ -37,6 +36,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Inject;
+
 /**
  * Reads and displays list of the histograms for a user select hdf file. Then
  * loads the user selected histograms into the data base and appends the file
@@ -68,10 +69,10 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 
 	private transient final Frame frame;
 
+	private transient final JamStatus status;
+
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();;
-
-	private static final JamStatus STATUS = GuiceInjector.getJamStatus();
 
 	/**
 	 * Constructs an object which uses a dialog to open a selected histogram out
@@ -79,13 +80,19 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	 * 
 	 * @param frame
 	 *            parent frame
+	 * @param hdfio
+	 *            for getting HDF input
+	 * @param status
+	 *            application status
 	 * @param msgHandler
 	 *            where to print messages
 	 */
-	public OpenSelectedHistogram(final Frame frame) {
+	@Inject
+	public OpenSelectedHistogram(final Frame frame, final HDFIO hdfio,
+			final JamStatus status) {
 		this.frame = frame;
-		hdfio = new HDFIO(frame);
-
+		this.hdfio = hdfio;
+		this.status = status;
 		dialog = new JDialog(frame, "Open Selected Histograms", false);
 		dialog.setLocation(frame.getLocation().x + 50,
 				frame.getLocation().y + 50);
@@ -228,7 +235,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 		// Set the current histogram to the first opened histogram
 		final Group firstGroup = hdfio.getFirstLoadGroup();
 		if (firstGroup != null) {
-			STATUS.setCurrentGroup(firstGroup);
+			this.status.setCurrentGroup(firstGroup);
 			/* Set the current histogram to the first opened histogram. */
 			if (firstGroup.histograms.getList().size() > 0) {
 				final AbstractHistogram firstHist = firstGroup.histograms
