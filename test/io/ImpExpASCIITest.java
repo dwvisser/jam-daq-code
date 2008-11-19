@@ -3,6 +3,7 @@ package test.io;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Group;
 import jam.io.ImpExpASCII;
@@ -90,7 +91,8 @@ public final class ImpExpASCIITest {// NOPMD
 		} catch (IOException ioe) {
 			fail(ioe.getMessage());
 		}
-		impExp = new ImpExpASCII();
+
+		impExp = new ImpExpASCII(GuiceInjector.getFrame());
 	}
 
 	/**

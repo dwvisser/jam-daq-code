@@ -9,6 +9,8 @@ import jam.ui.SelectionTree;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.inject.Inject;
+
 /**
  * Export data to a Radware gf3 spectrum file.
  * 
@@ -16,12 +18,10 @@ import java.util.Observer;
  */
 final class ExportRadware extends AbstractExportFile implements Observer {
 
-	ExportRadware() {
+	@Inject
+	ExportRadware(final ImpExpSPE impExpSPE) {
 		super("Radware gf3");
-	}
-
-	public void initCommand() {
-		importExport = new ImpExpSPE();
+		importExport = impExpSPE;
 	}
 
 	public void update(final Observable observe, final Object obj) {

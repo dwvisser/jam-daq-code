@@ -1,17 +1,18 @@
 package jam.io;
 
+import jam.data.AbstractHistogram;
 import jam.data.Factory;
 import jam.data.HistDouble1D;
 import jam.data.HistDouble2D;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
-import jam.data.AbstractHistogram;
 import jam.data.HistogramType;
 import jam.ui.ExtensionFileFilter;
 import jam.util.FileUtilities;
 import jam.util.NumberUtilities;
 import jam.util.StringUtilities;
 
+import java.awt.Frame;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInput;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import javax.swing.filechooser.FileFilter;
+
+import com.google.inject.Inject;
 
 /**
  * Imports and exports Oak Ridge (Milner) formatted files, as used by
@@ -80,6 +83,15 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 
 	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
 			EXTS, "Oak Ridge DAMM");
+
+	/**
+	 * @param frame
+	 *            application frame
+	 */
+	@Inject
+	public ImpExpORNL(final Frame frame) {
+		super(frame);
+	}
 
 	@Override
 	protected FileFilter getFileFilter() {
@@ -380,7 +392,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			throw new IOException("File uses " + wordCh
 					+ " words/channel, which can't be read.");
 		}
-		final AbstractHistogram hist = Factory.createHistogram(importGroup, counts, name);
+		final AbstractHistogram hist = Factory.createHistogram(importGroup,
+				counts, name);
 		hist.setNumber(number);
 	}
 
@@ -429,8 +442,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			throw new IOException("File uses " + wordCh
 					+ " words/channel, which I don't know how to read.");
 		}
-		final AbstractHistogram hist = Factory.createHistogram(importGroup, counts2d,
-				name);
+		final AbstractHistogram hist = Factory.createHistogram(importGroup,
+				counts2d, name);
 		hist.setNumber(number);
 	}
 
@@ -442,8 +455,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	 *                display on the msgHandler
 	 */
 	@Override
-	public void writeHist(final OutputStream ignored, final AbstractHistogram hist)
-			throws ImpExpException {
+	public void writeHist(final OutputStream ignored,
+			final AbstractHistogram hist) throws ImpExpException {
 		try {
 			final FileUtilities fileUtil = FileUtilities.getInstance();
 			final String fileNameHis = fileUtil.changeExtension(getLastFile()
@@ -477,7 +490,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		final StringUtilities util = StringUtilities.getInstance();
 		int diskOffSet = 0;
 		final DataOutputStream dosDrr = new DataOutputStream(buffout);
-		final List<AbstractHistogram> allHists = AbstractHistogram.getHistogramList();
+		final List<AbstractHistogram> allHists = AbstractHistogram
+				.getHistogramList();
 		/* number of histograms */
 		totalHist = AbstractHistogram.getHistogramList().size(); // number of
 		// histograms

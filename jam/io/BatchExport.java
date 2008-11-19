@@ -1,5 +1,6 @@
 package jam.io;
 
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.ui.ExtensionFileFilter;
@@ -228,25 +229,16 @@ public final class BatchExport extends JDialog implements Observer {
 
 	private List<AbstractImpExp> createExportList() {
 		final List<AbstractImpExp> rval = new ArrayList<AbstractImpExp>();
-		final String here = getClass().getName() + ".getClasses(): ";
 		final Set<Class<? extends AbstractImpExp>> set = jam.global.RuntimeSubclassIdentifier
 				.getSingletonInstance().find("jam.io", AbstractImpExp.class,
 						false);
 		set.remove(AbstractImpExp.class);
-		for (Class<?> temp : set) {
-			try {
-				final AbstractImpExp impExp = (AbstractImpExp) temp
-						.newInstance();
-				if (impExp.batchExportAllowed()) {
-					rval.add(impExp);
-					impExp.setSilent();
-				}
-			} catch (InstantiationException e) {
-				LOGGER.log(Level.SEVERE, here + e.getMessage(), e);
-			} catch (IllegalAccessException e) {
-				LOGGER.log(Level.SEVERE, here + e.getMessage(), e);
+		for (Class<? extends AbstractImpExp> temp : set) {
+			final AbstractImpExp impExp = GuiceInjector.getInstance(temp);
+			if (impExp.batchExportAllowed()) {
+				rval.add(impExp);
+				impExp.setSilent();
 			}
-
 		}
 		return rval;
 	}

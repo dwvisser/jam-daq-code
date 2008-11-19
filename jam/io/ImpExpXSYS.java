@@ -28,9 +28,9 @@ import static jam.io.XsysHeader.XSYS2DI4;
 import static jam.io.XsysHeader.XSYSEVAL;
 import static jam.io.XsysHeader.XSYS_BUFFER_SIZE;
 import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
 import jam.data.DataBase;
 import jam.data.Factory;
-import jam.data.AbstractHistogram;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.PolynomialFunction;
 import jam.global.BroadcastEvent;
@@ -38,6 +38,7 @@ import jam.global.Broadcaster;
 import jam.ui.ExtensionFileFilter;
 import jam.util.NumberUtilities;
 
+import java.awt.Frame;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +47,8 @@ import java.io.OutputStream;
 import java.nio.ByteOrder;
 
 import javax.swing.filechooser.FileFilter;
+
+import com.google.inject.Inject;
 
 /**
  * Imports and Exports Histograms files using the XSYS format. XSYS is a data
@@ -82,6 +85,15 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 
 	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
 			"dat", "TUNL's XSYS");
+
+	/**
+	 * @param frame
+	 *            application frame
+	 */
+	@Inject
+	public ImpExpXSYS(final Frame frame) {
+		super(frame);
+	}
 
 	@Override
 	protected FileFilter getFileFilter() {
@@ -162,8 +174,8 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 					final String areaTitle = areaNumber + "  " + areaName + " ";
 					final int[][] counts2d = unPackData2d(dis, areaSizeX,
 							areaSizeY, areaLengthPage);
-					final AbstractHistogram hist = Factory.createHistogram(importGroup,
-							counts2d, areaName, areaTitle);
+					final AbstractHistogram hist = Factory.createHistogram(
+							importGroup, counts2d, areaName, areaTitle);
 					hist.setNumber(areaNumber);
 					specRead++;
 				} else if (areaDataType == XSYS1DR4) {
@@ -198,8 +210,8 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	 *                display on the MessageHandler
 	 */
 	@Override
-	protected void writeHist(final OutputStream outStream, final AbstractHistogram hist)
-			throws ImpExpException {
+	protected void writeHist(final OutputStream outStream,
+			final AbstractHistogram hist) throws ImpExpException {
 		/* someday maybe if someone asks */
 	}
 

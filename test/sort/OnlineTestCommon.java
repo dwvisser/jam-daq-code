@@ -89,7 +89,7 @@ public final class OnlineTestCommon {
 		final Future<?> setupOnlineFuture = createSetupOnlineFuture(sortName,
 				inputStream, outputStream);
 		try {
-			setupOnlineFuture.get(2L, TimeUnit.SECONDS);
+			setupOnlineFuture.get(3L, TimeUnit.SECONDS);
 		} catch (TimeoutException te) {
 			fail(te.getMessage());
 		} catch (ExecutionException ee) {

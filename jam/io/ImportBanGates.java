@@ -1,9 +1,10 @@
 package jam.io;
 
-import jam.data.Gate;
 import jam.data.AbstractHistogram;
+import jam.data.Gate;
 import jam.ui.ExtensionFileFilter;
 
+import java.awt.Frame;
 import java.awt.Polygon;
 import java.io.File;
 import java.io.IOException;
@@ -15,19 +16,25 @@ import java.io.StreamTokenizer;
 
 import javax.swing.filechooser.FileFilter;
 
+import com.google.inject.Inject;
+
 /**
  * Imports banana gate files used by the ORPHLIB software at the HRIBF at ORNL.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Feb 13, 2004
+ * @version February 13, 2004
  */
 public final class ImportBanGates extends AbstractImpExp {
 
 	/**
 	 * Constructor.
+	 * 
+	 * @param frame
+	 *            application frame
 	 */
-	public ImportBanGates() {// NOPMD
-		super();
+	@Inject
+	public ImportBanGates(final Frame frame) {
+		super(frame);
 	}
 
 	/**
@@ -149,8 +156,8 @@ public final class ImportBanGates extends AbstractImpExp {
 	 *      jam.data.AbstractHistogram)
 	 */
 	@Override
-	protected void writeHist(final OutputStream outStream, final AbstractHistogram hist)
-			throws ImpExpException {
+	protected void writeHist(final OutputStream outStream,
+			final AbstractHistogram hist) throws ImpExpException {
 		// not implementing
 	}
 

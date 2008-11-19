@@ -1,14 +1,15 @@
 package jam.io;
 
+import jam.data.AbstractHistogram;
 import jam.data.Factory;
 import jam.data.HistDouble1D;
 import jam.data.HistDouble2D;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
-import jam.data.AbstractHistogram;
 import jam.data.HistogramType;
 import jam.ui.ExtensionFileFilter;
 
+import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -23,6 +24,8 @@ import java.nio.CharBuffer;
 import java.util.Scanner;
 
 import javax.swing.filechooser.FileFilter;
+
+import com.google.inject.Inject;
 
 /**
  * Imports and exports histograms in ASCII channel-space-counts-return format.
@@ -54,6 +57,15 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 
 	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
 			EXTS, "Text file");
+
+	/**
+	 * @param frame
+	 *            application frame
+	 */
+	@Inject
+	public ImpExpASCII(final Frame frame) {
+		super(frame);
+	}
 
 	@Override
 	protected FileFilter getFileFilter() {
@@ -342,8 +354,8 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 	 *                the msgHandler
 	 */
 	@Override
-	protected void writeHist(final OutputStream buffout, final AbstractHistogram hist)
-			throws ImpExpException {
+	protected void writeHist(final OutputStream buffout,
+			final AbstractHistogram hist) throws ImpExpException {
 		try {
 			final PrintWriter writer = new PrintWriter(buffout);
 			if (hist.getType() == HistogramType.ONE_DIM_INT) {

@@ -2,6 +2,8 @@ package jam.commands;
 
 import jam.io.ImpExpSPE;
 
+import com.google.inject.Inject;
+
 /**
  * Import a gf3 spectrum file.
  * 
@@ -9,9 +11,10 @@ import jam.io.ImpExpSPE;
  */
 final class ImportRadware extends AbstractImportFile {
 
-	ImportRadware() {
+	@Inject
+	ImportRadware(final ImpExpSPE impExpSPE) {
 		super("Radware gf3");
-		importExport = new ImpExpSPE();
+		importExport = impExpSPE;
 	}
 
 }

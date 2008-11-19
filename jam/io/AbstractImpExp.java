@@ -1,9 +1,7 @@
 package jam.io;
 
-import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Group;
-import jam.global.JamStatus;
 import jam.util.FileUtilities;
 
 import java.awt.Frame;
@@ -53,8 +51,6 @@ public abstract class AbstractImpExp {
 
 	private static final int SAVE = 314;
 
-	private static final JamStatus STATUS = GuiceInjector.getJamStatus();
-
 	/**
 	 * so the programmer may set display options
 	 */
@@ -80,13 +76,16 @@ public abstract class AbstractImpExp {
 	/**
 	 * Default constructor so that it may be launched dynamically for batch
 	 * exports.
+	 * 
+	 * @param frame
+	 *            application frame
 	 */
-	public AbstractImpExp() {
+	public AbstractImpExp(final Frame frame) {
 		super();
 		lastFileKey = getClass().getName() + "_LastValidFile";
 		lastFile = new File(PREFS.get(lastFileKey, System
 				.getProperty("user.dir")));
-		frame = GuiceInjector.getFrame();
+		this.frame = frame;
 	}
 
 	/**

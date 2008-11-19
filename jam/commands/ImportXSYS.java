@@ -2,15 +2,18 @@ package jam.commands;
 
 import jam.io.ImpExpXSYS;
 
+import com.google.inject.Inject;
+
 /**
  * Export data to an XSYS file.
  * 
  * @author Dale Visser
  */
 final class ImportXSYS extends AbstractImportFile {
-	
-	ImportXSYS(){
+
+	@Inject
+	ImportXSYS(final ImpExpXSYS impExpXSYS) {
 		super("TUNL's XSYS");
-		importExport=new ImpExpXSYS();		
+		importExport = impExpXSYS;
 	}
 }

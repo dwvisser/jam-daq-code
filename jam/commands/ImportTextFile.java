@@ -2,6 +2,8 @@ package jam.commands;
 
 import jam.io.ImpExpASCII;
 
+import com.google.inject.Inject;
+
 /**
  * Export data to an ASCII text file.
  * 
@@ -10,8 +12,9 @@ import jam.io.ImpExpASCII;
  */
 final class ImportTextFile extends AbstractImportFile {
 
-	ImportTextFile() {
+	@Inject
+	ImportTextFile(final ImpExpASCII impExpASCII) {
 		super("Text File");
-		importExport = new ImpExpASCII();
+		importExport = impExpASCII;
 	}
 }
