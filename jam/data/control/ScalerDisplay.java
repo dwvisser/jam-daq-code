@@ -256,7 +256,7 @@ public final class ScalerDisplay extends AbstractControl {
 	 * distribute event which will call our update method.
 	 */
 	public void read() {
-		if (STATUS.isOnline()) {
+		if (this.status.isOnline()) {
 			broadcaster.broadcast(BroadcastEvent.Command.SCALERS_READ);
 		} else {
 			displayScalers();

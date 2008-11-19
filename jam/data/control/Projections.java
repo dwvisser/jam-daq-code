@@ -1,15 +1,16 @@
 package jam.data.control;
 
 import static javax.swing.SwingConstants.RIGHT;
+import jam.data.AbstractHistogram;
 import jam.data.DataElement;
 import jam.data.DataException;
 import jam.data.DataUtility;
 import jam.data.Gate;
 import jam.data.HistDouble2D;
 import jam.data.HistInt2D;
-import jam.data.AbstractHistogram;
 import jam.data.HistogramType;
 import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
 import jam.ui.PanelOKApplyCancelButtons;
 import jam.ui.SelectionTree;
 import jam.util.NumberUtilities;
@@ -34,6 +35,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+
+import com.google.inject.Inject;
 
 /**
  * Class for projecting 2-D histograms.
@@ -63,8 +66,12 @@ public final class Projections extends AbstractManipulation implements
 
 	/**
 	 * Constructs a new projections dialog.
+	 * 
+	 * @param status
+	 *            application status
 	 */
-	public Projections() {
+	@Inject
+	public Projections(final JamStatus status) {
 		super("Project 2D Histogram", false);
 		setResizable(false);
 		final int hgap = 5;
@@ -156,7 +163,7 @@ public final class Projections extends AbstractManipulation implements
 					project();
 					BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
 					SelectionTree.setCurrentHistogram(hto);
-					STATUS.setCurrentGroup(DataUtility.getGroup(hto));
+					status.setCurrentGroup(DataUtility.getGroup(hto));
 					BROADCASTER.broadcast(
 							BroadcastEvent.Command.HISTOGRAM_SELECT, hto);
 				} catch (DataException de) {
@@ -252,7 +259,8 @@ public final class Projections extends AbstractManipulation implements
 		cchan.addItem(FULL);
 		cchan.addItem(BETWEEN);
 		/* add gates to chooser */
-		final AbstractHistogram hfrom = AbstractHistogram.getHistogram(hfromname);
+		final AbstractHistogram hfrom = AbstractHistogram
+				.getHistogram(hfromname);
 		if (hfrom != null) {
 			for (DataElement gate : hfrom.getGateCollection().getGates()) {
 				if (((Gate) gate).isDefined()) {
@@ -299,7 +307,8 @@ public final class Projections extends AbstractManipulation implements
 	 */
 	private void project() throws DataException {
 		final double[][] counts2d;
-		final AbstractHistogram hfrom = AbstractHistogram.getHistogram(hfromname);
+		final AbstractHistogram hfrom = AbstractHistogram
+				.getHistogram(hfromname);
 		final NumberUtilities numbers = NumberUtilities.getInstance();
 		counts2d = (hfrom.getType() == HistogramType.TWO_D_DOUBLE) ? ((HistDouble2D) hfrom)
 				.getCounts()

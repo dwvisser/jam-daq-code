@@ -1,11 +1,12 @@
 package jam.data.control;
 
 import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
 import jam.data.DataException;
 import jam.data.DataUtility;
-import jam.data.AbstractHistogram;
 import jam.data.HistogramType;
 import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
 import jam.ui.SelectionTree;
 
 import java.awt.BorderLayout;
@@ -31,6 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+
+import com.google.inject.Inject;
 
 /**
  * Class for adjusting the gain of 1d spectra.
@@ -67,10 +70,14 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 	/**
 	 * Constructs a gain shift dialog.
 	 * 
+	 * @param status
+	 *            application status
+	 * 
 	 * @param mh
 	 *            where to print messages
 	 */
-	public GainShift() {
+	@Inject
+	public GainShift(final JamStatus status) {
 		super("Gain Shift 1-D Histogram", false);
 		chan1i = 0.0;
 		chan2i = 1.0;
@@ -173,7 +180,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 							BROADCASTER
 									.broadcast(BroadcastEvent.Command.REFRESH);
 							SelectionTree.setCurrentHistogram(hto);
-							STATUS.setCurrentGroup(DataUtility.getGroup(hto));
+							status.setCurrentGroup(DataUtility.getGroup(hto));
 							BROADCASTER.broadcast(
 									BroadcastEvent.Command.HISTOGRAM_SELECT,
 									hto);

@@ -2,7 +2,6 @@ package jam.data.control;
 
 import injection.GuiceInjector;
 import jam.global.Broadcaster;
-import jam.global.JamStatus;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -44,8 +43,7 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	/**
 	 * Reference to instance of JamStatus.
 	 */
-	protected static final JamStatus STATUS = GuiceInjector.getJamStatus();
-
+	// protected static final JamStatus STATUS = GuiceInjector.getJamStatus();
 	/**
 	 * Setup all instances of <code>AbstractControl</code>.
 	 */

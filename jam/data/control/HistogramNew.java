@@ -8,6 +8,7 @@ import jam.data.HistogramType;
 import jam.data.NameValueCollection;
 import jam.data.Warehouse;
 import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
 import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
 
@@ -31,6 +32,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+
+import com.google.inject.Inject;
 
 /**
  * Class to control the histograms Allows one to zero the histograms and create
@@ -56,18 +59,21 @@ public class HistogramNew extends AbstractControl {
 
 	private transient final JCheckBox coneInt, coneDbl, ctwoInt, ctwoDbl;
 
+	private transient final JamStatus status;
+
 	private final static String[] DEFAULT_SIZES = { "64", "128", "256", "512",
 			"1024", "2048", "4096", "8192", };
 
 	/**
 	 * Construct a new "new histogram" dialog.
 	 * 
-	 * @param msghdlr
-	 *            where to print messages
+	 * @param status
+	 *            application status
 	 */
-	public HistogramNew() {
+	@Inject
+	public HistogramNew(final JamStatus status) {
 		super("New Histogram ", false);
-		/* dialog box */
+		this.status = status;
 		setResizable(false);
 		setLocation(30, 30);
 		final Container cdialogNew = getContentPane();
@@ -213,13 +219,13 @@ public class HistogramNew extends AbstractControl {
 			histGroup = Factory.createGroup(groupName, Group.Type.TEMP);
 		} else {
 			histGroup = GROUPS.get(groupName);
-			STATUS.setCurrentGroup(histGroup);
+			this.status.setCurrentGroup(histGroup);
 		}
 		final AbstractHistogram hist = Factory.createHistogram(histGroup,
 				array, name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		SelectionTree.setCurrentHistogram(hist);
-		STATUS.setCurrentGroup(histGroup);
+		this.status.setCurrentGroup(histGroup);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		final StringBuffer msg = new StringBuffer("New histogram created, ");
 		msg.append(name).append(", type: ");

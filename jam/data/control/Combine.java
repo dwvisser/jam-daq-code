@@ -1,13 +1,14 @@
 package jam.data.control;
 
 import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
 import jam.data.DataException;
 import jam.data.DataUtility;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
-import jam.data.AbstractHistogram;
 import jam.data.HistogramType;
 import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
 import jam.ui.PanelOKApplyCancelButtons;
 import jam.ui.SelectionTree;
 import jam.util.NumberUtilities;
@@ -31,6 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+
+import com.google.inject.Inject;
 
 /**
  * Combine histograms and also normalize a histogram
@@ -56,12 +59,16 @@ public class Combine extends AbstractManipulation implements Observer {
 	private transient final JTextField ttextto, ttimes1, ttimes2;
 
 	/**
-	 * Construct a new "manipilate histograms" dialog.
+	 * Construct a new "manipulate histograms" dialog.
+	 * 
+	 * @param status
+	 *            application status
 	 * 
 	 * @param console
 	 *            where to print messages
 	 */
-	public Combine() {
+	@Inject
+	public Combine(final JamStatus status) {
 		super("Manipulate 1-D Histograms", false);
 		setResizable(false);
 		Dimension dim;
@@ -194,7 +201,7 @@ public class Combine extends AbstractManipulation implements Observer {
 							BROADCASTER
 									.broadcast(BroadcastEvent.Command.REFRESH);
 							SelectionTree.setCurrentHistogram(hto);
-							STATUS.setCurrentGroup(DataUtility.getGroup(hto));
+							status.setCurrentGroup(DataUtility.getGroup(hto));
 							BROADCASTER.broadcast(
 									BroadcastEvent.Command.HISTOGRAM_SELECT,
 									hto);
@@ -237,8 +244,8 @@ public class Combine extends AbstractManipulation implements Observer {
 		in1 = doubleCountsArray(hfrom1);
 		err1 = hfrom1.getErrors();
 		if (cfrom2.isEnabled()) {
-			hfrom2 = (AbstractHist1D) AbstractHistogram.getHistogram((String) cfrom2
-					.getSelectedItem());
+			hfrom2 = (AbstractHist1D) AbstractHistogram
+					.getHistogram((String) cfrom2.getSelectedItem());
 			in2 = doubleCountsArray(hfrom2);
 			err2 = hfrom2.getErrors();
 		} else {

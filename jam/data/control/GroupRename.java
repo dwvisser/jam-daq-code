@@ -4,6 +4,7 @@ import jam.data.DataBase;
 import jam.data.DataException;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
 import jam.global.Nameable;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -11,6 +12,8 @@ import java.awt.BorderLayout;
 import java.util.logging.Level;
 
 import javax.swing.JTextField;
+
+import com.google.inject.Inject;
 
 /**
  * * Class create a new group
@@ -24,11 +27,18 @@ public class GroupRename extends AbstractControl {
 
 	private transient final JTextField textName;
 
+	private transient final JamStatus status;
+
 	/**
 	 * Constructs a "new group" dialog command.
+	 * 
+	 * @param status
+	 *            application status
 	 */
-	public GroupRename() {
+	@Inject
+	public GroupRename(final JamStatus status) {
 		super("Rename Group ", false);
+		this.status = status;
 		textName = GroupControlInitializer.initializeDialog(this);
 		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
 				new PanelOKApplyCancelButtons.AbstractListener(this) {
@@ -41,7 +51,7 @@ public class GroupRename extends AbstractControl {
 	}
 
 	/**
-	 * Does nothing. It is here to match other contollers.
+	 * Does nothing. It is here to match other controllers.
 	 */
 	@Override
 	public void doSetup() {
@@ -66,7 +76,7 @@ public class GroupRename extends AbstractControl {
 	@Override
 	public void setVisible(final boolean show) {
 		if (show) {
-			final Nameable nameable = STATUS.getCurrentGroup();
+			final Nameable nameable = this.status.getCurrentGroup();
 			if (DataBase.getInstance().isValid(nameable)) {
 				currentGroup = (Group) nameable;
 				if (currentGroup.getType() == Group.Type.SORT) {
