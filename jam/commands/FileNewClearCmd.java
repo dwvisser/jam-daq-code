@@ -1,8 +1,8 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.data.DataBase;
 import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
 
@@ -14,6 +14,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import com.google.inject.Inject;
+
 /**
  * Command for file menu new also clears
  * 
@@ -22,25 +24,29 @@ import javax.swing.KeyStroke;
  */
 final class FileNewClearCmd extends AbstractCommand implements Observer {
 
-	FileNewClearCmd() {
+	private transient final JFrame frame;
+	private transient final JamStatus status;
+
+	@Inject
+	FileNewClearCmd(final JFrame frame, final JamStatus status) {
 		super("Clear data\u2026");
+		this.frame = frame;
+		this.status = status;
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 				CTRL_MASK));
 		enable();
 	}
 
 	/**
-	 * Excecute command
+	 * Execute command
 	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	@Override
 	protected void execute(final Object[] cmdParams) {
-		final JFrame frame = GuiceInjector.getFrame();
 		if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(frame,
 				"Erase all current data?", "New", JOptionPane.YES_NO_OPTION)) {
-			GuiceInjector.getJamStatus().setSortMode(SortMode.NO_SORT,
-					"Data Cleared");
+			this.status.setSortMode(SortMode.NO_SORT, "Data Cleared");
 			DataBase.getInstance().clearAllLists();
 			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
 			BROADCASTER
@@ -63,7 +69,7 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 	}
 
 	private void enable() {
-		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
+		final QuerySortMode mode = this.status.getSortMode();
 		setEnabled(mode == SortMode.FILE || mode == SortMode.NO_SORT);
 	}
 

@@ -1,10 +1,10 @@
 package jam.data.control;
 
-import injection.GuiceInjector;
 import jam.data.DataBase;
 import jam.data.DataElement;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
+import jam.global.BroadcastUtilities;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.Nameable;
@@ -37,6 +37,8 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.JTextComponent;
 
+import com.google.inject.Inject;
+
 /**
  * Reads and displays the scaler values.
  * 
@@ -63,15 +65,25 @@ public final class ScalerDisplay extends AbstractControl {
 
 	private transient final JPanel pScalers;
 
-	private transient final JamStatus status = GuiceInjector.getJamStatus();
+	private transient final JamStatus status;
 
 	private transient final List<JTextField> textScaler = new ArrayList<JTextField>();
 
+	private transient final BroadcastUtilities broadcast;
+
 	/**
 	 * Creates the dialog box for reading and zeroing scalers.
+	 * 
+	 * @param broadcast
+	 *            for broadcasting scaler commands
+	 * @param status
 	 */
-	public ScalerDisplay() {
+	@Inject
+	public ScalerDisplay(final BroadcastUtilities broadcast,
+			final JamStatus status) {
 		super("Scalers", false);
+		this.broadcast = broadcast;
+		this.status = status;
 		broadcaster.addObserver(this);
 		/* dialog box to display scalers */
 		final Container cddisp = getContentPane();
@@ -121,7 +133,7 @@ public final class ScalerDisplay extends AbstractControl {
 			public void actionPerformed(final ActionEvent event) {
 				checkDisabled.setSelected(true);
 				bzero.setEnabled(false);
-				GuiceInjector.getBroadcastUtilitities().zeroScalers();
+				ScalerDisplay.this.broadcast.zeroScalers();
 			}
 		});
 		bzero.setEnabled(false);

@@ -1,5 +1,5 @@
 /*
- * Created on Jun 4, 2004
+ * Created on June 4, 2004
  */
 package jam.commands;
 
@@ -9,16 +9,19 @@ import jam.data.control.MonitorDisplay;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.inject.Inject;
+
 /**
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Jun 4, 2004
+ * @version June 4, 2004
  */
 final class ShowMonitorDisplay extends AbstractShowDialog implements Observer {
 
-	ShowMonitorDisplay() {
+	@Inject
+	ShowMonitorDisplay(final MonitorDisplay monitorDisplay) {
 		super("Display Monitors\u2026");
-		dialog = new MonitorDisplay();
+		dialog = monitorDisplay;
 	}
 
 	public void update(final Observable observe, final Object obj) {

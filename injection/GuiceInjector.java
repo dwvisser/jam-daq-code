@@ -1,15 +1,9 @@
 package injection;
 
 import jam.JamInitialization;
-import jam.global.AcquisitionStatus;
-import jam.global.BroadcastUtilities;
+import jam.commands.Commandable;
 import jam.global.JamStatus;
-import jam.plot.PlotDisplay;
 import jam.script.Session;
-import jam.sort.control.RunControl;
-import jam.sort.control.SetupSortOff;
-import jam.sort.control.SetupSortOn;
-import jam.sort.control.SortControl;
 
 import javax.swing.JFrame;
 
@@ -44,13 +38,6 @@ public final class GuiceInjector {
 	}
 
 	/**
-	 * @return the online setup dialog
-	 */
-	public static SetupSortOn getSetupSortOn() {
-		return injector.getInstance(SetupSortOn.class);
-	}
-
-	/**
 	 * @return application status
 	 */
 	public static JamStatus getJamStatus() {
@@ -65,44 +52,13 @@ public final class GuiceInjector {
 	}
 
 	/**
-	 * @return for use in broadcasting
+	 * @param <T>
+	 *            type to return
+	 * @param clazz
+	 *            class to return an instance of
+	 * @return instance
 	 */
-	public static BroadcastUtilities getBroadcastUtilitities() {
-		return injector.getInstance(BroadcastUtilities.class);
-	}
-
-	/**
-	 * @return the acquisition status
-	 */
-	public static AcquisitionStatus getAcquisitionStatus() {
-		return injector.getInstance(AcquisitionStatus.class);
-	}
-
-	/**
-	 * @return online run control dialog
-	 */
-	public static RunControl getRunControl() {
-		return injector.getInstance(RunControl.class);
-	}
-
-	/**
-	 * @return offline sort control dialog
-	 */
-	public static SortControl getSortControl() {
-		return injector.getInstance(SortControl.class);
-	}
-
-	/**
-	 * @return offline setup dialog
-	 */
-	public static SetupSortOff getSetupSortOff() {
-		return injector.getInstance(SetupSortOff.class);
-	}
-
-	/**
-	 * @return the plot display
-	 */
-	public static PlotDisplay getPlotDisplay() {
-		return injector.getInstance(PlotDisplay.class);
+	public static <T extends Commandable> T getInstance(final Class<T> clazz) {
+		return injector.getInstance(clazz);
 	}
 }

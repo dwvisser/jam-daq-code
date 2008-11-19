@@ -1,6 +1,5 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 import jam.ui.ExtensionFileFilter;
@@ -16,6 +15,9 @@ import java.util.Observer;
 import java.util.logging.Level;
 
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+
+import com.google.inject.Inject;
 
 /**
  * Export the summary table
@@ -32,12 +34,14 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
 			EXTS, "Text file");
 
+	private transient final JFrame frame;
+
 	private File chooseFile() {
 		File file = null;
 		final JFileChooser jfile = new JFileChooser();
 
 		jfile.setFileFilter(FILTER);
-		final int option = jfile.showSaveDialog(GuiceInjector.getFrame());
+		final int option = jfile.showSaveDialog(this.frame);
 		/* don't do anything if it was cancel */
 		if (option == JFileChooser.APPROVE_OPTION
 				&& jfile.getSelectedFile() != null) {
@@ -69,8 +73,10 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 		// TODO Auto-generated method stub
 	}
 
-	ExportSummaryTableCmd() {
+	@Inject
+	ExportSummaryTableCmd(final JFrame frame) {
 		super("Table");
+		this.frame = frame;
 	}
 
 	private void saveTable(final File file) {

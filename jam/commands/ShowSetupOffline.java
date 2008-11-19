@@ -1,25 +1,29 @@
 /*
- * Created on Jun 4, 2004
+ * Created on June 4, 2004
  */
 package jam.commands;
 
 import injection.GuiceInjector;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
+import jam.sort.control.SetupSortOff;
 
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.inject.Inject;
+
 /**
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Jun 4, 2004
+ * @version June 4, 2004
  */
 final class ShowSetupOffline extends AbstractShowDialog implements Observer {
 
-	ShowSetupOffline() {
+	@Inject
+	ShowSetupOffline(final SetupSortOff setupSortOff) {
 		super("Offline sorting\u2026");
-		dialog = GuiceInjector.getSetupSortOff().getDialog();
+		dialog = setupSortOff.getDialog();
 		enable();
 	}
 

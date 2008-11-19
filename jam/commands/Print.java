@@ -1,6 +1,5 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
@@ -19,6 +18,8 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
+import com.google.inject.Inject;
+
 /**
  * Command for Page Setup
  * 
@@ -28,9 +29,12 @@ import javax.swing.KeyStroke;
 final class Print extends AbstractPrintingCommand implements Observer {
 
 	private boolean firstTime = true;// NOPMD
+	private transient final PlotDisplay display;
 
-	Print() {
+	@Inject
+	Print(final PlotDisplay display) {
 		super();
+		this.display = display;
 		putValue(NAME, "Print\u2026");
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P,
 				CTRL_MASK));
@@ -47,7 +51,6 @@ final class Print extends AbstractPrintingCommand implements Observer {
 	 */
 	@Override
 	protected void execute(final Object[] cmdParams) {
-		final PlotDisplay display = GuiceInjector.getPlotDisplay();
 		if (firstTime) {
 			LOGGER
 					.warning("On some systems, it will be necessary to first "

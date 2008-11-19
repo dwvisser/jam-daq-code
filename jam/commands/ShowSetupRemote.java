@@ -1,5 +1,5 @@
 /*
- * Created on Jun 4, 2004
+ * Created on June 4, 2004
  */
 package jam.commands;
 
@@ -8,16 +8,19 @@ import jam.SetupRemote;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.inject.Inject;
+
 /**
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Jun 4, 2004
+ * @version June 4, 2004
  */
 final class ShowSetupRemote extends AbstractShowDialog implements Observer {
-	
-	ShowSetupRemote(){
+
+	@Inject
+	ShowSetupRemote(final SetupRemote setupRemote) {
 		super("Observe Remote\u2026");
-		dialog=new SetupRemote();
+		dialog = setupRemote;
 		enable();
 	}
 
@@ -25,9 +28,8 @@ final class ShowSetupRemote extends AbstractShowDialog implements Observer {
 		setEnabled(false);
 	}
 
-	public void update(final Observable observe, final Object obj){
+	public void update(final Observable observe, final Object obj) {
 		enable();
 	}
-	
 
 }

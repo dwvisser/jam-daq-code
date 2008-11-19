@@ -1,6 +1,5 @@
 package jam.sort.control;
 
-import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
@@ -28,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 ;
@@ -53,11 +53,13 @@ public final class SetupSortOff extends AbstractSetup {
 
 	private transient SortDaemon sortDaemon;
 
-	protected SetupSortOff() {
-		super("Setup Offline");
+	private transient final JamStatus status;
 
-		// Build GUI
-		sortControl = GuiceInjector.getSortControl();
+	@Inject
+	protected SetupSortOff(final SortControl sortControl, final JamStatus status) {
+		super("Setup Offline");
+		this.status = status;
+		this.sortControl = sortControl;
 		final java.awt.Container contents = dialog.getContentPane();
 		dialog.setResizable(false);
 		final int posx = 20;
@@ -134,7 +136,7 @@ public final class SetupSortOff extends AbstractSetup {
 	@Override
 	protected void doApply(final boolean dispose) {
 		try {
-			if (GuiceInjector.getJamStatus().canSetup()) {
+			if (this.status.canSetup()) {
 				resetSort();// clear current data areas and kill daemons
 				sortChooser.loadSorter(btnSpecifyPath.isSelected());
 				loadEventInput();
@@ -218,7 +220,6 @@ public final class SetupSortOff extends AbstractSetup {
 		btnSpecifyPath.setEnabled(notLock);
 		btnDefaultPath.setEnabled(notLock);
 		sortChooser.setEnabled(notLock);
-		final JamStatus status = GuiceInjector.getJamStatus();
 		if (lock) {
 			status.setSortMode(SortMode.OFFLINE, sortChooser.getSortRoutine()
 					.getClass().getName());

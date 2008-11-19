@@ -1,6 +1,5 @@
 package jam;
 
-import injection.GuiceInjector;
 import jam.plot.PlotDisplay;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -17,6 +16,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Inject;
+
 /**
  * Dialog for setting peak finding parameters.
  * 
@@ -32,10 +33,14 @@ public class PeakFindDialog extends JDialog {
 	/**
 	 * Constructs a new peak find dialog.
 	 * 
+	 * @param display
+	 *            plot display
+	 * 
 	 */
-	public PeakFindDialog() {
+	@Inject
+	public PeakFindDialog(final PlotDisplay display) {
 		super();
-		display = GuiceInjector.getPlotDisplay();
+		this.display = display;
 		createDialog();
 	}
 

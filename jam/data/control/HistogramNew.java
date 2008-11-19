@@ -1,7 +1,6 @@
 package jam.data.control;
 
 import static javax.swing.SwingConstants.RIGHT;
-import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Factory;
 import jam.data.Group;
@@ -220,7 +219,7 @@ public class HistogramNew extends AbstractControl {
 				array, name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		SelectionTree.setCurrentHistogram(hist);
-		GuiceInjector.getJamStatus().setCurrentGroup(histGroup);
+		STATUS.setCurrentGroup(histGroup);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		final StringBuffer msg = new StringBuffer("New histogram created, ");
 		msg.append(name).append(", type: ");

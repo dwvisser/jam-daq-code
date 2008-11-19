@@ -1,5 +1,8 @@
 package jam.commands;
 
+import jam.Help;
+
+import com.google.inject.Inject;
 
 /**
  * Show the license dialog.
@@ -8,8 +11,9 @@ package jam.commands;
  */
 final class ShowDialogLicense extends AbstractShowDialog {
 
-	ShowDialogLicense() {
+	@Inject
+	ShowDialogLicense(final Help help) {
 		super("License\u2026");
-		dialog = jam.Factory.createHelp();
+		dialog = help;
 	}
 }

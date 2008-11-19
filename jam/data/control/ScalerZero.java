@@ -1,6 +1,6 @@
 package jam.data.control;
 
-import injection.GuiceInjector;
+import jam.global.BroadcastUtilities;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -18,11 +18,13 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Inject;
+
 /**
  * Control dialog for zeroing scalers.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Jun 3, 2004
+ * @version June 3, 2004
  */
 public class ScalerZero extends AbstractControl {
 
@@ -30,11 +32,18 @@ public class ScalerZero extends AbstractControl {
 
 	private transient final JCheckBox chkDisable;
 
+	private transient final BroadcastUtilities broadcast;
+
 	/**
 	 * Constructs a new dialog for zeroing scaler values.
+	 * 
+	 * @param broadcast
+	 *            for broadcasting scaler commands
 	 */
-	public ScalerZero() {
+	@Inject
+	public ScalerZero(final BroadcastUtilities broadcast) {
 		super("Zero Scalers", true);
+		this.broadcast = broadcast;
 		final Container dzc = getContentPane();
 		setResizable(false);
 		setLocation(20, 50);
@@ -91,6 +100,6 @@ public class ScalerZero extends AbstractControl {
 	 * zero the camac crate scalers.
 	 */
 	private void zero() {
-		GuiceInjector.getBroadcastUtilitities().zeroScalers();
+		this.broadcast.zeroScalers();
 	}
 }

@@ -1,8 +1,8 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.plot.PlotDisplay;
 import jam.plot.View;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -22,6 +22,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+
+import com.google.inject.Inject;
 
 /**
  * Command to delete view.
@@ -43,10 +45,14 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 					}
 				});
 
+		private transient final PlotDisplay display;
+
 		private static final Frame frame = null;
 
-		ViewDelete() {
+		@Inject
+		ViewDelete(final PlotDisplay display) {
 			super(frame, "Delete View", false);
+			this.display = display;
 			setModal(false);
 			final Container cdnew = getContentPane();
 			setResizable(false);
@@ -90,7 +96,7 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 			}
 			Broadcaster.getSingletonInstance().broadcast(
 					BroadcastEvent.Command.VIEW_NEW);
-			GuiceInjector.getPlotDisplay().setView(View.SINGLE);
+			this.display.setView(View.SINGLE);
 			updateViewNames();
 		}
 
@@ -110,9 +116,10 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 		}
 	}
 
-	ShowDialogDeleteView() {
+	@Inject
+	ShowDialogDeleteView(final ViewDelete viewDelete) {
 		super("Delete\u2026");
-		dialog = new ViewDelete();
+		dialog = viewDelete;
 	}
 
 }

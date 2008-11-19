@@ -9,12 +9,15 @@ package jam.commands;
 import injection.GuiceInjector;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
+import jam.sort.control.RunControl;
 
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.Action;
 import javax.swing.Icon;
+
+import com.google.inject.Inject;
 
 /**
  * 
@@ -23,12 +26,13 @@ import javax.swing.Icon;
  */
 final class ShowRunControl extends AbstractShowDialog implements Observer {
 
-	ShowRunControl() {
+	@Inject
+	ShowRunControl(final RunControl runControl) {
 		super("Run\u2026");
 		final Icon iRun = loadToolbarIcon("jam/ui/Run.png");
 		putValue(Action.SMALL_ICON, iRun);
 		putValue(Action.SHORT_DESCRIPTION, "Run Control.");
-		dialog = GuiceInjector.getRunControl();
+		dialog = runControl;
 		enable();
 	}
 

@@ -1,7 +1,7 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
+import jam.plot.PlotDisplay;
 import jam.plot.View;
 import jam.ui.WindowCancelAction;
 
@@ -22,6 +22,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Inject;
+
 /**
  * Command to add view.
  * 
@@ -29,9 +31,10 @@ import javax.swing.border.EmptyBorder;
  */
 public class ShowDialogAddView extends AbstractShowDialog {
 
-	ShowDialogAddView() {
+	@Inject
+	ShowDialogAddView(final ViewNew viewNew) {
 		super("New\u2026");
-		dialog = new ViewNew();
+		dialog = viewNew;
 	}
 
 	/**
@@ -39,7 +42,7 @@ public class ShowDialogAddView extends AbstractShowDialog {
 	 * 
 	 * @author Ken Swartz
 	 */
-	private static class ViewNew extends JDialog {
+	static class ViewNew extends JDialog {
 
 		private transient final JTextField textName;
 
@@ -47,10 +50,14 @@ public class ShowDialogAddView extends AbstractShowDialog {
 
 		private transient final JComboBox comboCols;
 
+		private transient final PlotDisplay display;
+
 		private static final Frame parent = null;
 
-		ViewNew() {
+		@Inject
+		ViewNew(final PlotDisplay display) {
 			super(parent, "New View", false);
+			this.display = display;
 			final Container cdnew = getContentPane();
 			setResizable(false);
 			cdnew.setLayout(new BorderLayout(5, 5));
@@ -133,7 +140,7 @@ public class ShowDialogAddView extends AbstractShowDialog {
 			}
 			viewNew = new View(name, nRows, nCols);
 			BROADCASTER.broadcast(BroadcastEvent.Command.VIEW_NEW);
-			GuiceInjector.getPlotDisplay().setView(viewNew);
+			this.display.setView(viewNew);
 		}
 	}
 }

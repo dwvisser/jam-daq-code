@@ -3,8 +3,8 @@
  */
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.RunState;
 import jam.global.SortMode;
@@ -13,18 +13,24 @@ import jam.sort.control.RunControl;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.inject.Inject;
+
 /**
  * Flush the acquisition's currently filling buffer to Jam.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Jun 7, 2004
+ * @version June 7, 2004
  */
 final class FlushAcquisition extends AbstractCommand implements Observer {
 
-	private transient final RunControl control = GuiceInjector.getRunControl();
+	private transient final RunControl control;
+	private final JamStatus status;
 
-	FlushAcquisition() {
+	@Inject
+	FlushAcquisition(final RunControl control, final JamStatus status) {
 		super("Flush");
+		this.control = control;
+		this.status = status;
 		putValue(SHORT_DESCRIPTION,
 				"Flush the current data acquisition buffer.");
 		setEnabled(false);
@@ -61,7 +67,7 @@ final class FlushAcquisition extends AbstractCommand implements Observer {
 	}
 
 	private boolean online() {
-		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
+		final QuerySortMode mode = this.status.getSortMode();
 		return mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK;
 	}
 }

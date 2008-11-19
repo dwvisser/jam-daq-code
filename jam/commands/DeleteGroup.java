@@ -1,14 +1,16 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.data.DataBase;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
+import jam.global.JamStatus;
 import jam.global.Nameable;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+
+import com.google.inject.Inject;
 
 /**
  * Delete a group
@@ -18,8 +20,14 @@ import javax.swing.JOptionPane;
  */
 public class DeleteGroup extends AbstractCommand {
 
-	DeleteGroup() {
+	private transient final JFrame frame;
+	private transient final JamStatus status;
+
+	@Inject
+	DeleteGroup(final JFrame frame, final JamStatus status) {
 		super();
+		this.frame = frame;
+		this.status = status;
 		putValue(NAME, "Delete Group\u2026");
 	}
 
@@ -30,9 +38,7 @@ public class DeleteGroup extends AbstractCommand {
 	 */
 	@Override
 	protected void execute(final Object[] cmdParams) throws CommandException {
-		final JFrame frame = GuiceInjector.getFrame();
-		final Nameable nameable = GuiceInjector.getJamStatus()
-				.getCurrentGroup();
+		final Nameable nameable = status.getCurrentGroup();
 		if (!DataBase.getInstance().isValid(nameable)) {
 			LOGGER.severe("Need to select a group.");
 			return;
@@ -62,8 +68,7 @@ public class DeleteGroup extends AbstractCommand {
 	@Override
 	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
-		// TODO Auto-generated method stub
-
+		// nothing to do
 	}
 
 }

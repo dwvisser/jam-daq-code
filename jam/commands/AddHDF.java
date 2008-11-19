@@ -1,14 +1,15 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
-import jam.global.QuerySortMode;
+import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
 
 import java.io.File;
 import java.util.Observable;
+
+import com.google.inject.Inject;
 
 /**
  * Add counts to histograms in memory from histograms in an HDF file.
@@ -17,8 +18,12 @@ import java.util.Observable;
  */
 final class AddHDF extends AbstractLoaderHDF {
 
-	AddHDF() {
+	private transient final JamStatus status;
+
+	@Inject
+	AddHDF(final JamStatus status) {
 		super();
+		this.status = status;
 	}
 
 	@Override
@@ -30,8 +35,8 @@ final class AddHDF extends AbstractLoaderHDF {
 	@Override
 	protected void execute(final Object[] cmdParams) {
 		File file = null;
-		loadGroup = (Group) GuiceInjector.getJamStatus().getCurrentGroup();
-		// Parse commad parameters if given
+		loadGroup = (Group) status.getCurrentGroup();
+		// Parse command parameters if given
 		if (cmdParams != null) {
 			if (cmdParams.length > 0) {
 				final Object param0 = cmdParams[0];
@@ -49,9 +54,7 @@ final class AddHDF extends AbstractLoaderHDF {
 		final BroadcastEvent event = (BroadcastEvent) obj;
 		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
-			final QuerySortMode mode = GuiceInjector.getJamStatus()
-					.getSortMode();
-			setEnabled(mode != SortMode.REMOTE);
+			setEnabled(status.getSortMode() != SortMode.REMOTE);
 		}
 	}
 }

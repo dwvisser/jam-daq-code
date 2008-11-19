@@ -1,20 +1,25 @@
 /*
- * Created on Jun 4, 2004
+ * Created on June 4, 2004
  *
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package jam.commands;
 
+import jam.io.BatchExport;
+
+import com.google.inject.Inject;
+
 /**
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Jun 4, 2004
+ * @version June 4, 2004
  */
 final class ShowBatchExport extends AbstractShowDialog {
-	
-	ShowBatchExport(){
+
+	@Inject
+	ShowBatchExport(final BatchExport batchExport) {
 		super("Batch Export\u2026");
-		dialog=new jam.io.BatchExport();
+		dialog = batchExport;
 	}
 }

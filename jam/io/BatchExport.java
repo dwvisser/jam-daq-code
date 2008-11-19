@@ -1,6 +1,5 @@
 package jam.io;
 
-import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.ui.ExtensionFileFilter;
@@ -32,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -40,6 +40,8 @@ import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+
+import com.google.inject.Inject;
 
 /**
  * Dialog for exporting lists of histograms. Searches <code>jam.io</code> for
@@ -52,72 +54,10 @@ public final class BatchExport extends JDialog implements Observer {
 	private static final Logger LOGGER = Logger.getLogger(BatchExport.class
 			.getPackage().getName());
 
-	private class SelectHistogramDialog {
-
-		private transient final JDialog dialog;
-
-		private transient final JList histList;
-
-		SelectHistogramDialog() {
-			super();
-			final java.awt.Frame frame = GuiceInjector.getFrame();
-			dialog = new JDialog(frame, "Selected Histograms", false);
-			dialog.setLocation(frame.getLocation().x + 50,
-					frame.getLocation().y + 50);
-			final Container container = dialog.getContentPane();
-			container.setLayout(new BorderLayout(10, 10));
-			/* Selection list */
-			final DefaultListModel histListData = new DefaultListModel();
-			histList = new JList(histListData);
-			histList
-					.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-			histList.setSelectedIndex(0);
-			histList.setVisibleRowCount(10);
-			final JScrollPane listPane = new JScrollPane(histList);
-			listPane.setBorder(new EmptyBorder(10, 10, 0, 10));
-			container.add(listPane, BorderLayout.CENTER);
-			/* Lower panel with buttons */
-			final JPanel pLower = new JPanel(new FlowLayout());
-			container.add(pLower, BorderLayout.SOUTH);
-			final JButton bButton = new JButton("OK");
-			pLower.add(bButton);
-			bButton.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent actionEvent) {
-					addToSelection();
-					dialog.dispose();
-				}
-			});
-			dialog.setResizable(false);
-			dialog.pack();
-		}
-
-		private void addToSelection() {
-			final Object[] selected = histList.getSelectedValues();
-			final HashSet<Object> histFullSet = new HashSet<Object>();
-			/* now combine this with stuff already in list. */
-			final ListModel model = lstHists.getModel();
-			for (int i = 0; i < model.getSize(); i++) {
-				histFullSet.add(model.getElementAt(i));
-			}
-			for (int i = 0; i < selected.length; i++) {
-				if (!histFullSet.contains(selected[i])) {
-					histFullSet.add(selected[i]);
-				}
-			}
-			lstHists.setListData(histFullSet.toArray());
-		}
-
-		private void show() {
-			final Set<AbstractHistogram> histSet = new HashSet<AbstractHistogram>();
-			CollectionsUtil.getSingletonInstance()
-					.addConditional(AbstractHistogram.getHistogramList(),
-							histSet, HIST_COND_1D);
-			histList.setListData(histSet.toArray());
-			dialog.setVisible(true);
-		}
-	}
-
-	private static final CollectionsUtil.Condition<AbstractHistogram> HIST_COND_1D = new CollectionsUtil.Condition<AbstractHistogram>() {
+	/**
+	 * Gives true if a histogram is 1 dimensional.
+	 */
+	public static final CollectionsUtil.Condition<AbstractHistogram> HIST_COND_1D = new CollectionsUtil.Condition<AbstractHistogram>() {
 		public boolean accept(final AbstractHistogram hist) {
 			return hist.getDimensionality() == 1;
 		}
@@ -146,15 +86,26 @@ public final class BatchExport extends JDialog implements Observer {
 	private transient final JTextField txtDirectory = new JTextField(System
 			.getProperty("user.home"), 40);
 
+	private transient final JFrame frame;
+
 	/**
 	 * Constructs a new batch histogram exporter.
+	 * 
+	 * @param frame
+	 *            application frame
+	 * @param selectHistogram
+	 *            dialog for selecting histograms to export
 	 */
-	public BatchExport() {
-		super(GuiceInjector.getFrame(), "Batch Histogram Export");
+	@Inject
+	public BatchExport(final JFrame frame,
+			final SelectHistogramDialog selectHistogram) {
+		super(frame, "Batch Histogram Export");
+		this.frame = frame;
 		jam.global.Broadcaster.getSingletonInstance().addObserver(this);
 		buildGUI();
 		setupHistChooser();
-		selectHistDlg = new SelectHistogramDialog();
+		this.selectHistDlg = selectHistogram;
+		this.selectHistDlg.setExternalList(lstHists);
 	}
 
 	/**
@@ -400,8 +351,8 @@ public final class BatchExport extends JDialog implements Observer {
 		// Check for overwrite
 		if (status && already) {
 			final int optionPaneRely = JOptionPane.showConfirmDialog(
-					GuiceInjector.getFrame(), "Overwrite existing files? \n",
-					"File Exists", JOptionPane.YES_NO_OPTION);
+					this.frame, "Overwrite existing files? \n", "File Exists",
+					JOptionPane.YES_NO_OPTION);
 			if (optionPaneRely == JOptionPane.NO_OPTION) {
 				rval = false;
 			}
@@ -620,4 +571,5 @@ public final class BatchExport extends JDialog implements Observer {
 			setupHistChooser();
 		}
 	}
+
 }

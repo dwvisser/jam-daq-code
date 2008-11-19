@@ -1,6 +1,5 @@
 package jam;
 
-import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Gate;
 import jam.data.RemoteData;
@@ -12,11 +11,18 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+
 final class RemoteSnapshot {
 	private static final Logger LOGGER = Logger.getLogger(RemoteSnapshot.class
 			.getPackage().getName());
 
-	private static final JamStatus STATUS = GuiceInjector.getJamStatus();
+	private transient final JamStatus status;
+
+	@Inject
+	public RemoteSnapshot(final JamStatus status) {
+		this.status = status;
+	}
 
 	/**
 	 * Get a snap shot of data.
@@ -30,7 +36,7 @@ final class RemoteSnapshot {
 	public void takeSnapshot(final String url) throws JamException {
 		final RemoteData remoteData;
 		try {
-			if (STATUS.canSetup()) {
+			if (status.canSetup()) {
 				remoteData = (RemoteData) Naming.lookup(url);
 				LOGGER.info("Remote lookup OK!");
 			} else {

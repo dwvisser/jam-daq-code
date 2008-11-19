@@ -6,12 +6,15 @@ package jam.commands;
 import injection.GuiceInjector;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
+import jam.sort.control.RunControl;
 
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.Action;
 import javax.swing.Icon;
+
+import com.google.inject.Inject;
 
 /**
  * Stop data acquisition.
@@ -21,8 +24,12 @@ import javax.swing.Icon;
  */
 final class StopAcquisition extends AbstractCommand implements Observer {
 
-	StopAcquisition() {
+	private transient final RunControl control;
+
+	@Inject
+	StopAcquisition(final RunControl control) {
 		super("stop");
+		this.control = control;
 		final Icon iPause = loadToolbarIcon("jam/ui/Pause.png");
 		putValue(Action.SMALL_ICON, iPause);
 		putValue(Action.SHORT_DESCRIPTION, "Pause data acquisition.");
@@ -31,7 +38,7 @@ final class StopAcquisition extends AbstractCommand implements Observer {
 
 	@Override
 	protected void execute(final Object[] cmdParams) {
-		GuiceInjector.getRunControl().stopAcq();
+		this.control.stopAcq();
 	}
 
 	@Override

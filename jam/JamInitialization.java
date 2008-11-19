@@ -71,6 +71,8 @@ public final class JamInitialization {
 	 *            selection tree
 	 * @param broadcaster
 	 *            handles application-wide events
+	 * @param menuBar
+	 *            menu bar
 	 */
 	@Inject
 	public JamInitialization(final JFrame frame, final JamStatus status,

@@ -3,12 +3,15 @@
  */
 package jam.commands;
 
-import injection.GuiceInjector;
+import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
+import jam.sort.control.SetupSortOn;
 
 import java.util.Observable;
 import java.util.Observer;
+
+import com.google.inject.Inject;
 
 /**
  * 
@@ -17,14 +20,18 @@ import java.util.Observer;
  */
 final class ShowSetupOnline extends AbstractShowDialog implements Observer {
 
-	ShowSetupOnline() {
+	private transient final JamStatus status;
+
+	@Inject
+	ShowSetupOnline(final SetupSortOn setup, final JamStatus status) {
 		super("Online sorting\u2026");
-		dialog = GuiceInjector.getSetupSortOn().getDialog();
+		this.status = status;
+		dialog = setup.getDialog();
 		enable();
 	}
 
 	private void enable() {
-		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
+		final QuerySortMode mode = this.status.getSortMode();
 		setEnabled(!(mode == SortMode.OFFLINE || mode == SortMode.REMOTE));
 	}
 

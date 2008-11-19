@@ -1,7 +1,10 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
+import jam.global.BroadcastUtilities;
+import jam.global.JamStatus;
+
+import com.google.inject.Inject;
 
 /**
  * Command for scalers
@@ -14,12 +17,24 @@ public final class ScalersCmd extends AbstractCommand {
 
 	private static final int ZERO = 2;
 
+	private transient final BroadcastUtilities broadcast;
+
+	private transient final JamStatus status;
+
 	/**
 	 * Default constructor.
 	 * 
+	 * @param broadcast
+	 *            for issuing scaler commands
+	 * @param status
+	 *            application status
+	 * 
 	 */
-	public ScalersCmd() {
+	@Inject
+	public ScalersCmd(BroadcastUtilities broadcast, JamStatus status) {
 		super();
+		this.broadcast = broadcast;
+		this.status = status;
 		putValue(SHORT_DESCRIPTION,
 				"Read or zero scalers, depending on parameter.");
 	}
@@ -34,7 +49,7 @@ public final class ScalersCmd extends AbstractCommand {
 		if (param == READ) {
 			readScalers();
 		} else if (param == ZERO) {
-			GuiceInjector.getBroadcastUtilitities().zeroScalers();
+			this.broadcast.zeroScalers();
 		} else {
 			LOGGER
 					.severe("Incomplete command: need 'scaler zero' or 'scaler read'.");
@@ -56,7 +71,7 @@ public final class ScalersCmd extends AbstractCommand {
 	 * Does the scaler reading.
 	 */
 	private void readScalers() {
-		if (GuiceInjector.getJamStatus().isOnline()) {
+		if (this.status.isOnline()) {
 			BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
 		}
 	}

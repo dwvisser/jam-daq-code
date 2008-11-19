@@ -1,6 +1,5 @@
 package jam.fit;
 
-import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamException;
@@ -22,12 +21,15 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+
+import com.google.inject.Inject;
 
 /**
  * Load a fit routine.. Draw the fit routines interface window
@@ -50,12 +52,18 @@ public class LoadFit {
 
 	/**
 	 * Create the fit routine loading dialog.
+	 * 
+	 * @param frame
+	 *            application frame
+	 * @param display
+	 *            plot display
 	 */
-	public LoadFit() {
+	@Inject
+	public LoadFit(final JFrame frame, final PlotDisplay display) {
 		super();
 		broadcaster = Broadcaster.getSingletonInstance();
-		jamMain = GuiceInjector.getFrame();
-		display = GuiceInjector.getPlotDisplay();
+		jamMain = frame;
+		this.display = display;
 		final String dialogName = "Load Fit Routine";
 		dialog = new JDialog(jamMain, dialogName, false);
 		final Container contents = dialog.getContentPane();

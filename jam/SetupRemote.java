@@ -2,7 +2,6 @@
  */
 package jam;
 
-import injection.GuiceInjector;
 import jam.global.JamException;
 import jam.global.JamStatus;
 import jam.global.SortMode;
@@ -29,8 +28,11 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import com.google.inject.Inject;
 
 /**
  * Class to make this process into a remote server for Jam or hook up to a
@@ -62,29 +64,12 @@ public class SetupRemote extends JDialog implements ActionListener,
 
 	private static final String DEFAULT_URL = "rmi://meitner.physics.yale.edu/jam";
 
-	private static SetupRemote instance;
-
 	private static final Logger LOGGER = Logger.getLogger(SetupRemote.class
 			.getPackage().getName());
 
-	private static final JamStatus STATUS = GuiceInjector.getJamStatus();
+	private transient final JamStatus status;
 
-	private static final Object classMonitor = new Object();
-
-	private static final RemoteSnapshot remote = new RemoteSnapshot();
-
-	/**
-	 * 
-	 * @return the only instance of this class
-	 */
-	public static SetupRemote getInstance() {
-		synchronized (classMonitor) {
-			if (instance == null) {
-				instance = new SetupRemote();
-			}
-			return instance;
-		}
-	}
+	private transient final RemoteSnapshot remote;
 
 	private transient final JButton bapply, bok;
 
@@ -101,10 +86,20 @@ public class SetupRemote extends JDialog implements ActionListener,
 	/**
 	 * Constructor for Jam Application creates dialog box, we are in an
 	 * application
+	 * 
+	 * @param frame
+	 *            application frame
+	 * @param status
+	 *            application status
+	 * @param remote
+	 *            remote snapshot
 	 */
-	public SetupRemote() {
-		super(GuiceInjector.getFrame(), "Remote Hookup ", false);
-		// create dialog box
+	@Inject
+	public SetupRemote(final JFrame frame, final JamStatus status,
+			final RemoteSnapshot remote) {
+		super(frame, "Remote Hookup ", false);
+		this.status = status;
+		this.remote = remote;
 		setResizable(false);
 		setLocation(20, 50);
 		setSize(400, 250);
@@ -284,9 +279,9 @@ public class SetupRemote extends JDialog implements ActionListener,
 	public void setActive(final boolean active) {
 		if ((mode != Mode.SERVER) && (!inApplet)) {
 			if (active) {
-				STATUS.setSortMode(SortMode.REMOTE, "Remote");
+				status.setSortMode(SortMode.REMOTE, "Remote");
 			} else {
-				STATUS.setSortMode(SortMode.NO_SORT, "No Sort");
+				status.setSortMode(SortMode.NO_SORT, "No Sort");
 			}
 		}
 	}

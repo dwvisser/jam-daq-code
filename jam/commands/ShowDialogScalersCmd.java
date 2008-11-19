@@ -6,6 +6,8 @@ import jam.data.control.ScalerDisplay;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.inject.Inject;
+
 /**
  * Show the scalers dialog box
  * 
@@ -14,9 +16,10 @@ import java.util.Observer;
  */
 final class ShowDialogScalersCmd extends AbstractShowDialog implements Observer {
 
-	ShowDialogScalersCmd() {
+	@Inject
+	ShowDialogScalersCmd(final ScalerDisplay scalerDisplay) {
 		super("Display Scalers\u2026");
-		dialog = new ScalerDisplay();
+		dialog = scalerDisplay;
 	}
 
 	public void update(final Observable observe, final Object obj) {

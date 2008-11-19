@@ -1,6 +1,5 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.DataUtility;
 import jam.data.Group;
@@ -16,6 +15,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import com.google.inject.Inject;
+
 /**
  * Command for file menu new also clears
  * 
@@ -24,20 +25,23 @@ import javax.swing.KeyStroke;
  */
 final class DeleteHistogram extends AbstractCommand implements Observer {
 
-	DeleteHistogram() {
+	private transient final JFrame frame;
+
+	@Inject
+	DeleteHistogram(final JFrame frame) {
 		super("Delete\u2026");
+		this.frame = frame;
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D,
 				CTRL_MASK));
 	}
 
 	/**
-	 * Excecute command
+	 * Execute command
 	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	@Override
 	protected void execute(final Object[] cmdParams) {
-		final JFrame frame = GuiceInjector.getFrame();
 		final AbstractHistogram hist = (AbstractHistogram) SelectionTree
 				.getCurrentHistogram();
 		final String name = hist.getFullName().trim();

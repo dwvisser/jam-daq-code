@@ -1,5 +1,6 @@
 package jam.commands;
 
+import injection.GuiceInjector;
 import jam.global.Broadcaster;
 import jam.global.CommandFinder;
 import jam.global.CommandListener;
@@ -76,22 +77,11 @@ public final class CommandManager implements CommandListener, ActionCreator {
 			if (created) {
 				currentCom = INSTANCES.get(strCmd);
 			} else {
-				try {
-					currentCom = cmdClass.newInstance();
-					currentCom.initCommand();
-					if (currentCom instanceof Observer) {
-						Broadcaster.getSingletonInstance().addObserver(
-								(Observer) currentCom);
-					}
-				} catch (InstantiationException ie) {
-					/*
-					 * There was a problem resolving the command class or with
-					 * creating an instance. This should never happen if
-					 * exists==true.
-					 */
-					LOGGER.log(Level.SEVERE, ie.getMessage(), ie);
-				} catch (IllegalAccessException iae) {
-					LOGGER.log(Level.SEVERE, iae.getMessage(), iae);
+				currentCom = GuiceInjector.getInstance(cmdClass);
+				currentCom.initCommand();
+				if (currentCom instanceof Observer) {
+					Broadcaster.getSingletonInstance().addObserver(
+							(Observer) currentCom);
 				}
 				INSTANCES.put(strCmd, currentCom);
 			}

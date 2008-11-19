@@ -1,7 +1,7 @@
 package jam.data.control;
 
-import injection.GuiceInjector;
 import jam.data.Monitor;
+import jam.global.AcquisitionStatus;
 import jam.global.BroadcastEvent;
 
 import java.awt.BorderLayout;
@@ -22,6 +22,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Inject;
+
 /**
  * 
  * Displays the monitors
@@ -37,12 +39,18 @@ public class MonitorDisplay extends AbstractControl {
 
 	private transient final JPanel pBars;
 
+	private transient final AcquisitionStatus status;
+
 	/**
 	 * Constructs a new monitor display dialog.
+	 * 
+	 * @param status
+	 *            acquisition status
 	 */
-	public MonitorDisplay() {
+	@Inject
+	public MonitorDisplay(final AcquisitionStatus status) {
 		super("Monitors Disabled", false);
-		// >> dialog box to display Monitors
+		this.status = status;
 		setResizable(true);
 		setLocation(20, 50);
 		final Container cddisp = this.getContentPane();
@@ -90,8 +98,7 @@ public class MonitorDisplay extends AbstractControl {
 		// loop for each monitor check if we should sound alarm
 		for (Monitor monitor : Monitor.getMonitorList()) {
 			// If the audio on and are we taking data
-			if (checkAudio.isSelected()
-					&& GuiceInjector.getAcquisitionStatus().isAcqOn()
+			if (checkAudio.isSelected() && this.status.isAcqOn()
 					&& monitor.isAlarmActivated() && (!monitor.isAcceptable())) {
 				Toolkit.getDefaultToolkit().beep();
 				break;

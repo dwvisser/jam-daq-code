@@ -85,7 +85,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	private transient JTextField textHost;
 
 	/**
-	 * Receive action frow awt widgets
+	 * Receive action from AWT widgets
 	 */
 	public void actionPerformed(final ActionEvent actionEvent) {
 		String incommand;

@@ -53,10 +53,10 @@ final class MenuBar implements Observer {
 	 * @author Ken Swartz
 	 */
 	@Inject
-	protected MenuBar(final ViewMenu viewMenu) {
+	protected MenuBar(final ViewMenu viewMenu, final ImportMenu importMenu) {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
-		menus.add(createFileMenu());
+		menus.add(createFileMenu(importMenu));
 		menus.add(createMenu("Setup", CommandNames.SHOW_SETUP_ONLINE,
 				CommandNames.SHOW_SETUP_OFF, CommandNames.SHOW_SETUP_REMOTE,
 				CommandNames.SHOW_CONFIG));
@@ -72,7 +72,7 @@ final class MenuBar implements Observer {
 				CommandNames.USER_GUIDE, CommandNames.HELP_LICENSE));
 	}
 
-	private JMenu createFileMenu() {
+	private JMenu createFileMenu(final ImportMenu importMenu) {
 		final JMenu file = createMenu("File", CommandNames.CLEAR,
 				CommandNames.OPEN_HDF);
 		file.add(createMenu("Open Special", CommandNames.OPEN_MULTIPLE_HDF,
@@ -94,7 +94,6 @@ final class MenuBar implements Observer {
 		file.add(utilities);
 		file.addSeparator();
 
-		final ImportMenu importMenu = new ImportMenu();
 		file.add(importMenu.getMenu());
 
 		final JMenu expHist = createMenu("Export", CommandNames.EXPORT_TABLE,
