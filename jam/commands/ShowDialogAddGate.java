@@ -1,7 +1,7 @@
 package jam.commands;
 
-import jam.data.Gate;
 import jam.data.AbstractHistogram;
+import jam.data.Gate;
 import jam.data.control.GateAdd;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
@@ -9,6 +9,8 @@ import jam.ui.SelectionTree;
 
 import java.util.Observable;
 import java.util.Observer;
+
+import com.google.inject.Inject;
 
 /**
  * Show the scalers dialog box
@@ -18,12 +20,10 @@ import java.util.Observer;
  */
 final class ShowDialogAddGate extends AbstractShowDialog implements Observer {
 
-	ShowDialogAddGate() {
+	@Inject
+	ShowDialogAddGate(final GateAdd gateAdd) {
 		super("Add\u2026");
-	}
-
-	public void initCommand() {
-		dialog = new GateAdd();
+		dialog = gateAdd;
 	}
 
 	public void update(final Observable observe, final Object obj) {

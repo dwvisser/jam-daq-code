@@ -16,6 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
@@ -67,12 +68,15 @@ public class HistogramNew extends AbstractControl {
 	/**
 	 * Construct a new "new histogram" dialog.
 	 * 
+	 * @param frame
+	 *            application frame
+	 * 
 	 * @param status
 	 *            application status
 	 */
 	@Inject
-	public HistogramNew(final JamStatus status) {
-		super("New Histogram ", false);
+	public HistogramNew(final Frame frame, final JamStatus status) {
+		super(frame, "New Histogram ", false);
 		this.status = status;
 		setResizable(false);
 		setLocation(30, 30);

@@ -1,7 +1,7 @@
 package jam.data.control;
 
-import jam.data.Gate;
 import jam.data.AbstractHistogram;
+import jam.data.Gate;
 import jam.global.BroadcastEvent;
 import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
@@ -9,6 +9,7 @@ import jam.ui.WindowCancelAction;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +18,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import com.google.inject.Inject;
 
 /**
  * A dialog for defining new gates.
@@ -31,11 +34,12 @@ public class GateNew extends AbstractControl {
 	/**
 	 * Construct a new "new gate" dialog.
 	 * 
-	 * @param mh
-	 *            where to send messages
+	 * @param frame
+	 *            application frame
 	 */
-	public GateNew() {
-		super("New Gate", false);
+	@Inject
+	public GateNew(final Frame frame) {
+		super(frame, "New Gate", false);
 		final Container cdnew = getContentPane();
 		setResizable(false);
 		cdnew.setLayout(new BorderLayout(5, 5));
@@ -80,13 +84,15 @@ public class GateNew extends AbstractControl {
 	 *             if there's a problem
 	 */
 	private void makeGate() {
-		final AbstractHistogram hist = (AbstractHistogram) SelectionTree.getCurrentHistogram();
+		final AbstractHistogram hist = (AbstractHistogram) SelectionTree
+				.getCurrentHistogram();
 		new Gate(textNew.getText(), hist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
 		LOGGER.info("New gate " + textNew.getText() + " created for histogram "
 				+ hist.getFullName());
 	}
 
+	@Override
 	public void doSetup() {
 		/* nothing needed here */
 	}

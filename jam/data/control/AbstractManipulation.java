@@ -7,6 +7,7 @@ import jam.data.NameValueCollection;
 import jam.global.BroadcastEvent;
 
 import java.awt.FontMetrics;
+import java.awt.Frame;
 
 import javax.swing.JComboBox;
 
@@ -43,13 +44,17 @@ abstract class AbstractManipulation extends AbstractControl {
 	/**
 	 * Constructs a dialog box for manipulation of histograms.
 	 * 
+	 * @param frame
+	 *            application frame
+	 * 
 	 * @param title
 	 *            if dialog
 	 * @param modal
 	 *            whether to grab focus from parent window
 	 */
-	public AbstractManipulation(final String title, final boolean modal) {
-		super(title, modal);
+	public AbstractManipulation(final Frame frame, final String title,
+			final boolean modal) {
+		super(frame, title, modal);
 	}
 
 	/*

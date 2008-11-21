@@ -13,6 +13,7 @@ import jam.ui.SelectionTree;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -31,6 +32,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+
+import com.google.inject.Inject;
 
 /**
  * Class to control the histograms Allows one to zero the histograms and create
@@ -83,9 +86,13 @@ public class CalibrationFit extends AbstractControl {
 
 	/**
 	 * Constructs a calibration fitting dialog.
+	 * 
+	 * @param frame
+	 *            application frame
 	 */
-	public CalibrationFit() {
-		super("Calibration Fit", false);
+	@Inject
+	public CalibrationFit(final Frame frame) {
+		super(frame, "Calibration Fit", false);
 		setResizable(false);
 		setLocation(30, 30);
 		final Container cdialogCalib = getContentPane();

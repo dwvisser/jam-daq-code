@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.util.List;
@@ -44,12 +45,15 @@ public class MonitorDisplay extends AbstractControl {
 	/**
 	 * Constructs a new monitor display dialog.
 	 * 
+	 * @param frame
+	 *            application frame
+	 * 
 	 * @param status
 	 *            acquisition status
 	 */
 	@Inject
-	public MonitorDisplay(final AcquisitionStatus status) {
-		super("Monitors Disabled", false);
+	public MonitorDisplay(final Frame frame, final AcquisitionStatus status) {
+		super(frame, "Monitors Disabled", false);
 		this.status = status;
 		setResizable(true);
 		setLocation(20, 50);

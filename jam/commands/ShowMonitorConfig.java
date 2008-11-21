@@ -1,25 +1,32 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.data.control.MonitorControl;
+import jam.global.JamStatus;
 
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.inject.Inject;
+
 /**
- * Command that shows the monitor config dialog.
+ * Command that shows the monitor configuration dialog.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Jun 4, 2004
+ * @version June 4, 2004
  */
 final class ShowMonitorConfig extends AbstractShowDialog implements Observer {
 
-	ShowMonitorConfig() {
+	private transient final JamStatus status;
+
+	@Inject
+	ShowMonitorConfig(final MonitorControl monitorControl,
+			final JamStatus status) {
 		super("Configure Monitors\u2026");
-		dialog = MonitorControl.getSingletonInstance();
+		this.dialog = monitorControl;
+		this.status = status;
 	}
 
 	public void update(final Observable observe, final Object obj) {
-		setEnabled(GuiceInjector.getJamStatus().isOnline());
+		setEnabled(this.status.isOnline());
 	}
 }

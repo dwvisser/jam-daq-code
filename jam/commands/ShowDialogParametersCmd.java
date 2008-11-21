@@ -6,25 +6,27 @@ import jam.data.control.ParameterControl;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.inject.Inject;
+
 /**
  * Show parameters dialog.
  * 
  * @author Ken Swartz
- *
+ * 
  */
-final class ShowDialogParametersCmd extends AbstractShowDialog 
-implements Observer {
-
+final class ShowDialogParametersCmd extends AbstractShowDialog implements
+		Observer {
 
 	/**
 	 * Initialize command
 	 */
-	ShowDialogParametersCmd(){
+	@Inject
+	ShowDialogParametersCmd(final ParameterControl parameterControl) {
 		super("Parameters\u2026");
-		dialog = new ParameterControl();
+		dialog = parameterControl;
 	}
-		
-	public void update(final Observable observe, final Object obj){
+
+	public void update(final Observable observe, final Object obj) {
 		setEnabled(!DataParameter.getParameterList().isEmpty());
-	}	
+	}
 }

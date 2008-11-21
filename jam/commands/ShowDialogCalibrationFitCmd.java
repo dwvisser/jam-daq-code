@@ -9,6 +9,8 @@ import jam.ui.SelectionTree;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.inject.Inject;
+
 /**
  * Show histgoram Calibration fit dialog.
  * 
@@ -17,9 +19,10 @@ import java.util.Observer;
 final class ShowDialogCalibrationFitCmd extends AbstractShowDialog implements
 		Observer {
 
-	ShowDialogCalibrationFitCmd() {
+	@Inject
+	ShowDialogCalibrationFitCmd(final CalibrationFit calibrationFit) {
 		super("Calibration\u2026");
-		dialog = new CalibrationFit();
+		dialog = calibrationFit;
 		enable();
 	}
 

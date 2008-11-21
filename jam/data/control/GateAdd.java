@@ -1,8 +1,8 @@
 package jam.data.control;
 
+import jam.data.AbstractHistogram;
 import jam.data.DataException;
 import jam.data.Gate;
-import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +21,8 @@ import java.awt.event.WindowEvent;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+
+import com.google.inject.Inject;
 
 /**
  * A dialog for adding existing gates to histograms.
@@ -36,11 +39,12 @@ public final class GateAdd extends AbstractControl {
 	/**
 	 * Create a new "add gate" dialog.
 	 * 
-	 * @param mh
-	 *            where to print messages
+	 * @param frame
+	 *            application frame
 	 */
-	public GateAdd() {
-		super("Add Gate", false);
+	@Inject
+	public GateAdd(final Frame frame) {
+		super(frame, "Add Gate", false);
 		final Container cdadd = getContentPane();
 		setResizable(false);
 		setLocation(20, 50);

@@ -17,6 +17,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -61,6 +62,9 @@ public class Combine extends AbstractManipulation implements Observer {
 	/**
 	 * Construct a new "manipulate histograms" dialog.
 	 * 
+	 * @param frame
+	 *            application frame
+	 * 
 	 * @param status
 	 *            application status
 	 * 
@@ -68,8 +72,8 @@ public class Combine extends AbstractManipulation implements Observer {
 	 *            where to print messages
 	 */
 	@Inject
-	public Combine(final JamStatus status) {
-		super("Manipulate 1-D Histograms", false);
+	public Combine(final Frame frame, final JamStatus status) {
+		super(frame, "Manipulate 1-D Histograms", false);
 		setResizable(false);
 		Dimension dim;
 		final int hgap = 5;

@@ -83,6 +83,8 @@ public final class Session implements Observer {
 
 	private transient final JFrame frame;
 
+	private transient final HistogramZero histogramZero;
+
 	/**
 	 * Creates an instance, of which the user then invokes the methods to script
 	 * an offline sorting session. A non-trivial side-effect of invoking this
@@ -102,7 +104,8 @@ public final class Session implements Observer {
 	@Inject
 	protected Session(final JFrame frame, final SetupSortOff sortOffline,
 			final SetupSortOn sortOnline, final SortControl sortControl,
-			final RunControl runControl, final HDFIO hdfio) {
+			final RunControl runControl, final HDFIO hdfio,
+			final HistogramZero histogramZero) {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		this.frame = frame;
@@ -111,6 +114,7 @@ public final class Session implements Observer {
 		this.sortControl = sortControl;
 		this.runControl = runControl;
 		this.hdfio = hdfio;
+		this.histogramZero = histogramZero;
 		base = new File(System.getProperty("user.dir"));
 	}
 
@@ -520,7 +524,7 @@ public final class Session implements Observer {
 	 * Zero all histograms in memory.
 	 */
 	public void zeroHistograms() {
-		(new HistogramZero()).zeroAll();
+		this.histogramZero.zeroAll();
 	}
 
 	/**

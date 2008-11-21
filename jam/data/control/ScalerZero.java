@@ -4,6 +4,7 @@ import jam.global.BroadcastUtilities;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,12 +38,15 @@ public class ScalerZero extends AbstractControl {
 	/**
 	 * Constructs a new dialog for zeroing scaler values.
 	 * 
+	 * @param frame
+	 *            application frame
+	 * 
 	 * @param broadcast
 	 *            for broadcasting scaler commands
 	 */
 	@Inject
-	public ScalerZero(final BroadcastUtilities broadcast) {
-		super("Zero Scalers", true);
+	public ScalerZero(final Frame frame, final BroadcastUtilities broadcast) {
+		super(frame, "Zero Scalers", true);
 		this.broadcast = broadcast;
 		final Container dzc = getContentPane();
 		setResizable(false);

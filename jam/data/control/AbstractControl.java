@@ -1,9 +1,9 @@
 package jam.data.control;
 
-import injection.GuiceInjector;
 import jam.global.Broadcaster;
 
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,8 +61,9 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	 * @param modal
 	 *            whether dialog is modal
 	 */
-	protected AbstractControl(final String title, final boolean modal) {
-		super(GuiceInjector.getFrame(), title, modal);
+	protected AbstractControl(final Frame frame, final String title,
+			final boolean modal) {
+		super(frame, title, modal);
 		controllers.add(this);
 		BROADCASTER.addObserver(this);
 	}

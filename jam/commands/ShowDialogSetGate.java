@@ -12,6 +12,8 @@ import java.util.Observer;
 import javax.swing.Action;
 import javax.swing.Icon;
 
+import com.google.inject.Inject;
+
 /**
  * Show the scalers dialog box
  * 
@@ -20,8 +22,14 @@ import javax.swing.Icon;
  */
 final class ShowDialogSetGate extends AbstractShowDialog implements Observer {
 
-	ShowDialogSetGate() {
+	@Inject
+	ShowDialogSetGate(final GateSet gateSet) {
 		super();
+		dialog = gateSet;
+		putValue(NAME, "Set\u2026");
+		final Icon iGateSet = loadToolbarIcon("jam/ui/GateSet.png");
+		putValue(Action.SMALL_ICON, iGateSet);
+		putValue(Action.SHORT_DESCRIPTION, "Set Gate.");
 	}
 
 	private void decideEnable() {
@@ -30,14 +38,6 @@ final class ShowDialogSetGate extends AbstractShowDialog implements Observer {
 			final AbstractHistogram hist = (AbstractHistogram) named;
 			setEnabled(!hist.getGateCollection().getGates().isEmpty());
 		}
-	}
-
-	public void initCommand() {
-		putValue(NAME, "Set\u2026");
-		dialog = new GateSet();
-		final Icon iGateSet = loadToolbarIcon("jam/ui/GateSet.png");
-		putValue(Action.SMALL_ICON, iGateSet);
-		putValue(Action.SHORT_DESCRIPTION, "Set Gate.");
 	}
 
 	public void update(final Observable observe, final Object obj) {

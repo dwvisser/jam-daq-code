@@ -13,6 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -70,6 +71,9 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 	/**
 	 * Constructs a gain shift dialog.
 	 * 
+	 * @param frame
+	 *            application frame
+	 * 
 	 * @param status
 	 *            application status
 	 * 
@@ -77,8 +81,8 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 	 *            where to print messages
 	 */
 	@Inject
-	public GainShift(final JamStatus status) {
-		super("Gain Shift 1-D Histogram", false);
+	public GainShift(final Frame frame, final JamStatus status) {
+		super(frame, "Gain Shift 1-D Histogram", false);
 		chan1i = 0.0;
 		chan2i = 1.0;
 		chan1f = 0.0;

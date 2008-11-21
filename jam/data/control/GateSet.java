@@ -12,6 +12,7 @@ import jam.ui.SelectionTree;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Polygon;
 import java.awt.event.ActionEvent;
@@ -31,6 +32,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+
+import com.google.inject.Inject;
 
 /**
  * Class to set 1 D and 2 D gates.
@@ -59,9 +62,13 @@ public final class GateSet extends AbstractControl {
 
 	/**
 	 * Creates an instance of the GateControl class.
+	 * 
+	 * @param frame
+	 *            application frame
 	 */
-	public GateSet() {// NOPMD
-		super("Gate setting <none>", false);
+	@Inject
+	public GateSet(final Frame frame) {
+		super(frame, "Gate setting <none>", false);
 		setResizable(false);
 		final java.awt.Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
@@ -340,8 +347,8 @@ public final class GateSet extends AbstractControl {
 			final int lim1 = Integer.parseInt(textLower.getText());
 			final int lim2 = Integer.parseInt(textUpper.getText());
 			currentGate.setLimits(lim1, lim2);
-			LOGGER.info("Gate Set " + currentGate.getName()
-					+ " Limits=" + lim1 + "," + lim2);
+			LOGGER.info("Gate Set " + currentGate.getName() + " Limits=" + lim1
+					+ "," + lim2);
 		} else if (currentHistogram instanceof AbstractHist2D) {
 			saveTwoDimensionalGate();
 		}

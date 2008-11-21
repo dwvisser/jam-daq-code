@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -67,12 +68,15 @@ public final class Projections extends AbstractManipulation implements
 	/**
 	 * Constructs a new projections dialog.
 	 * 
+	 * @param frame
+	 *            application frame
+	 * 
 	 * @param status
 	 *            application status
 	 */
 	@Inject
-	public Projections(final JamStatus status) {
-		super("Project 2D Histogram", false);
+	public Projections(final Frame frame, final JamStatus status) {
+		super(frame, "Project 2D Histogram", false);
 		setResizable(false);
 		final int hgap = 5;
 		final int vgap = 10;

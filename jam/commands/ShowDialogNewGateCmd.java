@@ -9,18 +9,17 @@ import jam.ui.SelectionTree;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.inject.Inject;
+
 /**
  * Show the new gate dialog
  */
 final class ShowDialogNewGateCmd extends AbstractShowDialog implements Observer {
 
-	ShowDialogNewGateCmd() {
+	@Inject
+	ShowDialogNewGateCmd(final GateNew gateNew) {
 		super("New\u2026");
-	}
-
-	public void initCommand() {
-		/* Super class member next line */
-		dialog = new GateNew();
+		dialog = gateNew;
 	}
 
 	public void update(final Observable observe, final Object obj) {

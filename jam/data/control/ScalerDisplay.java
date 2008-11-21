@@ -13,6 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -74,14 +75,18 @@ public final class ScalerDisplay extends AbstractControl {
 	/**
 	 * Creates the dialog box for reading and zeroing scalers.
 	 * 
+	 * @param frame
+	 *            application frame
+	 * 
 	 * @param broadcast
 	 *            for broadcasting scaler commands
 	 * @param status
+	 *            application status
 	 */
 	@Inject
-	public ScalerDisplay(final BroadcastUtilities broadcast,
+	public ScalerDisplay(final Frame frame, final BroadcastUtilities broadcast,
 			final JamStatus status) {
-		super("Scalers", false);
+		super(frame, "Scalers", false);
 		this.broadcast = broadcast;
 		this.status = status;
 		broadcaster.addObserver(this);

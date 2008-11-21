@@ -14,6 +14,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +33,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 /**
  * Reads and displays the monitors.
  * 
@@ -40,6 +44,7 @@ import javax.swing.border.EmptyBorder;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since JDK1.1
  */
+@Singleton
 public final class MonitorControl extends AbstractControl implements Runnable {
 
 	// widgets for configuration
@@ -58,22 +63,6 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 
 	private static final int BORDER_HEIGHT = 5;
 
-	private static final Object classMonitor = new Object();
-
-	private static MonitorControl singletonInstance = null;
-
-	/**
-	 * @return the only instance of this class
-	 */
-	static public MonitorControl getSingletonInstance() {
-		synchronized (classMonitor) {
-			if (singletonInstance == null) {
-				singletonInstance = new MonitorControl();
-			}
-			return singletonInstance;
-		}
-	}
-
 	private transient boolean configured = false; // monitors have been
 	// configured
 
@@ -85,8 +74,9 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 
 	private transient final JSpinner spinnerUpdate;
 
-	MonitorControl() {
-		super("Monitors Setup", false);
+	@Inject
+	MonitorControl(final Frame frame) {
+		super(frame, "Monitors Setup", false);
 		setResizable(true);
 		setLocation(20, 50);
 		final Container cddisp = getContentPane();

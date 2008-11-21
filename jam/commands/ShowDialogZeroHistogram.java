@@ -10,6 +10,8 @@ import java.util.Observer;
 import javax.swing.Action;
 import javax.swing.Icon;
 
+import com.google.inject.Inject;
+
 /**
  * Show the zero histograms dialog
  * 
@@ -22,12 +24,13 @@ final class ShowDialogZeroHistogram extends AbstractShowDialog implements
 	/**
 	 * Initialize command
 	 */
-	ShowDialogZeroHistogram() {
+	@Inject
+	ShowDialogZeroHistogram(final HistogramZero histogramZero) {
 		super("Zero\u2026");
 		final Icon iZero = loadToolbarIcon("jam/ui/Zero.png");
 		putValue(Action.SMALL_ICON, iZero);
 		putValue(Action.SHORT_DESCRIPTION, "Zero Histograms.");
-		dialog = new HistogramZero();
+		dialog = histogramZero;
 	}
 
 	public void update(final Observable observe, final Object obj) {

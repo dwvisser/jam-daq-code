@@ -6,8 +6,11 @@ import jam.global.BroadcastEvent;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 
 import javax.swing.JTextField;
+
+import com.google.inject.Inject;
 
 /**
  * * Class create a new group
@@ -21,9 +24,13 @@ public class GroupNew extends AbstractControl {
 
 	/**
 	 * Constructs a "new group" dialog command.
+	 * 
+	 * @param frame
+	 *            application frame
 	 */
-	public GroupNew() {
-		super("New Group", false);
+	@Inject
+	public GroupNew(final Frame frame) {
+		super(frame, "New Group", false);
 		textName = GroupControlInitializer.initializeDialog(this);
 		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
 				new PanelOKApplyCancelButtons.AbstractListener(this) {

@@ -6,6 +6,7 @@ import jam.ui.SelectionTree;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Inject;
+
 /**
  * Zero histograms dialog
  */
@@ -26,11 +29,12 @@ public class HistogramZero extends AbstractControl {
 	/**
 	 * Construct a new "zero histograms" dialog.
 	 * 
-	 * @param mh
-	 *            where to print messages
+	 * @param frame
+	 *            application frame
 	 */
-	public HistogramZero() {
-		super("Zero Histograms", false);
+	@Inject
+	public HistogramZero(final Frame frame) {
+		super(frame, "Zero Histograms", false);
 		/* zero histogram dialog box */
 		final Container dzc = getContentPane();
 		setResizable(false);
@@ -70,6 +74,7 @@ public class HistogramZero extends AbstractControl {
 		dzc.add(pButton);
 		pack();
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(final WindowEvent event) {
 				dispose();
 			}
@@ -84,7 +89,8 @@ public class HistogramZero extends AbstractControl {
 		final String methname = "zeroAll";
 		LOGGER.entering(classname, methname);
 		LOGGER.info("Zero All");
-		final List<AbstractHistogram> allHistograms = AbstractHistogram.getHistogramList();
+		final List<AbstractHistogram> allHistograms = AbstractHistogram
+				.getHistogramList();
 		for (AbstractHistogram hist : allHistograms) {
 			hist.setZero();
 		}
@@ -92,6 +98,7 @@ public class HistogramZero extends AbstractControl {
 		LOGGER.exiting(classname, methname);
 	}
 
+	@Override
 	public void doSetup() {
 		/* nothing to do */
 	}

@@ -9,6 +9,7 @@ import jam.global.Nameable;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.util.logging.Level;
 
 import javax.swing.JTextField;
@@ -32,12 +33,15 @@ public class GroupRename extends AbstractControl {
 	/**
 	 * Constructs a "new group" dialog command.
 	 * 
+	 * @param frame
+	 *            application frame
+	 * 
 	 * @param status
 	 *            application status
 	 */
 	@Inject
-	public GroupRename(final JamStatus status) {
-		super("Rename Group ", false);
+	public GroupRename(final Frame frame, final JamStatus status) {
+		super(frame, "Rename Group ", false);
 		this.status = status;
 		textName = GroupControlInitializer.initializeDialog(this);
 		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(

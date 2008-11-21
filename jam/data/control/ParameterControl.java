@@ -6,6 +6,7 @@ import jam.ui.ExtensionFileFilter;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +30,8 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+
+import com.google.inject.Inject;
 
 /**
  * Sets and displays the Parameters (data.Parameters.class) used for sorting
@@ -57,9 +60,13 @@ public final class ParameterControl extends AbstractControl {
 
 	/**
 	 * Constructs a new parameter dialog.
+	 * 
+	 * @param frame
+	 *            application frame
 	 */
-	public ParameterControl() {
-		super("Sort Parameters", true);
+	@Inject
+	public ParameterControl(final Frame frame) {
+		super(frame, "Sort Parameters", true);
 		/* dialog box to display Parameters */
 		setResizable(true);
 		setLocation(20, 50);
