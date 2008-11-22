@@ -1,15 +1,17 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.data.Group;
 import jam.global.CommandListenerException;
+import jam.global.JamStatus;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
+import java.awt.Frame;
 import java.io.File;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
+
+import com.google.inject.Inject;
 
 /**
  * * Command to save a group of histograms.
@@ -19,14 +21,22 @@ import javax.swing.JFrame;
  */
 public class SaveGroupHDFCmd extends AbstractCommand {
 
-	SaveGroupHDFCmd() {
+	private transient final Frame frame;
+	private transient final JamStatus status;
+	private transient final HDFIO hdfio;
+
+	@Inject
+	SaveGroupHDFCmd(final Frame frame, final JamStatus status, final HDFIO hdfio) {
 		super("Save select group as\u2026");
+		this.frame = frame;
+		this.status = status;
+		this.hdfio = hdfio;
 	}
 
 	@Override
 	protected void execute(final Object[] cmdParams) throws CommandException {
 		File file = null;
-		Group group = (Group) GuiceInjector.getJamStatus().getCurrentGroup();
+		Group group = (Group) status.getCurrentGroup();
 		if (cmdParams != null) {
 			if (cmdParams.length > 0) {
 				file = (File) cmdParams[0];
@@ -39,8 +49,6 @@ public class SaveGroupHDFCmd extends AbstractCommand {
 	}
 
 	private void saveGroup(final File file, final Group group) {
-		final JFrame frame = GuiceInjector.getFrame();
-		final HDFIO hdfio = new HDFIO(frame);
 		if (group == null) {
 			LOGGER.severe("Need to select a group.");
 		} else {

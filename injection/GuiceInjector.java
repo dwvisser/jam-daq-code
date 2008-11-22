@@ -4,6 +4,7 @@ import jam.JamInitialization;
 import jam.commands.Commandable;
 import jam.global.JamStatus;
 import jam.io.AbstractImpExp;
+import jam.io.hdf.HDFIO;
 import jam.script.Session;
 
 import javax.swing.JFrame;
@@ -72,6 +73,13 @@ public final class GuiceInjector {
 	 */
 	public static <T extends AbstractImpExp> T getInstance(final Class<T> clazz) {
 		return injector.getInstance(clazz);
+	}
+
+	/**
+	 * @return object for reading/writing Jam HDF files
+	 */
+	public static HDFIO getHDFIO() {
+		return injector.getInstance(HDFIO.class);
 	}
 
 }

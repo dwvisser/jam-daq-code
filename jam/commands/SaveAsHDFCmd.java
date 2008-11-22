@@ -1,17 +1,18 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
+import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.KeyStroke;
+
+import com.google.inject.Inject;
 
 /**
  * Save data to an hdf file.
@@ -20,8 +21,14 @@ import javax.swing.KeyStroke;
  */
 final class SaveAsHDFCmd extends AbstractCommand {
 
-	SaveAsHDFCmd() {
+	private transient final HDFIO hdfio;
+	private transient final Frame frame;
+
+	@Inject
+	SaveAsHDFCmd(final Frame frame, final HDFIO hdfio) {
 		super("Save as\u2026");
+		this.frame = frame;
+		this.hdfio = hdfio;
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S,
 				CTRL_MASK));
 		final Icon iSaveAs = loadToolbarIcon("jam/ui/SaveAsHDF.png");
@@ -50,8 +57,6 @@ final class SaveAsHDFCmd extends AbstractCommand {
 	}
 
 	private void saveHDFFile(final File file) {
-		final JFrame frame = GuiceInjector.getFrame();
-		final HDFIO hdfio = new HDFIO(frame);
 		if (file == null) { // No file given
 			final JFileChooser jfile = new JFileChooser(HDFIO
 					.getLastValidFile());

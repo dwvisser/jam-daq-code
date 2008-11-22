@@ -1,20 +1,22 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.data.Group;
 import jam.data.Warehouse;
 import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
+import java.awt.Frame;
 import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
+
+import com.google.inject.Inject;
 
 /**
  * Command to save the sort group of histograms.
@@ -24,8 +26,17 @@ import javax.swing.JFrame;
  */
 final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 
-	SaveSortGroupHDFCmd() {
+	private transient final Frame frame;
+	private transient final JamStatus status;
+	private transient final HDFIO hdfio;
+
+	@Inject
+	SaveSortGroupHDFCmd(final Frame frame, final JamStatus status,
+			final HDFIO hdfio) {
 		super("Save sort group as\u2026");
+		this.frame = frame;
+		this.status = status;
+		this.hdfio = hdfio;
 	}
 
 	/*
@@ -44,9 +55,7 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 	}
 
 	private void saveSortGroup(final File file) {
-		final JFrame frame = GuiceInjector.getFrame();
-		final HDFIO hdfio = new HDFIO(frame);
-		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
+		final QuerySortMode mode = this.status.getSortMode();
 		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK
 				|| mode == SortMode.OFFLINE) {
 			/* find sort group */
@@ -93,7 +102,7 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 	}
 
 	private void enable() {
-		final QuerySortMode mode = GuiceInjector.getJamStatus().getSortMode();
+		final QuerySortMode mode = this.status;
 		setEnabled(mode == SortMode.OFFLINE || mode == SortMode.ONLINE_DISK
 				|| mode == SortMode.ON_NO_DISK);
 	}

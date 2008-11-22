@@ -9,6 +9,7 @@ import jam.global.BroadcastEvent;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
+import jam.io.hdf.HDFIO;
 import jam.ui.SelectionTree;
 
 import java.awt.Event;
@@ -16,6 +17,8 @@ import java.awt.event.KeyEvent;
 import java.util.Observable;
 
 import javax.swing.KeyStroke;
+
+import com.google.inject.Inject;
 
 /**
  * Reload data from a hdf file
@@ -25,8 +28,9 @@ import javax.swing.KeyStroke;
  */
 final class ReloadHDFCmd extends AbstractLoaderHDF {
 
-	ReloadHDFCmd() {
-		super();
+	@Inject
+	ReloadHDFCmd(final HDFIO hdfio) {
+		super(hdfio);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package test.io.hdf;
 
+import injection.GuiceInjector;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 
@@ -40,7 +41,7 @@ public class HDFIOTest extends TestCase {
 		try {
 			uri = url.toURI();
 			final File file = new File(uri);
-			final HDFIO hdfio = new HDFIO(null);
+			final HDFIO hdfio = GuiceInjector.getHDFIO();
 			hdfio.readFile(FileOpenMode.OPEN, file);
 		} catch (URISyntaxException e) {
 			fail(e.getMessage());

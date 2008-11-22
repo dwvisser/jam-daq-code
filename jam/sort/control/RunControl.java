@@ -1,6 +1,5 @@
 package jam.sort.control;
 
-import injection.GuiceInjector;
 import jam.comm.FrontEndCommunication;
 import jam.comm.ScalerCommunication;
 import jam.data.Warehouse;
@@ -9,7 +8,7 @@ import jam.global.JamStatus;
 import jam.global.RunInfo;
 import jam.global.RunState;
 import jam.global.GoodThread.State;
-import jam.io.DataIO;
+import jam.io.hdf.HDFIO;
 import jam.sort.Controller;
 import jam.sort.DiskDaemon;
 import jam.sort.NetDaemon;
@@ -117,6 +116,10 @@ public final class RunControl extends JDialog implements Controller,
 
 	private transient final JCheckBox zeroScalers;
 
+	private transient final Frame frame;
+
+	private transient final HDFIO hdfio;
+
 	/**
 	 * Creates the run control dialog box.
 	 * 
@@ -124,8 +127,11 @@ public final class RunControl extends JDialog implements Controller,
 	 *            parent frame
 	 */
 	@Inject
-	private RunControl(final Frame frame, final JamStatus status) {
+	private RunControl(final Frame frame, final JamStatus status,
+			final HDFIO hdfio) {
 		super(frame, "Run", false);
+		this.frame = frame;
+		this.hdfio = hdfio;
 		this.STATUS = status;
 		frontEnd = jam.comm.Factory.createFrontEndCommunication();
 		scaler = jam.comm.Factory.createScalerCommunication();
@@ -346,10 +352,9 @@ public final class RunControl extends JDialog implements Controller,
 		final File histFile = new File(histPath, histFileName);
 		LOGGER.info("Sorting finished writing out histogram file: "
 				+ histFile.getPath());
-		final Frame jamMain = GuiceInjector.getFrame();
-		final DataIO dataio = new jam.io.hdf.HDFIO(jamMain);
-		dataio.writeFile(histFile, Warehouse.getSortGroupGetter()
-				.getSortGroup());
+		hdfio
+				.writeFile(histFile, Warehouse.getSortGroupGetter()
+						.getSortGroup());
 		RunInfo.getInstance().runNumber++;// increment run number
 		tRunNumber.setText(Integer.toString(RunInfo.getInstance().runNumber));
 		setRunOn(false);
@@ -359,7 +364,7 @@ public final class RunControl extends JDialog implements Controller,
 	}
 
 	/**
-	 * flush the vme buffer
+	 * flush the VME buffer
 	 */
 	public void flushAcq() {
 		frontEnd.flush();

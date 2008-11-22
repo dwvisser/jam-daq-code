@@ -17,6 +17,8 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
 
+import com.google.inject.Inject;
+
 /**
  * Open an additional hdf file
  * 
@@ -28,10 +30,11 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 
 	private transient final HDFIO hdfio;
 
-	OpenAdditionalHDF() {
+	@Inject
+	OpenAdditionalHDF(final HDFIO hdfio) {
 		super();
 		putValue(NAME, "Open Additional\u2026");
-		hdfio = new HDFIO(GuiceInjector.getFrame());
+		this.hdfio = hdfio;
 		final Icon iOpenAdd = loadToolbarIcon("jam/ui/OpenAddHDF.png");
 		putValue(Action.SMALL_ICON, iOpenAdd);
 		putValue(Action.SHORT_DESCRIPTION, "Open an additional hdf data file");

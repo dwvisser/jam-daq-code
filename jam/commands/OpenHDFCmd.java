@@ -25,6 +25,8 @@ import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 
+import com.google.inject.Inject;
+
 /**
  * Open a hdf file
  * 
@@ -38,12 +40,15 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 
 	private transient final HDFIO hdfio;
 
-	OpenHDFCmd() {
+	private transient final Frame frame;
+
+	@Inject
+	OpenHDFCmd(final Frame frame, final HDFIO hdfio) {
 		super("Open\u2026");
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O,
 				CTRL_MASK));
-		final Frame frame = GuiceInjector.getFrame();
-		hdfio = new HDFIO(frame);
+		this.hdfio = hdfio;
+		this.frame = frame;
 		final Icon iOpen = loadToolbarIcon("jam/ui/OpenHDF.png");
 		putValue(Action.SMALL_ICON, iOpen);
 		putValue(Action.SHORT_DESCRIPTION, "Open an hdf data file");
@@ -70,8 +75,8 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 			final JFileChooser jfile = new JFileChooser(HDFIO
 					.getLastValidFile());
 			jfile.setFileFilter(new HDFileFilter(true));
-			final int option = jfile.showOpenDialog(GuiceInjector.getFrame());
-			// dont do anything if it was cancel
+			final int option = jfile.showOpenDialog(frame);
+			// Don't do anything if it was cancel
 			if (option == JFileChooser.APPROVE_OPTION
 					&& jfile.getSelectedFile() != null) {
 				openFile = jfile.getSelectedFile();

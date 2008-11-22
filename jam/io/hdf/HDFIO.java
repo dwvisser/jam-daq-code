@@ -1,6 +1,5 @@
 package jam.io.hdf;
 
-import injection.GuiceInjector;
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
 import jam.data.DataElement;
@@ -53,7 +52,7 @@ public final class HDFIO implements DataIO {
 	 */
 	public interface AsyncListener {
 		/**
-		 * Called when asychronous IO is completed
+		 * Called when asynchronous IO is completed
 		 * 
 		 * @param message
 		 *            if normal completion
@@ -161,19 +160,30 @@ public final class HDFIO implements DataIO {
 
 	private transient String uiMessage;
 
+	private final JamStatus status;
+
 	/**
 	 * Class constructor handed references to the main class and message
 	 * handler.
 	 * 
 	 * @param parent
 	 *            the parent window
+	 * @param status
+	 *            application status
+	 * @param jamToHDF
+	 *            converts between objects and hdf
+	 * @param hdfToJam
+	 *            converts from hdf to objects
 	 */
 	@Inject
-	public HDFIO(final Frame parent) {
+	public HDFIO(final Frame parent, final JamStatus status,
+			final ConvertJamObjToHDFObj jamToHDF,
+			final ConvertHDFObjToJamObj hdfToJam) {
 		super();
 		asyncMonitor = new AsyncProgressMonitor(parent);
-		jamToHDF = new ConvertJamObjToHDFObj();
-		hdfToJam = new ConvertHDFObjToJamObj();
+		this.jamToHDF = jamToHDF;
+		this.hdfToJam = hdfToJam;
+		this.status = status;
 	}
 
 	/*
@@ -527,7 +537,6 @@ public final class HDFIO implements DataIO {
 			currentGroup = groups.get(0);
 			// so use current group
 		} else if (mode == FileOpenMode.RELOAD) {
-			final JamStatus status = GuiceInjector.getJamStatus();
 			final Group sortGroup = SORT_GROUP_GETTER.getSortGroup();
 			status.setCurrentGroup(sortGroup);
 			currentGroup = (Group) status.getCurrentGroup();

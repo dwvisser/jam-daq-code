@@ -5,6 +5,7 @@ import jam.global.BroadcastEvent;
 import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
+import jam.io.hdf.HDFIO;
 
 import java.io.File;
 import java.util.Observable;
@@ -21,8 +22,8 @@ final class AddHDF extends AbstractLoaderHDF {
 	private transient final JamStatus status;
 
 	@Inject
-	AddHDF(final JamStatus status) {
-		super();
+	AddHDF(final HDFIO hdfio, final JamStatus status) {
+		super(hdfio);
 		this.status = status;
 	}
 

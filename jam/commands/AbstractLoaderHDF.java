@@ -11,7 +11,6 @@ import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 import jam.ui.SelectionTree;
 
-import java.awt.Frame;
 import java.io.File;
 import java.util.List;
 import java.util.Observer;
@@ -35,10 +34,9 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
 	 */
 	protected transient FileOpenMode fileOpenMode;
 
-	AbstractLoaderHDF() {
+	AbstractLoaderHDF(final HDFIO hdfio) {
 		super();
-		final Frame frame = GuiceInjector.getFrame();
-		hdfio = new HDFIO(frame);
+		this.hdfio = hdfio;
 	}
 
 	/**

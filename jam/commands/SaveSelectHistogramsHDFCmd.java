@@ -1,8 +1,9 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.global.CommandListenerException;
 import jam.io.control.SaveSelectedHistogram;
+
+import com.google.inject.Inject;
 
 /**
  * Save selected histograms to a file
@@ -12,8 +13,12 @@ import jam.io.control.SaveSelectedHistogram;
  */
 final class SaveSelectHistogramsHDFCmd extends AbstractCommand {
 
-	SaveSelectHistogramsHDFCmd() {
+	private transient final SaveSelectedHistogram saveDlg;
+
+	@Inject
+	SaveSelectHistogramsHDFCmd(final SaveSelectedHistogram saveDlg) {
 		super("Save select histograms\u2026");
+		this.saveDlg = saveDlg;
 	}
 
 	/**
@@ -21,10 +26,7 @@ final class SaveSelectHistogramsHDFCmd extends AbstractCommand {
 	 */
 	@Override
 	protected void execute(final Object[] cmdParams) {
-		final SaveSelectedHistogram saveDlg = new SaveSelectedHistogram(
-				GuiceInjector.getFrame());
 		saveDlg.show();
-
 	}
 
 	/*

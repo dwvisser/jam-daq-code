@@ -1,6 +1,5 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.global.CommandListenerException;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
@@ -10,6 +9,8 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
+import com.google.inject.Inject;
+
 /**
  * Save gates and scalers
  * 
@@ -18,8 +19,14 @@ import javax.swing.JFileChooser;
  */
 final class SaveGatesCmd extends AbstractCommand {
 
-	SaveGatesCmd() {
+	private transient final Frame frame;
+	private transient final HDFIO hdfio;
+
+	@Inject
+	SaveGatesCmd(final Frame frame, final HDFIO hdfio) {
 		super("Save gates & parameters as\u2026");
+		this.frame = frame;
+		this.hdfio = hdfio;
 	}
 
 	/**
@@ -41,8 +48,6 @@ final class SaveGatesCmd extends AbstractCommand {
 	}
 
 	private void saveGates(final File file) {
-		final Frame frame = GuiceInjector.getFrame();
-		final HDFIO hdfio = new HDFIO(frame);
 		if (file == null) { // No file given
 			final JFileChooser jfile = new JFileChooser(HDFIO
 					.getLastValidFile());

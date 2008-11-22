@@ -26,6 +26,8 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Inject;
+
 /**
  * Save a selection of histograms
  * 
@@ -40,15 +42,21 @@ public final class SaveSelectedHistogram {
 
 	private transient final JList listHist;
 
+	private transient final HDFIO hdfio;
+
 	/**
 	 * Constructs a dialog to save a selection of histograms out of an HDF file.
 	 * 
 	 * @param frame
 	 *            parent frame
+	 * @param hdfio
+	 *            for saving histograms
 	 */
-	public SaveSelectedHistogram(final Frame frame) {
+	@Inject
+	public SaveSelectedHistogram(final Frame frame, final HDFIO hdfio) {
 		super();
 		this.frame = frame;
+		this.hdfio = hdfio;
 		dialog = new JDialog(frame, "Save Selected Histograms", false);
 		dialog.setLocation(frame.getLocation().x + 50,
 				frame.getLocation().y + 50);
@@ -126,7 +134,6 @@ public final class SaveSelectedHistogram {
 	 * 
 	 */
 	private void saveHistListToFile() {
-		final HDFIO hdfio = new HDFIO(frame);
 		final List<AbstractHistogram> listSelected = new ArrayList<AbstractHistogram>();
 		File file = null;
 		/* Add selected histograms to a list. */

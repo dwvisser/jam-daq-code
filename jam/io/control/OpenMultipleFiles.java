@@ -76,13 +76,16 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 *            parent frame
 	 * @param status
 	 *            application status
+	 * @param hdfio
+	 *            for opening HDF files
 	 * @param console
 	 *            where to print messages
 	 */
 	@Inject
-	public OpenMultipleFiles(final java.awt.Frame parent, final JamStatus status) {
+	public OpenMultipleFiles(final java.awt.Frame parent,
+			final JamStatus status, final HDFIO hdfio) {
 		broadcaster = Broadcaster.getSingletonInstance();
-		hdfio = new HDFIO(parent);
+		this.hdfio = hdfio;
 		this.status = status;
 		dialog = new JDialog(parent, "Open Multiple Files");
 		dialog.setLocation(parent.getLocation().x + 50,

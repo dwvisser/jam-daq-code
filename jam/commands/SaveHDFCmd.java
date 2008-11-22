@@ -1,6 +1,5 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.JamStatus;
 import jam.global.QuerySortMode;
@@ -15,8 +14,9 @@ import java.util.Observer;
 
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.JFrame;
 import javax.swing.KeyStroke;
+
+import com.google.inject.Inject;
 
 /**
  * Save to a hdf file
@@ -26,8 +26,14 @@ import javax.swing.KeyStroke;
  */
 final class SaveHDFCmd extends AbstractCommand implements Observer {
 
-	SaveHDFCmd() {
+	private transient final JamStatus status;
+	private transient final HDFIO hdfio;
+
+	@Inject
+	SaveHDFCmd(final JamStatus status, final HDFIO hdfio) {
 		super("Save");
+		this.status = status;
+		this.hdfio = hdfio;
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S,
 				CTRL_MASK | InputEvent.SHIFT_MASK));
 		final Icon iSave = loadToolbarIcon("jam/ui/SaveHDF.png");
@@ -48,9 +54,7 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	@Override
 	protected void execute(final Object[] cmdParams) {
 		// No command options used
-		final JFrame frame = GuiceInjector.getFrame();
-		final HDFIO hdfio = new HDFIO(frame);
-		final File file = GuiceInjector.getJamStatus().getOpenFile();
+		final File file = this.status.getOpenFile();
 		if (file == null) { // File null, shouldn't be.
 			throw new IllegalStateException(
 					"Expected a reference for the previously accessed file.");
@@ -84,7 +88,6 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	}
 
 	private void enable() {
-		final JamStatus status = GuiceInjector.getJamStatus();
 		final QuerySortMode mode = status.getSortMode();
 		final boolean file = status.getOpenFile() != null;
 		setEnabled(file && (mode == SortMode.FILE || mode == SortMode.NO_SORT));
