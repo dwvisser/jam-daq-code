@@ -118,7 +118,7 @@ public final class NetDaemon extends GoodThread {
 
 	/**
 	 * Called when we've definitely lost a buffer we were meant to receive due
-	 * to a full ringbuffer.
+	 * to a full ring buffer.
 	 * 
 	 * @param state
 	 *            <code>true</code> if we lost a buffer, <code>false</code> to

@@ -1,6 +1,5 @@
 package jam.sort.control;
 
-import injection.GuiceInjector;
 import jam.global.Help;
 import jam.global.JamProperties;
 
@@ -8,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -26,6 +26,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 
+import com.google.inject.Inject;
+
 /**
  * Dialog to so the configuration
  */
@@ -35,9 +37,13 @@ public class ConfigurationDisplay extends JDialog {
 
 	/**
 	 * Constructor.
+	 * 
+	 * @param frame
+	 *            application frame
 	 */
-	public ConfigurationDisplay() {
-		super(GuiceInjector.getFrame(), "Configuration");
+	@Inject
+	public ConfigurationDisplay(final Frame frame) {
+		super(frame, "Configuration");
 		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout(10, 10));
 		setSize(400, 400);

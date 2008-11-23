@@ -114,14 +114,17 @@ public final class SetupSortOn extends AbstractSetup {
 
 	private transient final JTextField textPathHist, textPathData, textPathLog;
 
+	private final DisplayCounters displayCounters;
+
 	@Inject
 	private SetupSortOn(final ConsoleLog console, final JFrame frame,
-			final RunControl runControl) {
+			final RunControl runControl, final DisplayCounters displayCounters) {
 		super("Setup Online");
 		initCheckLock();
 		initDiskCheckbox();
 		readProperties();
 		this.runControl = runControl;
+		this.displayCounters = displayCounters;
 		consoleLog = console;
 		dialog.setResizable(false);
 		dialog.setLocation(20, 50);
@@ -551,8 +554,7 @@ public final class SetupSortOn extends AbstractSetup {
 		runControl.setupOn(exptName, dataFolder, histFolder, sortDaemon,
 				netDaemon, diskDaemon);
 		/* Tell the status dialog. */
-		DisplayCounters.getSingletonInstance().setupOn(netDaemon, sortDaemon,
-				diskDaemon);
+		displayCounters.setupOn(netDaemon, sortDaemon, diskDaemon);
 		/* Startup the daemons. */
 		if (useDisk) {
 			diskDaemon.start();

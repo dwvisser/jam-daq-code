@@ -55,11 +55,15 @@ public final class SetupSortOff extends AbstractSetup {
 
 	private transient final JamStatus status;
 
+	private transient final DisplayCounters displayCounters;
+
 	@Inject
-	protected SetupSortOff(final SortControl sortControl, final JamStatus status) {
+	protected SetupSortOff(final SortControl sortControl,
+			final JamStatus status, final DisplayCounters displayCounters) {
 		super("Setup Offline");
 		this.status = status;
 		this.sortControl = sortControl;
+		this.displayCounters = displayCounters;
 		final java.awt.Container contents = dialog.getContentPane();
 		dialog.setResizable(false);
 		final int posx = 20;
@@ -268,7 +272,7 @@ public final class SetupSortOff extends AbstractSetup {
 		/* tell run control about all, disk always to device */
 		sortControl.setup(sortDaemon, diskDaemon, diskDaemon);
 		/* tell status to setup */
-		DisplayCounters.getSingletonInstance().setupOff(sortDaemon, diskDaemon);
+		this.displayCounters.setupOff(sortDaemon, diskDaemon);
 		/*
 		 * start sortDaemon which is then suspended by Sort control until files
 		 * entered

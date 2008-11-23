@@ -1,6 +1,5 @@
 package jam.sort.control;
 
-import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -11,6 +10,7 @@ import jam.sort.SortDaemon;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +22,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 /**
  * Displays buffer counters of sort threads. Gives the number of buffers and
  * events received and sorted.
@@ -29,25 +32,10 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  * @version 05 newest done 9-98
  */
+@Singleton
 public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 
-	private static final Object classMonitor = new Object();
-
-	static private DisplayCounters instance = null;
-
-	private final static JamStatus STATUS = GuiceInjector.getJamStatus();
-
-	/**
-	 * @return the only instance of this class
-	 */
-	static public DisplayCounters getSingletonInstance() {
-		synchronized (classMonitor) {
-			if (instance == null) {
-				instance = new DisplayCounters();
-			}
-			return instance;
-		}
-	}
+	private transient final JamStatus status;
 
 	private transient final Broadcaster broadcaster;
 
@@ -86,8 +74,10 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 
 	private transient AbstractStorageDaemon storeDaemon;
 
-	private DisplayCounters() {
-		super(GuiceInjector.getFrame(), "Buffer Counters", false);
+	@Inject
+	private DisplayCounters(final JamStatus status, final Frame frame) {
+		super(frame, "Buffer Counters", false);
+		this.status = status;
 		final int xpos = 20;
 		final int ypos = 50;
 		final int maingap = 10;
@@ -118,7 +108,7 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 		bclear.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
 				final String space = " ";
-				if (STATUS.getSortMode().isOnline()) {
+				if (status.getSortMode().isOnline()) {
 					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_ZERO);
 					pBuffSort.setText(space);
 					sortDaemon.setBufferCount(0);
@@ -168,7 +158,7 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 		final JButton bupdate = new JButton("Update");
 		bupdate.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				if (STATUS.getSortMode().isOnline()) {
+				if (status.getSortMode().isOnline()) {
 					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_READ);
 					pBuffRecv.setText(String
 							.valueOf(netDaemon.getPacketCount()));
@@ -259,7 +249,7 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 		final BroadcastEvent event = (BroadcastEvent) object;
 		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.COUNTERS_UPDATE) {
-			if (STATUS.getSortMode().isOnline()) {
+			if (status.getSortMode().isOnline()) {
 				/* update remote fields */
 				final int[] vmeCounters = (int[]) event.getContent();
 				pBuffSent.setText(String.valueOf(vmeCounters[iBufferCt]));

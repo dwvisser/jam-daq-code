@@ -23,8 +23,6 @@
  **************************************************************/
 package jam.util;
 
-import injection.GuiceInjector;
-
 import java.awt.Frame;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -35,6 +33,8 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.swing.ProgressMonitor;
+
+import com.google.inject.Inject;
 
 /**
  * Scans YaleCAEN event files for scaler blocks.
@@ -56,10 +56,14 @@ public class YaleCAENgetScalers {
 	/**
 	 * Constructs an object that can scan YaleCAEN event files for scaler
 	 * blocks.
+	 * 
+	 * @param frame
+	 *            application frame
 	 */
-	public YaleCAENgetScalers() {
+	@Inject
+	public YaleCAENgetScalers(final Frame frame) {
 		super();
-		frame = GuiceInjector.getFrame();
+		this.frame = frame;
 	}
 
 	private void display() {

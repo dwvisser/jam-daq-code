@@ -2,6 +2,8 @@ package jam.commands;
 
 import jam.sort.control.ConfigurationDisplay;
 
+import com.google.inject.Inject;
+
 /**
  * Show the dialog which displays configuration parameters.
  * 
@@ -10,8 +12,9 @@ import jam.sort.control.ConfigurationDisplay;
  */
 public class ShowDialogConfiguration extends AbstractShowDialog {
 
-	ShowDialogConfiguration() {
+	@Inject
+	ShowDialogConfiguration(final ConfigurationDisplay configurationDisplay) {
 		super("View Configuration\u2026");
-		dialog = new ConfigurationDisplay();
+		dialog = configurationDisplay;
 	}
 }

@@ -10,6 +10,8 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
+import com.google.inject.Inject;
+
 /**
  * Open a file with YaleCAEN scalers.
  * 
@@ -17,11 +19,15 @@ import javax.swing.JFileChooser;
  */
 final class OpenScalersYaleCAEN extends AbstractCommand {
 
+	private transient final YaleCAENgetScalers ycs;
 
-	OpenScalersYaleCAEN() {
+	@Inject
+	OpenScalersYaleCAEN(final YaleCAENgetScalers ycs) {
 		super("Display scalers from YaleCAEN event file\u2026");
+		this.ycs = ycs;
 	}
 
+	@Override
 	protected void execute(final Object[] cmdParams) {
 		final File file;
 		if (cmdParams == null) {
@@ -31,24 +37,23 @@ final class OpenScalersYaleCAEN extends AbstractCommand {
 		}
 
 		if (file != null) {
-			final YaleCAENgetScalers ycs = new YaleCAENgetScalers();
 			ycs.processEventFile(file);
 		}
 	}
 
+	@Override
 	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
 		execute(null);
 	}
 
-	private transient File lastFile = new File(JamProperties//NOPMD
+	private transient File lastFile = new File(JamProperties// NOPMD
 			.getPropString(PropertyKeys.EVENT_INPATH));
 
 	/**
 	 * Get a *.evn file from a JFileChooser.
 	 * 
-	 * @return a <code>File</code> chosen by the user, null if dialog
-	 *         cancelled
+	 * @return a <code>File</code> chosen by the user, null if dialog cancelled
 	 */
 	private File getFile() {
 		File file = null;
