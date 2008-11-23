@@ -5,6 +5,7 @@ import jam.commands.Commandable;
 import jam.global.JamStatus;
 import jam.io.AbstractImpExp;
 import jam.io.hdf.HDFIO;
+import jam.plot.Action;
 import jam.script.Session;
 
 import javax.swing.JFrame;
@@ -80,6 +81,13 @@ public final class GuiceInjector {
 	 */
 	public static HDFIO getHDFIO() {
 		return injector.getInstance(HDFIO.class);
+	}
+
+	/**
+	 * @return object for handling plot actions
+	 */
+	public static Action getAction() {
+		return injector.getInstance(Action.class);
 	}
 
 }

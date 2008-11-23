@@ -6,6 +6,8 @@ import jam.global.AcquisitionStatus;
 import jam.global.Broadcaster;
 import jam.global.CommandFinder;
 import jam.global.JamStatus;
+import jam.plot.CurrentPlotAccessor;
+import jam.plot.PlotDisplay;
 import jam.ui.Console;
 import jam.ui.ConsoleLog;
 
@@ -37,6 +39,7 @@ public final class Module extends AbstractModule {
 		this.bind(Broadcaster.class).toInstance(
 				Broadcaster.getSingletonInstance());
 		this.bind(AcquisitionStatus.class).to(JamStatus.class);
+		this.bind(CurrentPlotAccessor.class).to(PlotDisplay.class);
 	}
 
 	class FrameProvider implements Provider<Frame> {

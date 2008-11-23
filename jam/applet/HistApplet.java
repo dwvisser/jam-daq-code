@@ -200,7 +200,8 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 		this.add(BorderLayout.SOUTH, console);
 		/* display in middle */
 		display = new PlotDisplay(console, CommandManager.getInstance()
-				.getCommandFinder(), GuiceInjector.getJamStatus());
+				.getCommandFinder(), GuiceInjector.getJamStatus(),
+				GuiceInjector.getAction());
 		this.add(display);
 		addToolbarSelect(ptop);// tool bar for selecting
 		/*

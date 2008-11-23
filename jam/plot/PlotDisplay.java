@@ -86,15 +86,17 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 *            finds commands
 	 * @param status
 	 *            application status
+	 * @param action
+	 *            handles plot actions
 	 */
 	@Inject
 	public PlotDisplay(final Console console, final CommandFinder finder,
-			final JamStatus status) {
+			final JamStatus status, final Action action) {
 		super();
 		this.status = status;
+		this.action = action;
 		Broadcaster.getSingletonInstance().addObserver(this);
 		/* display event handler */
-		action = new Action(this, console, finder);
 		PREFS.addPreferenceChangeListener(this);
 		createGridPanel();
 		toolbar = new Toolbar(this, action);

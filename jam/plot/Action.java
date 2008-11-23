@@ -21,7 +21,6 @@ import static jam.plot.PlotCommands.ZOOMHORZ;
 import static jam.plot.PlotCommands.ZOOMIN;
 import static jam.plot.PlotCommands.ZOOMOUT;
 import static jam.plot.PlotCommands.ZOOMVERT;
-import injection.GuiceInjector;
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
 import jam.data.DataUtility;
@@ -49,6 +48,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+
 /**
  * Class the does the actions on plots. Receives commands from buttons and
  * command line. Performs action by performing command on plot, plot1d and
@@ -75,7 +76,7 @@ import java.util.logging.Logger;
  * @version 0.5
  */
 
-final class Action {
+public final class Action {
 
 	/** Broadcaster for event and gate change */
 	private static final Broadcaster BROADCASTER = Broadcaster
@@ -163,6 +164,8 @@ final class Action {
 
 	private transient final AutoCounts autoCounts = new AutoCounts();
 
+	private transient final JamStatus status;
+
 	/**
 	 * Master constructor has no broadcaster.
 	 * 
@@ -171,12 +174,14 @@ final class Action {
 	 * @param console
 	 *            Jam's console component
 	 */
+	@Inject
 	Action(final CurrentPlotAccessor disp, final Console console,
-			final CommandFinder finder) {
+			final CommandFinder finder, final JamStatus status) {
 		super();
 		this.commandFinder = finder;
 		plotAccessor = disp;
 		textOut = console.getLog();
+		this.status = status;
 		final ParseCommand parseCommand = new ParseCommand(this.commandable,
 				disp);
 		console.addCommandListener(parseCommand);
@@ -350,7 +355,6 @@ final class Action {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);
 				LOGGER.severe("There is no histogram numbered " + num + ".");
 			} else {
-				final JamStatus status = GuiceInjector.getJamStatus();
 				SelectionTree.setCurrentHistogram(histogram);
 				status.setCurrentGroup(DataUtility.getGroup(histogram));
 				textOut.messageOut(Integer.toString(num) + " ",
