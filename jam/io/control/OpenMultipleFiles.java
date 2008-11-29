@@ -83,8 +83,9 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 */
 	@Inject
 	public OpenMultipleFiles(final java.awt.Frame parent,
-			final JamStatus status, final HDFIO hdfio) {
-		broadcaster = Broadcaster.getSingletonInstance();
+			final JamStatus status, final HDFIO hdfio,
+			final Broadcaster broadcaster) {
+		this.broadcaster = broadcaster;
 		this.hdfio = hdfio;
 		this.status = status;
 		dialog = new JDialog(parent, "Open Multiple Files");

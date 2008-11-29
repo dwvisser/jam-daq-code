@@ -78,8 +78,6 @@ public final class RunControl extends JDialog implements Controller,
 		FRONT_END
 	}
 
-	private static RunControl instance = null;
-
 	private static final Logger LOGGER = Logger.getLogger(RunControl.class
 			.getPackage().getName());
 
@@ -116,8 +114,6 @@ public final class RunControl extends JDialog implements Controller,
 
 	private transient final JCheckBox zeroScalers;
 
-	private transient final Frame frame;
-
 	private transient final HDFIO hdfio;
 
 	/**
@@ -127,14 +123,14 @@ public final class RunControl extends JDialog implements Controller,
 	 *            parent frame
 	 */
 	@Inject
-	private RunControl(final Frame frame, final JamStatus status,
-			final HDFIO hdfio) {
+	protected RunControl(final Frame frame, final JamStatus status,
+			final HDFIO hdfio, final FrontEndCommunication frontEnd,
+			final ScalerCommunication scaler) {
 		super(frame, "Run", false);
-		this.frame = frame;
 		this.hdfio = hdfio;
 		this.STATUS = status;
-		frontEnd = jam.comm.Factory.createFrontEndCommunication();
-		scaler = jam.comm.Factory.createScalerCommunication();
+		this.frontEnd = frontEnd;
+		this.scaler = scaler;
 		RunInfo.getInstance().runNumber = 100;
 		setResizable(false);
 		setLocation(20, 50);

@@ -1,5 +1,6 @@
 package jam.data;
 
+import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 
@@ -19,8 +20,8 @@ import java.util.Map;
 
 public final class Scaler implements DataElement {
 
-	private static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
+	private static final Broadcaster BROADCASTER = GuiceInjector
+			.getBroadcaster();
 
 	private static final List<Scaler> LIST = Collections
 			.synchronizedList(new ArrayList<Scaler>());
@@ -62,7 +63,7 @@ public final class Scaler implements DataElement {
 	}
 
 	/**
-	 * Update all the scaler values. The value indexs refer to the scaler
+	 * Update all the scaler values. The value indices refer to the scaler
 	 * number.
 	 * 
 	 * @param inValue

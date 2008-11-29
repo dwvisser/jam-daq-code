@@ -52,9 +52,6 @@ public final class ScalerDisplay extends AbstractControl {
 
 	private static final int BORDER_HEIGHT = 5;
 
-	private transient final Broadcaster broadcaster = Broadcaster
-			.getSingletonInstance();
-
 	private transient final JButton bupdate = new JButton("Read");
 
 	private transient final JButton bzero = new JButton("Zero");
@@ -82,11 +79,13 @@ public final class ScalerDisplay extends AbstractControl {
 	 *            for broadcasting scaler commands
 	 * @param status
 	 *            application status
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
 	public ScalerDisplay(final Frame frame, final BroadcastUtilities broadcast,
-			final JamStatus status) {
-		super(frame, "Scalers", false);
+			final JamStatus status, final Broadcaster broadcaster) {
+		super(frame, "Scalers", false, broadcaster);
 		this.broadcast = broadcast;
 		this.status = status;
 		broadcaster.addObserver(this);

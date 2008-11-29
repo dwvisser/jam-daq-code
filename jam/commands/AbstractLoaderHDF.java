@@ -5,6 +5,7 @@ import jam.data.AbstractHistogram;
 import jam.data.DataBase;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.Nameable;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
@@ -34,9 +35,12 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
 	 */
 	protected transient FileOpenMode fileOpenMode;
 
-	AbstractLoaderHDF(final HDFIO hdfio) {
+	protected transient final Broadcaster broadcaster;
+
+	AbstractLoaderHDF(final HDFIO hdfio, final Broadcaster broadcaster) {
 		super();
 		this.hdfio = hdfio;
+		this.broadcaster = broadcaster;
 	}
 
 	/**
@@ -99,7 +103,7 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
 			}
 		}
 		SelectionTree.setCurrentHistogram(firstHist);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+		this.broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 				firstHist);
 
 	}

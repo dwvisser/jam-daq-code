@@ -8,6 +8,7 @@ import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
 import jam.data.HistogramType;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.ui.PanelOKApplyCancelButtons;
 import jam.ui.SelectionTree;
@@ -67,13 +68,14 @@ public class Combine extends AbstractManipulation implements Observer {
 	 * 
 	 * @param status
 	 *            application status
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 * 
-	 * @param console
-	 *            where to print messages
 	 */
 	@Inject
-	public Combine(final Frame frame, final JamStatus status) {
-		super(frame, "Manipulate 1-D Histograms", false);
+	public Combine(final Frame frame, final JamStatus status,
+			final Broadcaster broadcaster) {
+		super(frame, "Manipulate 1-D Histograms", false, broadcaster);
 		setResizable(false);
 		Dimension dim;
 		final int hgap = 5;
@@ -202,11 +204,11 @@ public class Combine extends AbstractManipulation implements Observer {
 					public void apply() {
 						try {
 							combine();
-							BROADCASTER
+							broadcaster
 									.broadcast(BroadcastEvent.Command.REFRESH);
 							SelectionTree.setCurrentHistogram(hto);
 							status.setCurrentGroup(DataUtility.getGroup(hto));
-							BROADCASTER.broadcast(
+							broadcaster.broadcast(
 									BroadcastEvent.Command.HISTOGRAM_SELECT,
 									hto);
 						} catch (DataException je) {

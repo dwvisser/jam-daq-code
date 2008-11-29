@@ -6,6 +6,8 @@ import jam.global.Broadcaster;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.google.inject.Inject;
+
 /**
  * Communicates about scalers with VME.
  * 
@@ -15,9 +17,11 @@ import java.util.Observer;
 public class ScalerVMECommunicator implements ScalerCommunication, Observer {
 	private transient final VMECommunication vme;
 
-	ScalerVMECommunicator(final VMECommunication vme) {
+	@Inject
+	ScalerVMECommunicator(final VMECommunication vme,
+			final Broadcaster broadcaster) {
 		this.vme = vme;
-		Broadcaster.getSingletonInstance().addObserver(this);
+		broadcaster.addObserver(this);
 	}
 
 	/**

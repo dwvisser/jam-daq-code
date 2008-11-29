@@ -10,9 +10,9 @@ final class CounterVMECommunicator implements Observer {
 
 	private transient final VmeSender vme;
 
-	CounterVMECommunicator(final VmeSender vme) {
+	CounterVMECommunicator(final VmeSender vme, final Broadcaster broadcaster) {
 		this.vme = vme;
-		Broadcaster.getSingletonInstance().addObserver(this);
+		broadcaster.addObserver(this);
 	}
 
 	/**

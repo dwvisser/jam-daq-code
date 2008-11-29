@@ -6,7 +6,7 @@ import jam.data.HistInt2D;
 import jam.data.Monitor;
 import jam.data.Scaler;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
+import jam.sort.AbstractSortRoutine;
 
 /**
  * Test sort file for ADC at LENA. Modified 2 March 2002 for example purposes by
@@ -15,7 +15,7 @@ import jam.sort.SortRoutine;
  * @author C. Iliadis 
  * @author Dale Visser
  */
-public class CI extends SortRoutine {
+public class CI extends AbstractSortRoutine {
 
 	/** * GLOBAL DECLARATIONS ** */
 	private static final int ADC_BASE = 0xe0000000;
@@ -98,7 +98,7 @@ public class CI extends SortRoutine {
 	}
 
 	/**
-	 * @see SortRoutine#initialize()
+	 * @see AbstractSortRoutine#initialize()
 	 */
 	public void initialize() throws SortException {
 		/*
@@ -117,7 +117,7 @@ public class CI extends SortRoutine {
 	}//end of initialize()
 
 	/**
-	 * @see SortRoutine#monitor(String)
+	 * @see AbstractSortRoutine#monitor(String)
 	 */
 	public double monitor(final String name) {
 		double rval = 0.0;
@@ -132,7 +132,7 @@ public class CI extends SortRoutine {
 	}
 
 	/**
-	 * @see SortRoutine#sort(int[])
+	 * @see AbstractSortRoutine#sort(int[])
 	 */
 	public void sort(final int[] data) {
 		/** * EXTRACT DATA FROM ARRAY ** */

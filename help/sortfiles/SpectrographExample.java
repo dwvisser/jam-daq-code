@@ -6,7 +6,7 @@ import jam.data.HistInt2D;
 import jam.data.Monitor;
 import jam.data.Scaler;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
+import jam.sort.AbstractSortRoutine;
 
 /**
  * Online sort routine for YLSA coincidence with Enge Spectrometer. This was
@@ -18,7 +18,7 @@ import jam.sort.SortRoutine;
  * @created March 24, 2004
  * @since 26 July 2001
  */
-public final class SpectrographExample extends SortRoutine {
+public final class SpectrographExample extends AbstractSortRoutine {
 
 	private final static String DEAD_TIME = "Dead Time %";
 

@@ -1,11 +1,9 @@
 package jam;
 
+import jam.data.AbstractHistogram;
 import jam.data.Factory;
 import jam.data.Gate;
 import jam.data.Group;
-import jam.data.AbstractHistogram;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 
 /**
  * This class to make initial histogram to display that is nice to look at.
@@ -23,6 +21,7 @@ public final class InitialHistograms {
 
 	/**
 	 * Constructs an instance of this class.
+	 * 
 	 */
 	public InitialHistograms() {
 		super();
@@ -42,8 +41,6 @@ public final class InitialHistograms {
 		new Gate("Area A", histJam2d); // gate 2d
 		new Gate("Area B", histJam2d); // gate 2d
 		new Gate("Area C", histJam2d); // gate 2d
-		Broadcaster.getSingletonInstance().broadcast(
-				BroadcastEvent.Command.HISTOGRAM_ADD);
 		histInitial = histJam2d;
 		groupInitial = group;
 	}
@@ -157,7 +154,7 @@ public final class InitialHistograms {
 	}
 
 	/**
-	 * @return counds for a 1d histogram of triangles
+	 * @return counts for a 1d histogram of triangles
 	 */
 	private int[] histTriangle() {
 		final int sizeX = 1000;

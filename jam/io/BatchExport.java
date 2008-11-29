@@ -3,6 +3,7 @@ package jam.io;
 import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.ui.ExtensionFileFilter;
 import jam.util.CollectionsUtil;
 import jam.util.FileUtilities;
@@ -96,13 +97,16 @@ public final class BatchExport extends JDialog implements Observer {
 	 *            application frame
 	 * @param selectHistogram
 	 *            dialog for selecting histograms to export
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
 	public BatchExport(final JFrame frame,
-			final SelectHistogramDialog selectHistogram) {
+			final SelectHistogramDialog selectHistogram,
+			final Broadcaster broadcaster) {
 		super(frame, "Batch Histogram Export");
 		this.frame = frame;
-		jam.global.Broadcaster.getSingletonInstance().addObserver(this);
+		broadcaster.addObserver(this);
 		buildGUI();
 		setupHistChooser();
 		this.selectHistDlg = selectHistogram;

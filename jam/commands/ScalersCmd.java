@@ -2,6 +2,7 @@ package jam.commands;
 
 import jam.global.BroadcastEvent;
 import jam.global.BroadcastUtilities;
+import jam.global.Broadcaster;
 import jam.global.JamStatus;
 
 import com.google.inject.Inject;
@@ -21,6 +22,8 @@ public final class ScalersCmd extends AbstractCommand {
 
 	private transient final JamStatus status;
 
+	private transient final Broadcaster broadcaster;
+
 	/**
 	 * Default constructor.
 	 * 
@@ -28,13 +31,17 @@ public final class ScalersCmd extends AbstractCommand {
 	 *            for issuing scaler commands
 	 * @param status
 	 *            application status
+	 * @param broadcaster
+	 *            broadcasts any updates
 	 * 
 	 */
 	@Inject
-	public ScalersCmd(BroadcastUtilities broadcast, JamStatus status) {
+	public ScalersCmd(final BroadcastUtilities broadcast,
+			final JamStatus status, final Broadcaster broadcaster) {
 		super();
 		this.broadcast = broadcast;
 		this.status = status;
+		this.broadcaster = broadcaster;
 		putValue(SHORT_DESCRIPTION,
 				"Read or zero scalers, depending on parameter.");
 	}
@@ -72,7 +79,7 @@ public final class ScalersCmd extends AbstractCommand {
 	 */
 	private void readScalers() {
 		if (this.status.isOnline()) {
-			BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
+			this.broadcaster.broadcast(BroadcastEvent.Command.SCALERS_READ);
 		}
 	}
 }

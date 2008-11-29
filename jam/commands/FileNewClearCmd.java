@@ -2,6 +2,7 @@ package jam.commands;
 
 import jam.data.DataBase;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
@@ -26,12 +27,15 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 
 	private transient final JFrame frame;
 	private transient final JamStatus status;
+	private transient final Broadcaster broadcaster;
 
 	@Inject
-	FileNewClearCmd(final JFrame frame, final JamStatus status) {
+	FileNewClearCmd(final JFrame frame, final JamStatus status,
+			final Broadcaster broadcaster) {
 		super("Clear data\u2026");
 		this.frame = frame;
 		this.status = status;
+		this.broadcaster = broadcaster;
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 				CTRL_MASK));
 		enable();
@@ -48,9 +52,9 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 				"Erase all current data?", "New", JOptionPane.YES_NO_OPTION)) {
 			this.status.setSortMode(SortMode.NO_SORT, "Data Cleared");
 			DataBase.getInstance().clearAllLists();
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
-			BROADCASTER
-					.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, null);
+			this.broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
+			this.broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+					null);
 		}
 
 	}

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import jam.data.AbstractHistogram;
 import jam.data.DataBase;
 import jam.data.Factory;
 import jam.data.Gate;
@@ -13,9 +14,7 @@ import jam.data.HistDouble1D;
 import jam.data.HistDouble2D;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
-import jam.data.AbstractHistogram;
 import jam.data.func.LinearFunction;
-import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -57,8 +56,6 @@ public final class HistogramTest {// NOPMD
 
 	/**
 	 * Initialize local variables for the tests.
-	 * 
-	 * @see TestCase#setUp()
 	 */
 	@Before
 	public void setUp() {
@@ -149,8 +146,8 @@ public final class HistogramTest {// NOPMD
 				+ "\"", AbstractHistogram.getHistogram(hist1.getFullName()));
 		assertNotNull("Couldn't find histogram named \"" + hist2.getFullName()
 				+ "\"", AbstractHistogram.getHistogram(hist2.getFullName()));
-		assertNull("Found nonexistent histogram named \"notreal\"", AbstractHistogram
-				.getHistogram("notreal"));
+		assertNull("Found nonexistent histogram named \"notreal\"",
+				AbstractHistogram.getHistogram("notreal"));
 	}
 
 	/**

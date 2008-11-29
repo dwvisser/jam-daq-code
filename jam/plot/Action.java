@@ -79,8 +79,7 @@ import com.google.inject.Inject;
 public final class Action {
 
 	/** Broadcaster for event and gate change */
-	private static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
+	private transient final Broadcaster broadcaster;
 
 	private final static String chan = "channel";
 
@@ -176,8 +175,10 @@ public final class Action {
 	 */
 	@Inject
 	Action(final CurrentPlotAccessor disp, final Console console,
-			final CommandFinder finder, final JamStatus status) {
+			final CommandFinder finder, final JamStatus status,
+			final Broadcaster broadcaster) {
 		super();
+		this.broadcaster = broadcaster;
 		this.commandFinder = finder;
 		plotAccessor = disp;
 		textOut = console.getLog();
@@ -360,8 +361,8 @@ public final class Action {
 				textOut.messageOut(Integer.toString(num) + " ",
 						MessageHandler.END);
 				plotAccessor.getPlotContainer().removeOverlays();
-				BROADCASTER.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
-				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+				broadcaster.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
+				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 						histogram);
 				if (hist.size() > 1) {
 					if (histogram.getDimensionality() == 1) {
@@ -379,6 +380,9 @@ public final class Action {
 		}
 	}
 
+	/**
+	 * Publicly exposed commandable member.
+	 */
 	public transient final Commandable commandable = new Commandable() {
 		public String getCurrentCommand() {
 			synchronized (this) {
@@ -1001,7 +1005,7 @@ public final class Action {
 		}
 	}
 
-	transient final PlotMouseListener mouseListener = new PlotMouseListener() {// NOPMD
+	protected transient final PlotMouseListener mouseListener = new PlotMouseListener() {
 		/**
 		 * @see PlotMouseListener#plotMousePressed(Bin, Point)
 		 */
@@ -1018,7 +1022,7 @@ public final class Action {
 					/* No command being processed check if gate is being set */
 					final PlotContainer currentPlot = Action.this.plotAccessor
 							.getPlotContainer();
-					Broadcaster.getSingletonInstance().broadcast(
+					Action.this.broadcaster.broadcast(
 							BroadcastEvent.Command.GATE_SET_POINT, pChannel);
 					currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE,
 							pChannel, pPixel);
@@ -1119,7 +1123,7 @@ public final class Action {
 	@SuppressWarnings(UNUSED)
 	private void update() {// NOPMD
 		cursorCommand = false;
-		BROADCASTER.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
+		broadcaster.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
 		plotAccessor.update();
 		// Reset rebin to 1
 		final PlotContainer currentPlot = plotAccessor.getPlotContainer();
@@ -1128,7 +1132,7 @@ public final class Action {
 		/*
 		 * following to recover the chooser if user just overlayed a histogram
 		 */
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
 	}
 
 	/**

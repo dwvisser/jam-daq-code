@@ -1,6 +1,7 @@
 package jam.data.control;
 
 import jam.data.DataParameter;
+import jam.global.Broadcaster;
 import jam.ui.ExtensionFileFilter;
 
 import java.awt.Container;
@@ -63,10 +64,12 @@ public final class ParameterControl extends AbstractControl {
 	 * 
 	 * @param frame
 	 *            application frame
+	 * @param broadcaster
+	 *            broadcasts messages
 	 */
 	@Inject
-	public ParameterControl(final Frame frame) {
-		super(frame, "Sort Parameters", true);
+	public ParameterControl(final Frame frame, final Broadcaster broadcaster) {
+		super(frame, "Sort Parameters", true, broadcaster);
 		/* dialog box to display Parameters */
 		setResizable(true);
 		setLocation(20, 50);

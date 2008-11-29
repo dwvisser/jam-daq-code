@@ -2,6 +2,7 @@ package jam.data.control;
 
 import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.ui.SelectionTree;
 
 import java.awt.Container;
@@ -33,8 +34,8 @@ public class HistogramZero extends AbstractControl {
 	 *            application frame
 	 */
 	@Inject
-	public HistogramZero(final Frame frame) {
-		super(frame, "Zero Histograms", false);
+	public HistogramZero(final Frame frame, final Broadcaster broadcaster) {
+		super(frame, "Zero Histograms", false, broadcaster);
 		/* zero histogram dialog box */
 		final Container dzc = getContentPane();
 		setResizable(false);
@@ -50,7 +51,7 @@ public class HistogramZero extends AbstractControl {
 				final AbstractHistogram currentHistogram = (AbstractHistogram) SelectionTree
 						.getCurrentHistogram();
 				currentHistogram.setZero();
-				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
+				broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
 				LOGGER.info("Zero Histogram: " + currentHistogram.getTitle());
 				dispose();
 			}
@@ -94,7 +95,7 @@ public class HistogramZero extends AbstractControl {
 		for (AbstractHistogram hist : allHistograms) {
 			hist.setZero();
 		}
-		BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
+		broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
 		LOGGER.exiting(classname, methname);
 	}
 

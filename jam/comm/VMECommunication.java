@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 /**
  * Class to communicate with VME crate using UDP packets Two UDP sockets can be
  * setup with a daemon that receives packets and knows what to do with them The
@@ -30,25 +33,15 @@ import java.util.logging.Level;
  * @author Ken Swartz and Dale Visser
  * @since JDK1.1
  */
+@Singleton
 final class VMECommunication extends GoodThread implements VmeSender {
 
-	private static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
-
-	private static final VMECommunication INSTANCE = new VMECommunication();
+	private transient final Broadcaster BROADCASTER;
 
 	private static final Object LOCK = new Object();
 
 	private static final StringUtilities STR_UTIL = StringUtilities
 			.getInstance();
-
-	/**
-	 * 
-	 * @return the one unique instance of this class
-	 */
-	protected static VMECommunication getSingletonInstance() {
-		return INSTANCE;
-	}
 
 	private transient boolean active;
 
@@ -62,9 +55,11 @@ final class VMECommunication extends GoodThread implements VmeSender {
 	 * Creates the instance of this class for handling IP communications with
 	 * the VME front end computer.
 	 */
-	private VMECommunication() {
+	@Inject
+	protected VMECommunication(final Broadcaster broadcaster) {
 		super();
-		new CounterVMECommunicator(this);
+		this.BROADCASTER = broadcaster;
+		new CounterVMECommunicator(this, broadcaster);
 		this.setName("Front End Communication");
 		this.setDaemon(true);
 		this.setPriority(jam.sort.ThreadPriorities.MESSAGING);
@@ -291,7 +286,9 @@ final class VMECommunication extends GoodThread implements VmeSender {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jam.comm.VmeSender#sendToVME(java.lang.String)
 	 */
 	public void sendMessage(final String message) {

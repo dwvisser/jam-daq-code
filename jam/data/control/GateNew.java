@@ -3,6 +3,7 @@ package jam.data.control;
 import jam.data.AbstractHistogram;
 import jam.data.Gate;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
 
@@ -38,8 +39,8 @@ public class GateNew extends AbstractControl {
 	 *            application frame
 	 */
 	@Inject
-	public GateNew(final Frame frame) {
-		super(frame, "New Gate", false);
+	public GateNew(final Frame frame, final Broadcaster broadcaster) {
+		super(frame, "New Gate", false, broadcaster);
 		final Container cdnew = getContentPane();
 		setResizable(false);
 		cdnew.setLayout(new BorderLayout(5, 5));
@@ -87,7 +88,7 @@ public class GateNew extends AbstractControl {
 		final AbstractHistogram hist = (AbstractHistogram) SelectionTree
 				.getCurrentHistogram();
 		new Gate(textNew.getText(), hist);
-		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
+		broadcaster.broadcast(BroadcastEvent.Command.GATE_ADD);
 		LOGGER.info("New gate " + textNew.getText() + " created for histogram "
 				+ hist.getFullName());
 	}

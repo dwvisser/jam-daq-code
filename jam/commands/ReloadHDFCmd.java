@@ -6,6 +6,7 @@ import jam.data.Group;
 import jam.data.SortGroupGetter;
 import jam.data.Warehouse;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
@@ -29,8 +30,8 @@ import com.google.inject.Inject;
 final class ReloadHDFCmd extends AbstractLoaderHDF {
 
 	@Inject
-	ReloadHDFCmd(final HDFIO hdfio) {
-		super(hdfio);
+	ReloadHDFCmd(final HDFIO hdfio, final Broadcaster broadcaster) {
+		super(hdfio, broadcaster);
 	}
 
 	@Override
@@ -82,7 +83,7 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 				firstHist = currentGroup.histograms.getList().get(0);
 			}
 			SelectionTree.setCurrentHistogram(firstHist);
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+			this.broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 					firstHist);
 		}
 	}

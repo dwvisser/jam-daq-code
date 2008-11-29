@@ -6,6 +6,8 @@ import jam.commands.CommandNames;
 import javax.swing.Action;
 import javax.swing.JButton;
 
+import com.google.inject.Inject;
+
 /**
  * Main Toolbar for Jam.
  * 
@@ -14,12 +16,16 @@ import javax.swing.JButton;
  */
 final class ToolBar extends javax.swing.JToolBar {
 
+	private transient final CommandManager commands;
+
 	/**
 	 * Constructor.
 	 * 
 	 */
-	ToolBar() {
+	@Inject
+	ToolBar(final CommandManager commandManager) {
 		super();
+		this.commands = commandManager;
 		add(createButton(CommandNames.OPEN_HDF));
 		add(createButton(CommandNames.OPEN_ADD_HDF));
 		add(createButton(CommandNames.OPEN_MULTIPLE_HDF));
@@ -35,7 +41,6 @@ final class ToolBar extends javax.swing.JToolBar {
 	}
 
 	private JButton createButton(final String command) {
-		final CommandManager commands = CommandManager.getInstance();
 		final Action action = commands.getAction(command);
 		if (null == action) {
 			throw new IllegalArgumentException("Couldn't find action for '"

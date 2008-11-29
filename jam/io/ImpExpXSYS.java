@@ -12,7 +12,7 @@ import static jam.io.XsysHeader.NUMBER_SCALERS;
 import static jam.io.XsysHeader.P_AREA_CALIB_COEF;
 import static jam.io.XsysHeader.P_AREA_CALIB_FLAG;
 import static jam.io.XsysHeader.P_AREA_DATA_TYPE;
-import static jam.io.XsysHeader.P_AREA_LENGTH_PAGE;
+import static jam.io.XsysHeader.P_AREA_LEN_PAGE;
 import static jam.io.XsysHeader.P_AREA_NAME;
 import static jam.io.XsysHeader.P_AREA_NUMBER;
 import static jam.io.XsysHeader.P_AREA_SIZE_X;
@@ -83,6 +83,8 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 
 	private transient boolean firstHeader;
 
+	private transient final Broadcaster broadcaster;
+
 	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
 			"dat", "TUNL's XSYS");
 
@@ -91,8 +93,9 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	 *            application frame
 	 */
 	@Inject
-	public ImpExpXSYS(final Frame frame) {
+	public ImpExpXSYS(final Frame frame, final Broadcaster broadcaster) {
 		super(frame);
+		this.broadcaster = broadcaster;
 	}
 
 	@Override
@@ -144,7 +147,6 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 		final DataInputStream dis = new DataInputStream(buffin);
 		firstHeader = true;
 		DataBase.getInstance().clearAllLists();// clear the data base
-		final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
 
 		try {
@@ -237,7 +239,7 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 			areaNumber = bufferToBigEndian(buffer, P_AREA_NUMBER);
 			areaDataType = bufferToBigEndian(buffer, P_AREA_DATA_TYPE);
 			areaName = bufferToString(buffer, P_AREA_NAME, L_AREA_NAME);
-			areaLengthPage = bufferToBigEndian(buffer, P_AREA_LENGTH_PAGE);
+			areaLengthPage = bufferToBigEndian(buffer, P_AREA_LEN_PAGE);
 			areaSizeX = bufferToBigEndian(buffer, P_AREA_SIZE_X);
 			areaSizeY = bufferToBigEndian(buffer, P_AREA_SIZE_Y);
 			calibFlag = bufferToBigEndian(buffer, P_AREA_CALIB_FLAG);

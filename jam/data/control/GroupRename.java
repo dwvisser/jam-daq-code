@@ -4,6 +4,7 @@ import jam.data.DataBase;
 import jam.data.DataException;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.Nameable;
 import jam.ui.PanelOKApplyCancelButtons;
@@ -38,10 +39,13 @@ public class GroupRename extends AbstractControl {
 	 * 
 	 * @param status
 	 *            application status
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
-	public GroupRename(final Frame frame, final JamStatus status) {
-		super(frame, "Rename Group ", false);
+	public GroupRename(final Frame frame, final JamStatus status,
+			final Broadcaster broadcaster) {
+		super(frame, "Rename Group ", false, broadcaster);
 		this.status = status;
 		textName = GroupControlInitializer.initializeDialog(this);
 		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
@@ -70,7 +74,7 @@ public class GroupRename extends AbstractControl {
 		final String name = textName.getText();
 		try {
 			currentGroup.setName(name);
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		} catch (DataException dataError) {
 			LOGGER.log(Level.SEVERE, "Can't rename to existing name: " + name,
 					dataError);

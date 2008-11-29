@@ -4,7 +4,7 @@ import jam.data.DataParameter;
 import jam.data.Gate;
 import jam.data.HistInt1D;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
+import jam.sort.AbstractSortRoutine;
 
 /**
  * Template sort routine for Jam
@@ -12,7 +12,7 @@ import jam.sort.SortRoutine;
  * @author Ken Swartz
  * @version 1 June 99
  */
-public final class CamacSortTemplate extends SortRoutine {
+public final class CamacSortTemplate extends AbstractSortRoutine {
 
 	/** variables declarations */
 	private static final int PARAM_ID = 0; // id number for event word from
@@ -46,7 +46,7 @@ public final class CamacSortTemplate extends SortRoutine {
 	 * The initialization method code to define camac commands, variables and
 	 * classes.
 	 * 
-	 * @see SortRoutine#initialize()
+	 * @see AbstractSortRoutine#initialize()
 	 */
 	@Override
 	public void initialize() throws SortException {
@@ -67,7 +67,7 @@ public final class CamacSortTemplate extends SortRoutine {
 	}
 
 	/**
-	 * @see SortRoutine#sort(int[])
+	 * @see AbstractSortRoutine#sort(int[])
 	 */
 	@Override
 	public void sort(final int[] eventData) {

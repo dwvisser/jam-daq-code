@@ -75,7 +75,8 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 	private transient AbstractStorageDaemon storeDaemon;
 
 	@Inject
-	private DisplayCounters(final JamStatus status, final Frame frame) {
+	private DisplayCounters(final JamStatus status, final Frame frame,
+			final Broadcaster broadcaster) {
 		super(frame, "Buffer Counters", false);
 		this.status = status;
 		final int xpos = 20;
@@ -83,7 +84,7 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 		final int maingap = 10;
 		final int hgap = 5;
 		final int vgap = 10;
-		broadcaster = Broadcaster.getSingletonInstance();
+		this.broadcaster = broadcaster;
 		broadcaster.addObserver(this);
 		setResizable(false);
 		setLocation(xpos, ypos);

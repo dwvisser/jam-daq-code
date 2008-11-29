@@ -3,6 +3,7 @@ package jam.commands;
 import jam.data.DataBase;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.CommandListenerException;
 import jam.global.JamStatus;
 import jam.global.Nameable;
@@ -22,12 +23,15 @@ public class DeleteGroup extends AbstractCommand {
 
 	private transient final JFrame frame;
 	private transient final JamStatus status;
+	private transient final Broadcaster broadcaster;
 
 	@Inject
-	DeleteGroup(final JFrame frame, final JamStatus status) {
+	DeleteGroup(final JFrame frame, final JamStatus status,
+			final Broadcaster broadcaster) {
 		super();
 		this.frame = frame;
 		this.status = status;
+		this.broadcaster = broadcaster;
 		putValue(NAME, "Delete Group\u2026");
 	}
 
@@ -54,7 +58,8 @@ public class DeleteGroup extends AbstractCommand {
 					"Delete " + name + "?", "Delete group",
 					JOptionPane.YES_NO_OPTION)) {
 				jam.data.Warehouse.getGroupCollection().remove(group);
-				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+				this.broadcaster
+						.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			}
 		}
 

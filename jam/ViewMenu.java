@@ -1,5 +1,6 @@
 package jam;
 
+import jam.commands.CommandManager;
 import jam.commands.CommandNames;
 import jam.global.BroadcastEvent;
 import jam.plot.PlotDisplay;
@@ -21,9 +22,12 @@ final class ViewMenu implements Observer {
 
 	private transient final PlotDisplay display;
 
+	private transient final CommandManager commandManager;
+
 	@Inject
-	ViewMenu(final PlotDisplay display) {
+	ViewMenu(final PlotDisplay display, final CommandManager commandManager) {
 		this.display = display;
+		this.commandManager = commandManager;
 		this.updateViews();
 	}
 
@@ -33,8 +37,10 @@ final class ViewMenu implements Observer {
 
 	private void updateViews() {
 		view.removeAll();
-		view.add(MenuBar.getMenuItem(CommandNames.SHOW_VIEW_NEW));
-		view.add(MenuBar.getMenuItem(CommandNames.SHOW_VIEW_DELETE));
+		view.add(this.commandManager.getMenuItem(CommandNames.SHOW_VIEW_NEW));
+		view
+				.add(this.commandManager
+						.getMenuItem(CommandNames.SHOW_VIEW_DELETE));
 		view.addSeparator();
 		for (final String name : View.getNameList()) {
 			view.add(namedMenuItem(name));

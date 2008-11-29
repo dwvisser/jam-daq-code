@@ -14,6 +14,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 /**
  * Holds component which displays the current run state.
  * 
@@ -21,24 +24,18 @@ import javax.swing.SwingConstants;
  * @version 2004-12-09
  * @see jam.global.RunState
  */
+@Singleton
 final class RunStateBox implements Observer {
-	private static final RunStateBox INSTANCE = new RunStateBox();
-
-	/**
-	 * @return the only instance of this class.
-	 */
-	protected static RunStateBox getInstance() {
-		return INSTANCE;
-	}
 
 	private transient final JLabel lrunState = new JLabel("   Welcome   ",
 			SwingConstants.CENTER);
 
 	private transient final JPanel pRunState = new JPanel();
 
-	private RunStateBox() {
+	@Inject
+	protected RunStateBox(final Broadcaster broadcaster) {
 		super();
-		Broadcaster.getSingletonInstance().addObserver(this);
+		broadcaster.addObserver(this);
 		pRunState.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		pRunState.add(new JLabel(" Status: "));
 		lrunState.setOpaque(true);

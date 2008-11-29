@@ -71,8 +71,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 
 	private transient final JamStatus status;
 
-	private static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();;
+	private transient final Broadcaster broadcaster;
 
 	/**
 	 * Constructs an object which uses a dialog to open a selected histogram out
@@ -84,15 +83,16 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	 *            for getting HDF input
 	 * @param status
 	 *            application status
-	 * @param msgHandler
-	 *            where to print messages
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
 	public OpenSelectedHistogram(final Frame frame, final HDFIO hdfio,
-			final JamStatus status) {
+			final JamStatus status, final Broadcaster broadcaster) {
 		this.frame = frame;
 		this.hdfio = hdfio;
 		this.status = status;
+		this.broadcaster = broadcaster;
 		dialog = new JDialog(frame, "Open Selected Histograms", false);
 		dialog.setLocation(frame.getLocation().x + 50,
 				frame.getLocation().y + 50);
@@ -231,7 +231,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	private void notifyApp() {
 		// Update app status
 		AbstractControl.setupAll();
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		// Set the current histogram to the first opened histogram
 		final Group firstGroup = hdfio.getFirstLoadGroup();
 		if (firstGroup != null) {
@@ -241,7 +241,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 				final AbstractHistogram firstHist = firstGroup.histograms
 						.getList().get(0);
 				SelectionTree.setCurrentHistogram(firstHist);
-				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 						firstHist);
 			}
 		}

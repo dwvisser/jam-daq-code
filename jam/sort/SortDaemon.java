@@ -26,8 +26,7 @@ import java.util.logging.Level;
  */
 public class SortDaemon extends GoodThread {
 
-	private static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
+	private transient final Broadcaster broadcaster;
 
 	private transient boolean atBuffer = false; // are we at a buffer word
 
@@ -72,10 +71,13 @@ public class SortDaemon extends GoodThread {
 	 * 
 	 * @param con
 	 *            the sort control process
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
-	public SortDaemon(final Controller con) {
+	public SortDaemon(final Controller con, final Broadcaster broadcaster) {
 		super();
 		controller = con;
+		this.broadcaster = broadcaster;
 		this.setName("Sort Daemon");
 		this.setPriority(ThreadPriorities.SORT);
 		this.setDaemon(true);
@@ -551,7 +553,7 @@ public class SortDaemon extends GoodThread {
 	 * Update the counters display.
 	 */
 	private void updateCounters() {
-		BROADCASTER.broadcast(BroadcastEvent.Command.COUNTERS_UPDATE);
+		broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_UPDATE);
 	}
 
 	/**

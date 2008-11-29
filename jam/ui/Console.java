@@ -1,7 +1,9 @@
 package jam.ui;
 
+import injection.MapListener;
 import jam.global.CommandFinder;
 import jam.global.CommandListener;
+import jam.global.LoggerConfig;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -19,6 +21,9 @@ import java.util.regex.Pattern;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 /**
  * Class Console displays a output of commands and error messages and allows the
  * input of commands using the keyboard.
@@ -29,6 +34,7 @@ import javax.swing.JTextField;
  * @version 0.5 last edit 11-98
  * @version 0.5 last edit 1-99
  */
+@Singleton
 public class Console extends JPanel {
 
 	/**
@@ -68,7 +74,9 @@ public class Console extends JPanel {
 	 * @param listener
 	 *            listens to commands
 	 */
-	public Console(final CommandFinder finder, final CommandListener listener) {
+	@Inject
+	public Console(final CommandFinder finder,
+			final @MapListener CommandListener listener) {
 		this(NUM_LINES, finder, listener);
 	}
 
@@ -88,6 +96,7 @@ public class Console extends JPanel {
 		super(new BorderLayout());
 		this.commandFinder = finder;
 		consoleLog = new ConsoleLog(linesLog);
+		new LoggerConfig(Console.class.getPackage().getName(), consoleLog);
 		this.add(consoleLog.getComponent(), BorderLayout.CENTER);
 		textIn
 				.setToolTipText("Enter underlined characters from buttons to start a command.");

@@ -5,6 +5,7 @@ import jam.data.Factory;
 import jam.data.Group;
 import jam.data.NameValueCollection;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 
 import java.awt.FontMetrics;
 import java.awt.Frame;
@@ -51,10 +52,12 @@ abstract class AbstractManipulation extends AbstractControl {
 	 *            if dialog
 	 * @param modal
 	 *            whether to grab focus from parent window
+	 * @param broadcaster
+	 *            broadcast status updates
 	 */
 	public AbstractManipulation(final Frame frame, final String title,
-			final boolean modal) {
-		super(frame, title, modal);
+			final boolean modal, final Broadcaster broadcaster) {
+		super(frame, title, modal, broadcaster);
 	}
 
 	/*
@@ -117,7 +120,7 @@ abstract class AbstractManipulation extends AbstractControl {
 	 *            number of channels in histogram
 	 * @return a 1D double histogram
 	 */
-	protected static final AbstractHistogram createNewDoubleHistogram(
+	protected final AbstractHistogram createNewDoubleHistogram(
 			final String groupName, final String histName, final int size) {
 		Group group;
 		AbstractHistogram hist;
@@ -126,7 +129,7 @@ abstract class AbstractManipulation extends AbstractControl {
 			group = Factory.createGroup(groupName, Group.Type.FILE);
 		}
 		hist = Factory.createHistogram(group, new double[size], histName);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		return hist;
 	}
 

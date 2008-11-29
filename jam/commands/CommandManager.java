@@ -14,6 +14,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.Action;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
+import com.google.inject.Inject;
 
 /**
  * Class to create commands and execute them
@@ -21,10 +25,6 @@ import javax.swing.Action;
  * @author Ken Swartz
  */
 public final class CommandManager implements CommandListener, ActionCreator {
-
-	private static final Object classMonitor = new Object();
-
-	private static CommandManager instance = null;
 
 	private static final Map<String, Commandable> INSTANCES = Collections
 			.synchronizedMap(new HashMap<String, Commandable>());
@@ -34,28 +34,18 @@ public final class CommandManager implements CommandListener, ActionCreator {
 
 	private transient final CommandMap commandMap = new CommandMap(this);
 
-	/**
-	 * Singleton accessor.
-	 * 
-	 * @return the unique instance of this class
-	 */
-	public static CommandManager getInstance() {
-		synchronized (classMonitor) {
-			if (instance == null) {
-				instance = new CommandManager();
-			}
-			return instance;
-		}
-	}
-
 	private transient Commandable currentCom;
+
+	private transient final Broadcaster broadcaster;
 
 	/**
 	 * Constructor private as singleton
 	 * 
 	 */
-	private CommandManager() {
+	@Inject
+	protected CommandManager(final Broadcaster broadcaster) {
 		super();
+		this.broadcaster = broadcaster;
 	}
 
 	/**
@@ -80,8 +70,7 @@ public final class CommandManager implements CommandListener, ActionCreator {
 				currentCom = GuiceInjector.getInstance(cmdClass);
 				currentCom.initCommand();
 				if (currentCom instanceof Observer) {
-					Broadcaster.getSingletonInstance().addObserver(
-							(Observer) currentCom);
+					this.broadcaster.addObserver((Observer) currentCom);
 				}
 				INSTANCES.put(strCmd, currentCom);
 			}
@@ -101,6 +90,39 @@ public final class CommandManager implements CommandListener, ActionCreator {
 			rval = currentCom;
 		}
 		return rval;
+	}
+
+	/**
+	 * Produce a menu item that invokes the action given by the lookup table in
+	 * <code>jam.commands.CommandManager</code>
+	 * 
+	 * @param name
+	 *            name of the command
+	 * @return JMenuItem that invokes the associated action
+	 */
+	public JMenuItem getMenuItem(final String name) {
+		final Action action = this.getAction(name);
+		if (null == action) {
+			throw new IllegalArgumentException("Couldn't find action for '"
+					+ name + "'.");
+		}
+		return new JMenuItem(action);
+	}
+
+	/**
+	 * @param name
+	 *            of menu
+	 * @param commandNames
+	 *            of commands
+	 * @return a menu
+	 */
+	public JMenu createMenu(final String name, final String... commandNames) {
+		final JMenu result = new JMenu(name);
+		for (String commandName : commandNames) {
+			result.add(this.getMenuItem(commandName));
+		}
+
+		return result;
 	}
 
 	/**

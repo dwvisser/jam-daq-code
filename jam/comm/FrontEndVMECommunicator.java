@@ -13,6 +13,8 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
+import com.google.inject.Inject;
+
 /**
  * Communicates with VME front end.
  * 
@@ -26,6 +28,7 @@ public final class FrontEndVMECommunicator implements FrontEndCommunication,
 
 	private transient final VMECommunication vme;
 
+	@Inject
 	FrontEndVMECommunicator(final VMECommunication vme) {
 		this.vme = vme;
 	}

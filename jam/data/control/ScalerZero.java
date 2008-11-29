@@ -1,6 +1,7 @@
 package jam.data.control;
 
 import jam.global.BroadcastUtilities;
+import jam.global.Broadcaster;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -43,10 +44,13 @@ public class ScalerZero extends AbstractControl {
 	 * 
 	 * @param broadcast
 	 *            for broadcasting scaler commands
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
-	public ScalerZero(final Frame frame, final BroadcastUtilities broadcast) {
-		super(frame, "Zero Scalers", true);
+	public ScalerZero(final Frame frame, final BroadcastUtilities broadcast,
+			final Broadcaster broadcaster) {
+		super(frame, "Zero Scalers", true, broadcaster);
 		this.broadcast = broadcast;
 		final Container dzc = getContentPane();
 		setResizable(false);

@@ -47,12 +47,15 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 
 		private transient final PlotDisplay display;
 
+		private transient final Broadcaster broadcaster;
+
 		private static final Frame frame = null;
 
 		@Inject
-		ViewDelete(final PlotDisplay display) {
+		ViewDelete(final PlotDisplay display, final Broadcaster broadcaster) {
 			super(frame, "Delete View", false);
 			this.display = display;
+			this.broadcaster = broadcaster;
 			setModal(false);
 			final Container cdnew = getContentPane();
 			setResizable(false);
@@ -94,8 +97,7 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 					.equals(View.SINGLE.getName()))) {
 				View.removeView(name);
 			}
-			Broadcaster.getSingletonInstance().broadcast(
-					BroadcastEvent.Command.VIEW_NEW);
+			this.broadcaster.broadcast(BroadcastEvent.Command.VIEW_NEW);
 			this.display.setView(View.SINGLE);
 			updateViewNames();
 		}

@@ -4,6 +4,7 @@ import jam.data.AbstractHist1D;
 import jam.data.AbstractHist2D;
 import jam.data.Gate;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.Nameable;
 import jam.global.UnNamed;
 import jam.plot.Bin;
@@ -67,8 +68,8 @@ public final class GateSet extends AbstractControl {
 	 *            application frame
 	 */
 	@Inject
-	public GateSet(final Frame frame) {
-		super(frame, "Gate setting <none>", false);
+	public GateSet(final Frame frame, final Broadcaster broadcaster) {
+		super(frame, "Gate setting <none>", false, broadcaster);
 		setResizable(false);
 		final java.awt.Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
@@ -187,7 +188,7 @@ public final class GateSet extends AbstractControl {
 			final int ybin = Integer.parseInt(textUpper.getText().trim());
 			final Bin bin = Bin.create(xbin, ybin);
 			addPoint(bin);
-			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_ADD, bin);
+			broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_ADD, bin);
 		} catch (NumberFormatException ne) {
 			LOGGER.log(Level.SEVERE, "Invalid input: not a number.", ne);
 		}
@@ -241,7 +242,7 @@ public final class GateSet extends AbstractControl {
 	private transient final Canceller canceller = new Canceller() {
 		public void cancel() {
 			checkHistogram();
-			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
+			broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
 			setTitle("Gate setting <none>");
 			synchronized (this) {
 				newGate = false;
@@ -311,7 +312,7 @@ public final class GateSet extends AbstractControl {
 	private void removePoint() {
 		if (!gatePoints.isEmpty()) {
 			gatePoints.remove(gatePoints.size() - 1);
-			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_REMOVE);
+			broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_REMOVE);
 			if (gatePoints.isEmpty()) {
 				textLower.setText("");
 				textUpper.setText("");
@@ -331,10 +332,10 @@ public final class GateSet extends AbstractControl {
 		try { // check fields are numbers
 			if (currentGate != null) {
 				saveGate();
-				BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT,
+				broadcaster.broadcast(BroadcastEvent.Command.GATE_SELECT,
 						currentGate);
 				cgate.repaint();
-				BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_SAVE);
+				broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_SAVE);
 			}
 		} catch (NumberFormatException ne) {
 			LOGGER.log(Level.SEVERE, "Invalid input: not a number.", ne);
@@ -384,7 +385,7 @@ public final class GateSet extends AbstractControl {
 				}
 			}
 			unset.setEnabled(true);
-			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_ON);
+			broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_ON);
 			// change the title of the dialog
 			setTitle("Gate setting " + currentGate.getName());
 			// make fields and buttons active
@@ -431,7 +432,7 @@ public final class GateSet extends AbstractControl {
 		cgate.repaint();
 		LOGGER.info("Gate UnSet: " + currentGate.getName());
 		canceller.cancel();
-		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
+		broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
 	}
 
 	/**

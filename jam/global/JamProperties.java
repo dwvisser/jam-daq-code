@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  * properties are loaded before a way to print out messages has been constructed
  * we save the messages so they can be later retrieved.
  * 
- * Diretory for loading configuration is give by define jam.home. jam.home
+ * Directory for loading configuration is give by define jam.home. jam.home
  * should be defined by -D parameter in command line.
  * 
  * For config we try jam.home which if null we try DEFAULT_USER_HOME For user we
@@ -97,8 +97,7 @@ public final class JamProperties {
 	 * 
 	 * @param key
 	 *            the name of the property
-	 * @return <code>true</code> if equal to
-	 *         <code>Boolean.toString(true)</code>
+	 * @return <code>true</code> if equal to <code>Boolean.toString(true)</code>
 	 */
 	static public boolean getBooleanProperty(final String key) {
 		return PROPERTIES.getProperty(key).equals(Boolean.TRUE.toString());

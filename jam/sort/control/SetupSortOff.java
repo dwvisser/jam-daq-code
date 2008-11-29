@@ -6,10 +6,10 @@ import jam.global.GoodThread;
 import jam.global.JamException;
 import jam.global.JamStatus;
 import jam.global.SortMode;
+import jam.sort.AbstractSortRoutine;
 import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 
@@ -59,8 +59,9 @@ public final class SetupSortOff extends AbstractSetup {
 
 	@Inject
 	protected SetupSortOff(final SortControl sortControl,
-			final JamStatus status, final DisplayCounters displayCounters) {
-		super("Setup Offline");
+			final JamStatus status, final DisplayCounters displayCounters,
+			final Broadcaster broadcaster) {
+		super("Setup Offline", broadcaster);
 		this.status = status;
 		this.sortControl = sortControl;
 		this.displayCounters = displayCounters;
@@ -145,7 +146,8 @@ public final class SetupSortOff extends AbstractSetup {
 				sortChooser.loadSorter(btnSpecifyPath.isSelected());
 				loadEventInput();
 				loadEventOutput();
-				final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+				final AbstractSortRoutine sortRoutine = sortChooser
+						.getSortRoutine();
 				if (sortRoutine != null) {
 					LOGGER.info("Loaded sort class '"
 							+ sortRoutine.getClass().getName()
@@ -245,8 +247,7 @@ public final class SetupSortOff extends AbstractSetup {
 		}
 		sortChooser.forgetSortRoutine();
 		jam.data.DataBase.getInstance().clearAllLists();
-		Broadcaster.getSingletonInstance().broadcast(
-				BroadcastEvent.Command.HISTOGRAM_NEW);
+		this.broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
 		lockMode(false);
 	}
 
@@ -255,9 +256,9 @@ public final class SetupSortOff extends AbstractSetup {
 		initializeSorter();
 		/* setup sorting */
 		synchronized (this) {
-			sortDaemon = new SortDaemon(sortControl);
+			sortDaemon = new SortDaemon(sortControl, this.broadcaster);
 		}
-		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
 		sortDaemon.setup(inStream, sortRoutine.getEventSize());
 		sortDaemon.setSorter(sortRoutine);
 		/* eventInputStream to use get event size from sorting routine */

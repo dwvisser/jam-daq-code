@@ -3,6 +3,7 @@ package jam.data.control;
 import jam.data.Monitor;
 import jam.global.AcquisitionStatus;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -50,10 +51,13 @@ public class MonitorDisplay extends AbstractControl {
 	 * 
 	 * @param status
 	 *            acquisition status
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
-	public MonitorDisplay(final Frame frame, final AcquisitionStatus status) {
-		super(frame, "Monitors Disabled", false);
+	public MonitorDisplay(final Frame frame, final AcquisitionStatus status,
+			final Broadcaster broadcaster) {
+		super(frame, "Monitors Disabled", false, broadcaster);
 		this.status = status;
 		setResizable(true);
 		setLocation(20, 50);

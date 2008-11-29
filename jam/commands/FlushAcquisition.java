@@ -24,7 +24,7 @@ import com.google.inject.Inject;
 final class FlushAcquisition extends AbstractCommand implements Observer {
 
 	private transient final RunControl control;
-	private final JamStatus status;
+	private transient final JamStatus status;
 
 	@Inject
 	FlushAcquisition(final RunControl control, final JamStatus status) {

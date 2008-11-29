@@ -79,9 +79,14 @@ public class SummaryTable extends JPanel implements Observer {
 	/**
 	 * Default constructor.
 	 * 
+	 * @param status
+	 *            Application status
+	 * @param broadcaster
+	 *            broadcasts state changes
+	 * 
 	 */
 	@Inject
-	public SummaryTable(final JamStatus status) {
+	public SummaryTable(final JamStatus status, final Broadcaster broadcaster) {
 		super();
 		this.status = status;
 		setLayout(new BorderLayout());
@@ -92,7 +97,7 @@ public class SummaryTable extends JPanel implements Observer {
 				summaryTableModel);
 		summaryTableModel.setOptions(true, true, true);
 		this.add(toolbar, BorderLayout.NORTH);
-		Broadcaster.getSingletonInstance().addObserver(this);
+		broadcaster.addObserver(this);
 	}
 
 	/**

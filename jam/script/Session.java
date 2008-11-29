@@ -1,11 +1,12 @@
 package jam.script;
 
-import jam.commands.CommandManager;
+import injection.MapListener;
 import jam.commands.CommandNames;
 import jam.data.Warehouse;
 import jam.data.control.HistogramZero;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.CommandListener;
 import jam.global.RunState;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
@@ -85,6 +86,8 @@ public final class Session implements Observer {
 
 	private transient final HistogramZero histogramZero;
 
+	private transient final CommandListener listener;
+
 	/**
 	 * Creates an instance, of which the user then invokes the methods to script
 	 * an offline sorting session. A non-trivial side-effect of invoking this
@@ -105,9 +108,11 @@ public final class Session implements Observer {
 	protected Session(final JFrame frame, final SetupSortOff sortOffline,
 			final SetupSortOn sortOnline, final SortControl sortControl,
 			final RunControl runControl, final HDFIO hdfio,
-			final HistogramZero histogramZero) {
+			final HistogramZero histogramZero, final Broadcaster broadcaster,
+			final @MapListener CommandListener listener) {
 		super();
-		Broadcaster.getSingletonInstance().addObserver(this);
+		broadcaster.addObserver(this);
+		this.listener = listener;
 		this.frame = frame;
 		this.setupSortOffline = sortOffline;
 		this.setupSortOnline = sortOnline;
@@ -329,7 +334,7 @@ public final class Session implements Observer {
 	 * 
 	 * @param eventsOut
 	 *            where to write "pre-sort" events
-	 * @see jam.sort.SortRoutine#writeEvent(int [])
+	 * @see jam.sort.AbstractSortRoutine#writeEvent(int [])
 	 * @throws IllegalStateException
 	 *             if <code>setupOffline()</code> hasn't been called yet
 	 */
@@ -362,7 +367,7 @@ public final class Session implements Observer {
 	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
 	 * @param outStream
 	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
-	 * @see jam.sort.SortRoutine
+	 * @see jam.sort.AbstractSortRoutine
 	 * @see jam.sort.stream.AbstractEventInputStream
 	 * @see jam.sort.stream.AbstractEventOutputStream
 	 */
@@ -396,7 +401,7 @@ public final class Session implements Observer {
 	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
 	 * @param outStream
 	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
-	 * @see jam.sort.SortRoutine
+	 * @see jam.sort.AbstractSortRoutine
 	 * @see jam.sort.stream.AbstractEventInputStream
 	 * @see jam.sort.stream.AbstractEventOutputStream
 	 */
@@ -532,7 +537,6 @@ public final class Session implements Observer {
 	 */
 	public void readScalers() {
 		final String[] read = { "read" };
-		CommandManager.getInstance().performParseCommand(CommandNames.SCALERS,
-				read);
+		this.listener.performParseCommand(CommandNames.SCALERS, read);
 	}
 }

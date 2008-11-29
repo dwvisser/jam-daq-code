@@ -5,6 +5,7 @@ import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.CalibrationFitException;
 import jam.data.func.CalibrationFunctionCollection;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.Nameable;
 import jam.ui.CalibrationListCellRenderer;
 import jam.ui.PanelOKApplyCancelButtons;
@@ -89,10 +90,12 @@ public class CalibrationFit extends AbstractControl {
 	 * 
 	 * @param frame
 	 *            application frame
+	 * @param broadcaster
+	 *            broadcasts status changes
 	 */
 	@Inject
-	public CalibrationFit(final Frame frame) {
-		super(frame, "Calibration Fit", false);
+	public CalibrationFit(final Frame frame, final Broadcaster broadcaster) {
+		super(frame, "Calibration Fit", false, broadcaster);
 		setResizable(false);
 		setLocation(30, 30);
 		final Container cdialogCalib = getContentPane();
@@ -333,7 +336,7 @@ public class CalibrationFit extends AbstractControl {
 	 */
 	private void doCancelCalib() {
 		this.dispose();
-		BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
+		broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
 	}
 
 	/*
@@ -382,7 +385,7 @@ public class CalibrationFit extends AbstractControl {
 				calibFunc.fit();
 				fitText = calibFunc.getFormula(numFormatCoeff);
 				currentHist.setCalibration(calibFunc);
-				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
+				broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
 				LOGGER
 						.info("Calibrated histogram "
 								+ currentHist.getFullName().trim() + " with "
@@ -418,7 +421,7 @@ public class CalibrationFit extends AbstractControl {
 				}
 				calibFunc.setCoeff(coeff);
 				currentHist.setCalibration(calibFunc);
-				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
+				broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
 				LOGGER.info("Calibrated histogram "
 						+ currentHist.getFullName().trim() + " with "
 						+ calibFunc.getFormula(numFormatCoeff));

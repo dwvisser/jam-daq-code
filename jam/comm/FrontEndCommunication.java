@@ -34,7 +34,7 @@ public interface FrontEndCommunication {
 	void end();
 
 	/**
-	 * Tell the Front End to fluss out the data buffer
+	 * Tell the Front End to flush out the data buffer
 	 */
 	void flush();
 

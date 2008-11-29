@@ -1,6 +1,5 @@
 package jam.commands;
 
-import jam.global.Broadcaster;
 import jam.global.CommandListenerException;
 
 import java.awt.event.ActionEvent;
@@ -27,13 +26,6 @@ public abstract class AbstractCommand extends AbstractAction implements
 	 */
 	protected static final Logger LOGGER = Logger
 			.getLogger(AbstractCommand.class.getPackage().getName());
-
-	/**
-	 * Reference to <code>Broadcaster</code> singleton available to all
-	 * implementing classes.
-	 */
-	protected static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
 
 	/**
 	 * Constructor.

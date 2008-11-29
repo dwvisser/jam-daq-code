@@ -1,5 +1,6 @@
 package jam.commands;
 
+import jam.global.Broadcaster;
 import jam.io.ImpExpXSYS;
 
 import com.google.inject.Inject;
@@ -12,8 +13,8 @@ import com.google.inject.Inject;
 final class ImportXSYS extends AbstractImportFile {
 
 	@Inject
-	ImportXSYS(final ImpExpXSYS impExpXSYS) {
-		super("TUNL's XSYS");
+	ImportXSYS(final ImpExpXSYS impExpXSYS, final Broadcaster broadcaster) {
+		super("TUNL's XSYS", broadcaster);
 		importExport = impExpXSYS;
 	}
 }

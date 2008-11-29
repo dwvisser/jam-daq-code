@@ -6,6 +6,7 @@ import jam.data.DataBase;
 import jam.data.Group;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
@@ -42,13 +43,17 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 
 	private transient final Frame frame;
 
+	private transient final Broadcaster broadcaster;
+
 	@Inject
-	OpenHDFCmd(final Frame frame, final HDFIO hdfio) {
+	OpenHDFCmd(final Frame frame, final HDFIO hdfio,
+			final Broadcaster broadcaster) {
 		super("Open\u2026");
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O,
 				CTRL_MASK));
 		this.hdfio = hdfio;
 		this.frame = frame;
+		this.broadcaster = broadcaster;
 		final Icon iOpen = loadToolbarIcon("jam/ui/OpenHDF.png");
 		putValue(Action.SMALL_ICON, iOpen);
 		putValue(Action.SHORT_DESCRIPTION, "Open an hdf data file");
@@ -81,7 +86,8 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 					&& jfile.getSelectedFile() != null) {
 				openFile = jfile.getSelectedFile();
 				DataBase.getInstance().clearAllLists();
-				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
+				this.broadcaster
+						.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
 				hdfio.setListener(this);
 				isReading = hdfio.readFile(FileOpenMode.OPEN, openFile);
 			} else {
@@ -120,7 +126,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 		/* Set general status. */
 		GuiceInjector.getJamStatus().setOpenFile(file);
 		AbstractControl.setupAll();
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		this.broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		/*
 		 * Set selection of group and histogram. Set to first group and first
 		 * histogram
@@ -136,7 +142,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
 				SelectionTree.setCurrentHistogram(firstHist);
 			}
 		}
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+		this.broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 				firstHist);
 	}
 

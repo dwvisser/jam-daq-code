@@ -1,7 +1,5 @@
 package jam.data.func;
 
-import jam.data.DataException;
-
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -308,8 +306,6 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 *            array of x values
 	 * @param yVal
 	 *            array of y values
-	 * @throws DataException
-	 *             if regression fails
 	 * @return array where first element is constant, second is slope
 	 */
 	protected double[] linearRegression(final double[] xVal, final double[] yVal)
@@ -354,9 +350,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 *            array of x values
 	 * @param yVal
 	 *            array of y values
-	 * @throws DataException
-	 *             if regression fails
-	 * @return with polynomial coefficents
+	 * @return with polynomial coefficients
 	 */
 	protected double[] polynomialFit(final double[] xVal, final double[] yVal,
 			final int order) throws CalibrationFitException {

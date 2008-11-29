@@ -1,5 +1,6 @@
 package jam.commands;
 
+import jam.global.Broadcaster;
 import jam.io.ImportBanGates;
 
 import com.google.inject.Inject;
@@ -12,8 +13,9 @@ import com.google.inject.Inject;
 final class ImportORNLban extends AbstractImportFile {
 
 	@Inject
-	ImportORNLban(final ImportBanGates importBanGates) {
-		super("ORNL Banana Gates");
+	ImportORNLban(final ImportBanGates importBanGates,
+			final Broadcaster broadcaster) {
+		super("ORNL Banana Gates", broadcaster);
 		importExport = importBanGates;
 	}
 }

@@ -5,6 +5,7 @@ import static javax.swing.SwingConstants.LEFT;
 import static javax.swing.SwingConstants.RIGHT;
 import jam.data.Monitor;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.sort.ThreadPriorities;
 import jam.ui.Canceller;
@@ -49,17 +50,13 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 
 	// widgets for configuration
 
-	private static class BroadcastMonitorUpdate implements Runnable {
-		public static final BroadcastMonitorUpdate instance = new BroadcastMonitorUpdate();
-
-		private BroadcastMonitorUpdate() {
-			super();
-		}
-
+	private class BroadcastMonitorUpdate implements Runnable {
 		public void run() {
-			BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_UPDATE);
+			broadcaster.broadcast(BroadcastEvent.Command.MONITORS_UPDATE);
 		}
 	}
+
+	private transient final BroadcastMonitorUpdate monitorUpdate = new BroadcastMonitorUpdate();
 
 	private static final int BORDER_HEIGHT = 5;
 
@@ -75,8 +72,8 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	private transient final JSpinner spinnerUpdate;
 
 	@Inject
-	MonitorControl(final Frame frame) {
-		super(frame, "Monitors Setup", false);
+	MonitorControl(final Frame frame, final Broadcaster broadcaster) {
+		super(frame, "Monitors Setup", false, broadcaster);
 		setResizable(true);
 		setLocation(20, 50);
 		final Container cddisp = getContentPane();
@@ -232,7 +229,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		for (Monitor monitor : Monitor.getMonitorList()) {
 			monitor.reset();
 		}
-		BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_DISABLED);
+		broadcaster.broadcast(BroadcastEvent.Command.MONITORS_DISABLED);
 	}
 
 	/**
@@ -287,7 +284,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 				loopThread.setDaemon(true);
 				loopThread.start();
 			}
-			BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_ENABLED);
+			broadcaster.broadcast(BroadcastEvent.Command.MONITORS_ENABLED);
 		} else {
 			throw new IllegalStateException(getClass().getName() + ".start(): "
 					+ "called before the monitors were configured.");
@@ -332,14 +329,14 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		final int waitForResults = 500;
 		final int waitAfterRepaint = interval * 1000 - waitForResults;
 		/* read scalers and wait */
-		BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
+		broadcaster.broadcast(BroadcastEvent.Command.SCALERS_READ);
 		Thread.sleep(waitForResults);
 		// loop for each monitor
 		for (Monitor monitor : Monitor.getMonitorList()) {
 			monitor.update();// update the monitor
 		} // end loop monitors
 		/* Broadcast event on UI thread */
-		SwingUtilities.invokeLater(BroadcastMonitorUpdate.instance);
+		SwingUtilities.invokeLater(monitorUpdate);
 		Thread.sleep(waitAfterRepaint);
 	}
 }

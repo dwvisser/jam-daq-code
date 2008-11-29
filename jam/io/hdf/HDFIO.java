@@ -160,7 +160,7 @@ public final class HDFIO implements DataIO {
 
 	private transient String uiMessage;
 
-	private final JamStatus status;
+	private transient final JamStatus status;
 
 	/**
 	 * Class constructor handed references to the main class and message

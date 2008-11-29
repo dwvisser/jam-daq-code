@@ -1,9 +1,9 @@
 package jam.data.control;
 
 import jam.data.AbstractHistogram;
-import jam.data.DataException;
 import jam.data.Gate;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
 
@@ -43,8 +43,8 @@ public final class GateAdd extends AbstractControl {
 	 *            application frame
 	 */
 	@Inject
-	public GateAdd(final Frame frame) {
-		super(frame, "Add Gate", false);
+	public GateAdd(final Frame frame, final Broadcaster broadcaster) {
+		super(frame, "Add Gate", false, broadcaster);
 		final Container cdadd = getContentPane();
 		setResizable(false);
 		setLocation(20, 50);
@@ -101,10 +101,6 @@ public final class GateAdd extends AbstractControl {
 	/**
 	 * Add a gate.
 	 * 
-	 * @throws DataException
-	 *             if there's a problem
-	 * @throws GlobalException
-	 *             if there's a problem
 	 */
 	private void addGate() {
 		if (currentGateAdd == null) {
@@ -113,7 +109,7 @@ public final class GateAdd extends AbstractControl {
 			final AbstractHistogram hist = (AbstractHistogram) SelectionTree
 					.getCurrentHistogram();
 			hist.getGateCollection().addGate(currentGateAdd);
-			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
+			broadcaster.broadcast(BroadcastEvent.Command.GATE_ADD);
 			LOGGER.info("Added gate '" + currentGateAdd.getName().trim()
 					+ "' to histogram '" + hist.getFullName() + "'");
 		}

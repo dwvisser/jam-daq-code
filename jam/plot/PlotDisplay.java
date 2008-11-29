@@ -9,12 +9,10 @@ import jam.data.DataUtility;
 import jam.data.Gate;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.CommandFinder;
 import jam.global.JamStatus;
 import jam.global.Nameable;
 import jam.global.BroadcastEvent.Command;
 import jam.plot.PlotContainer.LayoutType;
-import jam.ui.Console;
 import jam.ui.SelectionTree;
 
 import java.awt.BorderLayout;
@@ -77,25 +75,26 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	/** Tool bar with plot controls (zoom...) */
 	private transient final Toolbar toolbar;
 
+	private final Broadcaster broadcaster;
+
 	/**
 	 * Constructor called by all constructors
 	 * 
-	 * @param console
-	 *            the class to call to print out messages
-	 * @param finder
-	 *            finds commands
 	 * @param status
 	 *            application status
 	 * @param action
 	 *            handles plot actions
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
-	public PlotDisplay(final Console console, final CommandFinder finder,
-			final JamStatus status, final Action action) {
+	public PlotDisplay(final JamStatus status, final Action action,
+			final Broadcaster broadcaster) {
 		super();
 		this.status = status;
 		this.action = action;
-		Broadcaster.getSingletonInstance().addObserver(this);
+		this.broadcaster = broadcaster;
+		broadcaster.addObserver(this);
 		/* display event handler */
 		PREFS.addPreferenceChangeListener(this);
 		createGridPanel();
@@ -243,8 +242,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			}
 			SelectionTree.setCurrentGate(null);
 			status.clearOverlays();
-			Broadcaster.getSingletonInstance().broadcast(
-					Command.HISTOGRAM_SELECT, hist);
+			this.broadcaster.broadcast(Command.HISTOGRAM_SELECT, hist);
 		}
 	}
 

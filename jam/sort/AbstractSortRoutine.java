@@ -45,7 +45,7 @@ import java.io.IOException;
  * @see jam.data.Monitor
  * @see jam.data.Gate
  */
-public abstract class SortRoutine implements Sorter, Beginner, Ender,
+public abstract class AbstractSortRoutine implements Sorter, Beginner, Ender,
 		EventSizeModeClient {
 
 	/**
@@ -320,7 +320,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender,
 	/**
 	 * Creates a new sort routine object.
 	 */
-	public SortRoutine() {
+	public AbstractSortRoutine() {
 		super();
 		setWriteEnabled(false);
 		cnafCommands = new CamacCommands(this);

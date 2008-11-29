@@ -4,7 +4,7 @@ import jam.data.Factory;
 import jam.data.Group;
 import jam.global.JamException;
 import jam.global.RuntimeSubclassIdentifier;
-import jam.sort.SortRoutine;
+import jam.sort.AbstractSortRoutine;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,11 +21,11 @@ final class SortChooser extends JComboBox {
 
 	private transient File classPath;
 
-	private transient Class<? extends SortRoutine> sortClass;
+	private transient Class<? extends AbstractSortRoutine> sortClass;
 
-	private transient SortRoutine sortRoutine;
+	private transient AbstractSortRoutine sortRoutine;
 
-	private transient final List<Class<? extends SortRoutine>> listClasses = new ArrayList<Class<? extends SortRoutine>>();
+	private transient final List<Class<? extends AbstractSortRoutine>> listClasses = new ArrayList<Class<? extends AbstractSortRoutine>>();
 
 	SortChooser() {
 		super();
@@ -33,12 +33,12 @@ final class SortChooser extends JComboBox {
 		addActionListener(new ActionListener() {
 			@SuppressWarnings("unchecked")
 			public void actionPerformed(final ActionEvent event) {
-				sortClass = (Class<? extends SortRoutine>) getSelectedItem();
+				sortClass = (Class<? extends AbstractSortRoutine>) getSelectedItem();
 			}
 		});
 	}
 
-	protected SortRoutine getSortRoutine() {
+	protected AbstractSortRoutine getSortRoutine() {
 		return sortRoutine;
 	}
 
@@ -59,7 +59,7 @@ final class SortChooser extends JComboBox {
 	protected void loadSorter(final boolean userSpecifiedPath)
 			throws JamException {
 		if (sortClass == null) {
-			sortClass = (Class<? extends SortRoutine>) getSelectedItem();
+			sortClass = (Class<? extends AbstractSortRoutine>) getSelectedItem();
 		}
 		if (sortClass == null) {
 			throw new JamException("No sort routine has been selected.");
@@ -71,7 +71,7 @@ final class SortChooser extends JComboBox {
 		try {
 			if (userSpecifiedPath) {
 				synchronized (this) {
-					sortRoutine = (SortRoutine) RuntimeSubclassIdentifier
+					sortRoutine = (AbstractSortRoutine) RuntimeSubclassIdentifier
 							.getSingletonInstance().loadClass(classPath,
 									sortClass.getName()).newInstance();
 				}
@@ -134,7 +134,7 @@ final class SortChooser extends JComboBox {
 	 * 
 	 * @return List of classes
 	 */
-	protected List<Class<? extends SortRoutine>> getClassList() {
+	protected List<Class<? extends AbstractSortRoutine>> getClassList() {
 		return listClasses;
 	}
 
@@ -145,7 +145,7 @@ final class SortChooser extends JComboBox {
 	 *            name of class to select
 	 */
 	public void selectSortClass(final String className) {
-		for (Class<? extends SortRoutine> clazz : getClassList()) {
+		for (Class<? extends AbstractSortRoutine> clazz : getClassList()) {
 			final String name = clazz.getName();
 			if (name.equals(className)) {
 				setSelectedItem(clazz);
@@ -161,9 +161,9 @@ final class SortChooser extends JComboBox {
 	 *            class path
 	 * @return set of available sort routines
 	 */
-	private Set<Class<? extends SortRoutine>> findSortClasses(final File path) {
+	private Set<Class<? extends AbstractSortRoutine>> findSortClasses(final File path) {
 		return RuntimeSubclassIdentifier.getSingletonInstance().find(path,
-				SortRoutine.class);
+				AbstractSortRoutine.class);
 	}
 
 	/**
@@ -171,12 +171,12 @@ final class SortChooser extends JComboBox {
 	 * 
 	 * @return set of available sort routines
 	 */
-	private Set<Class<? extends SortRoutine>> findSortClassesDefault() {
-		final Set<Class<? extends SortRoutine>> set = new LinkedHashSet<Class<? extends SortRoutine>>();
+	private Set<Class<? extends AbstractSortRoutine>> findSortClassesDefault() {
+		final Set<Class<? extends AbstractSortRoutine>> set = new LinkedHashSet<Class<? extends AbstractSortRoutine>>();
 		final RuntimeSubclassIdentifier rtsi = RuntimeSubclassIdentifier
 				.getSingletonInstance();
-		set.addAll(rtsi.find("help", SortRoutine.class, true));
-		set.addAll(rtsi.find("sort", SortRoutine.class, true));
+		set.addAll(rtsi.find("help", AbstractSortRoutine.class, true));
+		set.addAll(rtsi.find("sort", AbstractSortRoutine.class, true));
 		return set;
 	}
 }

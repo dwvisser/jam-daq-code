@@ -7,6 +7,7 @@
 package jam.commands;
 
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.CommandListenerException;
 
 import java.awt.Frame;
@@ -22,13 +23,16 @@ final class OpenSelectedHistogram extends AbstractCommand {
 
 	private transient final Frame frame;
 	private transient final jam.io.control.OpenSelectedHistogram osh;
+	private transient final Broadcaster broadcaster;
 
 	@Inject
 	OpenSelectedHistogram(final Frame frame,
-			final jam.io.control.OpenSelectedHistogram osh) {
+			final jam.io.control.OpenSelectedHistogram osh,
+			final Broadcaster broadcaster) {
 		super("Open Additional Select Histograms\u2026");
 		this.frame = frame;
 		this.osh = osh;
+		this.broadcaster = broadcaster;
 	}
 
 	/**
@@ -37,7 +41,7 @@ final class OpenSelectedHistogram extends AbstractCommand {
 	@Override
 	protected void execute(final Object[] cmdParams) {
 		osh.open();
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		this.broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		frame.repaint();
 	}
 

@@ -57,11 +57,14 @@ public class LoadFit {
 	 *            application frame
 	 * @param display
 	 *            plot display
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
-	public LoadFit(final JFrame frame, final PlotDisplay display) {
+	public LoadFit(final JFrame frame, final PlotDisplay display,
+			final Broadcaster broadcaster) {
 		super();
-		broadcaster = Broadcaster.getSingletonInstance();
+		this.broadcaster = broadcaster;
 		jamMain = frame;
 		this.display = display;
 		final String dialogName = "Load Fit Routine";

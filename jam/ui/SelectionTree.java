@@ -45,8 +45,7 @@ import com.google.inject.Inject;
  * @author Ken Swartz
  */
 public final class SelectionTree extends JPanel implements Observer {
-	private static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
+	private transient final Broadcaster broadcaster;
 
 	private static Nameable currentGate;
 
@@ -137,16 +136,22 @@ public final class SelectionTree extends JPanel implements Observer {
 	 * 
 	 * @param status
 	 *            application status
+	 * @param runStateBox
+	 *            run state widget
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
-	public SelectionTree(final JamStatus status) {
+	public SelectionTree(final JamStatus status, final RunStateBox runStateBox,
+			final Broadcaster broadcaster) {
 		super(new BorderLayout());
 		this.status = status;
-		BROADCASTER.addObserver(this);
+		this.broadcaster = broadcaster;
+		broadcaster.addObserver(this);
 		final Dimension dim = getMinimumSize();
 		dim.width = 160;
 		setPreferredSize(dim);
-		add(RunStateBox.getInstance().getComponent(), BorderLayout.NORTH);
+		add(runStateBox.getComponent(), BorderLayout.NORTH);
 		/* Default blank model */
 		treeModel = new DefaultTreeModel(new DefaultMutableTreeNode("No Data"));
 		tree = new JTree(treeModel);
@@ -335,12 +340,12 @@ public final class SelectionTree extends JPanel implements Observer {
 				final Object firstNodeObject = firstNode.getUserObject();
 
 				if (firstNode == rootNode) {// NOPMD
-					BROADCASTER.broadcast(BroadcastEvent.Command.ROOT_SELECT);
+					broadcaster.broadcast(BroadcastEvent.Command.ROOT_SELECT);
 				} else if (firstNodeObject instanceof Group) {
 					final Group group = (Group) firstNodeObject;
 					// Group.setCurrentGroup(group);
 					status.setCurrentGroup(group);
-					BROADCASTER.broadcast(BroadcastEvent.Command.GROUP_SELECT,
+					broadcaster.broadcast(BroadcastEvent.Command.GROUP_SELECT,
 							group);
 				} else if (firstNodeObject instanceof AbstractHistogram) {
 					/* Histogram selected */
@@ -358,7 +363,7 @@ public final class SelectionTree extends JPanel implements Observer {
 					} else {
 						status.clearOverlays();
 					}
-					BROADCASTER.broadcast(
+					broadcaster.broadcast(
 							BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 				} else if (firstNodeObject instanceof Gate) {
 					/* Gate selected */
@@ -369,7 +374,7 @@ public final class SelectionTree extends JPanel implements Observer {
 					setCurrentHistogram(hist);
 					setCurrentGate(gate);
 					status.clearOverlays();
-					BROADCASTER.broadcast(
+					broadcaster.broadcast(
 							BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 					selectGate(gate);
 				}
@@ -390,7 +395,7 @@ public final class SelectionTree extends JPanel implements Observer {
 	private void selectGate(final Gate gate) {
 		try {
 			setCurrentGate(gate);
-			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
+			broadcaster.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
 			final double area = gate.getArea();
 			final StringBuilder message = new StringBuilder();
 			if (gate.getDimensionality() == 1) {

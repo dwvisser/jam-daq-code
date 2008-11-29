@@ -8,7 +8,6 @@ import java.awt.Frame;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Future;
 
@@ -38,8 +37,6 @@ public class MessageReceiver extends GoodThread {
 	 *            that we receive at
 	 * @param sender
 	 *            used to send messages and data
-	 * @throws SocketException
-	 *             if we can't bind to the socket
 	 * @throws UnknownHostException
 	 *             if the host is invalid
 	 */

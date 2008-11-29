@@ -6,7 +6,7 @@ import jam.data.HistInt2D;
 import jam.data.Monitor;
 import jam.data.Scaler;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
+import jam.sort.AbstractSortRoutine;
 
 /**
  * Sort file for 3 singles channels of data
@@ -19,7 +19,7 @@ import jam.sort.SortRoutine;
  * @Edited by Tom Brown March 2006
  * @version Jam version 0.5 November 98
  */
-public class CamacScalerTest extends SortRoutine {// NOPMD
+public class CamacScalerTest extends AbstractSortRoutine {// NOPMD
 
 	// histograms
 	private transient HistInt1D hCh0, hCh1, hCh2, hCh3, hCh4;

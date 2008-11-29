@@ -2,10 +2,9 @@ package jam.plot;
 
 import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 import jam.data.AbstractHist1D;
-import jam.data.DataException;
+import jam.data.AbstractHistogram;
 import jam.data.HistDouble2D;
 import jam.data.HistInt2D;
-import jam.data.AbstractHistogram;
 import jam.data.HistogramType;
 import jam.plot.color.ColorPrefs;
 import jam.plot.color.DiscreteColorScale;
@@ -531,8 +530,6 @@ final class Plot2d extends AbstractPlot {
 	 * 
 	 * @param context
 	 *            the graphics context to paint to
-	 * @throws DataException
-	 *             if there's a problem painting the gate
 	 */
 	protected void paintPolyGate(final Graphics context) {
 		context.setPaintMode();

@@ -13,8 +13,8 @@ import com.google.inject.Inject;
 public class ShowDialogConfiguration extends AbstractShowDialog {
 
 	@Inject
-	ShowDialogConfiguration(final ConfigurationDisplay configurationDisplay) {
+	ShowDialogConfiguration(final ConfigurationDisplay configDisplay) {
 		super("View Configuration\u2026");
-		dialog = configurationDisplay;
+		dialog = configDisplay;
 	}
 }

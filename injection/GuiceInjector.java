@@ -1,7 +1,9 @@
 package injection;
 
 import jam.JamInitialization;
+import jam.commands.CommandManager;
 import jam.commands.Commandable;
+import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.io.AbstractImpExp;
 import jam.io.hdf.HDFIO;
@@ -88,6 +90,20 @@ public final class GuiceInjector {
 	 */
 	public static Action getAction() {
 		return injector.getInstance(Action.class);
+	}
+
+	/**
+	 * @return the command manager
+	 */
+	public static CommandManager getCommandManager() {
+		return injector.getInstance(CommandManager.class);
+	}
+
+	/**
+	 * @return the broadcaster object
+	 */
+	public static Broadcaster getBroadcaster() {
+		return injector.getInstance(Broadcaster.class);
 	}
 
 }

@@ -1,7 +1,6 @@
 package jam;
 
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 import jam.global.BroadcastEvent.Command;
 
 import java.awt.CardLayout;
@@ -31,6 +30,8 @@ public class Display extends JPanel implements Observer {
 	 *            plot panel
 	 * @param summaryTable
 	 *            summary panel
+	 * @param broadcaster
+	 *            broadcasts state changes we listen for
 	 */
 	public Display(final JPanel plotDisplay, final JPanel summaryTable) {
 		super();
@@ -40,7 +41,6 @@ public class Display extends JPanel implements Observer {
 		add(KEY_TABLE, summaryTable);
 		/* Initial show plot. */
 		cardLayout.show(this, KEY_PLOT);
-		Broadcaster.getSingletonInstance().addObserver(this);
 	}
 
 	/**

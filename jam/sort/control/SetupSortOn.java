@@ -7,18 +7,19 @@ import injection.GuiceInjector;
 import jam.comm.CommunicationsException;
 import jam.comm.FrontEndCommunication;
 import jam.comm.ScalerCommunication;
+import jam.global.Broadcaster;
 import jam.global.JamException;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
+import jam.sort.AbstractSortRoutine;
 import jam.sort.DiskDaemon;
 import jam.sort.EventSizeMode;
 import jam.sort.NetDaemon;
 import jam.sort.RingBuffer;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 import jam.ui.ConsoleLog;
@@ -93,11 +94,9 @@ public final class SetupSortOn extends AbstractSetup {
 	/* strings of data entered */
 	private transient String exptName;
 
-	private transient final FrontEndCommunication frontEnd = jam.comm.Factory
-			.createFrontEndCommunication();
+	private transient final FrontEndCommunication frontEnd;
 
-	private transient final ScalerCommunication scaler = jam.comm.Factory
-			.createScalerCommunication();
+	private transient final ScalerCommunication scaler;
 
 	private transient String hostDataIP;
 
@@ -114,12 +113,16 @@ public final class SetupSortOn extends AbstractSetup {
 
 	private transient final JTextField textPathHist, textPathData, textPathLog;
 
-	private final DisplayCounters displayCounters;
+	private transient final DisplayCounters displayCounters;
 
 	@Inject
 	private SetupSortOn(final ConsoleLog console, final JFrame frame,
-			final RunControl runControl, final DisplayCounters displayCounters) {
-		super("Setup Online");
+			final RunControl runControl, final DisplayCounters displayCounters,
+			final FrontEndCommunication frontEnd,
+			final ScalerCommunication scaler, final Broadcaster broadcaster) {
+		super("Setup Online", broadcaster);
+		this.frontEnd = frontEnd;
+		this.scaler = scaler;
 		initCheckLock();
 		initDiskCheckbox();
 		readProperties();
@@ -396,7 +399,7 @@ public final class SetupSortOn extends AbstractSetup {
 		final QuerySortMode sortMode = notlock ? SortMode.NO_SORT : (cdisk
 				.isSelected() ? SortMode.ONLINE_DISK : SortMode.ON_NO_DISK);
 		final String name;
-		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
 		if (sortRoutine == null) {
 			// instead of conditional assign to avoid PMD warning
 			name = "No Data";
@@ -436,8 +439,8 @@ public final class SetupSortOn extends AbstractSetup {
 			sortChooser.forgetSortRoutine();
 		}
 		jam.data.DataBase.getInstance().clearAllLists();
-		jam.global.Broadcaster.getSingletonInstance().broadcast(
-				jam.global.BroadcastEvent.Command.HISTOGRAM_NEW);
+		this.broadcaster
+				.broadcast(jam.global.BroadcastEvent.Command.HISTOGRAM_NEW);
 	}
 
 	/**
@@ -463,7 +466,7 @@ public final class SetupSortOn extends AbstractSetup {
 		/* Kill all existing Daemons and clear data areas */
 		resetAcq(false);
 		sortChooser.loadSorter(btnSpecifyPath.isSelected()); // load
-		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
 		if (sortRoutine != null) {
 			lockMode(true);
 			setupSort(); // create daemons
@@ -512,7 +515,7 @@ public final class SetupSortOn extends AbstractSetup {
 					+ ": illegal access to EventInputStream: "
 					+ inChooser.getSelectedItem(), iae);
 		}
-		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
 		try { // create new event input stream class
 			outStream = ((Class<? extends AbstractEventOutputStream>) outChooser
 					.getSelectedItem()).newInstance();
@@ -531,7 +534,7 @@ public final class SetupSortOn extends AbstractSetup {
 			throw new JamException(msg, iae);
 		}
 		// create sorter daemon
-		sortDaemon = new SortDaemon(runControl);
+		sortDaemon = new SortDaemon(runControl, this.broadcaster);
 		final boolean useDisk = cdisk.isSelected();
 		sortDaemon.setup(inStream, sortRoutine.getEventSize());
 		/* interprocess buffering between daemons */

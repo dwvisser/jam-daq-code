@@ -14,8 +14,7 @@ import com.google.inject.Singleton;
 @Singleton
 public final class BroadcastUtilities {
 
-	private static final Broadcaster INSTANCE = Broadcaster
-			.getSingletonInstance();
+	private transient final Broadcaster broadcaster;
 
 	private static final Logger LOGGER = Logger
 			.getLogger(BroadcastUtilities.class.getPackage().getName());
@@ -25,10 +24,14 @@ public final class BroadcastUtilities {
 	/**
 	 * @param status
 	 *            application status
+	 * @param broadcaster
+	 *            broadcaster
 	 */
 	@Inject
-	public BroadcastUtilities(final JamStatus status) {
+	public BroadcastUtilities(final JamStatus status,
+			final Broadcaster broadcaster) {
 		this.status = status;
+		this.broadcaster = broadcaster;
 	}
 
 	/**
@@ -36,8 +39,8 @@ public final class BroadcastUtilities {
 	 */
 	public void zeroScalers() {
 		if (this.status.isOnline()) {
-			INSTANCE.broadcast(BroadcastEvent.Command.SCALERS_CLEAR);
-			INSTANCE.broadcast(BroadcastEvent.Command.SCALERS_READ);
+			broadcaster.broadcast(BroadcastEvent.Command.SCALERS_CLEAR);
+			broadcaster.broadcast(BroadcastEvent.Command.SCALERS_READ);
 		} else {
 			LOGGER.severe("Can only Zero Scalers when in Online mode.");
 		}

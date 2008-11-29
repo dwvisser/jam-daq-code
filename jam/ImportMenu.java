@@ -1,5 +1,6 @@
 package jam;
 
+import jam.commands.CommandManager;
 import jam.commands.CommandNames;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -16,16 +17,17 @@ import javax.swing.JMenuItem;
 import com.google.inject.Inject;
 
 final class ImportMenu implements Observer {
-	final transient private JMenu menu = MenuBar.createMenu("Import",
-			CommandNames.IMPORT_TEXT, CommandNames.IMPORT_SPE,
-			CommandNames.IMPORT_DAMM, CommandNames.IMPORT_XSYS,
-			CommandNames.IMPORT_BAN);
+	final transient private JMenu menu;
 	private transient final JamStatus status;
 
 	@Inject
-	ImportMenu(final JamStatus status) {
-		Broadcaster.getSingletonInstance().addObserver(this);
+	ImportMenu(final JamStatus status, final Broadcaster broadcaster,
+			final CommandManager commandManager) {
+		broadcaster.addObserver(this);
 		this.status = status;
+		menu = commandManager.createMenu("Import", CommandNames.IMPORT_TEXT,
+				CommandNames.IMPORT_SPE, CommandNames.IMPORT_DAMM,
+				CommandNames.IMPORT_XSYS, CommandNames.IMPORT_BAN);
 	}
 
 	protected JMenuItem getMenu() {

@@ -1,6 +1,7 @@
 package jam.commands;
 
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.plot.PlotDisplay;
 import jam.plot.View;
 import jam.ui.WindowCancelAction;
@@ -52,12 +53,15 @@ public class ShowDialogAddView extends AbstractShowDialog {
 
 		private transient final PlotDisplay display;
 
+		private transient final Broadcaster broadcaster;
+
 		private static final Frame parent = null;
 
 		@Inject
-		ViewNew(final PlotDisplay display) {
+		ViewNew(final PlotDisplay display, final Broadcaster broadcaster) {
 			super(parent, "New View", false);
 			this.display = display;
+			this.broadcaster = broadcaster;
 			final Container cdnew = getContentPane();
 			setResizable(false);
 			cdnew.setLayout(new BorderLayout(5, 5));
@@ -139,7 +143,7 @@ public class ShowDialogAddView extends AbstractShowDialog {
 				name = "View " + nRows + "x" + nCols;
 			}
 			viewNew = new View(name, nRows, nCols);
-			BROADCASTER.broadcast(BroadcastEvent.Command.VIEW_NEW);
+			this.broadcaster.broadcast(BroadcastEvent.Command.VIEW_NEW);
 			this.display.setView(viewNew);
 		}
 	}

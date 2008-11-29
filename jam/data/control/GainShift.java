@@ -6,6 +6,7 @@ import jam.data.DataException;
 import jam.data.DataUtility;
 import jam.data.HistogramType;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.ui.SelectionTree;
 
@@ -76,13 +77,13 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 	 * 
 	 * @param status
 	 *            application status
-	 * 
-	 * @param mh
-	 *            where to print messages
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
-	public GainShift(final Frame frame, final JamStatus status) {
-		super(frame, "Gain Shift 1-D Histogram", false);
+	public GainShift(final Frame frame, final JamStatus status,
+			final Broadcaster broadcaster) {
+		super(frame, "Gain Shift 1-D Histogram", false, broadcaster);
 		chan1i = 0.0;
 		chan2i = 1.0;
 		chan1f = 0.0;
@@ -181,11 +182,11 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 					public void apply() {
 						try {
 							doGainShift();
-							BROADCASTER
+							broadcaster
 									.broadcast(BroadcastEvent.Command.REFRESH);
 							SelectionTree.setCurrentHistogram(hto);
 							status.setCurrentGroup(DataUtility.getGroup(hto));
-							BROADCASTER.broadcast(
+							broadcaster.broadcast(
 									BroadcastEvent.Command.HISTOGRAM_SELECT,
 									hto);
 						} catch (DataException je) {

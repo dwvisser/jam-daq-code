@@ -24,8 +24,7 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	/**
 	 * Reference to instance of Broadcaster.
 	 */
-	protected static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
+	protected transient final Broadcaster broadcaster;
 
 	/**
 	 * Default number of rows to display
@@ -62,10 +61,11 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	 *            whether dialog is modal
 	 */
 	protected AbstractControl(final Frame frame, final String title,
-			final boolean modal) {
+			final boolean modal, final Broadcaster broadcaster) {
 		super(frame, title, modal);
 		controllers.add(this);
-		BROADCASTER.addObserver(this);
+		this.broadcaster = broadcaster;
+		broadcaster.addObserver(this);
 	}
 
 	/**
@@ -133,7 +133,7 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	@Override
 	protected void finalize() throws Throwable {
 		controllers.remove(this);
-		BROADCASTER.deleteObserver(this);
+		broadcaster.deleteObserver(this);
 		super.finalize();// NOPMD
 	}
 

@@ -1,5 +1,6 @@
 package jam.commands;
 
+import jam.global.Broadcaster;
 import jam.io.ImpExpSPE;
 
 import com.google.inject.Inject;
@@ -12,8 +13,8 @@ import com.google.inject.Inject;
 final class ImportRadware extends AbstractImportFile {
 
 	@Inject
-	ImportRadware(final ImpExpSPE impExpSPE) {
-		super("Radware gf3");
+	ImportRadware(final ImpExpSPE impExpSPE, final Broadcaster broadcaster) {
+		super("Radware gf3", broadcaster);
 		importExport = impExpSPE;
 	}
 

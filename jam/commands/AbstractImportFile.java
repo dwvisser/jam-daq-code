@@ -3,6 +3,7 @@ package jam.commands;
 import injection.GuiceInjector;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.io.ImpExpException;
 
 import java.io.File;
@@ -15,12 +16,16 @@ import java.io.File;
  */
 class AbstractImportFile extends AbstractImportExport {
 
-	AbstractImportFile() {
+	private transient final Broadcaster broadcaster;
+
+	AbstractImportFile(final Broadcaster broadcaster) {
 		super();
+		this.broadcaster = broadcaster;
 	}
 
-	AbstractImportFile(final String name) {
+	AbstractImportFile(final String name, final Broadcaster broadcaster) {
 		super(name);
+		this.broadcaster = broadcaster;
 	}
 
 	/**
@@ -40,7 +45,8 @@ class AbstractImportFile extends AbstractImportExport {
 					GuiceInjector.getJamStatus().setOpenFile(
 							importExport.getLastFile());
 					AbstractControl.setupAll();
-					BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+					this.broadcaster
+							.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 				}
 			} else { // File given
 				final File file = (File) cmdParams[0];

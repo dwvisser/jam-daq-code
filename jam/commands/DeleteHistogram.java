@@ -4,6 +4,7 @@ import jam.data.AbstractHistogram;
 import jam.data.DataUtility;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
 
@@ -26,11 +27,13 @@ import com.google.inject.Inject;
 final class DeleteHistogram extends AbstractCommand implements Observer {
 
 	private transient final JFrame frame;
+	private transient final Broadcaster broadcaster;
 
 	@Inject
-	DeleteHistogram(final JFrame frame) {
+	DeleteHistogram(final JFrame frame, final Broadcaster broadcaster) {
 		super("Delete\u2026");
 		this.frame = frame;
+		this.broadcaster = broadcaster;
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D,
 				CTRL_MASK));
 	}
@@ -56,7 +59,8 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 					"Delete " + name + "?", "Delete histogram",
 					JOptionPane.YES_NO_OPTION)) {
 				hist.delete();
-				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+				this.broadcaster
+						.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			}
 		}
 	}

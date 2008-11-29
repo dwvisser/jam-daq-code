@@ -10,6 +10,7 @@ import jam.data.HistDouble2D;
 import jam.data.HistInt2D;
 import jam.data.HistogramType;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.ui.PanelOKApplyCancelButtons;
 import jam.ui.SelectionTree;
@@ -73,10 +74,13 @@ public final class Projections extends AbstractManipulation implements
 	 * 
 	 * @param status
 	 *            application status
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
-	public Projections(final Frame frame, final JamStatus status) {
-		super(frame, "Project 2D Histogram", false);
+	public Projections(final Frame frame, final JamStatus status,
+			final Broadcaster broadcaster) {
+		super(frame, "Project 2D Histogram", false, broadcaster);
 		setResizable(false);
 		final int hgap = 5;
 		final int vgap = 10;
@@ -165,10 +169,10 @@ public final class Projections extends AbstractManipulation implements
 			public void apply() {
 				try {
 					project();
-					BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
+					broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
 					SelectionTree.setCurrentHistogram(hto);
 					status.setCurrentGroup(DataUtility.getGroup(hto));
-					BROADCASTER.broadcast(
+					broadcaster.broadcast(
 							BroadcastEvent.Command.HISTOGRAM_SELECT, hto);
 				} catch (DataException de) {
 					LOGGER.log(Level.SEVERE, de.getMessage(), de);

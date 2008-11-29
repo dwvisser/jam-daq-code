@@ -73,13 +73,18 @@ public final class JamInitialization {
 	 *            handles application-wide events
 	 * @param menuBar
 	 *            menu bar
+	 * @param commandManager
+	 *            handles commands
+	 * @param jamToolBar
+	 *            iconic toolbar
 	 */
 	@Inject
 	public JamInitialization(final JFrame frame, final JamStatus status,
 			final Console console, final JamProperties properties,
 			final PlotDisplay plotDisplay, final SummaryTable summaryTable,
 			final AcquisitionAndRunState aars, final SelectionTree selectTree,
-			final Broadcaster broadcaster, final MenuBar menuBar) {
+			final Broadcaster broadcaster, final MenuBar menuBar,
+			final CommandManager commandManager, final ToolBar jamToolBar) {
 		this.frame = frame;
 		this.properties = properties;
 		this.summaryTable = summaryTable;
@@ -94,11 +99,11 @@ public final class JamInitialization {
 		LOGGER.info("Welcome to Jam v" + Version.getInstance().getName());
 
 		/* For now, initializing ToolBar depends on status having the frame. */
-		final ToolBar jamToolBar = new ToolBar();
 		contents.add(jamToolBar, BorderLayout.NORTH);
 		/* histogram displayer */
 		SummaryTable.setTable(summaryTable);
 		final Display display = new Display(plotDisplay, summaryTable);
+		broadcaster.addObserver(display);
 		final JSplitPane splitCenter = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, true, display, console);
 		splitCenter.setResizeWeight(0.9);
@@ -126,8 +131,7 @@ public final class JamInitialization {
 			}
 
 			private void exit() {
-				final Action exit = CommandManager.getInstance().getAction(
-						CommandNames.EXIT);
+				final Action exit = commandManager.getAction(CommandNames.EXIT);
 				if (null == exit) {
 					throw new IllegalStateException(
 							"Couldn't find exit action.");
@@ -139,12 +143,12 @@ public final class JamInitialization {
 		});
 		/* Initial histograms and setup */
 		final InitialHistograms initHists = new InitialHistograms();
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		AbstractControl.setupAll(); // setup jam.data.control dialog boxes
 		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
 		status.setCurrentGroup(initHists.getInitialGroup());
 		SelectionTree.setCurrentHistogram(initHists.getInitialHist());
-		Broadcaster.getSingletonInstance().broadcast(
-				BroadcastEvent.Command.HISTOGRAM_SELECT,
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 				initHists.getInitialHist());
 	}
 

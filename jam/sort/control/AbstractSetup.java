@@ -14,8 +14,8 @@ import jam.global.JamException;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
 import jam.global.RuntimeSubclassIdentifier;
+import jam.sort.AbstractSortRoutine;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 import jam.ui.SelectionTree;
@@ -79,8 +79,7 @@ abstract class AbstractSetup {
 		}
 	}
 
-	private static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
+	protected transient final Broadcaster broadcaster;
 
 	/**
 	 * All text message output goes to this object.
@@ -150,8 +149,9 @@ abstract class AbstractSetup {
 	 */
 	protected transient final JTextField textSortPath;
 
-	AbstractSetup(final String dialogName) {
+	AbstractSetup(final String dialogName, final Broadcaster broadcaster) {
 		super();
+		this.broadcaster = broadcaster;
 		// Jam properties needed
 		final String defInStream = JamProperties
 				.getPropString(PropertyKeys.EVENT_INSTREAM);
@@ -296,7 +296,7 @@ abstract class AbstractSetup {
 	 */
 	protected final void initializeSorter() throws JamException {
 		final StringBuffer message = new StringBuffer(400);
-		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
 		final String sortName = sortRoutine.getClass().getName();
 		try {
 			sortRoutine.initialize();
@@ -348,8 +348,8 @@ abstract class AbstractSetup {
 			final AbstractHistogram firstHist = histList.get(0);
 			SelectionTree.setCurrentHistogram(firstHist);
 		}
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
 	}
 
 	/**

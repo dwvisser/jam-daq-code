@@ -8,6 +8,7 @@ import jam.data.HistogramType;
 import jam.data.NameValueCollection;
 import jam.data.Warehouse;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
@@ -73,10 +74,13 @@ public class HistogramNew extends AbstractControl {
 	 * 
 	 * @param status
 	 *            application status
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
-	public HistogramNew(final Frame frame, final JamStatus status) {
-		super(frame, "New Histogram ", false);
+	public HistogramNew(final Frame frame, final JamStatus status,
+			final Broadcaster broadcaster) {
+		super(frame, "New Histogram ", false, broadcaster);
 		this.status = status;
 		setResizable(false);
 		setLocation(30, 30);
@@ -91,7 +95,7 @@ public class HistogramNew extends AbstractControl {
 		pLabels.add(new JLabel("Title", RIGHT));
 		pLabels.add(new JLabel("Type", RIGHT));
 		pLabels.add(new JLabel("Size", RIGHT));
-		/* Entires panel */
+		/* Entries panel */
 		final JPanel pEntires = new JPanel(new GridLayout(0, 1, 5, 5));
 		pEntires.setBorder(new EmptyBorder(10, 0, 0, 10));
 		cdialogNew.add(pEntires, BorderLayout.CENTER);
@@ -227,10 +231,10 @@ public class HistogramNew extends AbstractControl {
 		}
 		final AbstractHistogram hist = Factory.createHistogram(histGroup,
 				array, name, title);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		SelectionTree.setCurrentHistogram(hist);
 		this.status.setCurrentGroup(histGroup);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		final StringBuffer msg = new StringBuffer("New histogram created, ");
 		msg.append(name).append(", type: ");
 		if (coneInt.isSelected()) {

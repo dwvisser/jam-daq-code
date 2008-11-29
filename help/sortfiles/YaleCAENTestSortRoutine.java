@@ -5,7 +5,7 @@ import jam.data.Gate;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
+import jam.sort.AbstractSortRoutine;
 
 /**
  * Sort routine for neutron counting with the aid of an anti-coincidence muon
@@ -13,7 +13,7 @@ import jam.sort.SortRoutine;
  * 
  * @author R. Longland
  */
-public class YaleCAENTestSortRoutine extends SortRoutine {
+public class YaleCAENTestSortRoutine extends AbstractSortRoutine {
 
 	// -----------------------------------------------
 	// General Definitions

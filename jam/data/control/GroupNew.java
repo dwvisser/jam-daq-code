@@ -3,6 +3,7 @@ package jam.data.control;
 import jam.data.Factory;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
@@ -27,10 +28,12 @@ public class GroupNew extends AbstractControl {
 	 * 
 	 * @param frame
 	 *            application frame
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
-	public GroupNew(final Frame frame) {
-		super(frame, "New Group", false);
+	public GroupNew(final Frame frame, final Broadcaster broadcaster) {
+		super(frame, "New Group", false, broadcaster);
 		textName = GroupControlInitializer.initializeDialog(this);
 		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
 				new PanelOKApplyCancelButtons.AbstractListener(this) {
@@ -48,7 +51,7 @@ public class GroupNew extends AbstractControl {
 	 */
 	private void createGroup() {
 		Factory.createGroup(textName.getText(), Group.Type.TEMP);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 	}
 
 	/**

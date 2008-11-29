@@ -1,10 +1,11 @@
 package jam.commands;
 
-import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Group;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
@@ -29,12 +30,19 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 		HDFIO.AsyncListener {
 
 	private transient final HDFIO hdfio;
+	private transient final Broadcaster broadcaster;
+	private transient final JamStatus status;
+	private transient final Frame frame;
 
 	@Inject
-	OpenAdditionalHDF(final HDFIO hdfio) {
+	OpenAdditionalHDF(final HDFIO hdfio, final Broadcaster broadcaster,
+			final JamStatus status, final Frame frame) {
 		super();
 		putValue(NAME, "Open Additional\u2026");
 		this.hdfio = hdfio;
+		this.broadcaster = broadcaster;
+		this.status = status;
+		this.frame = frame;
 		final Icon iOpenAdd = loadToolbarIcon("jam/ui/OpenAddHDF.png");
 		putValue(Action.SMALL_ICON, iOpenAdd);
 		putValue(Action.SHORT_DESCRIPTION, "Open an additional hdf data file");
@@ -56,7 +64,6 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 	 * Read in an HDF file
 	 */
 	private void readAdditionalHDFFile(final File file) {
-		final Frame frame = GuiceInjector.getFrame();
 		hdfio.setListener(this);
 		final boolean isReading;
 		if (file == null) {// No file given
@@ -102,21 +109,21 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 		Group firstGroup;
 		AbstractHistogram firstHist = null;
 
-		// Update app status
+		// Update application status
 		AbstractControl.setupAll();
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		this.broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 
 		// Set the current histogram to the first opened histogram
 		firstGroup = hdfio.getFirstLoadGroup();
 		if (firstGroup != null) {
-			GuiceInjector.getJamStatus().setCurrentGroup(firstGroup);
+			this.status.setCurrentGroup(firstGroup);
 
 			/* Set the current histogram to the first opened histogram. */
 			if (firstGroup.histograms.getList().size() > 0) {
 				firstHist = firstGroup.histograms.getList().get(0);
 			}
 			SelectionTree.setCurrentHistogram(firstHist);
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+			this.broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 					firstHist);
 		}
 	}

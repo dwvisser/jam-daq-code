@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 /**
@@ -18,8 +19,7 @@ import com.google.inject.Singleton;
 @Singleton
 public final class JamStatus implements AcquisitionStatus, QuerySortMode {
 
-	private static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
+	private transient final Broadcaster broadcaster;
 
 	private transient AcquisitionStatus acqStatus;
 
@@ -33,8 +33,9 @@ public final class JamStatus implements AcquisitionStatus, QuerySortMode {
 
 	private transient String sortName = "";
 
-	protected JamStatus() {
-		// needed for dependency injection
+	@Inject
+	protected JamStatus(final Broadcaster broadcaster) {
+		this.broadcaster = broadcaster;
 	}
 
 	/**
@@ -188,7 +189,7 @@ public final class JamStatus implements AcquisitionStatus, QuerySortMode {
 	 *            new run state
 	 */
 	public void setRunState(final RunState runState) {
-		BROADCASTER.broadcast(BroadcastEvent.Command.RUN_STATE_CHANGED,
+		broadcaster.broadcast(BroadcastEvent.Command.RUN_STATE_CHANGED,
 				runState);
 	}
 
@@ -222,6 +223,6 @@ public final class JamStatus implements AcquisitionStatus, QuerySortMode {
 			}
 			sortMode = mode;
 		}
-		BROADCASTER.broadcast(BroadcastEvent.Command.SORT_MODE_CHANGED);
+		broadcaster.broadcast(BroadcastEvent.Command.SORT_MODE_CHANGED);
 	}
 }
