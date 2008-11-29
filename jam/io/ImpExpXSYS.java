@@ -91,6 +91,8 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	/**
 	 * @param frame
 	 *            application frame
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
 	public ImpExpXSYS(final Frame frame, final Broadcaster broadcaster) {

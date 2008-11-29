@@ -32,6 +32,8 @@ public class HistogramZero extends AbstractControl {
 	 * 
 	 * @param frame
 	 *            application frame
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
 	public HistogramZero(final Frame frame, final Broadcaster broadcaster) {

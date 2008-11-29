@@ -66,6 +66,8 @@ public final class GateSet extends AbstractControl {
 	 * 
 	 * @param frame
 	 *            application frame
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
 	public GateSet(final Frame frame, final Broadcaster broadcaster) {

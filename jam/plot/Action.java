@@ -1005,7 +1005,11 @@ public final class Action {
 		}
 	}
 
-	protected transient final PlotMouseListener mouseListener = new PlotMouseListener() {
+	protected PlotMouseListener getMouseListener() {
+		return this.mouseListener;
+	}
+
+	private transient final PlotMouseListener mouseListener = new PlotMouseListener() {
 		/**
 		 * @see PlotMouseListener#plotMousePressed(Bin, Point)
 		 */

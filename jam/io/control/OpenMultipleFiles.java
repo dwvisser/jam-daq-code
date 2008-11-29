@@ -80,6 +80,8 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 *            for opening HDF files
 	 * @param console
 	 *            where to print messages
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
 	public OpenMultipleFiles(final java.awt.Frame parent,

@@ -37,6 +37,8 @@ public class GateNew extends AbstractControl {
 	 * 
 	 * @param frame
 	 *            application frame
+	 * @param broadcaster
+	 *            broadcasts state changes
 	 */
 	@Inject
 	public GateNew(final Frame frame, final Broadcaster broadcaster) {

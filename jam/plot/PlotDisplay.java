@@ -75,7 +75,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	/** Tool bar with plot controls (zoom...) */
 	private transient final Toolbar toolbar;
 
-	private final Broadcaster broadcaster;
+	private transient final Broadcaster broadcaster;
 
 	/**
 	 * Constructor called by all constructors
@@ -170,7 +170,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	public void displayHistogram(final AbstractHistogram hist) {
 		if (hist != null) {
 			currentPlot.removeAllPlotMouseListeners();
-			currentPlot.addPlotMouseListener(action.mouseListener);
+			currentPlot.addPlotMouseListener(action.getMouseListener());
 			currentPlot.setMarkArea(false);
 			currentPlot.setMarkingChannels(false);
 			toolbar.setHistogramProperties(hist.getDimensionality(),
@@ -323,7 +323,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 					currentPlot.removeAllPlotMouseListeners();
 				}
 				if (container.hasHistogram()) {
-					container.addPlotMouseListener(action.mouseListener);
+					container.addPlotMouseListener(action.getMouseListener());
 				}
 				/* Change selected plot */
 				for (PlotContainer plotContainer : plotContainers) {

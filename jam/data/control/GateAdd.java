@@ -41,6 +41,9 @@ public final class GateAdd extends AbstractControl {
 	 * 
 	 * @param frame
 	 *            application frame
+	 * @param broadcaster
+	 *            broadcasts state changes
+	 * 
 	 */
 	@Inject
 	public GateAdd(final Frame frame, final Broadcaster broadcaster) {
