@@ -11,8 +11,6 @@ import jam.global.CommandListener;
 import jam.global.JamStatus;
 import jam.plot.CurrentPlotAccessor;
 import jam.plot.PlotDisplay;
-import jam.ui.Console;
-import jam.ui.ConsoleLog;
 
 import java.awt.Frame;
 
@@ -33,7 +31,6 @@ public final class Module extends AbstractModule {
 	protected void configure() {
 		this.bind(JFrame.class).toInstance(new JFrame("Jam"));
 		this.bind(Frame.class).toProvider(FrameProvider.class);
-		this.bind(ConsoleLog.class).toProvider(ConsoleLogProvider.class);
 		this.bind(AcquisitionStatus.class).to(JamStatus.class);
 		this.bind(CurrentPlotAccessor.class).to(PlotDisplay.class);
 		this.bind(FrontEndCommunication.class)
@@ -54,19 +51,6 @@ public final class Module extends AbstractModule {
 
 		public Frame get() {
 			return this.frame;
-		}
-	}
-
-	class ConsoleLogProvider implements Provider<ConsoleLog> {
-		private transient final ConsoleLog consoleLog;
-
-		@Inject
-		protected ConsoleLogProvider(final Console console) {
-			this.consoleLog = console.getLog();
-		}
-
-		public ConsoleLog get() {
-			return this.consoleLog;
 		}
 	}
 

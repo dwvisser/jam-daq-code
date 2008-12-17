@@ -26,13 +26,21 @@ import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
+import com.google.inject.Singleton;
+
 /**
  * Jam's console log panel.
  * 
  * @author Dale Visser
  */
+@Singleton
 public final class ConsoleLog implements MessageHandler {
 	private transient static final SimpleAttributeSet ATR_WARN, ATR_ERR;
+
+	/**
+	 * Number of lines in scroll-back log.
+	 */
+	private final static int MAX_LINES = 100;
 
 	/**
 	 * End of line character(s).
@@ -57,8 +65,6 @@ public final class ConsoleLog implements MessageHandler {
 
 	private transient BufferedWriter logWriter; // output stream
 
-	private transient final int maxLines;
-
 	private transient String messageFile; // message for file
 
 	/**
@@ -68,7 +74,10 @@ public final class ConsoleLog implements MessageHandler {
 
 	private transient int numberLines; // number of lines in output
 
-	ConsoleLog(final int linesLog) {
+	/**
+	 * Log of Console activity.
+	 */
+	public ConsoleLog() {
 		super();
 		textLog
 				.setToolTipText("After setup, this log is (usually) written to a file, too.");
@@ -78,7 +87,6 @@ public final class ConsoleLog implements MessageHandler {
 		final int defaultLines = 6;
 		final int logHeight = lineHeight * defaultLines;
 		textLog.setPreferredSize(new Dimension(600, logHeight));
-		maxLines = linesLog;
 		msgLock = false;
 		numberLines = 1;
 		logFileOn = false;
@@ -358,7 +366,7 @@ public final class ConsoleLog implements MessageHandler {
 	 */
 	private void trimLog() {
 		numberLines++;
-		if (numberLines > maxLines) { // get rid of top line
+		if (numberLines > MAX_LINES) { // get rid of top line
 			numberLines--;
 			try {
 				doc.remove(0, textLog.getText().indexOf(END_LINE)
@@ -380,4 +388,15 @@ public final class ConsoleLog implements MessageHandler {
 		promptOutln("Warning: " + message, ATR_WARN);
 	}
 
+	@Override
+	public String toString() {
+		String rval = "";
+		try {
+			rval = this.doc.getText(0, this.doc.getLength());
+		} catch (BadLocationException ble) {
+			this.warningOutln(ble.getMessage());
+		}
+
+		return rval;
+	}
 }

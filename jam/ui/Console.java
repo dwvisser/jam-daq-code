@@ -38,11 +38,6 @@ import com.google.inject.Singleton;
 public class Console extends JPanel {
 
 	/**
-	 * Number of lines in scroll-back log.
-	 */
-	private final static int NUM_LINES = 100;
-
-	/**
 	 * Command expected when input is numbers only.
 	 */
 	public static final String NUMBERS_ONLY = "int";
@@ -66,37 +61,23 @@ public class Console extends JPanel {
 	private transient final JTextField textIn = new JTextField();
 
 	/**
-	 * Create a JamConsole which has an text area for output a text field for
-	 * input.
+	 * Constructs a JamConsole which has an text area for output a text field
+	 * for input.
 	 * 
+	 * @param consoleLog
+	 *            log of console activity
 	 * @param finder
 	 *            finds commands
 	 * @param listener
 	 *            listens to commands
 	 */
 	@Inject
-	public Console(final CommandFinder finder,
+	public Console(final ConsoleLog consoleLog, final CommandFinder finder,
 			final @MapListener CommandListener listener) {
-		this(NUM_LINES, finder, listener);
-	}
-
-	/**
-	 * Constructs a JamConsole which has an text area for output a text field
-	 * for input.
-	 * 
-	 * @param linesLog
-	 *            number of lines to retain in on-screen display
-	 * @param finder
-	 *            finds commands
-	 * @param listener
-	 *            listens to commands
-	 */
-	public Console(final int linesLog, final CommandFinder finder,
-			final CommandListener listener) {
 		super(new BorderLayout());
 		this.commandFinder = finder;
-		consoleLog = new ConsoleLog(linesLog);
-		new LoggerConfig(Console.class.getPackage().getName(), consoleLog);
+		this.consoleLog = consoleLog;
+		new LoggerConfig("jam", consoleLog);
 		this.add(consoleLog.getComponent(), BorderLayout.CENTER);
 		textIn
 				.setToolTipText("Enter underlined characters from buttons to start a command.");
@@ -146,14 +127,6 @@ public class Console extends JPanel {
 	 */
 	public final void addCommandListener(final CommandListener msgCommand) {
 		listenerList.add(msgCommand);
-	}
-
-	/**
-	 * 
-	 * @return the message handler that logs messages to the jam window
-	 */
-	public ConsoleLog getLog() {
-		return consoleLog;
 	}
 
 	private boolean isNumber(final String string) {

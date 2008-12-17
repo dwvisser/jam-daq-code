@@ -9,6 +9,7 @@ import jam.io.AbstractImpExp;
 import jam.io.hdf.HDFIO;
 import jam.plot.Action;
 import jam.script.Session;
+import jam.ui.ConsoleLog;
 
 import javax.swing.JFrame;
 
@@ -104,6 +105,13 @@ public final class GuiceInjector {
 	 */
 	public static Broadcaster getBroadcaster() {
 		return injector.getInstance(Broadcaster.class);
+	}
+
+	/**
+	 * @return the console log
+	 */
+	public static ConsoleLog getConsoleLog() {
+		return injector.getInstance(ConsoleLog.class);
 	}
 
 }

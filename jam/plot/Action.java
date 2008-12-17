@@ -33,6 +33,7 @@ import jam.global.MessageHandler;
 import jam.global.UnNamed;
 import jam.plot.common.Scale;
 import jam.ui.Console;
+import jam.ui.ConsoleLog;
 import jam.ui.SelectionTree;
 
 import java.awt.Point;
@@ -175,13 +176,13 @@ public final class Action {
 	 */
 	@Inject
 	Action(final CurrentPlotAccessor disp, final Console console,
-			final CommandFinder finder, final JamStatus status,
-			final Broadcaster broadcaster) {
+			final ConsoleLog consoleLog, final CommandFinder finder,
+			final JamStatus status, final Broadcaster broadcaster) {
 		super();
 		this.broadcaster = broadcaster;
 		this.commandFinder = finder;
 		plotAccessor = disp;
-		textOut = console.getLog();
+		textOut = consoleLog;
 		this.status = status;
 		final ParseCommand parseCommand = new ParseCommand(this.commandable,
 				disp);

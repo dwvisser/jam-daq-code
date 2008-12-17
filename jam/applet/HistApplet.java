@@ -11,6 +11,7 @@ import jam.global.JamException;
 import jam.global.LoggerConfig;
 import jam.plot.PlotDisplay;
 import jam.ui.Console;
+import jam.ui.ConsoleLog;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -55,9 +56,10 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 
 	static {
 		final CommandManager manager = GuiceInjector.getCommandManager();
-		console = new Console(20, manager.getCommandFinder(), manager);
+		ConsoleLog log = new ConsoleLog();
+		console = new Console(log, manager.getCommandFinder(), manager);
 		final String packageName = HistApplet.class.getPackage().getName();
-		new LoggerConfig(packageName, console.getLog());
+		new LoggerConfig(packageName, log);
 		LOGGER = Logger.getLogger(packageName);
 	}
 
