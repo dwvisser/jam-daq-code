@@ -56,7 +56,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 
 	static {
 		final CommandManager manager = GuiceInjector.getCommandManager();
-		ConsoleLog log = new ConsoleLog();
+		final ConsoleLog log = new ConsoleLog();
 		console = new Console(log, manager.getCommandFinder(), manager);
 		final String packageName = HistApplet.class.getPackage().getName();
 		new LoggerConfig(packageName, log);

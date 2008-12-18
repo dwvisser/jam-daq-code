@@ -4,10 +4,10 @@ import java.text.NumberFormat;
 
 /**
  * A sqrt function that can be use to calibrate a histogram taken by a magnetic
- * spectometer.
+ * spectrometer.
  * 
  */
-public class SqrtEnergyFunction extends AbstractCalibrationFunction {
+public class SqrtEnergyFunction extends AbstractLinearRegressionFunction {
 
 	private static final int NUMBER_TERMS = 2;
 

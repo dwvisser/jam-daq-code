@@ -6,7 +6,7 @@ import java.text.NumberFormat;
  * A Cubic histogram calibration function, that is, E = a0 + a1 * channel+
  * a2*channel^2+a3*channel^3
  */
-public class CubicFunction extends AbstractCalibrationFunction {
+public class CubicFunction extends AbstractGaussJordanFunction {
 
 	private static final int NUMBER_TERMS = 4;
 

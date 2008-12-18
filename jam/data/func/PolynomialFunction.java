@@ -5,7 +5,7 @@ import java.text.NumberFormat;
 /**
  * A polynomial histogram calibration function of up to 4th order.
  */
-public class PolynomialFunction extends AbstractCalibrationFunction {
+public class PolynomialFunction extends AbstractGaussJordanFunction {
 
 	/**
 	 * Creates a new <code>CalibrationFunction</code> object of the specified

@@ -6,7 +6,7 @@ import java.text.NumberFormat;
  * A quadratic histogram calibration function, that is, E = a0 + a1 *
  * channel+a2*channel^2
  */
-public class QuadraticFunction extends AbstractCalibrationFunction {
+public class QuadraticFunction extends AbstractGaussJordanFunction {
 
 	private static final int NUMBER_TERMS = 3;
 

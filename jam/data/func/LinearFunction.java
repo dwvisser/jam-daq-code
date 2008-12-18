@@ -5,7 +5,7 @@ import java.text.NumberFormat;
 /**
  * A linear histogram calibration function, that is, E = a0 + a1 * channel.
  */
-public class LinearFunction extends AbstractCalibrationFunction {
+public class LinearFunction extends AbstractLinearRegressionFunction {
 
 	private static final int NUMBER_TERMS = 2;
 

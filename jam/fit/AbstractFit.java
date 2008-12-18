@@ -2,9 +2,9 @@ package jam.fit;
 
 import static javax.swing.SwingConstants.RIGHT;
 import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
 import jam.data.HistDouble1D;
 import jam.data.HistInt1D;
-import jam.data.AbstractHistogram;
 import jam.data.HistogramType;
 import jam.global.MessageHandler;
 import jam.plot.PlotDisplay;
@@ -82,10 +82,6 @@ public abstract class AbstractFit implements Fit {
 	protected transient FitConsole textInfo;
 
 	protected transient int upperLimit;
-
-	// -------------------------
-	// List of abstract methods
-	// -------------------------
 
 	/**
 	 * Class constructor.
