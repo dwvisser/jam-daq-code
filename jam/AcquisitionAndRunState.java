@@ -2,6 +2,7 @@ package jam;
 
 import jam.global.AcquisitionStatus;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.RunState;
@@ -29,7 +30,8 @@ final class AcquisitionAndRunState implements Observer {
 	 *            application frame
 	 */
 	@Inject
-	AcquisitionAndRunState(final Frame frame, final JamStatus status) {
+	AcquisitionAndRunState(final Frame frame, final JamStatus status,
+			final Broadcaster broadcaster) {
 		this.frame = frame;
 		this.status = status;
 		this.status.setAcquisitionStatus(new AcquisitionStatus() {
@@ -37,6 +39,7 @@ final class AcquisitionAndRunState implements Observer {
 				return AcquisitionAndRunState.this.getRunState().isAcqOn();
 			}
 		});
+		broadcaster.addObserver(this);
 	}
 
 	/**

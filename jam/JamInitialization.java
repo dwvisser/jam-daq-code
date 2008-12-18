@@ -8,22 +8,19 @@ import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.SortMode;
-import jam.plot.PlotDisplay;
-import jam.ui.Console;
 import jam.ui.SelectionTree;
-import jam.ui.SummaryTable;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.logging.Logger;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -47,8 +44,6 @@ public final class JamInitialization {
 	 */
 	private transient final JamProperties properties;
 
-	private transient final SummaryTable summaryTable;
-
 	private transient final JFrame frame;
 
 	/**
@@ -56,19 +51,10 @@ public final class JamInitialization {
 	 *            the GUI frame
 	 * @param status
 	 *            global status
-	 * @param console
-	 *            text console
 	 * @param properties
 	 *            accessor for Jam's properties files
 	 * @param plotDisplay
 	 *            plot display internal frame
-	 * @param summaryTable
-	 *            displays summary statistics
-	 * @param aars
-	 *            injected by Guice, but don't need to do anything with it
-	 *            because it registers itself with the broadcaster
-	 * @param selectTree
-	 *            selection tree
 	 * @param broadcaster
 	 *            handles application-wide events
 	 * @param menuBar
@@ -77,49 +63,41 @@ public final class JamInitialization {
 	 *            handles commands
 	 * @param jamToolBar
 	 *            iconic toolbar
+	 * @param sdPanel
+	 *            selection and display
+	 * @param initHists
+	 *            initial histograms
 	 */
 	@Inject
 	public JamInitialization(final JFrame frame, final JamStatus status,
-			final Console console, final JamProperties properties,
-			final PlotDisplay plotDisplay, final SummaryTable summaryTable,
-			final AcquisitionAndRunState aars, final SelectionTree selectTree,
-			final Broadcaster broadcaster, final MenuBar menuBar,
-			final CommandManager commandManager, final ToolBar jamToolBar) {
+			final JamProperties properties, final Broadcaster broadcaster,
+			final MenuBar menuBar, final CommandManager commandManager,
+			final ToolBar jamToolBar, final SelectionAndDisplayPanel sdPanel,
+			final InitialHistograms initHists) {
 		this.frame = frame;
 		this.properties = properties;
-		this.summaryTable = summaryTable;
-		broadcaster.addObserver(aars);
-
-		/* class to distribute events to all listeners */
-		/* Create main window GUI */
 		loadIcon();
 		final Container contents = this.frame.getContentPane();
 		contents.setLayout(new BorderLayout());
-		/* Output/Input text console */
 		LOGGER.info("Welcome to Jam v" + Version.getInstance().getName());
-
-		/* For now, initializing ToolBar depends on status having the frame. */
 		contents.add(jamToolBar, BorderLayout.NORTH);
-		/* histogram displayer */
-		SummaryTable.setTable(summaryTable);
-		final Display display = new Display(plotDisplay, summaryTable);
-		broadcaster.addObserver(display);
-		final JSplitPane splitCenter = new JSplitPane(
-				JSplitPane.VERTICAL_SPLIT, true, display, console);
-		splitCenter.setResizeWeight(0.9);
-		/* fraction of resize space that goes to display */
-		contents.add(splitCenter, BorderLayout.CENTER);
 		this.frame.setJMenuBar(menuBar.getMenuBar());
-		/* Histogram selection tree */
-		contents.add(selectTree, BorderLayout.WEST);
-		final JSplitPane splitTree = new JSplitPane(
-				JSplitPane.HORIZONTAL_SPLIT, true, selectTree, splitCenter);
-		splitTree.setResizeWeight(0.1);
-		contents.add(splitTree, BorderLayout.CENTER);
-		/* operations to close window */
+		contents.add(sdPanel, BorderLayout.CENTER);
 		this.frame
 				.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		this.frame.addWindowListener(new WindowAdapter() {
+		this.frame.addWindowListener(this.createWindowListener(commandManager));
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		AbstractControl.setupAll(); // setup jam.data.control dialog boxes
+		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
+		status.setCurrentGroup(initHists.getInitialGroup());
+		SelectionTree.setCurrentHistogram(initHists.getInitialHist());
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+				initHists.getInitialHist());
+	}
+
+	private WindowListener createWindowListener(
+			final CommandManager commandManager) {
+		return new WindowAdapter() {
 			@Override
 			public void windowClosed(final WindowEvent event) {
 				exit();
@@ -140,16 +118,7 @@ public final class JamInitialization {
 				final JButton temp = new JButton(exit);
 				temp.doClick();
 			}
-		});
-		/* Initial histograms and setup */
-		final InitialHistograms initHists = new InitialHistograms();
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		AbstractControl.setupAll(); // setup jam.data.control dialog boxes
-		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
-		status.setCurrentGroup(initHists.getInitialGroup());
-		SelectionTree.setCurrentHistogram(initHists.getInitialHist());
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
-				initHists.getInitialHist());
+		};
 	}
 
 	/**
@@ -181,7 +150,6 @@ public final class JamInitialization {
 
 				/* print out where configuration files were read from */
 				properties.outputMessages();
-				summaryTable.repaint();
 			}
 		};
 		SwingUtilities.invokeLater(showWindow);

@@ -2,12 +2,16 @@ package jam;
 
 import jam.global.BroadcastEvent;
 import jam.global.BroadcastEvent.Command;
+import jam.plot.PlotDisplay;
+import jam.ui.SummaryTable;
 
 import java.awt.CardLayout;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JPanel;
+
+import com.google.inject.Inject;
 
 /**
  * Display to show plots or table
@@ -33,7 +37,9 @@ public class Display extends JPanel implements Observer {
 	 * @param broadcaster
 	 *            broadcasts state changes we listen for
 	 */
-	public Display(final JPanel plotDisplay, final JPanel summaryTable) {
+	@Inject
+	public Display(final PlotDisplay plotDisplay,
+			final SummaryTable summaryTable) {
 		super();
 		cardLayout = new CardLayout();
 		setLayout(cardLayout);

@@ -36,6 +36,8 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 
 	private transient final JFrame frame;
 
+	private transient final SummaryTable summaryTable;
+
 	private File chooseFile() {
 		File file = null;
 		final JFileChooser jfile = new JFileChooser();
@@ -67,20 +69,14 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 		}
 	}
 
-	@Override
-	protected void executeParse(final String[] cmdTokens)
-			throws CommandListenerException {
-		// TODO Auto-generated method stub
-	}
-
 	@Inject
-	ExportSummaryTableCmd(final JFrame frame) {
+	ExportSummaryTableCmd(final JFrame frame, final SummaryTable summaryTable) {
 		super("Table");
 		this.frame = frame;
+		this.summaryTable = summaryTable;
 	}
 
 	private void saveTable(final File file) {
-		final SummaryTable summaryTable = SummaryTable.getTable();
 		try {
 			LOGGER.info("Starting to write out table to " + file);
 			// Create writer stream
@@ -111,6 +107,12 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 				|| (command == BroadcastEvent.Command.GATE_SELECT)) {
 			setEnabled(false);
 		}
+	}
+
+	@Override
+	protected void executeParse(final String[] cmdTokens)
+			throws CommandListenerException {
+		// Auto-generated method stub
 	}
 
 }

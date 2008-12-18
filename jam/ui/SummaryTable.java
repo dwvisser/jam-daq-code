@@ -16,12 +16,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Create a summary table for a group
  * 
  * @author Ken Swartz
  */
+@Singleton
 public class SummaryTable extends JPanel implements Observer {
 
 	/**
@@ -37,39 +39,6 @@ public class SummaryTable extends JPanel implements Observer {
 		 * One group is selected?
 		 */
 		SINGLE_GROUP
-	}
-
-	/**
-	 * The current table the system looks up.
-	 */
-	private static SummaryTable currentTable;
-
-	/**
-	 * Private mutex for the current table.
-	 */
-	private static final Object LOCK = new Object();
-
-	/**
-	 * Gets the display.
-	 * 
-	 * @return the display
-	 */
-	public static SummaryTable getTable() {
-		synchronized (LOCK) {
-			return currentTable;
-		}
-	}
-
-	/**
-	 * Sets the table.
-	 * 
-	 * @param table
-	 *            the table
-	 */
-	public static void setTable(final SummaryTable table) {
-		synchronized (LOCK) {
-			currentTable = table;
-		}
 	}
 
 	private transient final SummaryTableModel summaryTableModel = new SummaryTableModel();
