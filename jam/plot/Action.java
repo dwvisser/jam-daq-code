@@ -197,7 +197,7 @@ public final class Action {
 		final int fracDigits = 2;
 		numFormat.setMinimumFractionDigits(fracDigits);
 		numFormat.setMaximumFractionDigits(fracDigits);
-		PlotPrefs.PREFS.addPreferenceChangeListener(this.autoCounts);
+		PlotPreferences.PREFS.addPreferenceChangeListener(this.autoCounts);
 	}
 
 	private void cloneClickAndAdd(final Bin bin) {

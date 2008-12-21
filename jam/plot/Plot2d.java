@@ -66,7 +66,7 @@ final class Plot2d extends AbstractPlot {
 	Plot2d() {
 		super();
 		COLOR_PREFS.addPreferenceChangeListener(this);
-		setSmoothColorScale(PlotPrefs.PREFS.getBoolean(ColorPrefs.SMOOTH_SCALE,
+		setSmoothColorScale(PlotPreferences.PREFS.getBoolean(ColorPrefs.SMOOTH_SCALE,
 				true));
 	}
 

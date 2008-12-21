@@ -6,7 +6,7 @@ import jam.commands.CommandNames;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.io.hdf.HDFPrefs;
-import jam.plot.PlotPrefs;
+import jam.plot.PlotPreferences;
 import jam.plot.color.ColorPrefs;
 
 import java.util.Observable;
@@ -186,23 +186,23 @@ final class MenuBar implements Observer {
 
 	private JMenu createPreferencesMenu() {
 		final JMenu mPrefer = this.commandManager.createMenu("Preferences",
-				PlotPrefs.AUTO_IGNORE_ZERO, PlotPrefs.AUTO_IGNORE_FULL,
-				PlotPrefs.AUTO_ON_EXPAND);
+				PlotPreferences.AUTO_IGNORE_ZERO, PlotPreferences.AUTO_IGNORE_FULL,
+				PlotPreferences.AUTO_ON_EXPAND);
 		mPrefer.addSeparator();
-		mPrefer.add(this.commandManager.getMenuItem(PlotPrefs.HIGHLIGHT_GATE));
+		mPrefer.add(this.commandManager.getMenuItem(PlotPreferences.HIGHLIGHT_GATE));
 		mPrefer.add(this.commandManager.getMenuItem(ColorPrefs.SMOOTH_SCALE));
 		mPrefer
 				.add(this.commandManager
 						.getMenuItem(CommandNames.SHOW_GRADIENT));
 		mPrefer
 				.add(this.commandManager
-						.getMenuItem(PlotPrefs.ENABLE_SCROLLING));
-		mPrefer.add(this.commandManager.getMenuItem(PlotPrefs.DISPLAY_LABELS));
+						.getMenuItem(PlotPreferences.ENABLE_SCROLLING));
+		mPrefer.add(this.commandManager.getMenuItem(PlotPreferences.DISPLAY_LABELS));
 		mPrefer
 				.add(this.commandManager
-						.getMenuItem(PlotPrefs.BLACK_BACKGROUND));
+						.getMenuItem(PlotPreferences.BLACK_BACKGROUND));
 		mPrefer.addSeparator();
-		mPrefer.add(this.commandManager.getMenuItem(PlotPrefs.AUTO_PEAK_FIND));
+		mPrefer.add(this.commandManager.getMenuItem(PlotPreferences.AUTO_PEAK_FIND));
 		mPrefer.add(this.commandManager
 				.getMenuItem(CommandNames.SHOW_PEAK_FIND));
 		mPrefer.addSeparator();

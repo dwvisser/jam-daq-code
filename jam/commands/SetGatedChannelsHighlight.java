@@ -3,7 +3,7 @@
  *
  */
 package jam.commands;
-import jam.plot.PlotPrefs;
+import jam.plot.PlotPreferences;
 
 /**
  * 
@@ -17,8 +17,8 @@ final class SetGatedChannelsHighlight extends AbstractSetBooleanPreference {
 		putValue(NAME, "Highlight gate channels");
 		putValue(SHORT_DESCRIPTION,
 		"When showing gates, highlight all channels in the gate.");
-		prefsNode=PlotPrefs.PREFS;
-		key=PlotPrefs.HIGHLIGHT_GATE;
+		prefsNode=PlotPreferences.PREFS;
+		key=PlotPreferences.HIGHLIGHT_GATE;
 		defaultState=true;
 	}
 }

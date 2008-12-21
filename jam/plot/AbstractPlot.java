@@ -1,10 +1,10 @@
 package jam.plot;
 
-import static jam.plot.PlotPrefs.AUTO_IGNORE_FULL;
-import static jam.plot.PlotPrefs.AUTO_IGNORE_ZERO;
-import static jam.plot.PlotPrefs.BLACK_BACKGROUND;
-import static jam.plot.PlotPrefs.HIGHLIGHT_GATE;
-import static jam.plot.PlotPrefs.PREFS;
+import static jam.plot.PlotPreferences.AUTO_IGNORE_FULL;
+import static jam.plot.PlotPreferences.AUTO_IGNORE_ZERO;
+import static jam.plot.PlotPreferences.BLACK_BACKGROUND;
+import static jam.plot.PlotPreferences.HIGHLIGHT_GATE;
+import static jam.plot.PlotPreferences.PREFS;
 import static javax.swing.SwingConstants.BOTTOM;
 import static javax.swing.SwingConstants.LEFT;
 import static javax.swing.SwingConstants.TOP;
@@ -533,19 +533,19 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		final boolean newValue = Boolean.parseBoolean(pce.getNewValue());
-		if (key.equals(PlotPrefs.AUTO_IGNORE_ZERO)) {
+		if (key.equals(PlotPreferences.AUTO_IGNORE_ZERO)) {
 			options.setIgnoreChZero(newValue);
 			if (plotDataExists()) {
 				autoCounts();
 			}
-		} else if (key.equals(PlotPrefs.AUTO_IGNORE_FULL)) {
+		} else if (key.equals(PlotPreferences.AUTO_IGNORE_FULL)) {
 			options.setIgnoreChFull(newValue);
 			if (plotDataExists()) {
 				autoCounts();
 			}
-		} else if (key.equals(PlotPrefs.BLACK_BACKGROUND)) {
+		} else if (key.equals(PlotPreferences.BLACK_BACKGROUND)) {
 			panel.setColorMode(newValue);
-		} else if (key.equals(PlotPrefs.HIGHLIGHT_GATE)) {
+		} else if (key.equals(PlotPreferences.HIGHLIGHT_GATE)) {
 			options.setNoFillMode(!newValue);
 		}
 	}

@@ -223,11 +223,11 @@ final class Limits {
 		} else {
 			final Object object = TABLE.get(hist.getFullName());
 			if (object == null) {
-				final Preferences prefs = PlotPrefs.PREFS;
+				final Preferences prefs = PlotPreferences.PREFS;
 				final boolean ignoreZero = prefs.getBoolean(
-						PlotPrefs.AUTO_IGNORE_ZERO, true);
+						PlotPreferences.AUTO_IGNORE_ZERO, true);
 				final boolean ignoreFull = prefs.getBoolean(
-						PlotPrefs.AUTO_IGNORE_FULL, true);
+						PlotPreferences.AUTO_IGNORE_FULL, true);
 				rval = new Limits(hist, ignoreZero, ignoreFull);
 			} else {
 				rval = (Limits) object;

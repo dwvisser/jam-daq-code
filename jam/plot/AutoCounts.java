@@ -16,7 +16,7 @@ final class AutoCounts implements PreferenceChangeListener {
 	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
-		if (key.equals(PlotPrefs.AUTO_ON_EXPAND)) {
+		if (key.equals(PlotPreferences.AUTO_ON_EXPAND)) {
 			this.setAutoOnExpand(Boolean.parseBoolean(newValue));
 		}
 	}

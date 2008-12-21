@@ -96,7 +96,7 @@ final class Plot1d extends AbstractPlot {
 	 */
 	Plot1d() {
 		super();
-		setPeakFind(PlotPrefs.PREFS.getBoolean(PlotPrefs.AUTO_PEAK_FIND, true));
+		setPeakFind(PlotPreferences.PREFS.getBoolean(PlotPreferences.AUTO_PEAK_FIND, true));
 	}
 
 	private void addToMouseMoveClip(final int xcoord, final int ycoord) {
@@ -622,7 +622,7 @@ final class Plot1d extends AbstractPlot {
 	@Override
 	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
-		if (key.equals(PlotPrefs.AUTO_PEAK_FIND)) {
+		if (key.equals(PlotPreferences.AUTO_PEAK_FIND)) {
 			setPeakFind(Boolean.parseBoolean(pce.getNewValue()));
 		} else {
 			super.preferenceChange(pce);

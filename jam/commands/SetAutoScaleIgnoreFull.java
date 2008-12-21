@@ -3,7 +3,7 @@
  *
  */
 package jam.commands;
-import jam.plot.PlotPrefs;
+import jam.plot.PlotPreferences;
 
 /**
  * 
@@ -17,8 +17,8 @@ final class SetAutoScaleIgnoreFull extends AbstractSetBooleanPreference {
 		putValue(NAME, "Autoscale-Ignore Last Channel");
 		putValue(SHORT_DESCRIPTION,
 		"Ignore the counts in the last channel when autoscaling.");
-		prefsNode=PlotPrefs.PREFS;
-		key=PlotPrefs.AUTO_IGNORE_FULL;
+		prefsNode=PlotPreferences.PREFS;
+		key=PlotPreferences.AUTO_IGNORE_FULL;
 		defaultState=true;
 	}
 }

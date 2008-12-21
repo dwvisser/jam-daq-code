@@ -3,7 +3,7 @@
  *
  */
 package jam.commands;
-import jam.plot.PlotPrefs;
+import jam.plot.PlotPreferences;
 
 /**
  * 
@@ -17,8 +17,8 @@ final class SetBlackBackground extends AbstractSetBooleanPreference {
 		putValue(NAME, "Invert foreground/background");
 		putValue(SHORT_DESCRIPTION,
 		"Check to use white-on-black color scheme.");
-		prefsNode=PlotPrefs.PREFS;
-		key=PlotPrefs.BLACK_BACKGROUND;
+		prefsNode=PlotPreferences.PREFS;
+		key=PlotPreferences.BLACK_BACKGROUND;
 		defaultState=false;
 	}
 }

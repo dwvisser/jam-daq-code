@@ -3,7 +3,7 @@
  *
  */
 package jam.commands;
-import jam.plot.PlotPrefs;
+import jam.plot.PlotPreferences;
 
 /**
  * 
@@ -17,8 +17,8 @@ final class SetAutoScaleIgnoreZero extends AbstractSetBooleanPreference {
 		putValue(NAME, "Autoscale-Ignore Zero");
 		putValue(SHORT_DESCRIPTION,
 		"Ignore the counts in channel zero when autoscaling.");
-		prefsNode=PlotPrefs.PREFS;
-		key=PlotPrefs.AUTO_IGNORE_ZERO;
+		prefsNode=PlotPreferences.PREFS;
+		key=PlotPreferences.AUTO_IGNORE_ZERO;
 		defaultState=true;
 	}
 }

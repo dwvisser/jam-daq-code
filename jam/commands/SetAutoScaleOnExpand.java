@@ -3,7 +3,7 @@
  *
  */
 package jam.commands;
-import jam.plot.PlotPrefs;
+import jam.plot.PlotPreferences;
 
 /**
  * 
@@ -17,8 +17,8 @@ final class SetAutoScaleOnExpand extends AbstractSetBooleanPreference {
 		putValue(NAME, "Autoscale on Expand/Zoom");
 		putValue(SHORT_DESCRIPTION,
 		"Automatically scale counts when the plot's viewport changes.");
-		prefsNode=PlotPrefs.PREFS;
-		key=PlotPrefs.AUTO_ON_EXPAND;
+		prefsNode=PlotPreferences.PREFS;
+		key=PlotPreferences.AUTO_ON_EXPAND;
 		defaultState=true;
 	}
 }

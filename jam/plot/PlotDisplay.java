@@ -1,8 +1,8 @@
 package jam.plot;
 
-import static jam.plot.PlotPrefs.DISPLAY_LABELS;
-import static jam.plot.PlotPrefs.ENABLE_SCROLLING;
-import static jam.plot.PlotPrefs.PREFS;
+import static jam.plot.PlotPreferences.DISPLAY_LABELS;
+import static jam.plot.PlotPreferences.ENABLE_SCROLLING;
+import static jam.plot.PlotPreferences.PREFS;
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
 import jam.data.DataUtility;
@@ -27,6 +27,7 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -86,19 +87,29 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 *            handles plot actions
 	 * @param broadcaster
 	 *            broadcasts state changes
+	 * @param toolbar
+	 *            the plot toolbar
 	 */
 	@Inject
 	public PlotDisplay(final JamStatus status, final Action action,
-			final Broadcaster broadcaster) {
+			final Broadcaster broadcaster, final Toolbar toolbar) {
 		super();
 		this.status = status;
 		this.action = action;
 		this.broadcaster = broadcaster;
+		this.toolbar = toolbar;
+		final String defaultLocation = BorderLayout.NORTH;
+		final String location = PREFS
+				.get(Toolbar.LOCATION_KEY, defaultLocation);
+		final int orientation = (BorderLayout.NORTH.equals(location) || BorderLayout.SOUTH
+				.equals(location)) ? SwingConstants.HORIZONTAL
+				: SwingConstants.VERTICAL;
+		toolbar.setOrientation(orientation);
 		broadcaster.addObserver(this);
 		/* display event handler */
 		PREFS.addPreferenceChangeListener(this);
 		createGridPanel();
-		toolbar = new Toolbar(this, action);
+		this.add(toolbar, location);
 		initPrefs();
 		isOverlay = false;
 		/* Initial view only 1 plot */
@@ -253,9 +264,9 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
 
-		if (key.equals(PlotPrefs.ENABLE_SCROLLING)) {
+		if (key.equals(PlotPreferences.ENABLE_SCROLLING)) {
 			isScrolling = Boolean.parseBoolean(newValue);
-		} else if (key.equals(PlotPrefs.DISPLAY_LABELS)) {
+		} else if (key.equals(PlotPreferences.DISPLAY_LABELS)) {
 			isAxisLabels = Boolean.parseBoolean(newValue);
 		}
 		updateLayout();

@@ -5,7 +5,6 @@ package jam.plot;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -27,6 +25,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
+
+import com.google.inject.Inject;
 
 /**
  * The toolbar that goes with the display.
@@ -75,26 +75,12 @@ final class Toolbar extends JToolBar implements ActionListener {
 		}
 	}
 
-	private static final String LOCATION, KEY;
-
 	private static final Logger LOGGER = Logger.getLogger(Toolbar.class
 			.getPackage().getName());
 
-	private static final int ORIENTATION;
-
-	private static final Preferences PREFS;
+	public static final String LOCATION_KEY = "toolbarLocation";
 
 	private static final String[] REBIN_RATIOS = { "1", "2", "4", "8", "16" };
-
-	static {
-		final String defaultVal = BorderLayout.NORTH;
-		KEY = "toolbarLocation";
-		PREFS = Preferences.userNodeForPackage(Toolbar.class);
-		LOCATION = PREFS.get(KEY, defaultVal);
-		ORIENTATION = (BorderLayout.NORTH.equals(LOCATION) || BorderLayout.SOUTH
-				.equals(LOCATION)) ? SwingConstants.HORIZONTAL
-				: SwingConstants.VERTICAL;
-	}
 
 	private transient final Action action;
 
@@ -104,7 +90,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 
 	private final transient Icon iRebin;
 
-	/** Is a syncronize event, so don't fire events */
+	/** Is a synchronize event, so don't fire events */
 	private transient boolean isSyncEvent;
 
 	/*
@@ -112,8 +98,9 @@ final class Toolbar extends JToolBar implements ActionListener {
 	 * 
 	 * @since Version 0.5
 	 */
-	Toolbar(final Container container, final Action action) {
-		super("Actions", ORIENTATION);
+	@Inject
+	Toolbar(final Action action) {
+		super("Actions");
 		this.action = action;
 		isSyncEvent = false;
 		final Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
@@ -130,7 +117,6 @@ final class Toolbar extends JToolBar implements ActionListener {
 		final Icon iNetArea = loadToolbarIcon("jam/plot/NetArea.png");
 		final Icon iCancel = loadToolbarIcon("jam/plot/Cancel.png");
 		setToolTipText("Underlined letters are shortcuts for the console.");
-		container.add(this, LOCATION);
 		setRollover(false);
 		try {
 			final JButton bupdate = getButton(iUpdate, "<u>U</u>pdate");
@@ -246,9 +232,9 @@ final class Toolbar extends JToolBar implements ActionListener {
 							final Integer newValue = (Integer) evt
 									.getNewValue();
 							/* place an appropriate value in the user prefs */
-							PREFS
+							PlotPreferences.PREFS
 									.put(
-											KEY,
+											LOCATION_KEY,
 											(newValue.intValue() == SwingConstants.HORIZONTAL) ? BorderLayout.NORTH
 													: BorderLayout.WEST);
 							fitToolbar();

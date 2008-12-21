@@ -3,7 +3,7 @@
  *
  */
 package jam.commands;
-import jam.plot.PlotPrefs;
+import jam.plot.PlotPreferences;
 
 /**
  * 
@@ -17,8 +17,8 @@ final class SetAutoPeakFind extends AbstractSetBooleanPreference {
 		putValue(NAME, "Automatic peak find");
 		putValue(SHORT_DESCRIPTION,
 		"Automatically search for and mark peaks in 1d histograms.");
-		prefsNode=PlotPrefs.PREFS;
-		key=PlotPrefs.AUTO_PEAK_FIND;
+		prefsNode=PlotPreferences.PREFS;
+		key=PlotPreferences.AUTO_PEAK_FIND;
 		defaultState=false;
 	}
 }

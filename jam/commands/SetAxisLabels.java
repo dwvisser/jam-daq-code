@@ -6,7 +6,7 @@
  */
 package jam.commands;
 
-import jam.plot.PlotPrefs;
+import jam.plot.PlotPreferences;
 
 /**
  * 
@@ -21,8 +21,8 @@ public class SetAxisLabels extends AbstractSetBooleanPreference {
 		putValue(NAME, "Axis Labels Single Plot");
 		putValue(SHORT_DESCRIPTION,
 		"Shows the axis labels and title for tiled plots.");
-		prefsNode=PlotPrefs.PREFS;
-		key=PlotPrefs.DISPLAY_LABELS;
+		prefsNode=PlotPreferences.PREFS;
+		key=PlotPreferences.DISPLAY_LABELS;
 		defaultState=true;
 	}
 	

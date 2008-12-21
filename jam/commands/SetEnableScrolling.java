@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.plot.PlotPrefs;
+import jam.plot.PlotPreferences;
 
 /**
  * Enable scrolling on plots
@@ -14,8 +14,8 @@ public class SetEnableScrolling extends AbstractSetBooleanPreference {
 		putValue(NAME, "Plot Scrolling Tiled Plots");
 		putValue(SHORT_DESCRIPTION,
 		"Shows the scrollers allowing the scrolling on Plot.");
-		prefsNode=PlotPrefs.PREFS;
-		key=PlotPrefs.ENABLE_SCROLLING;
+		prefsNode=PlotPreferences.PREFS;
+		key=PlotPreferences.ENABLE_SCROLLING;
 		defaultState=false;
 	}
 }
