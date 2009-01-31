@@ -309,12 +309,15 @@ public final class Action {
 			xch = cursorBin.getX();
 			ych = cursorBin.getY();
 			// Bins can be made by keyboard input too, so checking for good
-			// values
-			// here.
-			if (xch < 0 || xch >= hist.getSizeX() || ych < 0
-					|| ych >= hist.getSizeY()) {
+			// values here.
+			if (xch < 0 || xch >= hist.getSizeX() || ych < 0) {
+				return; // NOPMD
+			}
+
+			if (ych >= hist.getSizeY() && hist.getDimensionality() > 1) {
 				return;
 			}
+
 			count = getCounts(cursorBin);
 		}
 		currentPlot.markChannel(cursorBin);
