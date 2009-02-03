@@ -13,7 +13,7 @@
 	<property name = "winlib" value="${windows}/lib" />
 	<property name = "MAJOR" value="2" />
 	<property name = "MINOR" value="4" />
-	<property name = "RELEASE" value="12" />
+	<property name = "RELEASE" value="13" />
 	<property name = "SOURCE_GUID" value="858b9da7-5471-4c5e-bc12-15ad987aebdc" />
 	<property name = "LIB_GUID" value="e7c01541-daf8-4198-b56f-6d0cdccc7bd7" />
 	<property name = "BIN_GUID" value="f9ed19ba-bc1c-4dda-9855-7d30176f118f" />
@@ -42,13 +42,21 @@
     </target>
     
     <target name="jar" depends="compile">
-        <jar jarfile="${build.dir}/jam-${MAJOR}.${MINOR}.${RELEASE}-lib.jar"
-            basedir="${copy.dir}"
-            excludes="*.html,**/*/*.db,*.jnlp,*.xml,*.jardesc,*.jar,help,help/**/*,test,test/**/*,WINpackage,WINpackage/*,jam\**\*.java,jam\**\*.chk,jam\**\*.bak,.classpath,.project,classes/**/*,sampledata/*"
-        />    
+    	<copy todir="${APIbase.dir}">
+    		<fileset dir = "${copy.dir}" includes = "help/**/*" />
+    	</copy>
+        <jar destfile="${build.dir}/jam-${MAJOR}.${MINOR}.${RELEASE}.jar">
+        	<fileset dir="${copy.dir}"
+                     excludes="*.html,**/*/*.db,*.jnlp,*.xml,*.jardesc,*.jar,help,help/**/*,test,test/**/*,WINpackage,WINpackage/*,jam\**\*.java,jam\**\*.chk,jam\**\*.bak,.classpath,.project,classes/**/*,sampledata/*"
+        	/>
+            <fileset dir="${APIbase.dir}"
+                     includes="help/**/*"
+            />    
+        </jar>    
+    	<delete dir="${APIbase.dir}" />
     </target>
-	
-	<target name="webstart" depends="jar,helpjar">
+	    
+	<target name="webstart" depends="jar">
 		<copy file="${copy.dir}/classes/jam/nukeicon.png" todir="${Webstart.dir}" />
 		<copy file="${copy.dir}/jam.jnlp" todir="${Webstart.dir}" />
 		<copy file="${build.dir}/Jam.jar" todir="${Webstart.dir}" />
@@ -65,19 +73,8 @@
     <target name="srczip" depends="copy">
         <zip zipfile="${build.dir}/jam-${MAJOR}.${MINOR}.${RELEASE}-src.zip"
             basedir="${copy.dir}"
-            includes="jam\**\*.java,jam\**\*.png,jam\**\*.gif, *.txt,jam/**/*.html,help\**\*,sampledata\**\*,test\**\*"
+            includes="jam\**\*.java,jam\**\*.png,jam\**\*.gif, *.txt,jam/**/*.html,help\**\*,sampledata\**\*,test\**\*,injection\**\*"
         />    
-    </target>
-    
-    <target name="helpjar" depends="compile">
-    	<copy todir="${APIbase.dir}">
-    		<fileset dir = "${copy.dir}" includes = "help/**/*" />
-    	</copy>
-        <jar jarfile="${build.dir}/jam-${MAJOR}.${MINOR}.${RELEASE}-help.jar"
-            basedir="${APIbase.dir}"
-            includes="help/**/*"
-        />    
-    	<delete dir="${APIbase.dir}" />
     </target>
     
 	<target name="buildonlyglobal" depends="prepare">
@@ -95,7 +92,7 @@
                 <filter token="BIN_GUID" value="${BIN_GUID}" />
             </filterset>
 		</copy>
-	   	<javac source="1.5" target="1.5" srcdir="${copy.dir}" destdir="${copy.dir}">
+	   	<javac source="1.6" target="1.6" srcdir="${copy.dir}" destdir="${copy.dir}">
 	    	<compilerarg value="-Xlint:unchecked" />
 	    	<classpath>
 	    		<pathelement location="${copy.dir}" />
@@ -145,12 +142,13 @@
     			<pathelement location="${copy.dir}" />
     			<pathelement location="${copy.dir}/jh.jar" />
     			<pathelement location="${copy.dir}/junit-4.3.1.jar" />
+    			<pathelement location="${copy.dir}/guice-1.0.jar"/>
     		</classpath>
     	</javac>
     </target> 	
     
 
-   	<target name="x-platform" depends="jar,srczip,helpjar"
+   	<target name="x-platform" depends="jar,srczip"
     description="Compile source into class jar, help jar and source zip" />
 
     <target name="windows" depends="x-platform"
