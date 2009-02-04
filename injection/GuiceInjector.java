@@ -10,6 +10,7 @@ import jam.io.hdf.HDFIO;
 import jam.plot.Action;
 import jam.script.Session;
 import jam.ui.ConsoleLog;
+import jam.util.StringUtilities;
 
 import javax.swing.JFrame;
 
@@ -112,6 +113,13 @@ public final class GuiceInjector {
 	 */
 	public static ConsoleLog getConsoleLog() {
 		return injector.getInstance(ConsoleLog.class);
+	}
+
+	/**
+	 * @return the string utilities object
+	 */
+	public static StringUtilities getStringUtilities() {
+		return injector.getInstance(StringUtilities.class);
 	}
 
 }

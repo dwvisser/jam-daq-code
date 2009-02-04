@@ -30,24 +30,27 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.google.inject.Inject;
+
 /**
  * @author Ken Swartz
  * @version 15 Feb 2005
  */
 final class ConvertHDFObjToJamObj {
 
-	private static final StringUtilities STRING_UTIL = StringUtilities
-			.getInstance();
+	private transient final StringUtilities stringUtilities;
 
 	private transient HDFile inHDF;
 
-	ConvertHDFObjToJamObj() {
+	@Inject
+	ConvertHDFObjToJamObj(final StringUtilities stringUtilities) {
 		super();
+		this.stringUtilities = stringUtilities;
 	}
 
 	private AbstractHistogram addHistogram(final Group group,
 			final String name, final Object histData) {
-		final AbstractHistogram histogram = group.histograms.get(STRING_UTIL
+		final AbstractHistogram histogram = group.histograms.get(stringUtilities
 				.makeLength(name, AbstractHistogram.NAME_LENGTH));
 		if (histogram != null) {
 			histogram.addCounts(histData);
@@ -148,9 +151,9 @@ final class ConvertHDFObjToJamObj {
 			gate = makeGate(hist, gateName);
 		} else { // reload
 			final String histName = hist.getFullName();
-			final String gateNameMod = STRING_UTIL.makeLength(gateName,
+			final String gateNameMod = stringUtilities.makeLength(gateName,
 					Gate.NAME_LENGTH);
-			final String gateFullName = STRING_UTIL.makeFullName(histName,
+			final String gateFullName = stringUtilities.makeFullName(histName,
 					gateNameMod);
 			gate = Gate.getGate(gateFullName);
 		}
@@ -210,7 +213,7 @@ final class ConvertHDFObjToJamObj {
 				final String groupName = currentGroup.getName();
 				final String histFullName = groupName
 						+ "/"
-						+ STRING_UTIL.makeLength(hname,
+						+ stringUtilities.makeLength(hname,
 								AbstractHistogram.NAME_LENGTH);
 				final AbstractHistogram hist = AbstractHistogram
 						.getHistogram(histFullName);
@@ -326,7 +329,7 @@ final class ConvertHDFObjToJamObj {
 		} else {
 			// Can reload without this histogram
 			if (mode == FileOpenMode.RELOAD) {
-				rval = group.histograms.get(STRING_UTIL.makeLength(name,
+				rval = group.histograms.get(stringUtilities.makeLength(name,
 						AbstractHistogram.NAME_LENGTH));
 			}
 		}
@@ -767,7 +770,7 @@ final class ConvertHDFObjToJamObj {
 
 	private AbstractHistogram reloadHistogram(final Group group,
 			final String name, final Object histData) {
-		final AbstractHistogram histogram = group.histograms.get(STRING_UTIL
+		final AbstractHistogram histogram = group.histograms.get(stringUtilities
 				.makeLength(name, AbstractHistogram.NAME_LENGTH));
 		if (histogram != null) {
 			histogram.setCounts(histData);

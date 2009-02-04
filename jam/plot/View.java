@@ -1,8 +1,8 @@
 package jam.plot;
 
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.global.Nameable;
-import jam.util.StringUtilities;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,7 +73,7 @@ public final class View {
 		prime = 1;
 		while (MAP.containsKey(tempName)) {
 			final String addition = "[" + prime + "]";
-			tempName = StringUtilities.getInstance().makeLength(tempName, // NOPMD
+			tempName = GuiceInjector.getStringUtilities().makeLength(tempName, // NOPMD
 					NAME_LENGTH - addition.length());
 			tempName += addition;// NOPMD
 			prime++;

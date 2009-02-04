@@ -3,6 +3,7 @@
  */
 package test.util;
 
+import injection.GuiceInjector;
 import jam.util.StringUtilities;
 import junit.framework.TestCase;
 
@@ -13,8 +14,8 @@ import org.junit.Test;
  */
 public class StringUtilitiesTest extends TestCase {// NOPMD
 
-	private transient final StringUtilities util = StringUtilities
-			.getInstance();
+	private transient final StringUtilities util = GuiceInjector
+			.getStringUtilities();
 
 	/**
 	 * Tests whether makeLength() works properly.

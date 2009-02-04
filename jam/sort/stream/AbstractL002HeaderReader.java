@@ -4,6 +4,7 @@ import static jam.sort.stream.L002Parameters.BUFFER_END_MARKER;
 import static jam.sort.stream.L002Parameters.EVENT_END_MARKER;
 import static jam.sort.stream.L002Parameters.HEADER_START;
 import static jam.sort.stream.L002Parameters.RUN_END_MARKER;
+import injection.GuiceInjector;
 import jam.util.StringUtilities;
 
 import java.io.IOException;
@@ -68,7 +69,7 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 		final byte[] reserved2 = new byte[92];// reserved set to 0
 		final byte[] secHead = new byte[256];// read buffer for secondary
 		// headers
-		final StringUtilities stringUtil = StringUtilities.getInstance();
+		final StringUtilities stringUtil = GuiceInjector.getStringUtilities();
 		try {
 			dataInput.readFully(headerStart); // key
 			dataInput.readFully(date); // date

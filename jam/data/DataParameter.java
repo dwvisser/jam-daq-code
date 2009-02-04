@@ -1,5 +1,6 @@
 package jam.data;
 
+import injection.GuiceInjector;
 import jam.global.Nameable;
 import jam.util.StringUtilities;
 
@@ -46,7 +47,7 @@ public class DataParameter implements Nameable {
 	 */
 	public DataParameter(final String name) {
 		super();
-		final StringUtilities stringUtil = StringUtilities.getInstance();
+		final StringUtilities stringUtil = GuiceInjector.getStringUtilities();
 		// give error if name is too long
 		if (name.length() > NAME_LENGTH) {
 			throw new IllegalArgumentException("Parameter name '" + name

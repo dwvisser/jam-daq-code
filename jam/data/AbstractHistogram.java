@@ -1,7 +1,7 @@
 package jam.data;
 
+import injection.GuiceInjector;
 import jam.global.Nameable;
-import jam.util.StringUtilities;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -102,8 +102,8 @@ public abstract class AbstractHistogram implements DataElement {
 	 * @return the histogram with the given name, null if name doesn't exist.
 	 */
 	public static AbstractHistogram getHistogram(final String name) {
-		final AbstractHistogram rval = name == null ? null : (AbstractHistogram) NAME_MAP
-				.get(name);
+		final AbstractHistogram rval = name == null ? null
+				: (AbstractHistogram) NAME_MAP.get(name);
 		return rval;
 	}
 
@@ -255,8 +255,8 @@ public abstract class AbstractHistogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected AbstractHistogram(final jam.data.HistogramType type, final int sizeX,
-			final int sizeY, final String title) {
+	protected AbstractHistogram(final jam.data.HistogramType type,
+			final int sizeX, final int sizeY, final String title) {
 		super();
 		this.type = type;
 		this.sizeX = sizeX;
@@ -302,9 +302,9 @@ public abstract class AbstractHistogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected AbstractHistogram(final jam.data.HistogramType type, final int sizeX,
-			final int sizeY, final String title, final String axisLabelX,
-			final String axisLabelY) {
+	protected AbstractHistogram(final jam.data.HistogramType type,
+			final int sizeX, final int sizeY, final String title,
+			final String axisLabelX, final String axisLabelY) {
 		this(type, sizeX, sizeY, title);
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
@@ -329,8 +329,8 @@ public abstract class AbstractHistogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected AbstractHistogram(final jam.data.HistogramType type, final int size,
-			final String title) {
+	protected AbstractHistogram(final jam.data.HistogramType type,
+			final int size, final String title) {
 		this(type, size, size, title);
 	}
 
@@ -357,8 +357,9 @@ public abstract class AbstractHistogram implements DataElement {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected AbstractHistogram(final jam.data.HistogramType type, final int size,
-			final String title, final String axisLabelX, final String axisLabelY) {
+	protected AbstractHistogram(final jam.data.HistogramType type,
+			final int size, final String title, final String axisLabelX,
+			final String axisLabelY) {
 		this(type, size, size, title);
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
@@ -627,10 +628,10 @@ public abstract class AbstractHistogram implements DataElement {
 
 	/* Create the full histogram name with group name. */
 	protected final void updateNames(final Nameable group) {
-		final StringUtilities stringUtil = StringUtilities.getInstance();
 		groupName = group.getName();
 		NAME_MAP.remove(uniqueName);
-		uniqueName = stringUtil.makeFullName(groupName, name);
+		uniqueName = GuiceInjector.getStringUtilities().makeFullName(groupName,
+				name);
 		NAME_MAP.put(uniqueName, this);
 	}
 
@@ -643,7 +644,8 @@ public abstract class AbstractHistogram implements DataElement {
 		LIST.remove(this);
 		NAME_MAP.remove(getFullName());
 		NUMBER_MAP.remove(getNumber());
-		final List<AbstractHistogram> dimList = DIM_LIST.get(getDimensionality() - 1);
+		final List<AbstractHistogram> dimList = DIM_LIST
+				.get(getDimensionality() - 1);
 		dimList.remove(this);
 	}
 }

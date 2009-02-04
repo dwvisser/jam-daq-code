@@ -15,6 +15,7 @@ import static jam.io.hdf.Constants.DFTAG_VER;
 import static jam.io.hdf.Constants.DFTAG_VG;
 import static jam.io.hdf.Constants.DFTAG_VH;
 import static jam.io.hdf.Constants.DFTAG_VS;
+import injection.GuiceInjector;
 import jam.util.StringUtilities;
 
 import java.nio.ByteBuffer;
@@ -71,7 +72,8 @@ public abstract class AbstractData {
 	 */
 	protected static final Map<Short, Class<? extends AbstractData>> TYPES = new HashMap<Short, Class<? extends AbstractData>>();
 
-	private static final StringUtilities UTIL = StringUtilities.getInstance();
+	protected static final StringUtilities STRING_UTIL = GuiceInjector
+			.getStringUtilities();
 
 	// Instance members
 
@@ -352,7 +354,7 @@ public abstract class AbstractData {
 	protected final String getString(final int len) {
 		final byte[] rval = new byte[len];
 		bytes.get(rval);
-		return UTIL.getASCIIstring(rval);
+		return STRING_UTIL.getASCIIstring(rval);
 	}
 
 	/*
@@ -422,7 +424,7 @@ public abstract class AbstractData {
 	 *            to be converted
 	 */
 	protected final void putString(final String string) {
-		bytes.put(UTIL.getASCIIarray(string));
+		bytes.put(STRING_UTIL.getASCIIarray(string));
 	}
 
 	/**

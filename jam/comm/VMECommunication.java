@@ -36,12 +36,11 @@ import com.google.inject.Singleton;
 @Singleton
 final class VMECommunication extends GoodThread implements VmeSender {
 
-	private transient final Broadcaster BROADCASTER;
+	private transient final Broadcaster broadcaster;
 
 	private static final Object LOCK = new Object();
 
-	private static final StringUtilities STR_UTIL = StringUtilities
-			.getInstance();
+	private transient final StringUtilities stringUtilities;
 
 	private transient boolean active;
 
@@ -51,14 +50,20 @@ final class VMECommunication extends GoodThread implements VmeSender {
 
 	private transient int vmePort;
 
+	private transient final PacketBuilder packetBuilder;
+
 	/**
 	 * Creates the instance of this class for handling IP communications with
 	 * the VME front end computer.
 	 */
 	@Inject
-	protected VMECommunication(final Broadcaster broadcaster) {
+	protected VMECommunication(final Broadcaster broadcaster,
+			final PacketBuilder packetBuilder,
+			final StringUtilities stringUtilities) {
 		super();
-		this.BROADCASTER = broadcaster;
+		this.broadcaster = broadcaster;
+		this.packetBuilder = packetBuilder;
+		this.stringUtilities = stringUtilities;
 		new CounterVMECommunicator(this, broadcaster);
 		this.setName("Front End Communication");
 		this.setDaemon(true);
@@ -174,7 +179,7 @@ final class VMECommunication extends GoodThread implements VmeSender {
 						Scaler.update(unpackedValues);
 					} else if (status == PacketTypes.COUNTER.intValue()) {
 						unPackCounters(byteBuffer, unpackedValues);
-						BROADCASTER.broadcast(
+						broadcaster.broadcast(
 								BroadcastEvent.Command.COUNTERS_UPDATE,
 								unpackedValues);
 					} else if (status == PacketTypes.ERROR.intValue()) {
@@ -224,7 +229,7 @@ final class VMECommunication extends GoodThread implements VmeSender {
 		final ByteBuffer byteBuff = ByteBuffer.wrap(byteMessage);
 		byteBuff.putInt(PacketTypes.CNAF.intValue());
 		// put command string into packet
-		final byte[] asciiListName = STR_UTIL.getASCIIarray(listName);
+		final byte[] asciiListName = stringUtilities.getASCIIarray(listName);
 		byteBuff.put(asciiListName);
 		for (int i = COMMAND_SIZE; i > asciiListName.length; i--) {
 			byteBuff.put(Constants.STRING_NULL);
@@ -273,8 +278,8 @@ final class VMECommunication extends GoodThread implements VmeSender {
 			throw new IllegalStateException(
 					"Attempted to send a message without a connection.");
 		}
-		final DatagramPacket packetMessage = PacketBuilder.getInstance()
-				.message(status, message, addressVME, vmePort);
+		final DatagramPacket packetMessage = packetBuilder.message(status,
+				message, addressVME, vmePort);
 		try {// create and send packet
 			socketSend.send(packetMessage);
 		} catch (IOException e) {

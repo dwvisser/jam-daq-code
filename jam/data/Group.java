@@ -1,5 +1,6 @@
 package jam.data;
 
+import injection.GuiceInjector;
 import jam.global.Nameable;
 import jam.util.StringUtilities;
 
@@ -159,8 +160,8 @@ public final class Group implements Nameable {
 		return fullName;
 	}
 
-	private static final StringUtilities stringUtil = StringUtilities
-			.getInstance();
+	private static final StringUtilities stringUtil = GuiceInjector
+			.getStringUtilities();
 
 	protected HistDouble2D createHistDouble2D(final String name,
 			final String title, final String labelX, final String labelY,

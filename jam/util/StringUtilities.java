@@ -19,18 +19,8 @@ public final class StringUtilities {
 
 	private static final char ELEMENT_SEPARATOR = '/';
 
-	private static final StringUtilities INSTANCE = new StringUtilities();
-
-	private static final Logger LOGGER = Logger.getLogger(StringUtilities.class.getPackage().getName());
-
-	/**
-	 * Get the only instance of this class.
-	 * 
-	 * @return the only instance of this class
-	 */
-	public static StringUtilities getInstance() {
-		return INSTANCE;
-	}
+	private static final Logger LOGGER = Logger.getLogger(StringUtilities.class
+			.getPackage().getName());
 
 	private StringUtilities() {
 		super();
@@ -72,8 +62,8 @@ public final class StringUtilities {
 	}
 
 	/**
-	 * Truncates a <code>String</code> or pads the end with spaces to make it
-	 * a certain length.
+	 * Truncates a <code>String</code> or pads the end with spaces to make it a
+	 * certain length.
 	 * 
 	 * @param input
 	 *            <code>String</code> to modify

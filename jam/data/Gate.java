@@ -1,5 +1,6 @@
 package jam.data;
 
+import injection.GuiceInjector;
 import jam.global.Nameable;
 import jam.util.StringUtilities;
 
@@ -165,7 +166,7 @@ public final class Gate implements DataElement {
 	 */
 	public Gate(final String nameIn, final AbstractHistogram hist) {
 		super();
-		final StringUtilities stringUtil = StringUtilities.getInstance();
+		final StringUtilities stringUtil = GuiceInjector.getStringUtilities();
 		histUniqueName = hist.getFullName();
 		// Set of names of gates for histogram this gate belongs to
 		final Set<String> gateNames = new TreeSet<String>();
@@ -199,7 +200,8 @@ public final class Gate implements DataElement {
 	}
 
 	private double getArea1d() {
-		final AbstractHistogram histogram = AbstractHistogram.getHistogram(histUniqueName);
+		final AbstractHistogram histogram = AbstractHistogram
+				.getHistogram(histUniqueName);
 		final jam.data.HistogramType htype = histogram.getType();
 		double rval = 0.0;
 		if (htype == jam.data.HistogramType.ONE_D_DOUBLE) {
@@ -217,7 +219,8 @@ public final class Gate implements DataElement {
 	}
 
 	private double getArea2d() {
-		final AbstractHistogram histogram = AbstractHistogram.getHistogram(histUniqueName);
+		final AbstractHistogram histogram = AbstractHistogram
+				.getHistogram(histUniqueName);
 		final jam.data.HistogramType htype = histogram.getType();
 		double rval = 0.0;
 		if (htype == jam.data.HistogramType.TWO_DIM_INT) {
@@ -271,7 +274,8 @@ public final class Gate implements DataElement {
 		double centroid = 0.0;
 		double area = 0.0;
 		if (dimensions == 1) {
-			final AbstractHistogram histogram = AbstractHistogram.getHistogram(histUniqueName);
+			final AbstractHistogram histogram = AbstractHistogram
+					.getHistogram(histUniqueName);
 			if (histogram.getType() == jam.data.HistogramType.ONE_DIM_INT) {
 				final int[] counts = ((HistInt1D) histogram).getCounts();
 				// sum up counts and weight

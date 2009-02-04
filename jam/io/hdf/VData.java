@@ -1,7 +1,6 @@
 package jam.io.hdf;
 
 import static jam.io.hdf.Constants.DFTAG_VS;
-import jam.util.StringUtilities;
 
 import java.nio.ByteBuffer;
 
@@ -139,7 +138,7 @@ public final class VData extends AbstractData {
 			break;
 		case VDataDescription.DFNT_CHAR8:
 			final String string = (String) (cells[col][row]);
-			out.put(StringUtilities.getInstance().getASCIIarray(string));
+			out.put(STRING_UTIL.getASCIIarray(string));
 			break;
 		default:
 			throw new IllegalStateException("Vdata.getBytes(" + row + "," + col
@@ -243,7 +242,7 @@ public final class VData extends AbstractData {
 			final int byteLength = order[col];
 			final byte[] temp = new byte[byteLength];
 			bytes.get(temp);
-			out = StringUtilities.getInstance().getASCIIstring(temp);
+			out = STRING_UTIL.getASCIIstring(temp);
 		} else {
 			throw new IllegalStateException(VS_STRING + getTag() + "/"
 					+ getRef() + ".getString(" + row + "," + col

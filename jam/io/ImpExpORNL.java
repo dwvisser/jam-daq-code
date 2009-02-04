@@ -1,5 +1,6 @@
 package jam.io;
 
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Factory;
 import jam.data.HistDouble1D;
@@ -487,7 +488,6 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	 * non-javadoc: write out a ORNL drr file
 	 */
 	private void writeDrr(final OutputStream buffout) throws IOException {
-		final StringUtilities util = StringUtilities.getInstance();
 		int diskOffSet = 0;
 		final DataOutputStream dosDrr = new DataOutputStream(buffout);
 		final List<AbstractHistogram> allHists = AbstractHistogram
@@ -527,6 +527,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		dosDrr.writeInt(calendar.get(Calendar.HOUR_OF_DAY)); // time
 		dosDrr.writeInt(calendar.get(Calendar.MINUTE)); // time
 		dosDrr.writeInt(calendar.get(Calendar.SECOND)); // time
+		final StringUtilities util = GuiceInjector.getStringUtilities();
 		dosDrr.writeBytes(util.makeLength("File Created by Jam", 80));
 		/* text from chill file */
 		for (AbstractHistogram hist : allHists) {

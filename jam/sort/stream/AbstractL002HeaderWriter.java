@@ -3,6 +3,7 @@ package jam.sort.stream;
 import static jam.sort.stream.L002Parameters.HEADER_START;
 import static jam.sort.stream.L002Parameters.IMAGE_LENGTH;
 import static jam.sort.stream.L002Parameters.TITLE_MAX;
+import injection.GuiceInjector;
 import jam.global.RunInfo;
 import jam.util.StringUtilities;
 
@@ -49,7 +50,6 @@ abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream {// NO
 	 */
 	@Override
 	public void writeHeader() throws EventException {
-		final StringUtilities stringUtilities = StringUtilities.getInstance();
 		String dateString;
 		final RunInfo runInfo = RunInfo.getInstance();
 		synchronized (formatter) {
@@ -67,6 +67,8 @@ abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream {// NO
 		final byte[] reserved2 = new byte[92]; // reserved 2
 		try {
 			dataOutput.writeBytes(HEADER_START); // header
+			final StringUtilities stringUtilities = GuiceInjector
+					.getStringUtilities();
 			dataOutput.writeBytes(stringUtilities.makeLength(dateString, 16)); // date
 			// //date
 			dataOutput.writeBytes(stringUtilities.makeLength(title, TITLE_MAX)); // title

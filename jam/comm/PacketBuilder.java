@@ -6,6 +6,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+import com.google.inject.Inject;
+
 /**
  * Worker class that creates standard Jam UDP packets.
  * 
@@ -13,14 +15,12 @@ import java.nio.ByteBuffer;
  * 
  */
 final class PacketBuilder {
-	private static final PacketBuilder INSTANCE = new PacketBuilder();
+	private transient final StringUtilities stringUtilities;
 
-	private PacketBuilder() {
+	@Inject
+	protected PacketBuilder(final StringUtilities stringUtilities) {
 		super();
-	}
-
-	protected static PacketBuilder getInstance() {
-		return INSTANCE;
+		this.stringUtilities = stringUtilities;
 	}
 
 	protected DatagramPacket message(final PacketTypes status,
@@ -28,7 +28,7 @@ final class PacketBuilder {
 		final byte[] byteMessage = new byte[message.length() + 5];
 		final ByteBuffer byteBuff = ByteBuffer.wrap(byteMessage);
 		byteBuff.putInt(status.intValue());
-		byteBuff.put(StringUtilities.getInstance().getASCIIarray(message));
+		byteBuff.put(this.stringUtilities.getASCIIarray(message));
 		byteBuff.put(Constants.STRING_NULL);
 		return new DatagramPacket(byteMessage, byteMessage.length, address,
 				port);

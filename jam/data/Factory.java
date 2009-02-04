@@ -1,5 +1,6 @@
 package jam.data;
 
+import injection.GuiceInjector;
 import jam.data.Group.Type;
 import jam.util.StringUtilities;
 
@@ -107,7 +108,7 @@ public final class Factory {
 			scalerNames.add(scaler.getName());
 		}
 
-		final StringUtilities stringUtil = StringUtilities.getInstance();
+		final StringUtilities stringUtil = GuiceInjector.getStringUtilities();
 		final String name = stringUtil.makeUniqueName(nameIn, scalerNames,
 				Scaler.NAME_LENGTH);
 		final String uniqueName = stringUtil
