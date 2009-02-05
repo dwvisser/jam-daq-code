@@ -11,6 +11,7 @@ import jam.global.CommandListener;
 import jam.global.JamStatus;
 import jam.plot.CurrentPlotAccessor;
 import jam.plot.PlotDisplay;
+import jam.plot.PlotSelectListener;
 
 import java.awt.Frame;
 
@@ -33,6 +34,7 @@ public final class Module extends AbstractModule {
 		this.bind(Frame.class).toProvider(FrameProvider.class);
 		this.bind(AcquisitionStatus.class).to(JamStatus.class);
 		this.bind(CurrentPlotAccessor.class).to(PlotDisplay.class);
+		this.bind(PlotSelectListener.class).to(PlotDisplay.class);
 		this.bind(FrontEndCommunication.class)
 				.to(FrontEndVMECommunicator.class);
 		this.bind(ScalerCommunication.class).to(ScalerVMECommunicator.class);

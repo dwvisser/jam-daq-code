@@ -3,6 +3,7 @@ package jam;
 import jam.global.BroadcastEvent;
 import jam.global.BroadcastEvent.Command;
 import jam.plot.PlotDisplay;
+import jam.plot.View;
 import jam.ui.SummaryTable;
 
 import java.awt.CardLayout;
@@ -44,6 +45,7 @@ public class Display extends JPanel implements Observer {
 		cardLayout = new CardLayout();
 		setLayout(cardLayout);
 		add(KEY_PLOT, plotDisplay);
+		plotDisplay.setView(View.SINGLE);
 		add(KEY_TABLE, summaryTable);
 		/* Initial show plot. */
 		cardLayout.show(this, KEY_PLOT);

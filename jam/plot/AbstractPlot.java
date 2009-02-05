@@ -9,9 +9,9 @@ import static javax.swing.SwingConstants.BOTTOM;
 import static javax.swing.SwingConstants.LEFT;
 import static javax.swing.SwingConstants.TOP;
 import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
 import jam.data.Dimensional;
 import jam.data.Gate;
-import jam.data.AbstractHistogram;
 import jam.global.RunInfo;
 import jam.plot.color.PlotColorMap;
 import jam.plot.common.Scale;
@@ -86,7 +86,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	/* Gives channels of mouse click. */
 	protected transient final PlotMouse plotMouse;
 
-	protected transient final PlotSelection plotSelection = new PlotSelection();
+	protected transient final PlotSelection plotSelection;
 
 	/** Gate points in plot coordinates (channels). */
 	protected final Polygon pointsGate = new Polygon();
@@ -106,8 +106,9 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 	/**
 	 * Constructor
 	 */
-	protected AbstractPlot() {
+	protected AbstractPlot(final PlotSelection plotSelection) {
 		super();
+		this.plotSelection = plotSelection;
 		panel.setOpaque(true);
 		panel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		painter = new Painter(this);
@@ -331,7 +332,8 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 
 	public AbstractHistogram getHistogram() {
 		synchronized (this) {
-			return plotHistNum < 0 ? null : AbstractHistogram.getHistogram(plotHistNum);// NOPMD
+			return plotHistNum < 0 ? null : AbstractHistogram
+					.getHistogram(plotHistNum);// NOPMD
 		}
 	}
 
@@ -673,7 +675,8 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 		refresh();
 	}
 
-	protected void setRenderForPrinting(final boolean rfp, final PageFormat format) {
+	protected void setRenderForPrinting(final boolean rfp,
+			final PageFormat format) {
 		synchronized (this) {
 			options.setPrinting(rfp);
 			panel.setPageFormat(format);

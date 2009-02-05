@@ -8,6 +8,7 @@ import jam.global.JamStatus;
 import jam.io.AbstractImpExp;
 import jam.io.hdf.HDFIO;
 import jam.plot.Action;
+import jam.plot.PlotContainer;
 import jam.script.Session;
 import jam.ui.ConsoleLog;
 import jam.util.StringUtilities;
@@ -120,6 +121,14 @@ public final class GuiceInjector {
 	 */
 	public static StringUtilities getStringUtilities() {
 		return injector.getInstance(StringUtilities.class);
+	}
+
+	/**
+	 * 
+	 * @return the plot container object
+	 */
+	public static PlotContainer getPlotContainer() {
+		return injector.getInstance(PlotContainer.class);
 	}
 
 }

@@ -3,6 +3,7 @@ package jam.plot;
 import static jam.plot.PlotPreferences.DISPLAY_LABELS;
 import static jam.plot.PlotPreferences.ENABLE_SCROLLING;
 import static jam.plot.PlotPreferences.PREFS;
+import injection.GuiceInjector;
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
 import jam.data.DataUtility;
@@ -43,8 +44,9 @@ import com.google.inject.Singleton;
  * @since JDK1.1
  */
 @Singleton
-public final class PlotDisplay extends JPanel implements PlotSelectListener,
-		PreferenceChangeListener, Observer, CurrentPlotAccessor {
+public final class PlotDisplay extends JPanel implements
+		PreferenceChangeListener, Observer, CurrentPlotAccessor,
+		PlotSelectListener {
 
 	private transient final Action action; // handles display events
 
@@ -112,8 +114,6 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		this.add(toolbar, location);
 		initPrefs();
 		isOverlay = false;
-		/* Initial view only 1 plot */
-		setView(View.SINGLE);
 	}
 
 	/**
@@ -151,7 +151,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 */
 	private void createPlots(final int numberPlots) {
 		for (int i = plotContainers.size(); i < numberPlots; i++) {
-			plotContainers.add(PlotContainer.createPlotContainer(this));
+			plotContainers.add(GuiceInjector.getPlotContainer());
 		}
 	}
 
@@ -238,11 +238,12 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		}
 	}
 
-	/**
-	 * @see PlotSelectListener#plotSelected(Object)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jam.plot.PlotSelectListener#plotSelected(jam.plot.PlotContainer)
 	 */
-	public void plotSelected(final Object selectedObject) {
-		final PlotContainer selectedPlot = (PlotContainer) selectedObject;
+	public void plotSelected(final PlotContainer selectedPlot) {
 		if (selectedPlot != getPlotContainer()) {
 			setPlotContainer(selectedPlot);
 			final AbstractHistogram hist = selectedPlot.getHistogram();

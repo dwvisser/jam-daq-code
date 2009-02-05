@@ -5,6 +5,8 @@ import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.inject.Singleton;
+
 /**
  * Contains utilities for manipulating <code>String</code> objects.
  * 
@@ -12,6 +14,7 @@ import java.util.logging.Logger;
  * @version 0.5
  * @see java.lang.String
  */
+@Singleton
 public final class StringUtilities {
 
 	private static final Charset ASCII = Charset.availableCharsets().get(
@@ -21,10 +24,6 @@ public final class StringUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(StringUtilities.class
 			.getPackage().getName());
-
-	private StringUtilities() {
-		super();
-	}
 
 	/**
 	 * 

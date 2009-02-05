@@ -25,6 +25,8 @@ import java.util.prefs.PreferenceChangeEvent;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import com.google.inject.Inject;
+
 /**
  * Plots a 1-dimensional histogram.
  * 
@@ -94,9 +96,11 @@ final class Plot1d extends AbstractPlot {
 	 * Constructor.
 	 * 
 	 */
-	Plot1d() {
-		super();
-		setPeakFind(PlotPreferences.PREFS.getBoolean(PlotPreferences.AUTO_PEAK_FIND, true));
+	@Inject
+	Plot1d(final PlotSelection plotSelection) {
+		super(plotSelection);
+		setPeakFind(PlotPreferences.PREFS.getBoolean(
+				PlotPreferences.AUTO_PEAK_FIND, true));
 	}
 
 	private void addToMouseMoveClip(final int xcoord, final int ycoord) {

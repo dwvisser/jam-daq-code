@@ -22,7 +22,7 @@ final class PlotMouse extends MouseAdapter {
 	private transient final Painter painter;
 
 	/* Called so a change in select plot can be made */
-	private transient PlotSelectListener plotListener;
+	private transient PlotContainerSelectListener plotSelect;
 
 	/*
 	 * non-javadoc: Construction, PlotMouseListener belongs to a Plot. this plot
@@ -36,8 +36,9 @@ final class PlotMouse extends MouseAdapter {
 	/*
 	 * non-javadoc: Add listener for plot select
 	 */
-	protected void setPlotSelectListener(final PlotSelectListener listener) {
-		this.plotListener = listener;
+	protected void setPlotContainerSelectListener(
+			final PlotContainerSelectListener plotSelect) {
+		this.plotSelect = plotSelect;
 	}
 
 	/*
@@ -64,7 +65,7 @@ final class PlotMouse extends MouseAdapter {
 	}
 
 	/**
-	 * A mousePressed event has occured, so call all listeners in the listeners
+	 * A mousePressed event has occurred, so call all listeners in the listeners
 	 * list.
 	 * 
 	 * @param event
@@ -72,10 +73,10 @@ final class PlotMouse extends MouseAdapter {
 	 */
 	@Override
 	public void mousePressed(final MouseEvent event) {
+		/* First listeners about selected plot firsts */
+		this.plotSelect.plotSelected();
 		final CountsContainer countsContainer = (CountsContainer) event
 				.getSource();
-		/* First listeners about selected plot firsts */
-		plotListener.plotSelected(countsContainer);
 		/* Only fire event if plot has counts */
 		if (countsContainer.getCounts() != null) {
 			final Point pin = event.getPoint();

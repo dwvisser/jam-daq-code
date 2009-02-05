@@ -24,6 +24,8 @@ import java.util.prefs.PreferenceChangeEvent;
 
 import javax.swing.SwingUtilities;
 
+import com.google.inject.Inject;
+
 /**
  * Class to plot a 2-dimensional histogram.
  * 
@@ -63,11 +65,12 @@ final class Plot2d extends AbstractPlot {
 	/**
 	 * Creates a Plot object for displaying 2D histograms.
 	 */
-	Plot2d() {
-		super();
+	@Inject
+	Plot2d(final PlotSelection plotSelection) {
+		super(plotSelection);
 		COLOR_PREFS.addPreferenceChangeListener(this);
-		setSmoothColorScale(PlotPreferences.PREFS.getBoolean(ColorPrefs.SMOOTH_SCALE,
-				true));
+		setSmoothColorScale(PlotPreferences.PREFS.getBoolean(
+				ColorPrefs.SMOOTH_SCALE, true));
 	}
 
 	/**

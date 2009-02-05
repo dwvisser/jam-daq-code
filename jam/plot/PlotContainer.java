@@ -1,8 +1,8 @@
 package jam.plot;
 
 import jam.data.AbstractHist1D;
-import jam.data.Gate;
 import jam.data.AbstractHistogram;
+import jam.data.Gate;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -16,6 +16,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import com.google.inject.Inject;
+
 /**
  * class for displayed plots.
  * 
@@ -25,7 +27,7 @@ import javax.swing.border.Border;
  * @since JDK 1.1
  * @author Ken Swartz
  */
-public final class PlotContainer implements PlotSelectListener {
+public final class PlotContainer implements PlotContainerSelectListener {
 
 	enum LayoutType {
 		/** Layout with axis labels without border */
@@ -74,7 +76,7 @@ public final class PlotContainer implements PlotSelectListener {
 
 	private transient boolean hasData;
 
-	private transient final PlotSelectListener selectListener;
+	private transient final PlotSelectListener plotSelectListener;
 
 	private transient LayoutType layoutType;
 
@@ -88,31 +90,28 @@ public final class PlotContainer implements PlotSelectListener {
 	 * @param plotSelect
 	 *            place to send selection messages
 	 */
-	private PlotContainer(final PlotSelectListener plotSelect) {
-		selectListener = plotSelect;
+	@Inject
+	protected PlotContainer(final PlotSelectListener plotDisplay,
+			final Plot1d plot1d, final Plot2d plot2d) {
+		this.plotSelectListener = plotDisplay;
 		/*
 		 * panel containing plots panel to holds 1d and 2d plots, and swaps them
 		 */
 		cardLayout = new CardLayout();
 		panel.setLayout(cardLayout);
 		/* panel 1d plot and its scroll bars */
-		plot1d = new Plot1d();
+		this.plot1d = plot1d;
 		scroller1d = new Scroller(plot1d);
 		panel.add(KEY1, scroller1d);
-		plot1d.getPlotMouse().setPlotSelectListener(this);
+		plot1d.getPlotMouse().setPlotContainerSelectListener(this);
 		/* panel 2d plot and its scroll bars */
-		plot2d = new Plot2d();
+		this.plot2d = plot2d;
 		scroller2d = new Scroller(plot2d);
 		panel.add(KEY2, scroller2d);
-		plot2d.getPlotMouse().setPlotSelectListener(this);
+		plot2d.getPlotMouse().setPlotContainerSelectListener(this);
 		/* Initial show plot1d */
 		cardLayout.show(panel, KEY1);
 		currentSubPlot = plot1d;
-	}
-
-	protected static PlotContainer createPlotContainer(
-			final PlotSelectListener psl) {
-		return new PlotContainer(psl);
 	}
 
 	/**
@@ -525,11 +524,13 @@ public final class PlotContainer implements PlotSelectListener {
 		plot2d.getPlotMouse().removeAllListeners();
 	}
 
-	/**
-	 * @see PlotSelectListener#plotSelected(Object)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jam.plot.PlotContainerSelectListener#plotSelected()
 	 */
-	public void plotSelected(final Object source) {
-		selectListener.plotSelected(this);
+	public void plotSelected() {
+		this.plotSelectListener.plotSelected(this);
 	}
 
 	// End Mouse methods
