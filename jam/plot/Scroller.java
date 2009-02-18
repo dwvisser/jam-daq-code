@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 
 /**
- * This Class does the scroll bars for one and two Dimensional Plots.
+ * Implements the scroll bars for one and two Dimensional Plots.
  * 
  * @version 1.0
  * @author Ken Swartz
@@ -27,10 +27,12 @@ class Scroller extends JPanel implements AdjustmentListener, Limitable {
 
 	private transient final boolean isPlot2d;
 
-	private transient final JScrollBar scrollHorz, scrollVert, scrollCount;
+	// horizontal limits, vertical limits (2d only), and counts scrollbar
+	// instances
+	private transient JScrollBar scrollHorz, scrollVert, scrollCount;
 
 	// keep track of last counts update
-	private transient int lastScrollValC, lastScrollVisC;// NOPMD
+	private transient int lastScrollValue, lastScrollVisible;// NOPMD
 
 	private transient int lastCountMax; // not used
 
@@ -43,20 +45,21 @@ class Scroller extends JPanel implements AdjustmentListener, Limitable {
 
 	private transient final Object LOCK = new Object();
 
-	/**
-	 * Create the scroller that belongs to the given plot.
-	 * 
-	 * @param plot
-	 *            the plot that uses this scroller
-	 */
-	Scroller(final AbstractPlot plot) {
+	Scroller(final Plot1d plot) {
 		super();
 		this.plot = plot;
-		if (plot instanceof Plot1d) {
-			isPlot2d = false;
-		} else {
-			isPlot2d = true;
-		}
+		isPlot2d = false;
+		initialize();
+	}
+
+	Scroller(final Plot2d plot) {
+		super();
+		this.plot = plot;
+		isPlot2d = true;
+		initialize();
+	}
+
+	private final void initialize() {
 		this.setLayout(new BorderLayout());
 		// add scroll bars to plot
 		plot.addScrollBars(this);
@@ -66,7 +69,7 @@ class Scroller extends JPanel implements AdjustmentListener, Limitable {
 		scrollHorz = new JScrollBar(Adjustable.HORIZONTAL, 0, 255, 0, 255);
 		this.add(scrollHorz, BorderLayout.SOUTH);
 		scrollHorz.addAdjustmentListener(this);
-		// if 2d plot add y scrollers
+		// if 2d plot add y scrollbar
 		if (isPlot2d) {
 			// scroll bar to move along the y axis
 			scrollVert = new JScrollBar(Adjustable.VERTICAL, 0, 255, 0, 255);
@@ -83,18 +86,20 @@ class Scroller extends JPanel implements AdjustmentListener, Limitable {
 				COUNT_SCROLL_VIEW, COUNT_SCROLL_MIN, COUNT_SCROLL_MAX);
 		this.add(scrollCount, BorderLayout.EAST);
 		scrollCount.addAdjustmentListener(this);
-		scrollCount.addMouseListener(new MouseAdapter() {
-			/**
-			 * Returns the count scrollbar to the middle.
-			 */
-			@Override
-			public void mouseReleased(final MouseEvent event) {
-				update();
-			}
-		});
+		scrollCount.addMouseListener(mouseListener);
 		// starting not updating count scale
 		countChanging = false;
 	}
+
+	private transient final MouseAdapter mouseListener = new MouseAdapter() {
+		/**
+		 * Returns the count scrollbar to the middle.
+		 */
+		@Override
+		public void mouseReleased(final MouseEvent event) {
+			update();
+		}
+	};
 
 	/**
 	 * Set the Limits that the scroll bars are connected to the models in
@@ -123,29 +128,26 @@ class Scroller extends JPanel implements AdjustmentListener, Limitable {
 		synchronized (LOCK) {
 			if (plot.hasHistogram()) {
 				final JScrollBar source = (JScrollBar) event.getSource();
-				final Adjustable adj = event.getAdjustable();
 				final int scrollValue = event.getValue();
+				final Adjustable adj = event.getAdjustable();
 				final int scrollVisible = adj.getVisibleAmount();
 				boolean updatePlot = false;
-				// scale scroll bar
 				if (source.equals(scrollCount)) {
-					if ((scrollValue != lastScrollValC)
-							|| (scrollVisible != lastScrollVisC)) {
-						countChange(scrollValue);
-						lastScrollValC = scrollValue;
-						lastScrollVisC = scrollVisible;
+					// scale scroll bar
+					if ((scrollValue != lastScrollValue)
+							|| (scrollVisible != lastScrollVisible)) {
+						countChange(scrollValue, scrollVisible);
 						updatePlot = true;
 					}
-					// horizontal scroll bar
-				} else if (source.equals(scrollHorz)) {
-					plotLimits.update();
-					updatePlot = true;
-					// vertical scroll bar
-				} else if (source.equals(scrollVert)) {
+				} else {
+					// not scale scroll bar, so must be limits scroll bars
 					plotLimits.update();
 					updatePlot = true;
 				}
-				/* update the plot can't use refresh as it resets count scroller */
+				/*
+				 * update the plot can't use refresh as it resets count
+				 * scrollbar
+				 */
 				if (updatePlot) {
 					plot.getComponent().repaint();
 				}
@@ -174,7 +176,7 @@ class Scroller extends JPanel implements AdjustmentListener, Limitable {
 	 * scrollBar change scale use to be a quadratic function we will make it
 	 * linear.
 	 */
-	private void countChange(final int scrollValue) {
+	private void countChange(final int scrollValue, final int scrollVisible) {
 		synchronized (LOCK) {
 			// get current maximum Counts if we have not done a countChange
 			if (!countChanging) {
@@ -191,15 +193,18 @@ class Scroller extends JPanel implements AdjustmentListener, Limitable {
 
 			// effectively multiplies if we are increasing, divides if we
 			// are decreasing
-			int newMax = lastCountMax
-					* (int) Math.round(Math.pow(scaleChange, sign));
+			int newMax = (int) Math.round(lastCountMax
+					* Math.pow(scaleChange, sign));
 
 			// change by one at least
 			if (newMax == lastCountMax) {
 				newMax = lastCountMax + sign;
 			}
+
 			countChanging = true;
 			plot.setMaximumCountsConstrained(newMax);
+			lastScrollValue = scrollValue;
+			lastScrollVisible = scrollVisible;
 		}
 	}
 
