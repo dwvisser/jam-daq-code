@@ -1,5 +1,10 @@
 package jam.plot;
 
+/***
+ * 
+ * @author Dale Visser
+ * 
+ */
 public interface PlotSelectListener {
 
 	/**

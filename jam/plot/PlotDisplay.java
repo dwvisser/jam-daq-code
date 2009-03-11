@@ -98,6 +98,7 @@ public final class PlotDisplay extends JPanel implements
 		super();
 		this.status = status;
 		this.action = action;
+		this.action.setPlotAccessor(this);
 		this.broadcaster = broadcaster;
 		this.toolbar = toolbar;
 		final String defaultLocation = BorderLayout.NORTH;

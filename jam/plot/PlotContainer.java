@@ -76,7 +76,7 @@ public final class PlotContainer implements PlotContainerSelectListener {
 
 	private transient boolean hasData;
 
-	private transient final PlotSelectListener plotSelectListener;
+	private transient final PlotSelectListener selectListener;
 
 	private transient LayoutType layoutType;
 
@@ -87,13 +87,13 @@ public final class PlotContainer implements PlotContainerSelectListener {
 	private transient final JPanel panel = new JPanel();
 
 	/**
-	 * @param plotSelect
+	 * @param selectListener
 	 *            place to send selection messages
 	 */
 	@Inject
-	protected PlotContainer(final PlotSelectListener plotDisplay,
+	protected PlotContainer(final PlotSelectListener selectListener,
 			final Plot1d plot1d, final Plot2d plot2d) {
-		this.plotSelectListener = plotDisplay;
+		this.selectListener = selectListener;
 		/*
 		 * panel containing plots panel to holds 1d and 2d plots, and swaps them
 		 */
@@ -120,13 +120,10 @@ public final class PlotContainer implements PlotContainerSelectListener {
 	 * @param selectedState
 	 */
 	protected void select(final boolean selectedState) {
-		Border border = null;
-		if ((layoutType == LayoutType.LABELS_BORDER)
-				|| (layoutType == LayoutType.NO_LABELS_BORDER)) {
-			border = selectedState ? BorderFactory.createLineBorder(
-					Color.BLACK, 2) : BorderFactory.createEmptyBorder(2, 2, 2,
-					2);
-		}
+		final Border border = ((layoutType == LayoutType.LABELS_BORDER) || (layoutType == LayoutType.NO_LABELS_BORDER)) ? (selectedState ? BorderFactory
+				.createLineBorder(Color.BLACK, 2)
+				: BorderFactory.createEmptyBorder(2, 2, 2, 2))
+				: BorderFactory.createEmptyBorder(2, 2, 2, 2);
 		panel.setBorder(border);
 	}
 
@@ -200,15 +197,15 @@ public final class PlotContainer implements PlotContainerSelectListener {
 	 * Overlay a histogram.
 	 * 
 	 * @param num
-	 *            the number of the hist to overlay
+	 *            the number of the histogram to overlay
 	 */
 	public void overlayHistogram(final int num) {
-		final AbstractHistogram hist = AbstractHistogram.getHistogram(num);
 		/* Check we can overlay. */
 		if (getDimensionality() != 1) {
 			throw new UnsupportedOperationException(
 					"Overlay attempted for non-1D histogram.");
 		}
+		final AbstractHistogram hist = AbstractHistogram.getHistogram(num);
 		if (hist.getDimensionality() != 1) {
 			throw new IllegalArgumentException(
 					"You may only overlay 1D histograms.");
@@ -350,11 +347,7 @@ public final class PlotContainer implements PlotContainerSelectListener {
 	private int constrainValue(final int value, final int size,
 			final boolean useMax) {
 		final int max = size - 1;
-		int rval = value;
-		if ((value < 0) || (value > max)) {
-			rval = useMax ? max : 0;
-		}
-		return rval;
+		return ((value < 0) || (value > max)) ? (useMax ? max : 0) : value;
 	}
 
 	/*
@@ -453,11 +446,7 @@ public final class PlotContainer implements PlotContainerSelectListener {
 
 	protected double getBinWidth() {
 		final AbstractPlot plot = getPlot();
-		double rval = 1.0;
-		if (plot instanceof Plot1d) {
-			rval = ((Plot1d) plot).getBinWidth();
-		}
-		return rval;
+		return plot instanceof Plot1d ? ((Plot1d) plot).getBinWidth() : 1.0;
 	}
 
 	protected void setSelectingArea(final boolean isSelectingArea) {
@@ -524,13 +513,8 @@ public final class PlotContainer implements PlotContainerSelectListener {
 		plot2d.getPlotMouse().removeAllListeners();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see jam.plot.PlotContainerSelectListener#plotSelected()
-	 */
 	public void plotSelected() {
-		this.plotSelectListener.plotSelected(this);
+		this.selectListener.plotSelected(this);
 	}
 
 	// End Mouse methods

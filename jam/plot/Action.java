@@ -50,6 +50,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Class the does the actions on plots. Receives commands from buttons and
@@ -77,6 +78,7 @@ import com.google.inject.Inject;
  * @version 0.5
  */
 
+@Singleton
 public final class Action {
 
 	/** Broadcaster for event and gate change */
@@ -152,7 +154,7 @@ public final class Action {
 	private transient final NumberFormat numFormat;
 
 	/** Plot displayer */
-	private transient final CurrentPlotAccessor plotAccessor;
+	private transient CurrentPlotAccessor plotAccessor;
 
 	/** Accessed by Display. */
 	private transient boolean settingGate;
@@ -166,6 +168,8 @@ public final class Action {
 
 	private transient final JamStatus status;
 
+	private transient final Console console;
+
 	/**
 	 * Master constructor has no broadcaster.
 	 * 
@@ -175,18 +179,15 @@ public final class Action {
 	 *            Jam's console component
 	 */
 	@Inject
-	Action(final CurrentPlotAccessor disp, final Console console,
-			final ConsoleLog consoleLog, final CommandFinder finder,
-			final JamStatus status, final Broadcaster broadcaster) {
+	Action(final Console console, final ConsoleLog consoleLog,
+			final CommandFinder finder, final JamStatus status,
+			final Broadcaster broadcaster) {
 		super();
+		this.console = console;
 		this.broadcaster = broadcaster;
 		this.commandFinder = finder;
-		plotAccessor = disp;
 		textOut = consoleLog;
 		this.status = status;
-		final ParseCommand parseCommand = new ParseCommand(this.commandable,
-				disp);
-		console.addCommandListener(parseCommand);
 		cursorBin = Bin.create();
 		commandPresent = false;
 		settingGate = false;
@@ -411,15 +412,16 @@ public final class Action {
 		 * 
 		 * @param inCommand
 		 */
-		public void doCommand(final String inCommand, final boolean console) {
-			this.doCommand(inCommand, null, console);
+		public void doCommand(final String inCommand,
+				final boolean typedAtConsole) {
+			this.doCommand(inCommand, null, typedAtConsole);
 		}
 
 		/*
 		 * non-javadoc: does a command with parameters
 		 */
 		public void doCommand(final String inCommand,
-				final List<Double> inParams, final boolean console) {
+				final List<Double> inParams, final boolean typedAtConsole) {
 			synchronized (this) {
 				/* if inCommand is null, keep currentCommand */
 				if (inCommand != null) {
@@ -440,20 +442,20 @@ public final class Action {
 				/* check that a histogram is defined */
 				if (SelectionTree.getCurrentHistogram() != UnNamed
 						.getSingletonInstance()) {
-					Action.this.doCurrentCommand(inParams, console);
+					Action.this.doCurrentCommand(inParams, typedAtConsole);
 				}
 			}
 		}
 	};
 
 	private void doCurrentCommand(final List<Double> parameters,
-			final boolean console) {
+			final boolean typedAtConsole) {
 		if (DISPLAY.equals(currentCommand)) {
 			display(parameters);
 		} else if (OVERLAY.equals(currentCommand)) {
 			overlay(parameters);
 		} else if (RANGE.equals(currentCommand)) {
-			range(console);
+			range(typedAtConsole);
 		} else if (REBIN.equals(currentCommand)) {
 			rebin(parameters);
 		} else if (NO_ARG_MAP.containsKey(currentCommand)) {
@@ -1044,11 +1046,11 @@ public final class Action {
 	/*
 	 * non-javadoc: Set the range for the counts scale.
 	 */
-	private void range(final boolean console) {
+	private void range(final boolean typedAtConsole) {
 		if (commandPresent) {
 			final PlotContainer plot = plotAccessor.getPlotContainer();
 			final boolean twoD = plot.getDimensionality() == 2;
-			final boolean useCounts = twoD && !console;
+			final boolean useCounts = twoD && !typedAtConsole;
 			final double cts = useCounts ? getCounts(cursorBin) : cursorBin
 					.getY();
 			if (clicks.isEmpty()) {
@@ -1138,7 +1140,7 @@ public final class Action {
 		currentPlot.setBinWidth(1.0);
 		done();
 		/*
-		 * following to recover the chooser if user just overlayed a histogram
+		 * following to recover the chooser if user just overlaid a histogram
 		 */
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
 	}
@@ -1202,6 +1204,13 @@ public final class Action {
 			}
 			return rval.toString();
 		}
+	}
+
+	protected void setPlotAccessor(final CurrentPlotAccessor plotAccessor) {
+		this.plotAccessor = plotAccessor;
+		final ParseCommand parseCommand = new ParseCommand(this.commandable,
+				this.plotAccessor);
+		this.console.addCommandListener(parseCommand);
 	}
 
 }
