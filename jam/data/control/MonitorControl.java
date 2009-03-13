@@ -19,6 +19,7 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.swing.JButton;
@@ -48,7 +49,9 @@ import com.google.inject.Singleton;
 @Singleton
 public final class MonitorControl extends AbstractControl implements Runnable {
 
-	// widgets for configuration
+	private static final int THRESHOLD_INDEX = 1;
+	private static final int MAX_VALUE_INDEX = 2;
+	private static final int CHECKBOX_INDEX = 3;
 
 	private class BroadcastMonitorUpdate implements Runnable {
 		public void run() {
@@ -161,27 +164,30 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	 * Configure the monitors, i.e. set the values their parameters according to
 	 * the input fields.
 	 */
-	private void configure() {
+	void configure() {
 		try {
-			// set update interval
+			/* set update interval */
 			interval = ((Integer) spinnerUpdate.getValue()).intValue();
 			if (interval < 1) {
 				throw new IllegalArgumentException(
 						"Update interval must be greater than 1");
 			}
+
 			Monitor.setInterval(interval);
+
 			/* get the Monitor parameters */
-			int base = 0;
-			for (Monitor monitor : Monitor.getMonitorList()) {
-				base += 4;
-				final JTextField textThreshold = (JTextField) pMonitors
-						.getComponent(base + 1);
-				final JTextField textMaximum = (JTextField) pMonitors
-						.getComponent(base + 2);
-				final JCheckBox checkAlarm = (JCheckBox) pMonitors
-						.getComponent(base + 3);
+			final List<Monitor> monitors = Monitor.getMonitorList();
+			for (int i = 0; i < monitors.size(); i++) {
+				final JPanel MonitorPanel = (JPanel) pMonitors.getComponent(i);
+				final JTextField textThreshold = (JTextField) MonitorPanel
+						.getComponent(MonitorControl.THRESHOLD_INDEX);
+				final JTextField textMaximum = (JTextField) MonitorPanel
+						.getComponent(MonitorControl.MAX_VALUE_INDEX);
+				final JCheckBox checkAlarm = (JCheckBox) MonitorPanel
+						.getComponent(MonitorControl.CHECKBOX_INDEX);
 				final double threshold = Double.parseDouble(textThreshold
 						.getText().trim());
+				final Monitor monitor = monitors.get(i);
 				monitor.setThreshold(threshold);
 				final double maximum = Double.parseDouble(textMaximum.getText()
 						.trim());
@@ -191,6 +197,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		} catch (NumberFormatException nfe) {
 			LOGGER.log(Level.SEVERE, "Invalid number input.", nfe);
 		}
+
 		configured = true;
 	}
 
@@ -235,19 +242,20 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	/**
 	 * Recall the monitor's parameters and set the input fields.
 	 */
-	private void recall() {
+	protected void recall() {
 		/* update interval */
 		spinnerUpdate.setValue(Integer.valueOf(interval));
 		/* get the Monitor parameters */
-		int base = 0;
-		for (Monitor monitor : Monitor.getMonitorList()) {
-			base += 4;
-			final JTextField textThreshold = (JTextField) pMonitors
-					.getComponent(base + 1);
-			final JTextField textMaximum = (JTextField) pMonitors
-					.getComponent(base + 2);
-			final JCheckBox checkAlarm = (JCheckBox) pMonitors
-					.getComponent(base + 3);
+		final List<Monitor> monitors = Monitor.getMonitorList();
+		for (int i = 0; i < monitors.size(); i++) {
+			final JPanel monitorPanel = (JPanel) pMonitors.getComponent(i);
+			final JTextField textThreshold = (JTextField) monitorPanel
+					.getComponent(THRESHOLD_INDEX);
+			final JTextField textMaximum = (JTextField) monitorPanel
+					.getComponent(MAX_VALUE_INDEX);
+			final JCheckBox checkAlarm = (JCheckBox) monitorPanel
+					.getComponent(CHECKBOX_INDEX);
+			final Monitor monitor = monitors.get(i);
 			textThreshold.setText(String.valueOf(monitor.getThreshold()));
 			textMaximum.setText(String.valueOf(monitor.getMaximum()));
 			checkAlarm.setSelected(monitor.isAlarmActivated());

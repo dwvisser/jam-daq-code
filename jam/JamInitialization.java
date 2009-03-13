@@ -67,15 +67,18 @@ public final class JamInitialization {
 	 *            selection and display
 	 * @param initHists
 	 *            initial histograms
+	 * @param aars
+	 *            AcquisitionAndRunState instance
 	 */
 	@Inject
 	public JamInitialization(final JFrame frame, final JamStatus status,
 			final JamProperties properties, final Broadcaster broadcaster,
 			final MenuBar menuBar, final CommandManager commandManager,
 			final ToolBar jamToolBar, final SelectionAndDisplayPanel sdPanel,
-			final InitialHistograms initHists) {
+			final InitialHistograms initHists, final AcquisitionAndRunState aars) {
 		this.frame = frame;
 		this.properties = properties;
+		broadcaster.addObserver(aars);
 		loadIcon();
 		final Container contents = this.frame.getContentPane();
 		contents.setLayout(new BorderLayout());
