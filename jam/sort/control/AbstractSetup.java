@@ -45,7 +45,7 @@ import javax.swing.JToggleButton;
  * 
  * @see jam.sort.control.SetupSortOn
  * @see jam.sort.control.SetupSortOff
- * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  * @version 2004-12-21
  */
 abstract class AbstractSetup {

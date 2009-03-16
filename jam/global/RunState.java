@@ -5,7 +5,7 @@ import java.awt.Color;
 /**
  * represents the possible run states of Jam.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 1.4, 2003-12-31
  */
 public final class RunState implements AcquisitionStatus {

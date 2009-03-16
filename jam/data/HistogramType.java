@@ -3,7 +3,7 @@ package jam.data;
 /**
  * Encapsulates the 4 different types a histogram may have.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  */
 public final class HistogramType {
 	private final static int[] DIM = { 1, 2, 1, 2 };

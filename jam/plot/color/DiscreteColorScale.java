@@ -9,7 +9,7 @@ import java.awt.Color;
  * A color scale where ranges in counts are represented by individual, discrete
  * colors.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  * @version 2004-11-09
  * @since 1.6.0
  */

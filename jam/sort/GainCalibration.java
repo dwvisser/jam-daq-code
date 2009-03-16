@@ -19,7 +19,7 @@ import java.util.Map;
  * Utility class for writers of sort routines to easily read in calibrations and
  * use them.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  */
 public final class GainCalibration {
 

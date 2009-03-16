@@ -4,7 +4,7 @@ package jam.data.peaks;
  * This class represents a gaussian peak, in terms of it's properties. Fields
  * are also provided for the error bars on these properties.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 2001-02-14
  */
 public final class Peak extends Object implements Comparable<Peak>, Cloneable {

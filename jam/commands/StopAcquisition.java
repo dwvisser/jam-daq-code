@@ -19,7 +19,7 @@ import com.google.inject.Inject;
 /**
  * Stop data acquisition.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 7, 2004
  */
 final class StopAcquisition extends AbstractCommand implements Observer {

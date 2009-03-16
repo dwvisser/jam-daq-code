@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Represents a group of peaks in a spectrum.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  */
 final class Multiplet extends ArrayList<Peak> {
 

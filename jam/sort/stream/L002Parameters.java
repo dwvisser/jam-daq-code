@@ -4,7 +4,7 @@ package jam.sort.stream;
  * Parameters for L002 ORNL formatted data. 
  *
  * @version	0.5, 0.9
- * @author 	<a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author 	<a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @since       JDK1.1
  */
 public final class L002Parameters {

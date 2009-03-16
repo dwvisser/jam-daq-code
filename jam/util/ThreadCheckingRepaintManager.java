@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
  * Set repaint manager to this to check whether Swing and event threads are
  * being used properly.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  */
 public final class ThreadCheckingRepaintManager extends RepaintManager {//NOPMD
 

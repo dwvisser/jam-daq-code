@@ -6,7 +6,7 @@ package jam.data;
 import java.util.Arrays;
 
 /**
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  */
 public final class HistDouble2D extends AbstractHist2D {
 

@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 /**
  * Control dialog for zeroing scalers.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 3, 2004
  */
 public class ScalerZero extends AbstractControl {

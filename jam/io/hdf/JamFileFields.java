@@ -4,7 +4,7 @@ package jam.io.hdf;
  * Contains field names used in HDF files produced by the
  * <code>jam.io.hdf</code> package.
  * 
- * @author <a href=mailto:dale@visser.name>Dale Visser </a>
+ * @author <a href=mailto:dwvisser@users.sourceforge.net>Dale Visser </a>
  */
 public final class JamFileFields {
 

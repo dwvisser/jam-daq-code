@@ -3,7 +3,7 @@ package jam.io;
 /**
  * Enumeration of the possible modes available when opening files.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version May 3, 2004
  */
 public final class FileOpenMode {

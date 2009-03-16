@@ -13,7 +13,7 @@ import javax.swing.UIManager;
  * Renders representations for a JComboBox list entry of a
  * <code>jam.data.Gate</code> object.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 17 Dec 2003
  */
 final class GateListCellRenderer extends DefaultListCellRenderer {

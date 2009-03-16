@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  * Abstract class to represent a generic HDF data object.
  * 
  * @version 0.5 November 98
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @since JDK1.1
  */
 public abstract class AbstractData {

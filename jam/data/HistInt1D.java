@@ -10,7 +10,7 @@ import java.util.Arrays;
 /**
  * The 1-dimensional histogram class to use for online and offline sorting.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  */
 public final class HistInt1D extends AbstractHist1D {
 	private static final int[] EMPTY_INT = new int[0];

@@ -3,7 +3,7 @@ package jam.sort;
 /**
  * Encapsulates the different ways the event size can be specified.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  */
 public class EventSizeMode {// NOPMD
 	private static final int SET_BY_CNAF = 0;

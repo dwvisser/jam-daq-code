@@ -3,7 +3,7 @@ package jam.plot.common;
 /**
  * Plot package public constants that don't neatly fit into a single class.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  * @version 2004-12-13
  */
 public final class ScaleCalculator {

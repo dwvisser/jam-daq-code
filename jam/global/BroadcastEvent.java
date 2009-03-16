@@ -10,7 +10,7 @@ public final class BroadcastEvent {
 	/**
 	 * The possible commands for <code>BroadcastEvent</code>'s.
 	 * 
-	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+	 * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
 	 */
 	public enum Command {
 

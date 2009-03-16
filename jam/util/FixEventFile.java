@@ -3,7 +3,7 @@
  * Copyright (C) 2003 Yale University
  * 
  * Original Developer
- *     Dale Visser (dale@visser.name)
+ *     Dale Visser (dwvisser@users.sourceforge.net)
  * 
  * OSI Certified Open Source Software
  * 
@@ -43,7 +43,7 @@ import java.util.logging.Logger;
  * it, and appends it to the end of a second specified event file. The first
  * file is typically run number "x" and the second file is for run number "x-1".
  * 
- * @author <a href="mailto:dale@visser.name">Dale W. Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W. Visser</a>
  */
 public class FixEventFile {
 

@@ -19,7 +19,7 @@ import java.util.logging.Level;
  * Writes events to disk and reads them back.
  * 
  * @author Ken Swartz
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  */
 public final class DiskDaemon extends AbstractStorageDaemon {
 

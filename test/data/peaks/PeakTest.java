@@ -8,7 +8,7 @@ import org.junit.Test;
 /**
  * JUnit tests for <code>jam.data.peak.PeakTest</code>.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  */
 public final class PeakTest {// NOPMD
 

@@ -46,7 +46,7 @@ import com.google.inject.Inject;
  * </p>
  * 
  * @author Ken Swartz
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  * @version 1.0
  */
 public class ImpExpASCII extends AbstractImpExp {// NOPMD

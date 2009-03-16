@@ -21,7 +21,7 @@ import com.google.inject.Inject;
 /**
  * Dialog for setting peak finding parameters.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  */
 public class PeakFindDialog extends JDialog {
 

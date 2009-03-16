@@ -14,7 +14,7 @@ import javax.swing.JComponent;
  * of "Java 2D Graphics" by Jonathan Knudsen.
  * 
  * @author Jonathan Knudsen
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jan 22, 2004
  */
 public class ComponentPrintable implements Printable {

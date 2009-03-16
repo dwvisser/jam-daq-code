@@ -3,7 +3,7 @@ package jam;
 /**
  * Constants representing which version of Jam this is.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 30 Dec 2003
  */
 public final class Version {

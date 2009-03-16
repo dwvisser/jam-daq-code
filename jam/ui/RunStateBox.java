@@ -20,7 +20,7 @@ import com.google.inject.Singleton;
 /**
  * Holds component which displays the current run state.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  * @version 2004-12-09
  * @see jam.global.RunState
  */

@@ -14,7 +14,7 @@ import com.google.inject.Singleton;
  * A global status class so that information is globally available.
  * 
  * @author Ken Swartz
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  */
 @Singleton
 public final class JamStatus implements AcquisitionStatus, QuerySortMode {

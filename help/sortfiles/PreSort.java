@@ -12,7 +12,7 @@ import java.io.File;
 /**
  * Script for performing pre-sorts on specified subsets of the data.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 8 Apr 2004
  */
 public final class PreSort {

@@ -3,7 +3,7 @@ package jam.plot;
 /**
  * Enumeration type to represent the different modes of gate setting.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jan 26, 2004
  */
 enum GateSetMode {

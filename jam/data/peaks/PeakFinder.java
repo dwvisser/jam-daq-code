@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Given sensitivity and width parameters, finds peaks in a given spectrum.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 2001-05-11
  */
 public final class PeakFinder {

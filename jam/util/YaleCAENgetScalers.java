@@ -3,7 +3,7 @@
  * Copyright (C) 2003 Yale University
  * 
  * Original Developer
- *     Dale Visser (dale@visser.name)
+ *     Dale Visser (dwvisser@users.sourceforge.net)
  * 
  * OSI Certified Open Source Software
  * 
@@ -39,7 +39,7 @@ import com.google.inject.Inject;
 /**
  * Scans YaleCAEN event files for scaler blocks.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  */
 public class YaleCAENgetScalers {
 	private static final Logger LOGGER = Logger

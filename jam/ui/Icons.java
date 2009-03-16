@@ -9,7 +9,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
- * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  */
 public final class Icons {
 

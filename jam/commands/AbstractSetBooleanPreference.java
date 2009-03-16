@@ -13,7 +13,7 @@ import javax.swing.ImageIcon;
  * Abstract implementation of <code>Commandable</code> which can set/unset a
  * given preference.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jun 10, 2004
  */
 public abstract class AbstractSetBooleanPreference extends AbstractCommand {// NOPMD

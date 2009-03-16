@@ -3,7 +3,7 @@
  * Copyright (C) 2003 Yale University
  * 
  * Original Developer
- *     Dale Visser (dale@visser.name)
+ *     Dale Visser (dwvisser@users.sourceforge.net)
  * 
  * OSI Certified Open Source Software
  * 
@@ -57,7 +57,7 @@ import javax.swing.border.EmptyBorder;
 /**
  * Scans HDF files for scaler values.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  */
 public final class ScalerScan implements ProgressUpdater {
 

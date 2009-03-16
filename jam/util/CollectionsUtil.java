@@ -6,7 +6,7 @@ package jam.util;
 import java.util.Collection;
 
 /**
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  */
 public final class CollectionsUtil {
 
@@ -28,7 +28,7 @@ public final class CollectionsUtil {
 	/**
 	 * Used for conditional add of elements in a collection.
 	 * 
-	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+	 * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
 	 * @param <T>
 	 *            type of element in the collection
 	 */

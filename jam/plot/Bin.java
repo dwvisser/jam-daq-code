@@ -5,7 +5,7 @@ import java.awt.Point;
 /**
  * Abstraction of a histogram channel on the display.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 2004-10-04
  */
 public final class Bin implements Cloneable {

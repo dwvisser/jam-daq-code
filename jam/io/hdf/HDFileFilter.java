@@ -11,7 +11,7 @@ import javax.swing.filechooser.FileFilter;
 /**
  * Filters only HDF files for file dialogs.
  * 
- * @author <a href=mailto:dale@visser.name>Dale Visser</a>
+ * @author <a href=mailto:dwvisser@users.sourceforge.net>Dale Visser</a>
  */
 public class HDFileFilter extends FileFilter implements java.io.FileFilter {
 

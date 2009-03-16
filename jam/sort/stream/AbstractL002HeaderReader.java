@@ -13,7 +13,7 @@ import java.io.IOException;
  * This class takes care of reading standard Oak Ridge L002 header records. All
  * event input streams which wish to do the same should extend this.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Feb 2, 2004
  */
 public abstract class AbstractL002HeaderReader extends AbstractEventInputStream {

@@ -35,7 +35,7 @@ import com.google.inject.Inject;
  * Load a fit routine.. Draw the fit routines interface window
  * 
  * @version 1.1
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  */
 public class LoadFit {
 

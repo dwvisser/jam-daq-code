@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
  * This class takes care of properly displaying the histogram chooser in Jam's
  * main window.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 1.4.2 RC3
  */
 final class HistogramComboBoxModel extends DefaultComboBoxModel {
@@ -26,7 +26,7 @@ final class HistogramComboBoxModel extends DefaultComboBoxModel {
 	/**
 	 * The possible modes for a histogram combo box.
 	 * 
-	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+	 * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
 	 */
 	static public enum Mode {
 		/**

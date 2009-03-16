@@ -11,7 +11,7 @@ import java.util.Observer;
 /**
  * Sets/unsets debug preference.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 2004-06-11
  */
 final class SetDebug extends AbstractSetBooleanPreference implements Observer {

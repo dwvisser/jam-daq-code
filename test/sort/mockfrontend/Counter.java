@@ -8,7 +8,7 @@ package test.sort.mockfrontend;
 
 /**
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Feb 15, 2004
  */
 public final class Counter extends NamedTextPanel {

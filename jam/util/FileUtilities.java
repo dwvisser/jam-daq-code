@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 /**
  * Utility class for file dialogs.
  * 
- * @author <a href=mailto:dale@visser.name>Dale Visser </a>
+ * @author <a href=mailto:dwvisser@users.sourceforge.net>Dale Visser </a>
  */
 public final class FileUtilities {
 

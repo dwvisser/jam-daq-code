@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
  * Class to represent an HDF <em>Vdata description</em> data object.
  * 
  * @version 0.5 November 98
- * @author <a href="mailto:dale@visser.name">Dale Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser </a>
  * @since JDK1.1
  */
 public final class VData extends AbstractData {

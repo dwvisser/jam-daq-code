@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * The superclass of all 1-dimensional histograms.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  */
 public abstract class AbstractHist1D extends AbstractHistogram {
 

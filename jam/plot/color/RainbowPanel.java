@@ -5,7 +5,7 @@ package jam.plot.color;
 
 /**
  * @author Eric Lingerfelt
- * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  */
 import java.awt.Color;
 import java.awt.Graphics;

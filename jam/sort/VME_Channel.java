@@ -4,7 +4,7 @@ package jam.sort;
  * Represents a single channel of data that the acquisition electronics will
  * read out. Used by VME_Map to store its info.
  * 
- * @author <a href=mailto:dale@visser.name>Dale Visser</a>
+ * @author <a href=mailto:dwvisser@users.sourceforge.net>Dale Visser</a>
  */
 public final class VME_Channel {
 

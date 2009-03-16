@@ -30,7 +30,7 @@ import javax.swing.event.ChangeListener;
  * Dialog for setting the gradient color scale parameters.
  * 
  * @author Eric Lingerfelt
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  * @version 2004-11-08
  */
 public final class ColorSettingsFrame extends JDialog implements ChangeListener {

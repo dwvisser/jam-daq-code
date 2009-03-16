@@ -25,7 +25,7 @@ import org.junit.internal.ArrayComparisonFailure;
 /**
  * JUnit tests for <code>jam.sort.RingBuffer</data>.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @see RingBuffer
  */
 public final class RingBufferTest {// NOPMD

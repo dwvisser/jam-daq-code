@@ -50,7 +50,7 @@ import com.google.inject.Inject;
  * portions of the sorting task on different machines at the same time, and
  * combine their results in a "merge script".
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version April 5, 2004
  */
 public final class Session implements Observer {

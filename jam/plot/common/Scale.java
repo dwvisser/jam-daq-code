@@ -3,7 +3,7 @@ package jam.plot.common;
 /**
  * Represents the type of counts plot scale.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  * @version 2004-11-08
  */
 public enum Scale {

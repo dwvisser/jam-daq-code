@@ -15,7 +15,7 @@ import com.google.inject.Inject;
 
 /**
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jun 4, 2004
  */
 final class ShowSetupOnline extends AbstractShowDialog implements Observer {

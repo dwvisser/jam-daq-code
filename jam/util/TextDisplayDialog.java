@@ -19,7 +19,7 @@ import javax.swing.JTextArea;
 /**
  * Shows a dialog with the given text.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Apr 2, 2004
  */
 public class TextDisplayDialog extends JDialog {

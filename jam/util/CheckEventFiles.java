@@ -3,7 +3,7 @@
  * Copyright (C) 2003 Yale University
  * 
  * Original Developer
- *     Dale Visser (dale@visser.name)
+ *     Dale Visser (dwvisser@users.sourceforge.net)
  * 
  * OSI Certified Open Source Software
  * 

@@ -16,7 +16,7 @@ import com.google.inject.Inject;
 /**
  * Show the sort control dialog.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 2004-06-04
  */
 final class ShowSortControl extends AbstractShowDialog implements Observer {

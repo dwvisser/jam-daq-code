@@ -3,7 +3,7 @@ package jam.global;
 /**
  * Enumeration of the possible sorting modes for Jam.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version May 9, 2004
  * @since 1.5.1
  * @see jam.global.JamStatus#setSortMode(SortMode,String)

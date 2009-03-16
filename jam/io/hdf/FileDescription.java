@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
  * meant to be a description of the contents of the file.
  * 
  * @version 0.5 December 98
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @since JDK1.1
  */
 final class FileDescription extends AbstractData {

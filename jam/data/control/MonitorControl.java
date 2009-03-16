@@ -43,7 +43,7 @@ import com.google.inject.Singleton;
  * 
  * @version September 2000
  * @author Ken Swartz
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @since JDK1.1
  */
 @Singleton

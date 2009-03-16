@@ -60,7 +60,7 @@ import com.google.inject.Singleton;
  * </ul>
  * 
  * @author Ken Swartz
- * @author <a href="mailto:dale@visser.name">Dale Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser </a>
  */
 @Singleton
 public final class RunControl extends JDialog implements Controller,
@@ -81,7 +81,7 @@ public final class RunControl extends JDialog implements Controller,
 	private static final Logger LOGGER = Logger.getLogger(RunControl.class
 			.getPackage().getName());
 
-	private transient final JamStatus STATUS;
+	private transient final JamStatus status;
 
 	private transient final Begin begin;
 
@@ -100,9 +100,9 @@ public final class RunControl extends JDialog implements Controller,
 	private transient NetDaemon netDaemon;
 
 	/**
-	 * Are we currently in a run, saving event data
+	 * Are we currently in a run, saving event data.
 	 */
-	private boolean runOn = false;
+	private boolean runningOnline = false;
 
 	private transient SortDaemon sortDaemon;
 
@@ -116,6 +116,8 @@ public final class RunControl extends JDialog implements Controller,
 
 	private transient final HDFIO hdfio;
 
+	private transient final Object syncObject = new Object();
+
 	/**
 	 * Creates the run control dialog box.
 	 * 
@@ -128,7 +130,7 @@ public final class RunControl extends JDialog implements Controller,
 			final ScalerCommunication scaler) {
 		super(frame, "Run", false);
 		this.hdfio = hdfio;
-		this.STATUS = status;
+		this.status = status;
 		this.frontEnd = frontEnd;
 		this.scaler = scaler;
 		RunInfo.getInstance().runNumber = 100;
@@ -285,7 +287,7 @@ public final class RunControl extends JDialog implements Controller,
 		end.setEnabled(true);
 		begin.setEnabled(false);
 		setLockControls(true);
-		STATUS.setRunState(RunState.runOnline(RunInfo.getInstance().runNumber));
+		status.setRunState(RunState.runOnline(RunInfo.getInstance().runNumber));
 		if (device == Device.DISK) {
 			LOGGER.info("Began run " + RunInfo.getInstance().runNumber
 					+ ", events being written to file: "
@@ -314,7 +316,7 @@ public final class RunControl extends JDialog implements Controller,
 		frontEnd.end(); // stop acquisition, flush buffer
 		scaler.readScalers(); // read scalers
 
-		STATUS.setRunState(RunState.ACQ_OFF);
+		status.setRunState(RunState.ACQ_OFF);
 		LOGGER.info("Ending run " + RunInfo.getInstance().runNumber
 				+ ", waiting for sorting to finish.");
 		int numSeconds = 0;
@@ -366,9 +368,25 @@ public final class RunControl extends JDialog implements Controller,
 		frontEnd.flush();
 	}
 
+	/**
+	 * 
+	 * @return whether Jam is in a run, i.e., saving event data to disk
+	 */
 	private boolean isRunOn() {
-		synchronized (this) {
-			return runOn;
+		synchronized (this.syncObject) {
+			return this.runningOnline;
+		}
+	}
+
+	/**
+	 * Only called by beginRun (value=true) and endRun(value=false).
+	 * 
+	 * @param value
+	 *            whether Jam is in a run, i.e., saving event data to disk
+	 */
+	private void setRunOn(final boolean value) {
+		synchronized (this.syncObject) {
+			this.runningOnline = value;
 		}
 	}
 
@@ -378,12 +396,6 @@ public final class RunControl extends JDialog implements Controller,
 		textRunTitle.setEditable(enable);
 		cHistZero.setEnabled(enable);
 		zeroScalers.setEnabled(enable);
-	}
-
-	private void setRunOn(final boolean val) {
-		synchronized (this) {
-			runOn = val;
-		}
 	}
 
 	/**
@@ -433,14 +445,14 @@ public final class RunControl extends JDialog implements Controller,
 		frontEnd.startAcquisition();
 		// if we are in a run, display run number
 		if (isRunOn()) {// runOn is true if the current state is a run
-			STATUS.setRunState(RunState
+			status.setRunState(RunState
 					.runOnline(RunInfo.getInstance().runNumber));
 			// see stopAcq() for reason for this next line.
 			end.setEnabled(true);
 			LOGGER.info("Started Acquisition, continuing Run #"
 					+ RunInfo.getInstance().runNumber);
 		} else {// just viewing events, not running to disk
-			STATUS.setRunState(RunState.ACQ_ON);
+			status.setRunState(RunState.ACQ_ON);
 			begin.setEnabled(false);// don't want to try to begin run
 			// while going
 			LOGGER
@@ -452,29 +464,28 @@ public final class RunControl extends JDialog implements Controller,
 	 * Tells VME to stop acquisition, and suspends the net listener.
 	 */
 	public void stopAcq() {
-		frontEnd.stopAcquisition();
-		/*
-		 * Commented out next line to see if this stops our problem of
-		 * "leftover" buffers DWV 15 Nov 2001
-		 */
-		STATUS.setRunState(RunState.ACQ_OFF);
+		this.frontEnd.stopAcquisition();
+		this.status.setRunState(RunState.ACQ_OFF);
+
 		/*
 		 * done to avoid "last buffer in this run becomes first and last buffer
 		 * in next run" problem
 		 */
-		end.setEnabled(false);
-		if (!isRunOn()) {// not running to disk
-			begin.setEnabled(true);// since it was disabled during
-			// start
-		}
+		this.end.setEnabled(false);
 
-		LOGGER.warning("Stopped Acquisition...if you are doing a run, "
-				+ "you will need to start again before clicking \"End Run\".");
+		if (this.isRunOn()) {
+			LOGGER
+					.info("Stopped acquisition during a run: you will need to start acquisition again before you can end the run.");
+		} else {
+			/*
+			 * If not running to disk, "Begin" was disabled and needs to be
+			 * re-enabled.
+			 */
+			this.begin.setEnabled(true);
+		}
 	}
 
 	private boolean storageCaughtUp() {
-		final boolean rval = device == Device.FRONT_END ? true : diskDaemon
-				.caughtUpOnline();
-		return rval;
+		return device == Device.FRONT_END ? true : diskDaemon.caughtUpOnline();
 	}
 }

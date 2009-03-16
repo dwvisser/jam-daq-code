@@ -11,7 +11,7 @@ import com.google.inject.Inject;
 /**
  * Command that shows the monitor configuration dialog.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 4, 2004
  */
 final class ShowMonitorConfig extends AbstractShowDialog implements Observer {

@@ -24,7 +24,7 @@ import com.google.inject.Inject;
  * Jam's menu bar. Separated from JamMain to reduce its size and separate
  * responsibilities.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser </a>
  * @version 1.4
  * @since 30 December 2003
  */

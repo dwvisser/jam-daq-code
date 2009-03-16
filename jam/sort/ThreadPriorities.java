@@ -15,7 +15,7 @@ package jam.sort;
  * <tr><td>1</td><td>Run only if nothing else can</td></tr>
  * </table>
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Apr 12, 2004
  */
 public final class ThreadPriorities {

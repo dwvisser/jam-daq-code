@@ -82,7 +82,7 @@ public final class PanelOKApplyCancelButtons {
 	 * Handler for OK, apply and cancel methods which are called when their
 	 * associated buttons are pressed.
 	 * 
-	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+	 * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
 	 */
 	public interface Listener extends Canceller {
 
@@ -102,7 +102,7 @@ public final class PanelOKApplyCancelButtons {
 	 * exectute <code>apply()</code>, then <code>cancel</code>, which makes the
 	 * given <code>Window</code> invisible.
 	 * 
-	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+	 * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
 	 */
 	public static abstract class AbstractListener implements Listener {
 		private transient final Window parent;

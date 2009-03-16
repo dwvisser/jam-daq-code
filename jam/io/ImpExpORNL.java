@@ -46,7 +46,7 @@ import com.google.inject.Inject;
  * Where <code><i>filename</i></code> is the same for both files.
  * 
  * @author Ken Swartz
- * @author <a href="mailto:dale@visser.name">Dale Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser </a>
  * @version 0.5
  */
 public class ImpExpORNL extends AbstractImpExp {// NOPMD

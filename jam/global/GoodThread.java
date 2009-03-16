@@ -10,14 +10,14 @@ import javax.swing.JOptionPane;
  * stop request has been sent to it. Based on code given in "Java Design" by
  * Peter Coad and Mark Mayfield.
  * 
- * @author <a href="dale@visser.name">Dale Visser</a>
+ * @author <a href="dwvisser@users.sourceforge.net">Dale Visser</a>
  */
 public class GoodThread extends Thread {
 
 	/**
 	 * The possible thread states for a <code>GoodThread</code>.
 	 * 
-	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+	 * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
 	 */
 	public enum State {
 		/**

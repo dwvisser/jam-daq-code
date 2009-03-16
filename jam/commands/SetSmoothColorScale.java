@@ -7,7 +7,7 @@ import jam.plot.color.ColorPrefs;
 
 /**
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jun 11, 2004
  */
 final class SetSmoothColorScale extends AbstractSetBooleanPreference {

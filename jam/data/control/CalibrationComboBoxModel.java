@@ -15,7 +15,7 @@ import javax.swing.event.ListDataListener;
  * Used anywhere a JComboBox is used to select from the available calibration
  * functions.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @author Ken Swartz
  * @version 1.4.2 RC 3
  */

@@ -8,7 +8,7 @@ import jam.data.func.CalibrationFunctionCollection;
 import java.util.Arrays;
 
 /**
- * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  */
 public final class HistDouble1D extends AbstractHist1D {
 

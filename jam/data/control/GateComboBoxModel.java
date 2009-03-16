@@ -14,7 +14,7 @@ import javax.swing.DefaultComboBoxModel;
 /**
  * Used anywhere a JComboBox is used to select from the available gates.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 1.4.2 RC 3
  */
 final class GateComboBoxModel extends DefaultComboBoxModel {
@@ -24,7 +24,7 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 	 * modes exist now, which are accessible as static fields of this class.
 	 * 
 	 * @version 1.4.2 (RC3)
-	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+	 * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
 	 */
 	static public enum Mode {
 		/**

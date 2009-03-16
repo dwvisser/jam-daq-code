@@ -3,7 +3,7 @@ package jam.io.hdf;
 /**
  * Contains constants for the <code>jam.io.hdf</code> package.
  * 
- * @author <a href=mailto:dale@visser.name>Dale Visser</a>
+ * @author <a href=mailto:dwvisser@users.sourceforge.net>Dale Visser</a>
  * @version 1.0
  */
 public final class Constants {

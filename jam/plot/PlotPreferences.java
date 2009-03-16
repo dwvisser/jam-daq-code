@@ -9,7 +9,7 @@ import java.util.prefs.Preferences;
  * Holds reference to the preferences node affecting the <code>jam.plot</code>
  * package, as well as the preference names.
  * 
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jun 10, 2004
  * @see java.util.prefs.Preferences
  */

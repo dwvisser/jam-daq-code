@@ -49,7 +49,7 @@ import com.google.inject.Inject;
  * Dialog for exporting lists of histograms. Searches <code>jam.io</code> for
  * all classes extending <code>jam.io.ImpExp</code>.
  * 
- * @author <a href=mailto:dale@visser.name>Dale Visser </a>
+ * @author <a href=mailto:dwvisser@users.sourceforge.net>Dale Visser </a>
  */
 public final class BatchExport extends JDialog implements Observer {
 
