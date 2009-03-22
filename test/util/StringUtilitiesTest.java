@@ -24,11 +24,11 @@ public class StringUtilitiesTest extends TestCase {// NOPMD
 	public final void testMakeLength() {
 		final int testLength = 8;
 		final String test1 = "Dale";
-		final String test2 = "Dale Visser";
 		final String answer1 = "Dale    ";
-		final String answer2 = "Dale Vis";
 		assertEquals("Failed to lengthen String properly.", util.makeLength(
 				test1, testLength), answer1);
+		final String test2 = "Dale Visser";
+		final String answer2 = "Dale Vis";
 		assertEquals("Failed to shorten String properly.", util.makeLength(
 				test2, testLength), answer2);
 	}

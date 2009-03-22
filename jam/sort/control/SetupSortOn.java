@@ -18,6 +18,7 @@ import jam.sort.DiskDaemon;
 import jam.sort.EventSizeMode;
 import jam.sort.NetDaemon;
 import jam.sort.RingBuffer;
+import jam.sort.RingBufferFactory;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
 import jam.sort.stream.AbstractEventInputStream;
@@ -115,12 +116,16 @@ public final class SetupSortOn extends AbstractSetup {
 
 	private transient final DisplayCounters displayCounters;
 
+	private transient final RingBufferFactory ringFactory;
+
 	@Inject
 	private SetupSortOn(final ConsoleLog console, final JFrame frame,
 			final RunControl runControl, final DisplayCounters displayCounters,
 			final FrontEndCommunication frontEnd,
-			final ScalerCommunication scaler, final Broadcaster broadcaster) {
+			final ScalerCommunication scaler, final Broadcaster broadcaster,
+			final RingBufferFactory ringFactory) {
 		super("Setup Online", broadcaster);
+		this.ringFactory = ringFactory;
 		this.frontEnd = frontEnd;
 		this.scaler = scaler;
 		initCheckLock();
@@ -538,11 +543,12 @@ public final class SetupSortOn extends AbstractSetup {
 		final boolean useDisk = cdisk.isSelected();
 		sortDaemon.setup(inStream, sortRoutine.getEventSize());
 		/* interprocess buffering between daemons */
-		final RingBuffer sortingRing = new RingBuffer();
+		final RingBuffer sortingRing = this.ringFactory.create();
 		sortDaemon.setRingBuffer(sortingRing);
 		sortDaemon.setSorter(sortRoutine);
 		// if disk not selected than storage ring is made in "null/empty" state
-		final RingBuffer storageRing = new RingBuffer(!cdisk.isSelected());
+		final RingBuffer storageRing = this.ringFactory.create(!cdisk
+				.isSelected());
 		// create storage daemon
 		if (cdisk.isSelected()) { // don't create storage daemon otherwise
 			diskDaemon = new DiskDaemon(runControl);

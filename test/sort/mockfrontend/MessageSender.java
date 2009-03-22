@@ -1,6 +1,6 @@
 package test.sort.mockfrontend;
 
-import jam.sort.RingBuffer;
+import injection.GuiceInjector;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -69,7 +69,8 @@ public class MessageSender {
 	}
 
 	class EventGenerator implements Runnable {
-		private transient final byte[] buffer = RingBuffer.freshBuffer();
+		private transient final byte[] buffer = GuiceInjector
+				.getRingBufferFactory().freshBuffer();
 		private transient final byte[] parameter0 = { (byte) 0x80, 0x00 };
 		private transient final byte[] parameter1 = { (byte) 0x80, 0x01 };
 		private transient final byte[] eventEnd = { (byte) 0xff, (byte) 0xff };

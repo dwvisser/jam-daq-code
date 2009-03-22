@@ -113,8 +113,7 @@ final class VMECommunication extends GoodThread implements VmeSender {
 				socketReceive = new DatagramSocket(portRecv, addressLocal);
 			} catch (BindException be) {
 				throw new CommunicationsException(
-						getClass().getName()
-								+ "Problem binding receive socket. (Is another Jam running online?)",
+						"Problem binding receive socket. (Is another Jam running online?)",
 						be);
 			} catch (SocketException se) {
 				throw new CommunicationsException(

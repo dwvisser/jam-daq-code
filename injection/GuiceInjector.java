@@ -10,6 +10,7 @@ import jam.io.hdf.HDFIO;
 import jam.plot.Action;
 import jam.plot.PlotContainer;
 import jam.script.Session;
+import jam.sort.RingBufferFactory;
 import jam.ui.ConsoleLog;
 import jam.util.StringUtilities;
 
@@ -129,6 +130,13 @@ public final class GuiceInjector {
 	 */
 	public static PlotContainer getPlotContainer() {
 		return injector.getInstance(PlotContainer.class);
+	}
+
+	/**
+	 * @return the ring buffer factory
+	 */
+	public static RingBufferFactory getRingBufferFactory() {
+		return injector.getInstance(RingBufferFactory.class);
 	}
 
 }

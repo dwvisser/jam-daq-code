@@ -6,7 +6,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import injection.GuiceInjector;
 import jam.sort.RingBuffer;
+import jam.sort.RingBufferFactory;
 
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -23,7 +25,7 @@ import org.junit.Test;
 import org.junit.internal.ArrayComparisonFailure;
 
 /**
- * JUnit tests for <code>jam.sort.RingBuffer</data>.
+ * JUnit tests for <code>jam.sort.IRingBuffer</data>.
  * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @see RingBuffer
@@ -33,6 +35,9 @@ public final class RingBufferTest {// NOPMD
 	private static final String ARRAYS_NOT_EQUAL = "Arrays should have been equal.";
 
 	private transient RingBuffer ring, emptyRing;
+
+	private transient final RingBufferFactory ringFactory = GuiceInjector
+			.getRingBufferFactory();
 
 	/**
 	 * @param output
@@ -47,18 +52,17 @@ public final class RingBufferTest {// NOPMD
 		assertNotSame("Expect two different arrays.", input, output);
 	}
 
-	private void assertRingBufferEmpty(final RingBuffer ringbuffer) {
-		assertTrue("Expected empty ring buffer.", ringbuffer.isEmpty());
-		assertFalse("Expected ring buffer to not be full.", ringbuffer.isFull());
+	private void assertRingBufferEmpty(final RingBuffer ring2) {
+		assertTrue("Expected empty ring buffer.", ring2.isEmpty());
+		assertFalse("Expected ring buffer to not be full.", ring2.isFull());
 		assertEquals("Expected all buffers in ring to be available.",
-				RingBuffer.NUMBER_BUFFERS, ringbuffer.getAvailableBuffers());
+				RingBuffer.NUMBER_BUFFERS, ring2.getAvailableBuffers());
 	}
 
-	private void assertRingBufferFull(final RingBuffer ringbuffer) {
-		assertFalse("Expected ring buffer to not be empty.", ringbuffer
-				.isEmpty());
-		assertTrue("Expected full ring buffer.", ringbuffer.isFull());
-		assertEquals("Expected zero available buffers.", 0, ringbuffer
+	private void assertRingBufferFull(final RingBuffer ring2) {
+		assertFalse("Expected ring buffer to not be empty.", ring2.isEmpty());
+		assertTrue("Expected full ring buffer.", ring2.isFull());
+		assertEquals("Expected zero available buffers.", 0, ring2
 				.getAvailableBuffers());
 	}
 
@@ -66,46 +70,45 @@ public final class RingBufferTest {// NOPMD
 	 * @param usedBuffers
 	 *            number of buffers used up
 	 */
-	private void assertUsedBuffers(final RingBuffer ringbuffer,
-			final int usedBuffers) {
+	private void assertUsedBuffers(final RingBuffer ring2, final int usedBuffers) {
 		assertEquals("Expected " + usedBuffers + " buffers used.", usedBuffers,
-				ringbuffer.getUsedBuffers());
+				ring2.getUsedBuffers());
 		final int available = RingBuffer.NUMBER_BUFFERS - usedBuffers;
 		assertEquals("Expected " + available + " buffers available.",
-				available, ringbuffer.getAvailableBuffers());
+				available, ring2.getAvailableBuffers());
 	}
 
-	private void clear(final RingBuffer ringbuffer) {
-		ringbuffer.clear();
-		this.assertRingBufferEmpty(ringbuffer);
+	private void clear(final RingBuffer ring2) {
+		ring2.clear();
+		this.assertRingBufferEmpty(ring2);
 	}
 
 	/**
 	 * @returns last buffer inserted
 	 */
-	private byte[] fillEmptyRingBuffer(final RingBuffer ringbuffer,
+	private byte[] fillEmptyRingBuffer(final RingBuffer ring2,
 			final int numBuffers) {
-		assertRingBufferEmpty(ringbuffer);
-		final byte[] buffer = RingBuffer.freshBuffer();
+		assertRingBufferEmpty(ring2);
+		final byte[] buffer = ringFactory.freshBuffer();
 		for (int i = 0; i < numBuffers; i++) {
 			Arrays.fill(buffer, (byte) (i + 1));
-			putBuffer(ringbuffer, buffer, true);
+			putBuffer(ring2, buffer, true);
 		}
 		return buffer;
 	}
 
 	/**
-	 * @param ringbuffer
+	 * @param ring2
 	 * @param buffer
 	 */
-	private void putBuffer(final RingBuffer ringbuffer, final byte[] buffer,
+	private void putBuffer(final RingBuffer ring2, final byte[] buffer,
 			final boolean expectedSuccess) {
 		final String message = expectedSuccess ? "Expected success putting buffer into ring."
 				: "Expected failure putting buffer into full ring.";
 		if (expectedSuccess) {
-			assertTrue(message, ringbuffer.tryPutBuffer(buffer));
+			assertTrue(message, ring2.tryPutBuffer(buffer));
 		} else {
-			assertFalse(message, ringbuffer.tryPutBuffer(buffer));
+			assertFalse(message, ring2.tryPutBuffer(buffer));
 		}
 	}
 
@@ -114,8 +117,8 @@ public final class RingBufferTest {// NOPMD
 	 */
 	@Before
 	public void setUp() {
-		ring = new RingBuffer();
-		emptyRing = new RingBuffer(true);
+		ring = ringFactory.create();
+		emptyRing = ringFactory.create(true);
 	}
 
 	/**
@@ -136,7 +139,7 @@ public final class RingBufferTest {// NOPMD
 	public void testGetAvailableBuffers() {
 		assertEquals("Expected all buffers to be available.",
 				RingBuffer.NUMBER_BUFFERS, ring.getAvailableBuffers());
-		final byte[] buffer = RingBuffer.freshBuffer();
+		final byte[] buffer = ringFactory.freshBuffer();
 		for (int i = 0; i < RingBuffer.NUMBER_BUFFERS; i++) {
 			putBuffer(ring, buffer, true);
 			assertUsedBuffers(ring, i + 1);
@@ -172,8 +175,8 @@ public final class RingBufferTest {// NOPMD
 	 */
 	@Test
 	public void testPut() throws InterruptedException {
-		final byte[] out = RingBuffer.freshBuffer();
-		byte[] buffer = RingBuffer.freshBuffer();
+		final byte[] out = ringFactory.freshBuffer();
+		byte[] buffer = ringFactory.freshBuffer();
 		this.clear(ring);
 		for (int i = 0; i < RingBuffer.NUMBER_BUFFERS / 2; i++) {
 			Arrays.fill(buffer, (byte) i);
@@ -226,7 +229,8 @@ public final class RingBufferTest {// NOPMD
 
 	static class Getter implements Callable<byte[]> {
 		private transient final RingBuffer ring;
-		private static final byte[] buffer = RingBuffer.freshBuffer();
+		private static final byte[] buffer = GuiceInjector
+				.getRingBufferFactory().freshBuffer();
 
 		Getter(final RingBuffer ring) {
 			this.ring = ring;
@@ -239,6 +243,9 @@ public final class RingBufferTest {// NOPMD
 	}
 
 	static class Putter implements Callable<Boolean> {
+
+		private transient final RingBufferFactory ringFactory = GuiceInjector
+				.getRingBufferFactory();
 
 		private transient final RingBuffer ring;
 
@@ -253,7 +260,7 @@ public final class RingBufferTest {// NOPMD
 			Boolean rval = Boolean.FALSE;
 			try {
 				Thread.sleep(this.msecToSleep);
-				final boolean result = ring.tryPutBuffer(RingBuffer
+				final boolean result = ring.tryPutBuffer(ringFactory
 						.freshBuffer());
 				rval = Boolean.valueOf(result);
 			} catch (InterruptedException ie) {

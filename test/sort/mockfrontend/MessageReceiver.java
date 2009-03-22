@@ -1,5 +1,6 @@
 package test.sort.mockfrontend;
 
+import injection.GuiceInjector;
 import jam.comm.PacketTypes;
 import jam.global.GoodThread;
 import jam.sort.RingBuffer;
@@ -56,8 +57,8 @@ public class MessageReceiver extends GoodThread {
 	 */
 	@Override
 	public void run() {
-		final DatagramPacket packet = new DatagramPacket(
-				new byte[RingBuffer.BUFFER_SIZE], RingBuffer.BUFFER_SIZE);
+		final DatagramPacket packet = new DatagramPacket(GuiceInjector
+				.getRingBufferFactory().freshBuffer(), RingBuffer.BUFFER_SIZE);
 		Future<?> eventGenerator = null;
 		while (checkState()) {
 			try {

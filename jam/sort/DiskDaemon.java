@@ -1,5 +1,6 @@
 package jam.sort;
 
+import injection.GuiceInjector;
 import jam.sort.stream.EventException;
 import jam.util.NumberUtilities;
 
@@ -305,7 +306,8 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 */
 	private void writeLoop() throws IOException {
 		final NumberUtilities numberUtilities = NumberUtilities.getInstance();
-		final byte[] buffer = RingBuffer.freshBuffer();
+		final byte[] buffer = GuiceInjector.getRingBufferFactory()
+				.freshBuffer();
 		final int offset = buffer.length - 2;
 		/*
 		 * checkState() waits until state is STOP (return value=false) or RUN

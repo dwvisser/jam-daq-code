@@ -518,7 +518,8 @@ public class SortDaemon extends GoodThread {
 	public void sortOnline() throws Exception {// NOPMD
 		final RingInputStream ringInputStream = new RingInputStream();
 		final int[] eventData = new int[eventSize];
-		final byte[] buffer = RingBuffer.freshBuffer();
+		final byte[] buffer = GuiceInjector.getRingBufferFactory()
+				.freshBuffer();
 		while (true) { // loop while acquisition on
 			/* Get a new buffer and make an input stream out of it. */
 			if (ringBuffer.isCloseToFull()) {

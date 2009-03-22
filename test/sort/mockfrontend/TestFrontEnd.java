@@ -67,7 +67,7 @@ public class TestFrontEnd extends JFrame {
 					10205);
 			jdAddress.setText(jamData.toString());
 			final InetSocketAddress jamMessageReceive = new InetSocketAddress(
-					localhost, 5005);
+					localhost, 5006);
 			jmrAddress.setText(jamMessageReceive.toString());
 			final MessageSender sender = new MessageSender(eventsSent,
 					buffersSent, console, frontEndSocket, jamData,
