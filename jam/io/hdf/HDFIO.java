@@ -17,6 +17,7 @@ import jam.data.func.NoFunction;
 import jam.global.JamStatus;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
+import jam.util.AbstractSwingWorker;
 import jam.util.FileUtilities;
 
 import java.awt.Frame;
@@ -31,7 +32,6 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 
 import com.google.inject.Inject;
 
@@ -998,9 +998,9 @@ public final class HDFIO implements DataIO {
 			final List<HistogramAttributes> histAttributeList) {
 		uiMessage = "";
 		uiErrorMsg = "";
-		final SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>() {
+		final AbstractSwingWorker worker = new AbstractSwingWorker() {
 			@Override
-			public Object doInBackground() {
+			public Object construct() {
 				// FIXME KBS Test change thread priority to make monitor pop up
 				// sooner
 				Thread.yield();
@@ -1043,7 +1043,7 @@ public final class HDFIO implements DataIO {
 
 			/* Runs on the event-dispatching thread. */
 			@Override
-			public void done() {
+			public void finished() {
 				if (uiErrorMsg.length() > 0) {
 					LOGGER.severe(uiErrorMsg);
 				}
@@ -1052,7 +1052,7 @@ public final class HDFIO implements DataIO {
 				}
 			}
 		};
-		worker.execute();
+		worker.start();
 	}
 
 	/*
@@ -1063,16 +1063,16 @@ public final class HDFIO implements DataIO {
 			final boolean wrtSettings) {
 		this.uiMessage = "";
 		this.uiErrorMsg = "";
-		final SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>() {
+		final AbstractSwingWorker worker = new AbstractSwingWorker() {
 			@Override
-			public Object doInBackground() {
+			public Object construct() {
 				HDFIO.this.asyncWriteFile(file, groups, histograms, writeData,
 						wrtSettings);
 				return null;
 			}
 
 			@Override
-			public void done() {
+			public void finished() {
 				if (HDFIO.this.uiErrorMsg.length() == 0) {
 					LOGGER.info(uiMessage);
 				} else {
@@ -1080,7 +1080,7 @@ public final class HDFIO implements DataIO {
 				}
 			}
 		};
-		worker.execute();
+		worker.start();
 	}
 
 	private static final List<AbstractHistogram> EMPTY_HIST_LIST = Collections

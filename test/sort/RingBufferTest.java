@@ -39,6 +39,10 @@ public final class RingBufferTest {// NOPMD
 	private transient final RingBufferFactory ringFactory = GuiceInjector
 			.getRingBufferFactory();
 
+	private transient final String expectedClassName = GuiceInjector
+			.getVersion().isJ2SE6() ? "jam.sort.LinkedBlockingDequeRingBuffer"
+			: "jam.sort.SimpleRingBuffer";
+
 	/**
 	 * @param output
 	 *            result of getBuffer
@@ -119,6 +123,16 @@ public final class RingBufferTest {// NOPMD
 	public void setUp() {
 		ring = ringFactory.create();
 		emptyRing = ringFactory.create(true);
+	}
+
+	/**
+	 * Test that we have the expected implementation of the RingBuffer interface
+	 * given the version of JRE that is present.
+	 */
+	@Test
+	public void testCorrectRingBufferClassForJRE() {
+		final String actualClassName = ring.getClass().getName();
+		assertEquals(actualClassName, expectedClassName);
 	}
 
 	/**

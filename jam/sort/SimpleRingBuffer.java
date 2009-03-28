@@ -31,19 +31,12 @@ public final class SimpleRingBuffer implements RingBuffer {
 	private transient int posGet = 0;
 
 	/**
-	 * Creates a new ring buffer.
-	 */
-	public SimpleRingBuffer() {
-		this(false);
-	}
-
-	/**
 	 * Constructor.
 	 * 
 	 * @param empty
 	 *            whether to create a zero-capacity buffer or not.
 	 */
-	public SimpleRingBuffer(boolean empty) {
+	protected SimpleRingBuffer(final boolean empty) {
 		super();
 		buffer = empty ? new byte[0][0] : new byte[NUMBER_BUFFERS][BUFFER_SIZE];
 	}

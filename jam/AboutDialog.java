@@ -1,5 +1,7 @@
 package jam;
 
+import injection.GuiceInjector;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -46,7 +48,7 @@ public class AboutDialog {
 		final Border border = new EmptyBorder(20, 20, 20, 20);
 		pcenter.setBorder(border);
 		cad.add(pcenter, BorderLayout.CENTER);
-		pcenter.add(new JLabel("Jam v" + Version.getInstance().getName(),
+		pcenter.add(new JLabel("Jam v" + GuiceInjector.getVersion().getName(),
 				SwingConstants.CENTER));
 		pcenter.add(new JLabel("by", SwingConstants.CENTER));
 		pcenter.add(new JLabel("Ken Swartz, Dale Visser, and John Baris",

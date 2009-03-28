@@ -118,13 +118,16 @@ public class Help extends JDialog {
 	 * 
 	 * @param licenseReader
 	 *            responsible for getting the license text
+	 * @param jamVersion
+	 *            the jam version object
 	 */
 	@Inject
-	public Help(final JFrame frame, final LicenseReader licenseReader) {
+	public Help(final JFrame frame, final LicenseReader licenseReader,
+			final Version jamVersion) {
 		super(frame, "University of Illinois/NCSA Open Source License", true);
 		layoutLicenseDialog(licenseReader);
 		final String defaultVal = "notseen";
-		final String version = Version.getInstance().getName();
+		final String version = jamVersion.getName();
 		final String key = "license";
 		final Preferences helpnode = Preferences.userNodeForPackage(getClass());
 		if (frame.isVisible() && !version.equals(helpnode.get(key, defaultVal))) {

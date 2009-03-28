@@ -50,6 +50,8 @@ public class LoadFit {
 
 	private transient final Frame jamMain;
 
+	private transient final RuntimeSubclassIdentifier rtsi;
+
 	/**
 	 * Create the fit routine loading dialog.
 	 * 
@@ -59,12 +61,15 @@ public class LoadFit {
 	 *            plot display
 	 * @param broadcaster
 	 *            broadcasts state changes
+	 * @param rtsi
+	 *            for finding fit classes
 	 */
 	@Inject
 	public LoadFit(final JFrame frame, final PlotDisplay display,
-			final Broadcaster broadcaster) {
+			final Broadcaster broadcaster, final RuntimeSubclassIdentifier rtsi) {
 		super();
 		this.broadcaster = broadcaster;
+		this.rtsi = rtsi;
 		jamMain = frame;
 		this.display = display;
 		final String dialogName = "Load Fit Routine";
@@ -110,8 +115,6 @@ public class LoadFit {
 	private Object[] getFitClasses() {
 		final String package1 = "jam.fit";
 		final String package2 = "fit";
-		final RuntimeSubclassIdentifier rtsi = RuntimeSubclassIdentifier
-				.getSingletonInstance();
 		final Set<Class<? extends AbstractFit>> set = rtsi.find(package1,
 				AbstractFit.class, false);
 		set.addAll(rtsi.find(package2, AbstractFit.class, false));

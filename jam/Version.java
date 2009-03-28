@@ -1,11 +1,14 @@
 package jam;
 
+import com.google.inject.Singleton;
+
 /**
  * Constants representing which version of Jam this is.
  * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
- * @version 30 Dec 2003
+ * @version 30 December 2003
  */
+@Singleton
 public final class Version {
 
 	/*
@@ -21,18 +24,21 @@ public final class Version {
 	/**
 	 * Incremented whenever work starts on new features to be included in a
 	 * future release. Normally, these go into a new development branch, so that
-	 * "subminor" level fixes, etc. may go into the current release without
+	 * "sub-minor" level fixes, etc. may go into the current release without
 	 * committing users to the new, untested stuff yet.
 	 */
 	private static final String MINOR = "@MINOR@";
 
 	/**
-	 * Incremented every time a bugfix or patch is performed for release back to
-	 * the users.
+	 * Incremented every time a bug fix or patch is performed for release back
+	 * to the users.
 	 */
 	private static final String RELEASE = "@RELEASE@";
 
 	private static final String PLATFORM = System.getProperty("os.name");
+
+	private static final String JRE_VERSION = System
+			.getProperty("java.version");
 
 	private static final StringBuffer NAME = new StringBuffer(); // NOPMD
 	static {
@@ -40,25 +46,20 @@ public final class Version {
 				.append(RELEASE).append('-').append(PLATFORM);
 	}
 
-	private static final Version INSTANCE = new Version();
-
-	private Version() {
-		super();
-	}
-
-	/**
-	 * 
-	 * @return the only instance of this class
-	 */
-	static public Version getInstance() {
-		return INSTANCE;
-	}
-
 	/**
 	 * @return a string representing the build version of Jam running
 	 */
 	public String getName() {
 		return NAME.toString();
+	}
+
+	/**
+	 * @return whether we are running on J2SE 6 or greater
+	 */
+	public boolean isJ2SE6() {
+		final String[] parts = JRE_VERSION.split("\\.");
+		final int minor = Integer.parseInt(parts[1]);
+		return minor >= 6;
 	}
 
 }

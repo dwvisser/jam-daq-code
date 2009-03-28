@@ -318,7 +318,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 			try {
 				ringBuffer.getBuffer(buffer);
 			} catch (InterruptedException e) {
-				throw new IOException(e);
+				throw new IOException(e.getMessage());
 			}
 			bos.write(buffer);
 			bufferCount++;

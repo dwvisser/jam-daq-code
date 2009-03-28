@@ -1,10 +1,12 @@
 package injection;
 
 import jam.JamInitialization;
+import jam.Version;
 import jam.commands.CommandManager;
 import jam.commands.Commandable;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
+import jam.global.RuntimeSubclassIdentifier;
 import jam.io.AbstractImpExp;
 import jam.io.hdf.HDFIO;
 import jam.plot.Action;
@@ -137,6 +139,20 @@ public final class GuiceInjector {
 	 */
 	public static RingBufferFactory getRingBufferFactory() {
 		return injector.getInstance(RingBufferFactory.class);
+	}
+
+	/**
+	 * @return the subclass identifier helper object
+	 */
+	public static RuntimeSubclassIdentifier getRuntimeSubclassIdentifier() {
+		return injector.getInstance(RuntimeSubclassIdentifier.class);
+	}
+
+	/**
+	 * @return the jam version object
+	 */
+	public static Version getVersion() {
+		return injector.getInstance(Version.class);
 	}
 
 }

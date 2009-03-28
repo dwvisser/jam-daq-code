@@ -22,6 +22,8 @@ import java.util.zip.ZipEntry;
 
 import javax.swing.JOptionPane;
 
+import com.google.inject.Singleton;
+
 /**
  * This utility class is looking for all the classes implementing or inheriting
  * from a given interface or class. (RunTime Subclass Identification)
@@ -29,14 +31,13 @@ import javax.swing.JOptionPane;
  * @author <a href="mailto:daniel@satlive.org">Daniel Le Berre</a>
  * @version 1.0
  */
+@Singleton
 public final class RuntimeSubclassIdentifier {
 
 	private static final String CLASS_EXT = ".class";
 
 	private static final ClassLoader DEF_LOADER = ClassLoader
 			.getSystemClassLoader();
-
-	private static final RuntimeSubclassIdentifier instance = new RuntimeSubclassIdentifier();
 
 	private static final Logger LOGGER = Logger
 			.getLogger(RuntimeSubclassIdentifier.class.getPackage().getName());
@@ -98,14 +99,6 @@ public final class RuntimeSubclassIdentifier {
 		return temp;
 	}
 
-	/**
-	 * 
-	 * @return the unique singleton instance of this class
-	 */
-	static public RuntimeSubclassIdentifier getSingletonInstance() {
-		return instance;
-	}
-
 	private static String jarEntryToClassname(final ZipEntry entry,
 			final String starts) {
 		final String entryname = entry.getName();
@@ -116,29 +109,6 @@ public final class RuntimeSubclassIdentifier {
 			classname = classname.replace('/', '.');
 		}
 		return classname;
-	}
-
-	/**
-	 * Find all valid instantiatable subclasses of the given classname. The
-	 * first argument is the classname, and it is assumed the whole classpath
-	 * will be searched if no other argument is given. If a second argument is
-	 * given, the first argument is the package to search.
-	 * 
-	 * @param args
-	 *            the command-line arguments
-	 */
-	public static void main(final String[] args) {
-		final String usage = "Usage: java RTSI [<package>] <subclass>";
-		final int minargs = 1;
-		if (args.length > minargs) {
-			instance.find(args[0], args[1], true);
-		} else {
-			if (args.length == minargs) {
-				instance.find(args[0], true);
-			} else {
-				LOGGER.info(usage);
-			}
-		}
 	}
 
 	private transient final String rtsiName;

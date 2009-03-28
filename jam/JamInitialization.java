@@ -69,20 +69,29 @@ public final class JamInitialization {
 	 *            initial histograms
 	 * @param aars
 	 *            AcquisitionAndRunState instance
+	 * @param version
+	 *            jam version
 	 */
 	@Inject
 	public JamInitialization(final JFrame frame, final JamStatus status,
 			final JamProperties properties, final Broadcaster broadcaster,
 			final MenuBar menuBar, final CommandManager commandManager,
 			final ToolBar jamToolBar, final SelectionAndDisplayPanel sdPanel,
-			final InitialHistograms initHists, final AcquisitionAndRunState aars) {
+			final InitialHistograms initHists,
+			final AcquisitionAndRunState aars, final Version version) {
 		this.frame = frame;
 		this.properties = properties;
 		broadcaster.addObserver(aars);
 		loadIcon();
 		final Container contents = this.frame.getContentPane();
 		contents.setLayout(new BorderLayout());
-		LOGGER.info("Welcome to Jam v" + Version.getInstance().getName());
+		LOGGER.info("Welcome to Jam v" + version.getName());
+		if (version.isJ2SE6()) {
+			LOGGER.info("You are running on J2SE 6 or later. Good!");
+		} else {
+			LOGGER
+					.warning("You are running on J2SE 5. Consider upgrading to J2SE 6 for better multi-thread performance.");
+		}
 		contents.add(jamToolBar, BorderLayout.NORTH);
 		this.frame.setJMenuBar(menuBar.getMenuBar());
 		contents.add(sdPanel, BorderLayout.CENTER);

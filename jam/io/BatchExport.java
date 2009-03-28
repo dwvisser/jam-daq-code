@@ -4,6 +4,7 @@ import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.RuntimeSubclassIdentifier;
 import jam.ui.ExtensionFileFilter;
 import jam.util.CollectionsUtil;
 import jam.util.FileUtilities;
@@ -90,6 +91,8 @@ public final class BatchExport extends JDialog implements Observer {
 
 	private transient final JFrame frame;
 
+	private transient final RuntimeSubclassIdentifier rtsi;
+
 	/**
 	 * Constructs a new batch histogram exporter.
 	 * 
@@ -99,13 +102,16 @@ public final class BatchExport extends JDialog implements Observer {
 	 *            dialog for selecting histograms to export
 	 * @param broadcaster
 	 *            broadcasts state changes
+	 * @param rtsi
+	 *            for identifying export classes
 	 */
 	@Inject
 	public BatchExport(final JFrame frame,
 			final SelectHistogramDialog selectHistogram,
-			final Broadcaster broadcaster) {
+			final Broadcaster broadcaster, final RuntimeSubclassIdentifier rtsi) {
 		super(frame, "Batch Histogram Export");
 		this.frame = frame;
+		this.rtsi = rtsi;
 		broadcaster.addObserver(this);
 		buildGUI();
 		setupHistChooser();
@@ -233,9 +239,8 @@ public final class BatchExport extends JDialog implements Observer {
 
 	private List<AbstractImpExp> createExportList() {
 		final List<AbstractImpExp> rval = new ArrayList<AbstractImpExp>();
-		final Set<Class<? extends AbstractImpExp>> set = jam.global.RuntimeSubclassIdentifier
-				.getSingletonInstance().find("jam.io", AbstractImpExp.class,
-						false);
+		final Set<Class<? extends AbstractImpExp>> set = rtsi.find("jam.io",
+				AbstractImpExp.class, false);
 		set.remove(AbstractImpExp.class);
 		for (Class<? extends AbstractImpExp> temp : set) {
 			final AbstractImpExp impExp = GuiceInjector.getInstance(temp);

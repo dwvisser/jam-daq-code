@@ -271,8 +271,8 @@ abstract class AbstractSetup {
 	 */
 	private Set<Class<?>> getClasses(final String inPackage,
 			final Class<?> inClass) {
-		final RuntimeSubclassIdentifier classFinder = RuntimeSubclassIdentifier
-				.getSingletonInstance();
+		final RuntimeSubclassIdentifier classFinder = GuiceInjector
+				.getRuntimeSubclassIdentifier();
 		final Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(
 				classFinder.find(inPackage, inClass, false));
 		lhs.remove(inClass);

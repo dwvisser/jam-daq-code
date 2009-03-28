@@ -1,5 +1,6 @@
 package jam.sort.control;
 
+import injection.GuiceInjector;
 import jam.data.Factory;
 import jam.data.Group;
 import jam.global.JamException;
@@ -26,6 +27,9 @@ final class SortChooser extends JComboBox {
 	private transient AbstractSortRoutine sortRoutine;
 
 	private transient final List<Class<? extends AbstractSortRoutine>> listClasses = new ArrayList<Class<? extends AbstractSortRoutine>>();
+
+	private transient final RuntimeSubclassIdentifier rtsi = GuiceInjector
+			.getRuntimeSubclassIdentifier();
 
 	SortChooser() {
 		super();
@@ -71,9 +75,8 @@ final class SortChooser extends JComboBox {
 		try {
 			if (userSpecifiedPath) {
 				synchronized (this) {
-					sortRoutine = (AbstractSortRoutine) RuntimeSubclassIdentifier
-							.getSingletonInstance().loadClass(classPath,
-									sortClass.getName()).newInstance();
+					sortRoutine = (AbstractSortRoutine) rtsi.loadClass(
+							classPath, sortClass.getName()).newInstance();
 				}
 			} else {// use default loader
 				/* we call loadClass() in order to guarantee latest version */
@@ -161,9 +164,9 @@ final class SortChooser extends JComboBox {
 	 *            class path
 	 * @return set of available sort routines
 	 */
-	private Set<Class<? extends AbstractSortRoutine>> findSortClasses(final File path) {
-		return RuntimeSubclassIdentifier.getSingletonInstance().find(path,
-				AbstractSortRoutine.class);
+	private Set<Class<? extends AbstractSortRoutine>> findSortClasses(
+			final File path) {
+		return rtsi.find(path, AbstractSortRoutine.class);
 	}
 
 	/**
@@ -173,8 +176,6 @@ final class SortChooser extends JComboBox {
 	 */
 	private Set<Class<? extends AbstractSortRoutine>> findSortClassesDefault() {
 		final Set<Class<? extends AbstractSortRoutine>> set = new LinkedHashSet<Class<? extends AbstractSortRoutine>>();
-		final RuntimeSubclassIdentifier rtsi = RuntimeSubclassIdentifier
-				.getSingletonInstance();
 		set.addAll(rtsi.find("help", AbstractSortRoutine.class, true));
 		set.addAll(rtsi.find("sort", AbstractSortRoutine.class, true));
 		return set;

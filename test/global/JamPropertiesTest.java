@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import jam.global.JamProperties;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -38,10 +38,14 @@ public final class JamPropertiesTest {// NOPMD
 		System.setProperty("jam.home", tmpDir);
 		final Properties properties = new Properties();
 		properties.put(testProp, testValue);
+		FileOutputStream output = null;
 		try {
-			final FileWriter writer = new FileWriter(out);
-			properties.store(writer, "JamProperties Test");
-			writer.close();
+			output = new FileOutputStream(out);
+			try {
+				properties.store(output, "JamProperties Test");
+			} finally {
+				output.close();
+			}
 		} catch (IOException e) {
 			System.err.println(e.getLocalizedMessage());// NOPMD
 		}

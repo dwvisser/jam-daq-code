@@ -1,5 +1,7 @@
 package jam;
 
+import injection.GuiceInjector;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -131,7 +133,7 @@ class SplashWindow extends JWindow {
 		east.add(osi);
 		final JPanel panelSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		final JLabel versionLabel = new JLabel("v. "
-				+ Version.getInstance().getName(), SwingConstants.RIGHT);
+				+ GuiceInjector.getVersion().getName(), SwingConstants.RIGHT);
 		panelSouth.add(versionLabel);
 		panelSouth.setBackground(Color.CYAN);
 		panelSouth.setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1,
