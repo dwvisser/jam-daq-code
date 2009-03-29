@@ -14,18 +14,30 @@
 <executableName>bin\Jam.exe</executableName>
 <iconLocation>nukeicon32.png</iconLocation>
 <initialMemoryHeap>8388608</initialMemoryHeap>
-<mainClassName>jam.JamMain</mainClassName>
+<mainClassName>jam.Main</mainClassName>
 <maximumMemoryHeap>209715200</maximumMemoryHeap>
 <maximumVersion></maximumVersion>
-<minimumVersion>1.4.2</minimumVersion>
+<minimumVersion>1.5.0</minimumVersion>
 <skeletonName>Windowed Wrapper</skeletonName>
 <skeletonProperties>
 <key>Message</key>
-<value>This program needs Java 1.4.2 or greater to run.
+<value>This program needs Java 1.5.0 or greater to run.
 Please download it at http://www.java.com</value>
 </skeletonProperties>
 <skeletonProperties>
-<key>PressKey</key>
+<key>URL</key>
+<value></value>
+</skeletonProperties>
+<skeletonProperties>
+<key>SingleProcess</key>
+<value>0</value>
+</skeletonProperties>
+<skeletonProperties>
+<key>SingleInstance</key>
+<value>0</value>
+</skeletonProperties>
+<skeletonProperties>
+<key>JniSmooth</key>
 <value>0</value>
 </skeletonProperties>
 <skeletonProperties>

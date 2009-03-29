@@ -4,6 +4,7 @@
     <property name="base.dir" value="." />
     <property name="build.dir" value="${user.home}/jambuild" />
     <property name="copy.dir" value="${build.dir}/copy" />
+    <property name="release.dir" value="${build.dir}/release" />
 	<property name="ndoc.dir" value="${build.dir}/ndoclet" />
     <property name="APIbase.dir" value="${build.dir}/APItemp" />
     <property name="API.dir" value="${APIbase.dir}/help/API" />
@@ -14,6 +15,13 @@
 	<property name = "MAJOR" value="2" />
 	<property name = "MINOR" value="4" />
 	<property name = "RELEASE" value="17" />
+	<property name = "java.latest" value = "1.6.0_07" />
+	<property name = "jam.version" value = "${MAJOR}.${MINOR}.${RELEASE}" />
+	<property name="jam.jar" value="jam-${jam.version}.jar" />
+	<property name="fulljam.jar" value="${build.dir}/${jam.jar}" />
+	<property name="src.zip" value="jam-${jam.version}-src.zip"/>
+	<property name="fullsrc.zip" value="${build.dir}/${src.zip}"/>
+	<property name="jam.zip" value="jam-${jam.version}.zip" />
 	<property name = "SOURCE_GUID" value="858b9da7-5471-4c5e-bc12-15ad987aebdc" />
 	<property name = "LIB_GUID" value="e7c01541-daf8-4198-b56f-6d0cdccc7bd7" />
 	<property name = "BIN_GUID" value="f9ed19ba-bc1c-4dda-9855-7d30176f118f" />
@@ -45,7 +53,7 @@
     	<copy todir="${APIbase.dir}">
     		<fileset dir = "${copy.dir}" includes = "help/**/*" />
     	</copy>
-        <jar destfile="${build.dir}/jam-${MAJOR}.${MINOR}.${RELEASE}.jar">
+        <jar destfile="${fulljam.jar}">
         	<fileset dir="${copy.dir}"
                      excludes="*.html,**/*/*.db,*.jnlp,*.xml,*.jardesc,*.jar,help,help/**/*,test,test/**/*,WINpackage,WINpackage/*,jam\**\*.java,jam\**\*.chk,jam\**\*.bak,.classpath,.project,classes/**/*,sampledata/*"
         	/>
@@ -71,7 +79,7 @@
 	</target>
 
     <target name="srczip" depends="copy">
-        <zip zipfile="${build.dir}/jam-${MAJOR}.${MINOR}.${RELEASE}-src.zip"
+        <zip zipfile="${fullsrc.zip}"
             basedir="${copy.dir}"
             includes="jam\**\*.java,jam\**\*.png,jam\**\*.gif, *.txt,jam/**/*.html,help\**\*,sampledata\**\*,test\**\*,injection\**\*"
         />    
@@ -147,25 +155,46 @@
     	</javac>
     </target> 	
     
-
    	<target name="x-platform" depends="jar,srczip"
-    description="Compile source into class jar, help jar and source zip" />
-
+    description="Compile source into class jar, help jar and source zip">
+   		<copy todir="${release.dir}">
+    	 	<fileset dir="${build.dir}" includes="${jam.jar}" />
+    	 	<fileset dir="${build.dir}" includes="${src.zip}" />
+    	 	<fileset dir="${copy.dir}" includes="jh.jar" />
+    	 	<fileset dir="${copy.dir}" includes="guice-1.0.jar" />
+    	 	<fileset dir="${copy.dir}" includes="aopalliance.jar" />
+   		</copy>
+  		<copy todir="${release.dir}">
+  			<fileset dir="${base.dir}/launch" includes="jam.*" />
+            <filterset>
+    			<filter token="jam.jar" value="${jam.jar}" />
+    			<filter token="java.latest" value="${java.latest}" />
+           	</filterset>
+  		</copy>
+  		<copy todir="${release.dir}">
+  			<fileset dir="${base.dir}/readme" includes="readme.txt" />
+  		</copy>
+        <zip 
+        	zipfile="${release.dir}/${jam.zip}" 
+        	basedir="${release.dir}" 
+        	includes="*.jar,jam.*,readme.txt" 
+        />    
+ 	</target>
+	
     <target name="windows" depends="x-platform"
     description="Make Windows executables">
     	<copy todir="${winlib}">
-    	 	<fileset dir="${build.dir}" includes="jam-${MAJOR}.${MINOR}.${RELEASE}-lib.jar, jam-${MAJOR}.${MINOR}.${RELEASE}-help.jar" />
+    	 	<fileset dir="${build.dir}" includes="${jam.jar}" />
     	 	<fileset dir="${copy.dir}" includes="jh.jar" />
+    	 	<fileset dir="${copy.dir}" includes="guice-1.0.jar" />
+    	 	<fileset dir="${copy.dir}" includes="aopalliance.jar" />
     	</copy>
-    	<copy todir="${windows}" file="${build.dir}/jam-${MAJOR}.${MINOR}.${RELEASE}-src.zip" />
-    	
+    	<copy todir="${windows}" file="${src.zip}" />
     	<copy todir="${windows}" flatten="true">
     		<fileset dir="${copy.dir}/WINpackage" includes="*.*" />
     	</copy>
     	<jsmoothgen project="${windows}/build.jsmooth" 
-      		skeletonroot="C:\\Program Files\\JSmooth 0.9.9-7\\skeletons"/>
-    	<jsmoothgen project="${windows}/help.jsmooth" 
-      		skeletonroot="C:\\Program Files\\JSmooth 0.9.9-7\\skeletons"/>
+      		skeletonroot="C:\\Program Files (x86)\\JSmooth 0.9.9-7\\skeletons"/>
     </target>
     
     <target name="all" depends="windows" />
