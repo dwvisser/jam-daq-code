@@ -92,13 +92,17 @@ final class Plot1d extends AbstractPlot {
 	private transient final List<Integer> overlayNumber = Collections
 			.synchronizedList(new ArrayList<Integer>());
 
+	private transient final NumberUtilities numberUtilities;
+
 	/**
 	 * Constructor.
 	 * 
 	 */
 	@Inject
-	Plot1d(final PlotSelection plotSelection) {
+	Plot1d(final PlotSelection plotSelection,
+			final NumberUtilities numberUtilities) {
 		super(plotSelection);
+		this.numberUtilities = numberUtilities;
 		setPeakFind(PlotPreferences.PREFS.getBoolean(
 				PlotPreferences.AUTO_PEAK_FIND, true));
 	}
@@ -138,7 +142,7 @@ final class Plot1d extends AbstractPlot {
 		size = new Size(hist.getSizeX(), hist.getSizeY());
 		if (type == HistogramType.ONE_DIM_INT) {
 			final int[] temp = ((HistInt1D) hist).getCounts();
-			counts = NumberUtilities.getInstance().intToDoubleArray(temp);
+			counts = this.numberUtilities.intToDoubleArray(temp);
 		} else {// must be floating point
 			counts = ((HistDouble1D) hist).getCounts();
 		}
@@ -357,7 +361,7 @@ final class Plot1d extends AbstractPlot {
 		final HistogramType hoType = hOver.getType();
 		if (hoType == HistogramType.ONE_DIM_INT) {
 			final int[] countsInt = ((HistInt1D) hOver).getCounts();
-			ctOver = NumberUtilities.getInstance().intToDoubleArray(countsInt);
+			ctOver = this.numberUtilities.intToDoubleArray(countsInt);
 		} else {// (hoType == Histogram.Type.ONE_D_DOUBLE)
 			ctOver = new double[sizex];
 			System.arraycopy(((HistDouble1D) hOver).getCounts(), 0, ctOver, 0,

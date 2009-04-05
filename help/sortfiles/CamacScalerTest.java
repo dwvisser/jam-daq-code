@@ -5,8 +5,8 @@ import jam.data.HistInt1D;
 import jam.data.HistInt2D;
 import jam.data.Monitor;
 import jam.data.Scaler;
-import jam.sort.SortException;
 import jam.sort.AbstractSortRoutine;
+import jam.sort.SortException;
 
 /**
  * Sort file for 3 singles channels of data
@@ -25,25 +25,25 @@ public class CamacScalerTest extends AbstractSortRoutine {// NOPMD
 	private transient HistInt1D hCh0, hCh1, hCh2, hCh3, hCh4;
 	private transient HistInt1D hCh5; // TAC from detector #1
 	private transient HistInt1D hCh6; // TAC from detector #2
-	private transient HistInt1D ampgate_p1;
-	private transient HistInt1D ampgate_p2;
-	private transient HistInt1D ampgate_r1;
-	private transient HistInt1D ampgate_r2;
-	private transient HistInt2D GevsTAC1;
-	private transient HistInt2D GevsTAC2;
-	private transient HistInt1D ampgatespectra_1;
-	private transient HistInt1D ampgatespectra_2;
-	private transient HistInt1D rejGe_p1;
-	private transient HistInt1D rejGe_p2;
-	private transient HistInt1D rejGe_r1;
-	private transient HistInt1D rejGe_r2;
+	private transient HistInt1D ampGateP1;
+	private transient HistInt1D apgGateP2;
+	private transient HistInt1D ampGateR1;
+	private transient HistInt1D ampGateR2;
+	private transient HistInt2D gevsTAC1;
+	private transient HistInt2D gevsTAC2;
+	private transient HistInt1D ampGateSpectrum1;
+	private transient HistInt1D ampGateSpectrum2;
+	private transient HistInt1D rejectGeP1;
+	private transient HistInt1D rejectGeP2;
+	private transient HistInt1D rejectGeR1;
+	private transient HistInt1D rejectGeR2;
 
-	private transient Gate tacgate_p1; // prompt TAC peak from detector #1
-	private transient Gate tacgate_r1; // random TAC region from detector #1
-	private transient Gate tacgate_p2; // prompt TAC peak from detector #2
-	private transient Gate tacgate_r2; // random TAC region from detector #2
-	private transient Gate ampgate_1;// gates on Ge #1 to generate TAC
-	private transient Gate ampgate_2;// gates on Ge #2 to generate TAC
+	private transient Gate tacGateP1; // prompt TAC peak from detector #1
+	private transient Gate tacGateR1; // random TAC region from detector #1
+	private transient Gate tacCateP2; // prompt TAC peak from detector #2
+	private transient Gate tacGateR2; // random TAC region from detector #2
+	private transient Gate ampGate1;// gates on Ge #1 to generate TAC
+	private transient Gate ampGate2;// gates on Ge #2 to generate TAC
 
 	// event position id's
 	private transient int idCh0, idCh1, idCh2, idCh4, idCh5;
@@ -72,13 +72,13 @@ public class CamacScalerTest extends AbstractSortRoutine {// NOPMD
 		// create histogram
 		hCh0 = createHist1D(8192, "Ge #1", "Ge signal from detector #1");
 		hCh1 = createHist1D(8192, "Ge #2", "Ge signal from detector #2");
-		rejGe_p1 = createHist1D(8192, "Ge #1 after reject:P",
+		rejectGeP1 = createHist1D(8192, "Ge #1 after reject:P",
 				"Ge signal from detector #1 after rejection from prompt");
-		rejGe_p2 = createHist1D(8192, "Ge #2 after reject:P",
+		rejectGeP2 = createHist1D(8192, "Ge #2 after reject:P",
 				"Ge signal from detector #2 after rejection from prompt");
-		rejGe_r1 = createHist1D(8192, "Ge #1 after reject:R",
+		rejectGeR1 = createHist1D(8192, "Ge #1 after reject:R",
 				"Ge signal from detector #1 after rejection from random");
-		rejGe_r2 = createHist1D(8192, "Ge #2 after reject:R",
+		rejectGeR2 = createHist1D(8192, "Ge #2 after reject:R",
 				"Ge signal from detector #2 after rejection from random");
 		hCh2 = createHist1D(8192, "Pulser #1",
 				"Pulser signal through detector #1");
@@ -87,47 +87,47 @@ public class CamacScalerTest extends AbstractSortRoutine {// NOPMD
 		hCh4 = createHist1D(8192, "Direct_Pulser", "Direct pulser signal");
 		hCh5 = createHist1D(8192, "TAC #1", "TAC signal from detector #1");
 		hCh6 = createHist1D(8192, "TAC #2", "TAC signal from detector #2");
-		ampgate_p1 = createHist1D(8192, "AmpGatePrompt #1",
+		ampGateP1 = createHist1D(8192, "AmpGatePrompt #1",
 				"Ampl Gate Prompt from detector #1");
-		ampgate_p2 = createHist1D(8192, "AmpGatePrompt #2",
+		apgGateP2 = createHist1D(8192, "AmpGatePrompt #2",
 				"Ampl Gate Prompt from detector #2");
-		ampgate_r1 = createHist1D(8192, "AmpGateRandom #1",
+		ampGateR1 = createHist1D(8192, "AmpGateRandom #1",
 				"Ampl Gate Random from detector #1");
-		ampgate_r2 = createHist1D(8192, "AmpGateRandom #2",
+		ampGateR2 = createHist1D(8192, "AmpGateRandom #2",
 				"Ampl Gate Random from detector #2");
-		GevsTAC1 = createHist2D(512, 128, "Ampl vs TAC #1", "Ampl vs TAC #1",
+		gevsTAC1 = createHist2D(512, 128, "Ampl vs TAC #1", "Ampl vs TAC #1",
 				"TAC #1", "Ampl");
-		GevsTAC2 = createHist2D(512, 128, "Ampl vs TAC #2", "Ampl vs TAC #2",
+		gevsTAC2 = createHist2D(512, 128, "Ampl vs TAC #2", "Ampl vs TAC #2",
 				"TAC #2", "Ampl");
-		ampgatespectra_1 = createHist1D(8192, "TAC from Ge #1",
+		ampGateSpectrum1 = createHist1D(8192, "TAC from Ge #1",
 				"TAC signal from gate on Ge #1");
-		ampgatespectra_2 = createHist1D(8192, "TAC from Ge #2",
+		ampGateSpectrum2 = createHist1D(8192, "TAC from Ge #2",
 				"TAC signal from gate on Ge #2");
 
-		tacgate_p1 = new Gate("Prompt TAC peak from detector #1", hCh5);
-		tacgate_r1 = new Gate("Random TAC region from detector #1", hCh5);
-		tacgate_p2 = new Gate("Prompt TAC peak from detector #2", hCh6);
-		tacgate_r2 = new Gate("Random TAC region from detector #2", hCh6);
+		tacGateP1 = new Gate("Prompt TAC peak from detector #1", hCh5);
+		tacGateR1 = new Gate("Random TAC region from detector #1", hCh5);
+		tacCateP2 = new Gate("Prompt TAC peak from detector #2", hCh6);
+		tacGateR2 = new Gate("Random TAC region from detector #2", hCh6);
 
-		ampgate_1 = new Gate("Gate for TAC 0", hCh0);
-		ampgate_2 = new Gate("Gate for TAC 1", hCh1);
+		ampGate1 = new Gate("Gate for TAC 0", hCh0);
+		ampGate2 = new Gate("Gate for TAC 1", hCh1);
 
-		new Gate("Gate for TAC", ampgatespectra_1);
-		new Gate("Gate for TAC", ampgatespectra_2);
+		new Gate("Gate for TAC", ampGateSpectrum1);
+		new Gate("Gate for TAC", ampGateSpectrum2);
 
 		new Gate("Gate for Energy 0", hCh0);
 		new Gate("Gate for Energy 1", hCh1);
 
-		new Gate("Gate for Energy 1", ampgate_p1);
-		new Gate("Gate for Energy 2", ampgate_p2);
+		new Gate("Gate for Energy 1", ampGateP1);
+		new Gate("Gate for Energy 2", apgGateP2);
 
 		new Gate("Narrow", hCh2);
 		new Gate("Narrow", hCh3);
 		new Gate("Wide", hCh2);
 		new Gate("Wide", hCh3);
 
-		new Gate("Gate for Energy", rejGe_p1);
-		new Gate("Gate for Energy", rejGe_p2);
+		new Gate("Gate for Energy", rejectGeP1);
+		new Gate("Gate for Energy", rejectGeP2);
 
 		final Scaler sPulser = createScaler("Direct pulser", 0);
 
@@ -209,26 +209,26 @@ public class CamacScalerTest extends AbstractSortRoutine {// NOPMD
 			hCh0.inc(eCh0);
 			hCh1.inc(eCh4);
 
-			this.incrementIfInGate(tacgate_p1, ampgate_p1, eCh0, eCh1);
-			this.incrementIfInGate(tacgate_r1, ampgate_r1, eCh0, eCh1);
-			this.incrementIfInGate(tacgate_p2, ampgate_p2, eCh4, eCh5);
-			this.incrementIfInGate(tacgate_r2, ampgate_r2, eCh4, eCh5);
-			this.incrementIfInGate(ampgate_1, ampgatespectra_1, eCh1, eCh0);
-			this.incrementIfInGate(ampgate_2, ampgatespectra_2, eCh5, eCh4);
-			if (!tacgate_p1.inGate(eCh1)) {
-				rejGe_p1.inc(eCh0);
+			this.incrementIfInGate(tacGateP1, ampGateP1, eCh0, eCh1);
+			this.incrementIfInGate(tacGateR1, ampGateR1, eCh0, eCh1);
+			this.incrementIfInGate(tacCateP2, apgGateP2, eCh4, eCh5);
+			this.incrementIfInGate(tacGateR2, ampGateR2, eCh4, eCh5);
+			this.incrementIfInGate(ampGate1, ampGateSpectrum1, eCh1, eCh0);
+			this.incrementIfInGate(ampGate2, ampGateSpectrum2, eCh5, eCh4);
+			if (!tacGateP1.inGate(eCh1)) {
+				rejectGeP1.inc(eCh0);
 			}
 
-			if (!tacgate_p2.inGate(eCh5)) {
-				rejGe_p2.inc(eCh4);
+			if (!tacCateP2.inGate(eCh5)) {
+				rejectGeP2.inc(eCh4);
 			}
 
-			if (!tacgate_r1.inGate(eCh1)) {
-				rejGe_r1.inc(eCh0);
+			if (!tacGateR1.inGate(eCh1)) {
+				rejectGeR1.inc(eCh0);
 			}
 
-			if (!tacgate_r2.inGate(eCh5)) {
-				rejGe_r2.inc(eCh4);
+			if (!tacGateR2.inGate(eCh5)) {
+				rejectGeR2.inc(eCh4);
 			}
 		} else {
 			hCh2.inc(eCh0);
@@ -237,10 +237,10 @@ public class CamacScalerTest extends AbstractSortRoutine {// NOPMD
 		}
 		// increment the 2d spectra
 		if (eCh1 > 0) {
-			GevsTAC1.inc(eCh1 >> 4, eCh0 >> 6);
+			gevsTAC1.inc(eCh1 >> 4, eCh0 >> 6);
 		}
 		if (eCh5 > 0) {
-			GevsTAC2.inc(eCh5 >> 4, eCh4 >> 6);
+			gevsTAC2.inc(eCh5 >> 4, eCh4 >> 6);
 		}
 
 	}

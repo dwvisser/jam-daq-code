@@ -1,6 +1,7 @@
 package jam.fit;
 
 import static javax.swing.SwingConstants.RIGHT;
+import injection.GuiceInjector;
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
 import jam.data.HistDouble1D;
@@ -82,6 +83,9 @@ public abstract class AbstractFit implements Fit {
 	protected transient FitConsole textInfo;
 
 	protected transient int upperLimit;
+
+	private static final NumberUtilities NUMUTIL = GuiceInjector
+			.getNumberUtilities();
 
 	/**
 	 * Class constructor.
@@ -230,8 +234,7 @@ public abstract class AbstractFit implements Fit {
 						.getCurrentHistogram();
 				if (hist1d.getType() == HistogramType.ONE_DIM_INT) {
 					final int[] temp = ((HistInt1D) hist1d).getCounts();
-					AbstractFit.this.counts = NumberUtilities.getInstance()
-							.intToDoubleArray(temp);
+					AbstractFit.this.counts = NUMUTIL.intToDoubleArray(temp);
 				} else {
 					AbstractFit.this.counts = ((HistDouble1D) hist1d)
 							.getCounts();
@@ -342,7 +345,7 @@ public abstract class AbstractFit implements Fit {
 		if (histogram != null && histogram.getDimensionality() == 1) {
 			if (histogram.getType() == HistogramType.ONE_DIM_INT) {
 				final int[] temp = ((HistInt1D) histogram).getCounts();
-				counts = NumberUtilities.getInstance().intToDoubleArray(temp);
+				counts = NUMUTIL.intToDoubleArray(temp);
 			} else if (histogram.getType() == HistogramType.ONE_D_DOUBLE) {
 				counts = ((HistDouble1D) histogram).getCounts();
 			}

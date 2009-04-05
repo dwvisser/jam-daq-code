@@ -9,6 +9,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.ui.SelectionTree;
+import jam.util.NumberUtilities;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -69,6 +70,8 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 
 	private transient double x2lo, x2hi;
 
+	private transient final NumberUtilities numberUtilities;
+
 	/**
 	 * Constructs a gain shift dialog.
 	 * 
@@ -79,11 +82,14 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 	 *            application status
 	 * @param broadcaster
 	 *            broadcasts state changes
+	 * @param numberUtilities
+	 *            number utility object
 	 */
 	@Inject
 	public GainShift(final Frame frame, final JamStatus status,
-			final Broadcaster broadcaster) {
+			final Broadcaster broadcaster, final NumberUtilities numberUtilities) {
 		super(frame, "Gain Shift 1-D Histogram", false, broadcaster);
+		this.numberUtilities = numberUtilities;
 		chan1i = 0.0;
 		chan2i = 1.0;
 		chan1f = 0.0;
@@ -301,11 +307,9 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 		} else {
 			getCoefficients();
 		}
-		final jam.util.NumberUtilities numbers = jam.util.NumberUtilities
-				.getInstance();
 		/* Get input histogram. */
 		final HistogramType oneDi = HistogramType.ONE_DIM_INT;
-		final double[] countsIn = (hfrom.getType() == oneDi) ? numbers
+		final double[] countsIn = (hfrom.getType() == oneDi) ? this.numberUtilities
 				.intToDoubleArray(((jam.data.HistInt1D) hfrom).getCounts())
 				: ((jam.data.HistDouble1D) hfrom).getCounts();
 		final double[] errIn = hfrom.getErrors();
@@ -319,7 +323,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 		final double[] errOut = errorGainShift(errIn, intercept1, slope1,
 				intercept2, slope2, hto.getErrors().length);
 		if (hto.getType() == oneDi) {
-			hto.setCounts(numbers.doubleToIntArray(out));
+			hto.setCounts(this.numberUtilities.doubleToIntArray(out));
 		} else {
 			hto.setCounts(out);
 		}

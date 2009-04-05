@@ -305,7 +305,8 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 * you see a end of run marker, then inform controller.
 	 */
 	private void writeLoop() throws IOException {
-		final NumberUtilities numberUtilities = NumberUtilities.getInstance();
+		final NumberUtilities numberUtilities = GuiceInjector
+				.getNumberUtilities();
 		final byte[] buffer = GuiceInjector.getRingBufferFactory()
 				.freshBuffer();
 		final int offset = buffer.length - 2;
@@ -318,7 +319,9 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 			try {
 				ringBuffer.getBuffer(buffer);
 			} catch (InterruptedException e) {
-				throw new IOException(e.getMessage());
+				// Not using IOException(Throwable) constructor to retain
+				// J2SE 5 compatibility.
+				throw new IOException(e.getMessage());// NOPMD
 			}
 			bos.write(buffer);
 			bufferCount++;

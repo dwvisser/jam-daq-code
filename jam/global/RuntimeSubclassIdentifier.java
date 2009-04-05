@@ -17,7 +17,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
 import javax.swing.JOptionPane;
@@ -38,9 +37,6 @@ public final class RuntimeSubclassIdentifier {
 
 	private static final ClassLoader DEF_LOADER = ClassLoader
 			.getSystemClassLoader();
-
-	private static final Logger LOGGER = Logger
-			.getLogger(RuntimeSubclassIdentifier.class.getPackage().getName());
 
 	private static final String PERIOD = ".";
 
@@ -200,32 +196,6 @@ public final class RuntimeSubclassIdentifier {
 	}
 
 	/**
-	 * Display all the classes inheriting or implementing a given class in the
-	 * currently loaded packages.
-	 * 
-	 * @param tosubclassname
-	 *            the name of the class to inherit from
-	 * @param recurse
-	 *            whether to recurse into subfolders
-	 */
-	private void find(final String tosubclassname, final boolean recurse) {
-		final Class<?> tosubclass = resolveClass(tosubclassname);
-		if (tosubclass != null) {
-			final Package[] pcks = Package.getPackages();
-			LOGGER.info("Packages:");
-			for (int i = 0; i < pcks.length; i++) {
-				LOGGER.info("\t" + pcks[i].getName());
-			}
-			for (int i = 0; i < pcks.length; i++) {
-				for (Class<?> clazz : find(pcks[i].getName(), tosubclass,
-						recurse)) {
-					LOGGER.info("Found class: " + clazz.getName());
-				}
-			}
-		}
-	}
-
-	/**
 	 * @param <T>
 	 *            class to find implememtors of
 	 * @return a set of unique classes that can have instances and are
@@ -264,30 +234,6 @@ public final class RuntimeSubclassIdentifier {
 					rtsiName, JOptionPane.ERROR_MESSAGE);
 		}
 		return rval;
-	}
-
-	/**
-	 * Display all the classes inheriting or implementing a given class in a
-	 * given package.
-	 * 
-	 * @param pckname
-	 *            the fully qualified name of the package
-	 * @param tosubclassname
-	 *            the name of the class to inherit from
-	 * @param recurse
-	 *            try all sub-packages as well if true
-	 */
-	private void find(final String pckname, final String tosubclassname,
-			final boolean recurse) {
-		final Class<?> tosubclass = resolveClass(tosubclassname);
-		final Set<Class<?>> result = new LinkedHashSet<Class<?>>();
-		result.addAll(find(pckname, tosubclass, recurse));
-		LOGGER.info("Find classes assignable as " + tosubclass.getName()
-				+ " in \"" + pckname + "\"");
-		for (Class<?> clazz : result) {
-			LOGGER.info("\t" + clazz.getName());
-		}
-		LOGGER.info("done.");
 	}
 
 	/**
@@ -487,17 +433,5 @@ public final class RuntimeSubclassIdentifier {
 					JOptionPane.ERROR_MESSAGE);
 		}
 		return rval;
-	}
-
-	private Class<?> resolveClass(final String name) {
-		Class<?> tosubclass = null;
-		try {
-			tosubclass = Class.forName(name);
-		} catch (ClassNotFoundException ex) {
-			JOptionPane.showMessageDialog(null,
-					"Class " + name + " not found!", rtsiName,
-					JOptionPane.ERROR_MESSAGE);
-		}
-		return tosubclass;
 	}
 }

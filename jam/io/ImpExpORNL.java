@@ -58,8 +58,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 
 	private transient ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
 
-	private static final NumberUtilities NUM_UTIL = NumberUtilities
-			.getInstance();
+	private transient final NumberUtilities numberUtilities;
 
 	private transient int totalHist; // number of histograms
 
@@ -80,6 +79,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 
 	private transient int[] iDnumber; // ID list
 
+	private transient final FileUtilities fileUtilities;
+
 	private static final String[] EXTS = { "his", "drr" };
 
 	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
@@ -88,10 +89,17 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	/**
 	 * @param frame
 	 *            application frame
+	 * @param fileUtilities
+	 *            the file utility object
+	 * @param numberUtilities
+	 *            number utility object
 	 */
 	@Inject
-	public ImpExpORNL(final Frame frame) {
+	public ImpExpORNL(final Frame frame, final FileUtilities fileUtilities,
+			final NumberUtilities numberUtilities) {
 		super(frame);
+		this.fileUtilities = fileUtilities;
+		this.numberUtilities = numberUtilities;
 	}
 
 	@Override
@@ -145,8 +153,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		try {
 			AbstractHistogram.clearList(); // clear current list of histograms
 			readDrr(buffin); // read the drr file
-			final FileUtilities fileUtil = FileUtilities.getInstance();
-			final String fileNameHis = fileUtil.changeExtension(
+			final String fileNameHis = this.fileUtilities.changeExtension(
 					getFileName(getLastFile()), "*.his", FileUtilities.FORCE);
 			/* open .his file random access, read only */
 			final RandomAccessFile fileHis = new RandomAccessFile(new File(
@@ -195,7 +202,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		getCorrectByteOrder(numHistByte);
 		msg.append("file byte order: ").append(byteOrder);
 		LOGGER.info(msg.toString());
-		totalHist = NUM_UTIL.bytesToInt(numHistByte, 0, byteOrder); // number of
+		totalHist = numberUtilities.bytesToInt(numHistByte, 0, byteOrder); // number
+																			// of
 		// histograms
 		numHalfWords = readInt(disDrr); // total number of 16 bit words
 		readIgnoredSection(disDrr);
@@ -324,7 +332,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	 * @param numHistByte
 	 */
 	private void getCorrectByteOrder(final byte[] numHistByte) {
-		if (!isCorrectByteOrder(NUM_UTIL.bytesToInt(numHistByte, 0, byteOrder))) {
+		if (!isCorrectByteOrder(numberUtilities.bytesToInt(numHistByte, 0,
+				byteOrder))) {
 			if (byteOrder == ByteOrder.BIG_ENDIAN) {
 				byteOrder = ByteOrder.LITTLE_ENDIAN;
 			} else {
@@ -380,13 +389,15 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 		if (wordCh == 2) { // four byte data
 			int offset = 0;
 			for (int i = 0; i < sizeX; i++) {
-				counts[i] = NUM_UTIL.bytesToInt(inBuffer, offset, byteOrder);
+				counts[i] = numberUtilities.bytesToInt(inBuffer, offset,
+						byteOrder);
 				offset += 4;
 			}
 		} else if (wordCh == 1) { // two byte data
 			int offset = 0;
 			for (int i = 0; i < sizeX; i++) {
-				counts[i] = NUM_UTIL.bytesToShort(inBuffer, offset, byteOrder);
+				counts[i] = numberUtilities.bytesToShort(inBuffer, offset,
+						byteOrder);
 				offset += 2;
 			}
 		} else { // unable to handle data type
@@ -425,8 +436,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			int offset = 0;
 			for (int j = 0; j < sizeY; j++) {
 				for (int i = 0; i < sizeX; i++) {
-					counts2d[i][j] = NUM_UTIL.bytesToInt(inBuffer, offset,
-							byteOrder);
+					counts2d[i][j] = numberUtilities.bytesToInt(inBuffer,
+							offset, byteOrder);
 					offset += 4;
 				}
 			}
@@ -434,8 +445,8 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			int offset = 0;
 			for (int j = 0; j < sizeY; j++) {
 				for (int i = 0; i < sizeX; i++) {
-					counts2d[i][j] = NUM_UTIL.bytesToShort(inBuffer, offset,
-							byteOrder);
+					counts2d[i][j] = numberUtilities.bytesToShort(inBuffer,
+							offset, byteOrder);
 					offset += 2;
 				}
 			}
@@ -459,11 +470,10 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	public void writeHist(final OutputStream ignored,
 			final AbstractHistogram hist) throws ImpExpException {
 		try {
-			final FileUtilities fileUtil = FileUtilities.getInstance();
-			final String fileNameHis = fileUtil.changeExtension(getLastFile()
-					.getName(), ".his", FileUtilities.FORCE);
-			final String fileNameDRR = fileUtil.changeExtension(getLastFile()
-					.getName(), ".drr", FileUtilities.FORCE);
+			final String fileNameHis = this.fileUtilities.changeExtension(
+					getLastFile().getName(), ".his", FileUtilities.FORCE);
+			final String fileNameDRR = this.fileUtilities.changeExtension(
+					getLastFile().getName(), ".drr", FileUtilities.FORCE);
 			final File parent = getLastFile().getParentFile();
 			final File fileHis = new File(parent, fileNameHis);
 			final FileOutputStream fosHis = new FileOutputStream(fileHis);
@@ -665,13 +675,13 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 	private int readInt(final DataInput dataInput) throws IOException {
 		final byte[] rval = new byte[4];
 		dataInput.readFully(rval);
-		return NUM_UTIL.bytesToInt(rval, 0, byteOrder);
+		return numberUtilities.bytesToInt(rval, 0, byteOrder);
 	}
 
 	private short readShort(final DataInput dataInput) throws IOException {
 		final byte[] rval = new byte[2];
 		dataInput.readFully(rval);
-		return NUM_UTIL.bytesToShort(rval, 0, byteOrder);
+		return numberUtilities.bytesToShort(rval, 0, byteOrder);
 	}
 
 	@Override
@@ -703,10 +713,9 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 			}
 			if (inFile != null) { // if Open file was not canceled
 				setLastFile(inFile);
-				final FileUtilities fileUtil = FileUtilities.getInstance();
 				final File drrFile = (inFile.getName().endsWith("his")) ? new File(
-						inFile.getParent(), fileUtil.changeExtension(inFile
-								.getName(), "drr", FileUtilities.FORCE))
+						inFile.getParent(), this.fileUtilities.changeExtension(
+								inFile.getName(), "drr", FileUtilities.FORCE))
 						: inFile;
 				final FileInputStream inStream = new FileInputStream(drrFile);
 				InputStream inBuffStream = null;

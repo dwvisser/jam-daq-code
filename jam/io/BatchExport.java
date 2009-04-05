@@ -93,6 +93,8 @@ public final class BatchExport extends JDialog implements Observer {
 
 	private transient final RuntimeSubclassIdentifier rtsi;
 
+	private transient final FileUtilities fileUtilities;
+
 	/**
 	 * Constructs a new batch histogram exporter.
 	 * 
@@ -104,14 +106,19 @@ public final class BatchExport extends JDialog implements Observer {
 	 *            broadcasts state changes
 	 * @param rtsi
 	 *            for identifying export classes
+	 * @param fileUtilities
+	 *            the file utility object
 	 */
 	@Inject
 	public BatchExport(final JFrame frame,
 			final SelectHistogramDialog selectHistogram,
-			final Broadcaster broadcaster, final RuntimeSubclassIdentifier rtsi) {
+			final Broadcaster broadcaster,
+			final RuntimeSubclassIdentifier rtsi,
+			final FileUtilities fileUtilities) {
 		super(frame, "Batch Histogram Export");
 		this.frame = frame;
 		this.rtsi = rtsi;
+		this.fileUtilities = fileUtilities;
 		broadcaster.addObserver(this);
 		buildGUI();
 		setupHistChooser();
@@ -274,9 +281,8 @@ public final class BatchExport extends JDialog implements Observer {
 
 	private File createExportFile(final String dir, final String groupName,
 			final String histName, final String extension) {
-		final FileUtilities fileUtil = FileUtilities.getInstance();
-		final String fullFileName = fileUtil.changeExtension(histName.trim(),
-				extension, FileUtilities.APPEND_ONLY);
+		final String fullFileName = this.fileUtilities.changeExtension(histName
+				.trim(), extension, FileUtilities.APPEND_ONLY);
 		return new File(dir + File.separator + groupName, fullFileName);
 	}
 

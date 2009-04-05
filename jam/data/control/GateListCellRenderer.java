@@ -9,6 +9,8 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.UIManager;
 
+import com.google.inject.Inject;
+
 /**
  * Renders representations for a JComboBox list entry of a
  * <code>jam.data.Gate</code> object.
@@ -17,9 +19,13 @@ import javax.swing.UIManager;
  * @version 17 Dec 2003
  */
 final class GateListCellRenderer extends DefaultListCellRenderer {
-	
-	GateListCellRenderer() {
+
+	private transient final Icons icons;
+
+	@Inject
+	GateListCellRenderer(final Icons icons) {
 		super();
+		this.icons = icons;
 	}
 
 	/**
@@ -29,6 +35,7 @@ final class GateListCellRenderer extends DefaultListCellRenderer {
 	 * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList,
 	 *      java.lang.Object, int, boolean, boolean)
 	 */
+	@Override
 	public Component getListCellRendererComponent(final JList list,
 			final Object value, final int index, final boolean isSelected,
 			final boolean cellHasFocus) {
@@ -40,7 +47,6 @@ final class GateListCellRenderer extends DefaultListCellRenderer {
 			setBackground(list.getBackground());
 			setForeground(list.getForeground());
 		}
-		final Icons icons = Icons.getInstance();
 		if (value instanceof Gate) {
 			final Gate gate = (Gate) value;
 			final String name = gate.getName();

@@ -4,23 +4,28 @@ import jam.util.NumberUtilities;
 
 import java.text.NumberFormat;
 
-final class ValueAndUncertaintyFormatter {
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
-	private static final ValueAndUncertaintyFormatter INSTANCE = new ValueAndUncertaintyFormatter();
+/**
+ * Utility class for formatting numeric values and their uncertainties.
+ * 
+ * @author Dale Visser
+ * 
+ */
+@Singleton
+public final class ValueAndUncertaintyFormatter {
 
-	protected static ValueAndUncertaintyFormatter getSingletonInstance() {
-		return INSTANCE;
+	@Inject
+	ValueAndUncertaintyFormatter(final NumberUtilities numberUtilities) {
+		this.util = numberUtilities;
 	}
 
-	private ValueAndUncertaintyFormatter() {
-		// nothing to do
-	}
-
-	private static NumberUtilities util = NumberUtilities.getInstance();
+	private transient final NumberUtilities util;
 
 	/*
-	 * non-javadoc: Given an error, determines the appropriat number of fraction
-	 * digits to show.
+	 * Given an error, determines the appropriate number of fraction digits to
+	 * show.
 	 */
 	private int fractionDigits(final double err) {
 		int out;
@@ -41,8 +46,7 @@ final class ValueAndUncertaintyFormatter {
 	}
 
 	/*
-	 * non-javadoc: Given a double, returns the value of the first significant
-	 * decimal digit.
+	 * Given a double, returns the value of the first significant decimal digit.
 	 */
 	private int firstSigFig(final double value) {
 		if (value <= 0.0) {
@@ -111,8 +115,8 @@ final class ValueAndUncertaintyFormatter {
 	}
 
 	/*
-	 * non-javadoc: Given an error term determine the appropriate number of
-	 * integer digits to display.
+	 * Given an error term, determine the appropriate number of integer digits
+	 * to display.
 	 */
 	private int integerDigits(final double err) {
 		int out;

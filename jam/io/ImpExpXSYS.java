@@ -85,6 +85,8 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 
 	private transient final Broadcaster broadcaster;
 
+	private transient final NumberUtilities numberUtilities;
+
 	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
 			"dat", "TUNL's XSYS");
 
@@ -93,11 +95,15 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	 *            application frame
 	 * @param broadcaster
 	 *            broadcasts state changes
+	 * @param numberUtilities
+	 *            number utility object
 	 */
 	@Inject
-	public ImpExpXSYS(final Frame frame, final Broadcaster broadcaster) {
+	public ImpExpXSYS(final Frame frame, final Broadcaster broadcaster,
+			final NumberUtilities numberUtilities) {
 		super(frame);
 		this.broadcaster = broadcaster;
+		this.numberUtilities = numberUtilities;
 	}
 
 	@Override
@@ -325,8 +331,8 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 		buffin.readFully(tempBuff, 0, numberLongWords * L_INT);
 		for (int i = 0; i < length; i++) {
 			/* litte endian read from buffer */
-			rval[i] = NumberUtilities.getInstance().bytesToInt(tempBuff,
-					i * L_INT, ByteOrder.LITTLE_ENDIAN);
+			rval[i] = this.numberUtilities.bytesToInt(tempBuff, i * L_INT,
+					ByteOrder.LITTLE_ENDIAN);
 		}
 		return rval;
 	}
@@ -356,9 +362,8 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 		for (channelX = 0; channelX < lengthX; channelX++) {
 			for (channelY = 0; channelY < lengthY; channelY++) {
 				// little endian read from buffer
-				rval[channelX][channelY] = NumberUtilities.getInstance()
-						.bytesToInt(tempBuff, index * L_INT,
-								ByteOrder.LITTLE_ENDIAN);
+				rval[channelX][channelY] = this.numberUtilities.bytesToInt(
+						tempBuff, index * L_INT, ByteOrder.LITTLE_ENDIAN);
 				index++;
 			}
 		}

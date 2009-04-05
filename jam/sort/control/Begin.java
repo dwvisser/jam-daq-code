@@ -1,8 +1,8 @@
 package jam.sort.control;
 
+import injection.GuiceInjector;
 import jam.global.JamException;
 import jam.sort.SortException;
-import jam.ui.Icons;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -33,7 +33,7 @@ class Begin extends AbstractAction {
 		textRunTitle = text;
 		putValue(Action.NAME, "Begin Run");
 		putValue(Action.SHORT_DESCRIPTION, "Begins the next run.");
-		putValue(Action.SMALL_ICON, Icons.getInstance().BEGIN);
+		putValue(Action.SMALL_ICON, GuiceInjector.getIcons().BEGIN);
 		setEnabled(false);
 	}
 

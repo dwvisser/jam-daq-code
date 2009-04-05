@@ -22,18 +22,18 @@ public abstract class AbstractSwingWorker {
 	private static class ThreadVar {
 		private transient Thread thread;
 
-		ThreadVar(Thread newThread) {
+		ThreadVar(final Thread newThread) {
 			super();
 			thread = newThread;
 		}
 
-		Thread get() {
+		protected Thread get() {
 			synchronized (this) {
 				return thread;
 			}
 		}
 
-		void clear() {
+		protected void clear() {
 			synchronized (this) {
 				thread = null;// NOPMD
 			}

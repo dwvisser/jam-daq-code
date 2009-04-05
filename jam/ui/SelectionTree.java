@@ -58,7 +58,7 @@ public final class SelectionTree extends JPanel implements Observer {
 
 	private transient final JamStatus status;
 
-	private static final Validator validator = DataBase.getInstance();
+	private static final Validator VALIDATOR = DataBase.getInstance();
 
 	/**
 	 * Gets the current <code>Gate</code>.
@@ -67,7 +67,7 @@ public final class SelectionTree extends JPanel implements Observer {
 	 */
 	public static Nameable getCurrentGate() {
 		synchronized (LOCK) {
-			if (!validator.isValid(currentGate)) {
+			if (!VALIDATOR.isValid(currentGate)) {
 				currentGate = UnNamed.getSingletonInstance();
 			}
 			return currentGate;
@@ -82,7 +82,7 @@ public final class SelectionTree extends JPanel implements Observer {
 	 */
 	public static Nameable getCurrentHistogram() {
 		synchronized (LOCK) {
-			if (!validator.isValid(currentHistogram)) {
+			if (!VALIDATOR.isValid(currentHistogram)) {
 				currentHistogram = UnNamed.getSingletonInstance();
 			}
 			return currentHistogram;
@@ -140,10 +140,13 @@ public final class SelectionTree extends JPanel implements Observer {
 	 *            run state widget
 	 * @param broadcaster
 	 *            broadcasts state changes
+	 * @param treeCellRender
+	 *            renders the tree elements
 	 */
 	@Inject
 	public SelectionTree(final JamStatus status, final RunStateBox runStateBox,
-			final Broadcaster broadcaster) {
+			final Broadcaster broadcaster,
+			final SelectionTreeCellRender treeCellRender) {
 		super(new BorderLayout());
 		this.status = status;
 		this.broadcaster = broadcaster;
@@ -157,7 +160,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		tree = new JTree(treeModel);
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-		tree.setCellRenderer(new SelectionTreeCellRender());
+		tree.setCellRenderer(treeCellRender);
 		ToolTipManager.sharedInstance().registerComponent(tree);
 		addSelectionListener();
 		add(new JScrollPane(tree), BorderLayout.CENTER);

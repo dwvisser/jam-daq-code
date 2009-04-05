@@ -102,7 +102,7 @@ public final class RunControl extends JDialog implements Controller,
 	/**
 	 * Are we currently in a run, saving event data.
 	 */
-	private boolean runningOnline = false;
+	private transient boolean runningOnline = false;
 
 	private transient SortDaemon sortDaemon;
 

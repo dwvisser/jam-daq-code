@@ -2,7 +2,7 @@
  */
 package jam.fit;
 
-import jam.util.NumberUtilities;
+import injection.GuiceInjector;
 
 /**
  * <p>
@@ -134,6 +134,9 @@ final class Parameter<T> {
 	public boolean estimate;
 
 	private transient final Object monitor = new Object();
+
+	private static final ValueAndUncertaintyFormatter FORMATTER = GuiceInjector
+			.getValueAndUncertaintyFormatter();
 
 	Parameter(final String name, final int options) {
 		this.name = name;
@@ -346,25 +349,22 @@ final class Parameter<T> {
 					"No error term for this parameter.");
 		}
 		return "\u00b1 "
-				+ ValueAndUncertaintyFormatter.getSingletonInstance().format(
-						(Double) getValue(), getDoubleError())[1];
+				+ FORMATTER.format((Double) getValue(), getDoubleError())[1];
 	}
 
 	protected String formatValue() {
 		String temp = "Invalid Type"; // default return value
 		if (isDouble()) {
-			final ValueAndUncertaintyFormatter formatter = ValueAndUncertaintyFormatter
-					.getSingletonInstance();
 			final double doubleValue = (Double) getValue();
 			if (hasErrorBar()) {
 				final double error = getDoubleError();
-				temp = formatter.format(doubleValue, error)[0];
+				temp = FORMATTER.format(doubleValue, error)[0];
 			} else {
-				int integer = (int) NumberUtilities.getInstance().log10(
+				int integer = (int) GuiceInjector.getNumberUtilities().log10(
 						Math.abs(doubleValue));
 				integer = Math.max(integer, 1);
 				final int fraction = Math.max(4 - integer, 0);
-				temp = formatter.format(doubleValue, fraction);
+				temp = FORMATTER.format(doubleValue, fraction);
 			}
 		} else if (isInteger()) {
 			temp = getValue().toString().trim();

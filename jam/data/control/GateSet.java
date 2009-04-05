@@ -68,9 +68,12 @@ public final class GateSet extends AbstractControl {
 	 *            application frame
 	 * @param broadcaster
 	 *            broadcasts state changes
+	 * @param gateListRender
+	 *            renders the gate list elements
 	 */
 	@Inject
-	public GateSet(final Frame frame, final Broadcaster broadcaster) {
+	public GateSet(final Frame frame, final Broadcaster broadcaster,
+			final GateListCellRenderer gateListRender) {
 		super(frame, "Gate setting <none>", false, broadcaster);
 		setResizable(false);
 		final java.awt.Container contents = getContentPane();
@@ -83,7 +86,7 @@ public final class GateSet extends AbstractControl {
 		final java.awt.Dimension dimset = cgate.getPreferredSize();
 		dimset.width = 200;
 		cgate.setPreferredSize(dimset);
-		cgate.setRenderer(new GateListCellRenderer());
+		cgate.setRenderer(gateListRender);
 		cgate.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent actionEvent) {
 				final Object item = cgate.getSelectedItem();

@@ -43,10 +43,13 @@ public final class GateAdd extends AbstractControl {
 	 *            application frame
 	 * @param broadcaster
 	 *            broadcasts state changes
+	 * @param gateListRender
+	 *            a renderer for the list of gates
 	 * 
 	 */
 	@Inject
-	public GateAdd(final Frame frame, final Broadcaster broadcaster) {
+	public GateAdd(final Frame frame, final Broadcaster broadcaster,
+			final GateListCellRenderer gateListRender) {
 		super(frame, "Add Gate", false, broadcaster);
 		final Container cdadd = getContentPane();
 		setResizable(false);
@@ -56,7 +59,7 @@ public final class GateAdd extends AbstractControl {
 		ptadd.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
 		cdadd.add(ptadd, BorderLayout.CENTER);
 		cadd = new JComboBox(new GateComboBoxModel(GateComboBoxModel.Mode.ALL));
-		cadd.setRenderer(new GateListCellRenderer());
+		cadd.setRenderer(gateListRender);
 		cadd.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
 				final Object item = cadd.getSelectedItem();

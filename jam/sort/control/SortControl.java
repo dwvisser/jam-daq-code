@@ -59,37 +59,12 @@ public final class SortControl extends javax.swing.JDialog implements
 	 */
 	private transient final JButton bbrowse;
 
-	private transient final Action beginAction = new AbstractAction() {
-		{// NOPMD
-			putValue(Action.NAME, "Begin");
-			putValue(Action.SHORT_DESCRIPTION, "Begin sort of all files."
-					+ " If a sort was halted, we start over.");
-			putValue(Action.SMALL_ICON, Icons.getInstance().BEGIN);
-			setEnabled(false);
-		}
-
-		public void actionPerformed(final ActionEvent actionEvent) {
-			beginSort();
-		}
-	};
+	private transient final Action beginAction, haltAction;
 
 	/** check box for writing out events */
 	private transient final JCheckBox cout;
 
 	private transient File fileOut, lastFile, outDirectory;
-
-	private transient final Action haltAction = new AbstractAction() {
-		{// NOPMD
-			putValue(Action.NAME, "Halt");
-			putValue(Action.SHORT_DESCRIPTION, "Halt sort in process.");
-			putValue(Action.SMALL_ICON, Icons.getInstance().END);
-			setEnabled(false);
-		}
-
-		public void actionPerformed(final ActionEvent actionEvent) {
-			endSort();
-		}
-	};
 
 	/* daemon threads */
 	private transient AbstractStorageDaemon inputDaemon;
@@ -108,10 +83,13 @@ public final class SortControl extends javax.swing.JDialog implements
 	private transient final JFrame frame;
 
 	@Inject
-	protected SortControl(final JFrame frame, final JamStatus status) {
+	protected SortControl(final JFrame frame, final JamStatus status,
+			final Icons icons) {
 		super(frame, "Sorting", false);
 		this.frame = frame;
 		this.STATUS = status;
+		this.beginAction = this.createBeginAction(icons);
+		this.haltAction = this.createHaltAction(icons);
 		final String eventDefault = JamProperties.getPropString(EVENT_OUTPATH);
 		final String outDefault = JamProperties.getPropString(EVENT_OUTFILE);
 		setResizable(true);// sometimes there are long paths to files
@@ -170,6 +148,37 @@ public final class SortControl extends javax.swing.JDialog implements
 		pack();
 		lockFields(false);
 		setWriteEvents(cout.isSelected());
+	}
+
+	private AbstractAction createBeginAction(final Icons icons) {
+		return new AbstractAction() {
+			{// NOPMD
+				putValue(Action.NAME, "Begin");
+				putValue(Action.SHORT_DESCRIPTION, "Begin sort of all files."
+						+ " If a sort was halted, we start over.");
+				putValue(Action.SMALL_ICON, icons.BEGIN);
+				setEnabled(false);
+			}
+
+			public void actionPerformed(final ActionEvent actionEvent) {
+				beginSort();
+			}
+		};
+	}
+
+	private AbstractAction createHaltAction(final Icons icons) {
+		return new AbstractAction() {
+			{// NOPMD
+				putValue(Action.NAME, "Halt");
+				putValue(Action.SHORT_DESCRIPTION, "Halt sort in process.");
+				putValue(Action.SMALL_ICON, icons.END);
+				setEnabled(false);
+			}
+
+			public void actionPerformed(final ActionEvent actionEvent) {
+				endSort();
+			}
+		};
 	}
 
 	/**

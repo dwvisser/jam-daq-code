@@ -66,6 +66,8 @@ public final class Projections extends AbstractManipulation implements
 
 	private transient AbstractHistogram hto;
 
+	private transient final NumberUtilities numberUtilities;
+
 	/**
 	 * Constructs a new projections dialog.
 	 * 
@@ -76,11 +78,14 @@ public final class Projections extends AbstractManipulation implements
 	 *            application status
 	 * @param broadcaster
 	 *            broadcasts state changes
+	 * @param numberUtilities
+	 *            number utility object
 	 */
 	@Inject
 	public Projections(final Frame frame, final JamStatus status,
-			final Broadcaster broadcaster) {
+			final Broadcaster broadcaster, final NumberUtilities numberUtilities) {
 		super(frame, "Project 2D Histogram", false, broadcaster);
+		this.numberUtilities = numberUtilities;
 		setResizable(false);
 		final int hgap = 5;
 		final int vgap = 10;
@@ -317,10 +322,10 @@ public final class Projections extends AbstractManipulation implements
 		final double[][] counts2d;
 		final AbstractHistogram hfrom = AbstractHistogram
 				.getHistogram(hfromname);
-		final NumberUtilities numbers = NumberUtilities.getInstance();
 		counts2d = (hfrom.getType() == HistogramType.TWO_D_DOUBLE) ? ((HistDouble2D) hfrom)
 				.getCounts()
-				: numbers.intToDouble2DArray(((HistInt2D) hfrom).getCounts());
+				: this.numberUtilities.intToDouble2DArray(((HistInt2D) hfrom)
+						.getCounts());
 		final String name = (String) cto.getSelectedItem();
 		final Object selected = cchan.getSelectedItem();
 		final boolean between = BETWEEN.equals(selected);
@@ -329,13 +334,12 @@ public final class Projections extends AbstractManipulation implements
 		getDestinationHistogram(hfrom, name);
 		final boolean gateSelected = selected instanceof Gate;
 		final Gate gate = gateSelected ? (Gate) selected : null; // NOPMD
-		internalProject(counts2d, hfrom, numbers, limits, gateSelected, gate);
+		internalProject(counts2d, hfrom, limits, gateSelected, gate);
 	}
 
 	private void internalProject(final double[][] counts2d,
-			final AbstractHistogram hfrom, final NumberUtilities numbers,
-			final int[] limits, final boolean gateSelected, final Gate gate)
-			throws DataException {
+			final AbstractHistogram hfrom, final int[] limits,
+			final boolean gateSelected, final Gate gate) throws DataException {
 		double[] countsDouble;
 		final StringBuffer typeProj = new StringBuffer();
 		if (cdown.isSelected()) {
@@ -345,7 +349,7 @@ public final class Projections extends AbstractManipulation implements
 			countsDouble = calculateYprojection(counts2d, limits, gateSelected,
 					gate, typeProj);
 		}
-		setProjectionCounts(countsDouble, numbers);
+		setProjectionCounts(countsDouble);
 		LOGGER.info("Project " + hfrom.getFullName().trim() + " to "
 				+ hto.getFullName() + " " + typeProj);
 	}
@@ -382,12 +386,12 @@ public final class Projections extends AbstractManipulation implements
 		return countsDouble;
 	}
 
-	private void setProjectionCounts(final double[] countsDouble,
-			final NumberUtilities numbers) throws DataException {
+	private void setProjectionCounts(final double[] countsDouble)
+			throws DataException {
 		if (hto.getType() == HistogramType.ONE_D_DOUBLE) {
 			hto.setCounts(countsDouble);
 		} else if (hto.getType() == HistogramType.ONE_DIM_INT) {
-			hto.setCounts(numbers.doubleToIntArray(countsDouble));
+			hto.setCounts(this.numberUtilities.doubleToIntArray(countsDouble));
 		} else {
 			throw new DataException("Need to project to 1 dimension histogram");
 		}

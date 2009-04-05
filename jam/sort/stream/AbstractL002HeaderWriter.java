@@ -19,11 +19,11 @@ import java.util.TimeZone;
  */
 abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream {// NOPMD
 
-	private static final SimpleDateFormat formatter = new SimpleDateFormat(
+	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat(
 			"MM/dd/yy HH:mm  ", Locale.getDefault());
 
 	static {
-		formatter.setTimeZone(TimeZone.getDefault());
+		FORMATTER.setTimeZone(TimeZone.getDefault());
 	}
 
 	/**
@@ -52,8 +52,8 @@ abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream {// NO
 	public void writeHeader() throws EventException {
 		String dateString;
 		final RunInfo runInfo = RunInfo.getInstance();
-		synchronized (formatter) {
-			dateString = formatter.format(runInfo.runStartTime); // date
+		synchronized (FORMATTER) {
+			dateString = FORMATTER.format(runInfo.runStartTime); // date
 		}
 		final String title = runInfo.runTitle; // title
 		final int number = runInfo.runNumber; // header number

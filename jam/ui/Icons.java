@@ -8,20 +8,13 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import com.google.inject.Singleton;
+
 /**
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  */
+@Singleton
 public final class Icons {
-
-	private static final Icons instance = new Icons();
-
-	/**
-	 * @return the singleton instance of this class
-	 */
-	static public Icons getInstance() {
-		return instance;
-	}
-
 	/**
 	 * represents stopping
 	 */
@@ -97,7 +90,7 @@ public final class Icons {
 	 */
 	public final transient ImageIcon END;
 
-	private Icons() {
+	protected Icons() {
 		super();
 		final ClassLoader LOADER = ClassLoader.getSystemClassLoader();
 		final URL urlStop = LOADER.getResource("jam/ui/stop.png");

@@ -60,6 +60,8 @@ public class Combine extends AbstractManipulation implements Observer {
 
 	private transient final JTextField ttextto, ttimes1, ttimes2;
 
+	private transient final NumberUtilities numberUtilities;
+
 	/**
 	 * Construct a new "manipulate histograms" dialog.
 	 * 
@@ -70,12 +72,15 @@ public class Combine extends AbstractManipulation implements Observer {
 	 *            application status
 	 * @param broadcaster
 	 *            broadcasts state changes
+	 * @param numberUtilities
+	 *            number utilities
 	 * 
 	 */
 	@Inject
 	public Combine(final Frame frame, final JamStatus status,
-			final Broadcaster broadcaster) {
+			final Broadcaster broadcaster, final NumberUtilities numberUtilities) {
 		super(frame, "Manipulate 1-D Histograms", false, broadcaster);
+		this.numberUtilities = numberUtilities;
 		setResizable(false);
 		Dimension dim;
 		final int hgap = 5;
@@ -279,7 +284,7 @@ public class Combine extends AbstractManipulation implements Observer {
 
 		/* cast to int array if needed */
 		if (hto.getType() == HistogramType.ONE_DIM_INT) {
-			hto.setCounts(NumberUtilities.getInstance().doubleToIntArray(out));
+			hto.setCounts(this.numberUtilities.doubleToIntArray(out));
 		} else {
 			hto.setCounts(out);
 		}
@@ -473,8 +478,8 @@ public class Combine extends AbstractManipulation implements Observer {
 	private double[] doubleCountsArray(final AbstractHist1D hist) {
 		double[] dCounts;
 		if (hist.getType() == HistogramType.ONE_DIM_INT) {
-			dCounts = NumberUtilities.getInstance().intToDoubleArray(
-					((HistInt1D) hist).getCounts());
+			dCounts = this.numberUtilities.intToDoubleArray(((HistInt1D) hist)
+					.getCounts());
 		} else {
 			dCounts = ((HistDouble1D) hist).getCounts();
 		}

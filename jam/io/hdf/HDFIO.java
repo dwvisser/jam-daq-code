@@ -62,7 +62,7 @@ public final class HDFIO implements DataIO {
 		void completedIO(String message, String errorMessage);
 	}
 
-	private static final FileUtilities FILE_UTIL = FileUtilities.getInstance();
+	private transient final FileUtilities fileUtilities;
 
 	private static final String HDF_FILE_EXT = "hdf";
 
@@ -125,13 +125,13 @@ public final class HDFIO implements DataIO {
 
 	private transient final AsyncProgressMonitor asyncMonitor;
 
-	private static final AsyncListener doNothing = new AsyncListener() {
+	private static final AsyncListener DO_NOTHING = new AsyncListener() {
 		public void completedIO(final String message, final String errorMessage) {
 			// do nothing
 		}
 	};
 
-	private transient AsyncListener asListener = doNothing;
+	private transient AsyncListener asListener = DO_NOTHING;
 
 	private transient Group firstLoadedGroup;
 
@@ -174,16 +174,20 @@ public final class HDFIO implements DataIO {
 	 *            converts between objects and hdf
 	 * @param hdfToJam
 	 *            converts from hdf to objects
+	 * @param fileUtilities
+	 *            the file utility object
 	 */
 	@Inject
 	public HDFIO(final Frame parent, final JamStatus status,
 			final ConvertJamObjToHDFObj jamToHDF,
-			final ConvertHDFObjToJamObj hdfToJam) {
+			final ConvertHDFObjToJamObj hdfToJam,
+			final FileUtilities fileUtilities) {
 		super();
 		asyncMonitor = new AsyncProgressMonitor(parent);
 		this.jamToHDF = jamToHDF;
 		this.hdfToJam = hdfToJam;
 		this.status = status;
+		this.fileUtilities = fileUtilities;
 	}
 
 	/*
@@ -218,7 +222,7 @@ public final class HDFIO implements DataIO {
 				inHDF.readFile();
 				AbstractData.interpretBytesAll();
 				asyncMonitor.increment();
-				final String fileName = FILE_UTIL
+				final String fileName = fileUtilities
 						.removeExtensionFileName(infile.getName());
 				if (hdfToJam.hasVGroupRootGroup()) {
 					convertHDFToJam(mode, fileName, existingGrps, histAttrList);
@@ -272,7 +276,7 @@ public final class HDFIO implements DataIO {
 			// FIXME currently only add one group
 			message.append(" to groups ");
 			for (int i = 0; i < existingGrps.size(); i++) {
-				final String groupName = (existingGrps.get(0)).getName();
+				final String groupName = existingGrps.get(0).getName();
 				if (0 < i) {
 					message.append(", ");
 				}
@@ -970,7 +974,7 @@ public final class HDFIO implements DataIO {
 	 */
 	public void removeListener() {
 		synchronized (asListener) {
-			asListener = doNothing;
+			asListener = DO_NOTHING;
 		}
 	}
 
@@ -1170,11 +1174,11 @@ public final class HDFIO implements DataIO {
 		}
 		// Append .hdf to file name
 		final String path = file.getParent();
-		final String fileName = FILE_UTIL.changeExtension(file.getName(),
+		final String fileName = fileUtilities.changeExtension(file.getName(),
 				HDF_FILE_EXT, FileUtilities.APPEND_ONLY);
 		final String fileFullName = path + File.separator + fileName;
 		final File appendFile = new File(fileFullName);
-		if (FILE_UTIL.overWriteExistsConfirm(appendFile)) {
+		if (fileUtilities.overWriteExistsConfirm(appendFile)) {
 			spawnAsyncWriteFile(appendFile, groupsToUse, histsToUse, writeData,
 					wrtSettings);
 		}

@@ -23,6 +23,7 @@
  **************************************************************/
 package jam.util;
 
+import injection.GuiceInjector;
 import jam.global.LoggerConfig;
 
 import java.io.BufferedInputStream;
@@ -47,14 +48,14 @@ import java.util.logging.Logger;
  */
 public class FixEventFile {
 
-	private static final String packageName = FixEventFile.class.getPackage()
+	private static final String PACKAGENAME = FixEventFile.class.getPackage()
 			.getName();
 
 	static {
-		new LoggerConfig(packageName);
+		new LoggerConfig(PACKAGENAME);
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(packageName);
+	private static final Logger LOGGER = Logger.getLogger(PACKAGENAME);
 
 	/**
 	 * Launches the task to fix an event file.
@@ -112,7 +113,7 @@ public class FixEventFile {
 			tokenizer.nextToken();
 			String dir = tokenizer.sval;
 			LOGGER.info("Directory containing input event files: " + dir);
-			final FileUtilities fileUtil = FileUtilities.getInstance();
+			final FileUtilities fileUtil = GuiceInjector.getFileUtilities();
 			directory = fileUtil.getDir(dir);
 			tokenizer.nextToken();
 			expName = tokenizer.sval;

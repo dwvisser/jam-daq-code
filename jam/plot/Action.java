@@ -84,9 +84,9 @@ public final class Action {
 	/** Broadcaster for event and gate change */
 	private transient final Broadcaster broadcaster;
 
-	private final static String chan = "channel";
+	private final static String CHANNEL = "channel";
 
-	private final static String energy = "energy";
+	private final static String ENERGY = "energy";
 
 	private static final Logger LOGGER = Logger.getLogger(Action.class
 			.getPackage().getName());
@@ -648,11 +648,11 @@ public final class Action {
 			if (currentPlot.getDimensionality() == 1
 					&& existsAndIsCalibrated(hist)) {
 				final String mess = new StringBuffer(intro).append(cal).append(
-						space).append(energy).append(leftParen).append(space)
+						space).append(ENERGY).append(leftParen).append(space)
 						.toString();
 				textOut.messageOut(mess, MessageHandler.NEW);
 			} else {
-				final String mess = new StringBuffer(intro).append(chan)
+				final String mess = new StringBuffer(intro).append(CHANNEL)
 						.append(leftParen).append(space).toString();
 				textOut.messageOut(mess, MessageHandler.NEW);
 			}
@@ -669,23 +669,23 @@ public final class Action {
 			int xCoord = cursorBin.getX();
 			if (existsAndIsCalibrated(hist)) {
 				if (currentPlot.getDimensionality() == 1) {
-					output.append(energy).append(equal).append(
+					output.append(ENERGY).append(equal).append(
 							currentPlot.getEnergy(xCoord)).append(sep).append(
-							chan).append(equal).append(xCoord);
+							CHANNEL).append(equal).append(xCoord);
 				}
 			} else {
-				output.append(chan).append(equal).append(xCoord);
+				output.append(CHANNEL).append(equal).append(xCoord);
 			}
 			if (currentPlot.getDimensionality() == 1
 					&& existsAndIsCalibrated(hist)) {
-				output = new StringBuffer(energy).append(equal).append(xCoord);
+				output = new StringBuffer(ENERGY).append(equal).append(xCoord);
 				synchronized (this) {
 					xCoord = currentPlot.getChannel(xCoord);
 					if (xCoord > currentPlot.getSizeX()) {
 						xCoord = currentPlot.getSizeX() - 1;
 					}
 				}
-				output.append(sep).append(chan).append(equal).append(xCoord);
+				output.append(sep).append(CHANNEL).append(equal).append(xCoord);
 			}
 			final int rangeToUse = 100;
 			final int halfRange = rangeToUse / 2;

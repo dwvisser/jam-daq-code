@@ -3,6 +3,7 @@ package jam.data.control;
 import jam.data.DataParameter;
 import jam.global.Broadcaster;
 import jam.ui.ExtensionFileFilter;
+import jam.util.FileUtilities;
 
 import java.awt.Container;
 import java.awt.Dimension;
@@ -59,6 +60,8 @@ public final class ParameterControl extends AbstractControl {
 
 	private transient JTextField[] textParam;
 
+	private transient final FileUtilities fileUtilities;
+
 	/**
 	 * Constructs a new parameter dialog.
 	 * 
@@ -66,10 +69,14 @@ public final class ParameterControl extends AbstractControl {
 	 *            application frame
 	 * @param broadcaster
 	 *            broadcasts messages
+	 * @param fileUtilities
+	 *            the file utility object
 	 */
 	@Inject
-	public ParameterControl(final Frame frame, final Broadcaster broadcaster) {
+	public ParameterControl(final Frame frame, final Broadcaster broadcaster,
+			final FileUtilities fileUtilities) {
 		super(frame, "Sort Parameters", true, broadcaster);
+		this.fileUtilities = fileUtilities;
 		/* dialog box to display Parameters */
 		setResizable(true);
 		setLocation(20, 50);
@@ -343,11 +350,10 @@ public final class ParameterControl extends AbstractControl {
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fileDialog.getSelectedFile() != null) {
 			final File selectFile = fileDialog.getSelectedFile();
-			final jam.util.FileUtilities fileUtility = jam.util.FileUtilities
-					.getInstance();
-			final File outputFile = fileUtility.changeExtension(selectFile,
-					FILE_EXTENSION, jam.util.FileUtilities.APPEND_ONLY);
-			if (fileUtility.overWriteExistsConfirm(outputFile)) {
+			final File outputFile = this.fileUtilities.changeExtension(
+					selectFile, FILE_EXTENSION,
+					jam.util.FileUtilities.APPEND_ONLY);
+			if (this.fileUtilities.overWriteExistsConfirm(outputFile)) {
 				final Properties saveProperties = new Properties();
 				for (DataParameter parameter : DataParameter.getParameterList()) {
 					final String valueString = String.valueOf(parameter

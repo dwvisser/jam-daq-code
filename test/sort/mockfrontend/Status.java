@@ -14,13 +14,13 @@ package test.sort.mockfrontend;
 public class Status extends NamedTextPanel {
 	static class Value {
 
-		private static final String[] values = { "Booted", "Initialized",
+		private static final String[] VALUES = { "Booted", "Initialized",
 				"Started", "Stopped" };
 
 		private transient final String stringValue;
 
 		private Value(final int value) {
-			this.stringValue = values[value];
+			this.stringValue = VALUES[value];
 		}
 
 		public static final Value BOOTED = new Value(0);

@@ -164,7 +164,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	 * Configure the monitors, i.e. set the values their parameters according to
 	 * the input fields.
 	 */
-	void configure() {
+	protected void configure() {
 		try {
 			/* set update interval */
 			interval = ((Integer) spinnerUpdate.getValue()).intValue();

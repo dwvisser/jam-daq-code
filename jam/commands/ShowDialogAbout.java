@@ -16,7 +16,7 @@ final class ShowDialogAbout extends AbstractShowDialog {
 	 */
 	ShowDialogAbout() {
 		super("About\u2026");
-		dialog = (new AboutDialog(GuiceInjector.getFrame())).getDialog();
+		dialog = new AboutDialog(GuiceInjector.getFrame()).getDialog();
 	}
 
 }

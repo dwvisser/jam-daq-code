@@ -90,7 +90,7 @@ public final class JamProperties {
 	 */
 	private static final Properties PROPERTIES = new Properties();
 
-	private static final String userHomeDir = System.getProperty("user.home");
+	private static final String USERHOME = System.getProperty("user.home");
 
 	/**
 	 * Get the value of a boolean property.
@@ -290,7 +290,7 @@ public final class JamProperties {
 	private void loadUser() {
 		userLoadWarning = NO_WARNINGS;
 		loadError = NO_ERRORS;
-		userFile = new File(userHomeDir, FILE_USER);
+		userFile = new File(USERHOME, FILE_USER);
 		try {
 			// try userHomeDir
 			if (userFile.exists()) {
@@ -342,13 +342,13 @@ public final class JamProperties {
 			inputStream = new FileInputStream(userFile);
 			PROPERTIES.load(inputStream);
 			userLoadWarning = "Cannot find user configuration file "
-					+ FILE_USER + " in user home directory " + userHomeDir;
+					+ FILE_USER + " in user home directory " + USERHOME;
 			userLoadMessage = "Read user configuration from file "
 					+ userFile.getPath();
 			// use default properties
 		} else {
 			userLoadWarning = "Cannot find user configuration file "
-					+ FILE_USER + ", in user home directory " + userHomeDir
+					+ FILE_USER + ", in user home directory " + USERHOME
 					+ " or in current directory " + userCurrentDir;
 			userLoadMessage = "Using default user properties";
 		}
@@ -379,7 +379,7 @@ public final class JamProperties {
 	 * Load default configuration properties.
 	 */
 	private void setDefaultConfig() {
-		PROPERTIES.setProperty(JAM_HOME, (new File(userCurrentDir)).getPath());
+		PROPERTIES.setProperty(JAM_HOME, new File(userCurrentDir).getPath());
 		PROPERTIES.setProperty(HOST_IP, "localhost");
 		PROPERTIES.setProperty(HOST_PORT_SEND, "5002");
 		PROPERTIES.setProperty(HOST_PORT_RECV, "5006");
@@ -396,14 +396,14 @@ public final class JamProperties {
 		PROPERTIES.setProperty(EXP_NAME, "default_");
 		PROPERTIES.setProperty(SORT_ROUTINE, "jam.sort.Example");
 		PROPERTIES.setProperty(SORT_CLASSPATH, DEFAULT_SORTPATH);
-		PROPERTIES.setProperty(HIST_PATH, (new File(userHomeDir, "spectra"))
+		PROPERTIES.setProperty(HIST_PATH, new File(USERHOME, "spectra")
 				.getPath());
-		PROPERTIES.setProperty(EVENT_INPATH, (new File(userHomeDir, "events"))
+		PROPERTIES.setProperty(EVENT_INPATH, new File(USERHOME, "events")
 				.getPath());
-		PROPERTIES.setProperty(EVENT_OUTPATH, (new File(userHomeDir, "events"))
+		PROPERTIES.setProperty(EVENT_OUTPATH, new File(USERHOME, "events")
 				.getPath());
 		PROPERTIES.setProperty(EVENT_OUTFILE, "sortout.evn");
-		PROPERTIES.setProperty(LOG_PATH, (new File(userHomeDir)).getPath());
+		PROPERTIES.setProperty(LOG_PATH, new File(USERHOME).getPath());
 		PROPERTIES.setProperty(EVENT_INSTREAM,
 				"jam.sort.stream.YaleCAEN_InputStream");
 		PROPERTIES.setProperty(EVENT_OUTSTREAM,

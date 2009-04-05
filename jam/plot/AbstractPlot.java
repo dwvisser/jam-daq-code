@@ -332,8 +332,8 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
 
 	public AbstractHistogram getHistogram() {
 		synchronized (this) {
-			return plotHistNum < 0 ? null : AbstractHistogram
-					.getHistogram(plotHistNum);// NOPMD
+			return plotHistNum < 0 ? null : AbstractHistogram // NOPMD
+					.getHistogram(plotHistNum);
 		}
 	}
 

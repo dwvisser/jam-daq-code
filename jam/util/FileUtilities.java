@@ -4,11 +4,14 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
+import com.google.inject.Singleton;
+
 /**
  * Utility class for file dialogs.
  * 
  * @author <a href=mailto:dwvisser@users.sourceforge.net>Dale Visser </a>
  */
+@Singleton
 public final class FileUtilities {
 
 	/**
@@ -25,20 +28,6 @@ public final class FileUtilities {
 	 * Don't change the given filename.
 	 */
 	public static final int NO_CHANGE = 2;
-
-	private static final FileUtilities instance = new FileUtilities();
-
-	/**
-	 * 
-	 * @return the singleton instance
-	 */
-	public static FileUtilities getInstance() {
-		return instance;
-	}
-
-	private FileUtilities() {
-		super();
-	}
 
 	/**
 	 * Takes a file and extension and appends the extension to the file name. If

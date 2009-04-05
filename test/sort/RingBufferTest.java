@@ -132,7 +132,8 @@ public final class RingBufferTest {// NOPMD
 	@Test
 	public void testCorrectRingBufferClassForJRE() {
 		final String actualClassName = ring.getClass().getName();
-		assertEquals(actualClassName, expectedClassName);
+		assertEquals("Expected a certain class.", actualClassName,
+				expectedClassName);
 	}
 
 	/**

@@ -4,8 +4,8 @@ import jam.data.DataParameter;
 import jam.data.Gate;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
-import jam.sort.SortException;
 import jam.sort.AbstractSortRoutine;
+import jam.sort.SortException;
 
 /**
  * Sort routine for neutron counting with the aid of an anti-coincidence muon
@@ -59,7 +59,7 @@ public class YaleCAENTestSortRoutine extends AbstractSortRoutine {
 	private transient HistInt1D hSciTAC;
 
 	// Capture times gated on 2D PSD spectrum
-	private transient HistInt2D h2dnEvsTDC_PSD;
+	private transient HistInt2D eVsTdcPsd;
 
 	// Summed NaI spectra (gated on NaI TDC)
 	private transient HistInt1D hNaIsumE;
@@ -71,24 +71,24 @@ public class YaleCAENTestSortRoutine extends AbstractSortRoutine {
 	private transient HistInt2D h2dnEvsTDC;
 
 	// BC523A vetoed by scintillators or NaI
-	private transient HistInt1D hnE_NaIVeto;
-	private transient HistInt1D hnE_SciVetoE; // energy only
-	private transient HistInt1D hnE_SciVetoT; // time only
-	private transient HistInt1D hnE_SciNaIVeto; // NaI and Scintillators
+	private transient HistInt1D eNaIveto;
+	private transient HistInt1D eScintVetoEnergy; // energy only
+	private transient HistInt1D eScintVetoTime; // time only
+	private transient HistInt1D eScintNaIveto; // NaI and Scintillators
 
 	// BC523A spectrum gated on 2D PSD gate (a and b)
-	private transient HistInt1D hnE_PSDGatea;
-	private transient HistInt1D hnE_PSDGateb;
+	private transient HistInt1D ePsdGateA;
+	private transient HistInt1D ePsdGateB;
 
 	// BC523A spectrum gated on capture peak TDC (a and b)
-	private transient HistInt1D hnE_TDCGatea;
-	private transient HistInt1D hnE_TDCGateb;
+	private transient HistInt1D eTdcGateA;
+	private transient HistInt1D eTdcGateB;
 
 	// BC523A spectrum gated on 2D capture peak
-	private transient HistInt1D hnE_ETDCGate;
+	private transient HistInt1D eTdcGateCapture;
 
 	// BC523A spectrum gated on NaI 477 keV gamma-ray
-	private transient HistInt1D hnE_NaIE;
+	private transient HistInt1D eGateNaI;
 
 	// ----------------------------------------------------
 	// GATES
@@ -209,32 +209,32 @@ public class YaleCAENTestSortRoutine extends AbstractSortRoutine {
 				"Neutron E Singles vs PSD", "E", "PSD");
 		h2dnEvsTDC = createHist2D(TWO_D_CHANNELS, "E vs Cap Time",
 				"Neutron E Singles vs Capture Time", "E", "Time");
-		h2dnEvsTDC_PSD = createHist2D(TWO_D_CHANNELS, "E vs Cap Time, PSD",
+		eVsTdcPsd = createHist2D(TWO_D_CHANNELS, "E vs Cap Time, PSD",
 				"Neutron E Singles vs Capture Time, Gated on PSD Gate a", "E",
 				"Time");
 
-		hnE_NaIVeto = createHist1D(SPC_CHANNELS, "E NaI Veto",
+		eNaIveto = createHist1D(SPC_CHANNELS, "E NaI Veto",
 				"Neutron E Vetoed by NaI");
-		hnE_SciVetoE = createHist1D(SPC_CHANNELS, "E Sci Veto E",
+		eScintVetoEnergy = createHist1D(SPC_CHANNELS, "E Sci Veto E",
 				"Neutron E Vetoed by Scintillator Energy");
-		hnE_SciVetoT = createHist1D(SPC_CHANNELS, "E Sci Veto T",
+		eScintVetoTime = createHist1D(SPC_CHANNELS, "E Sci Veto T",
 				"Neutron E Vetoed by Scintillator Times");
-		hnE_SciNaIVeto = createHist1D(SPC_CHANNELS, "E NaI and Sci Veto",
+		eScintNaIveto = createHist1D(SPC_CHANNELS, "E NaI and Sci Veto",
 				"Neutron E Vetoed by NaI and Scintillators");
 
-		hnE_PSDGatea = createHist1D(SPC_CHANNELS, "E, PSD Gate a",
+		ePsdGateA = createHist1D(SPC_CHANNELS, "E, PSD Gate a",
 				"Neutron E Gated on PSD Gate a");
-		hnE_PSDGateb = createHist1D(SPC_CHANNELS, "E, PSD Gate b",
+		ePsdGateB = createHist1D(SPC_CHANNELS, "E, PSD Gate b",
 				"Neutron E Gated on PSD Gate b");
 
-		hnE_TDCGatea = createHist1D(SPC_CHANNELS, "E, Capture Gate a",
+		eTdcGateA = createHist1D(SPC_CHANNELS, "E, Capture Gate a",
 				"Neutron E Gated on Capture Gate a");
-		hnE_TDCGateb = createHist1D(SPC_CHANNELS, "E, Capture Gate b",
+		eTdcGateB = createHist1D(SPC_CHANNELS, "E, Capture Gate b",
 				"Neutron E Gated on Capture Gate b");
-		hnE_ETDCGate = createHist1D(SPC_CHANNELS, "E, 2D Capture Gate",
+		eTdcGateCapture = createHist1D(SPC_CHANNELS, "E, 2D Capture Gate",
 				"Neutron E Gated on 2D Capture Gate");
 
-		hnE_NaIE = createHist1D(SPC_CHANNELS, "E, NaIE Gate",
+		eGateNaI = createHist1D(SPC_CHANNELS, "E, NaIE Gate",
 				"Neutron E Gated on Summed Neutron Energy");
 
 		hNaIsumE = createHist1D(SPC_CHANNELS, "NaI Summed Energy",
@@ -351,18 +351,18 @@ public class YaleCAENTestSortRoutine extends AbstractSortRoutine {
 		incrementWithin2Dgates(cnE, calibnE, calibnPSD, calibnTDC);
 		// Increment neutron spectra gated on capture peak TDC (a and b)
 		if (gnTDCa.inGate(cnTDC)) {
-			hnE_TDCGatea.inc(cnE);
+			eTdcGateA.inc(cnE);
 		}
 		if (gnTDCb.inGate(cnTDC)) {
-			hnE_TDCGateb.inc(cnE);
+			eTdcGateB.inc(cnE);
 		}
 		// And 2D gate
 		if (gnEvsTDC.inGate(calibnE, calibnTDC)) {
-			hnE_ETDCGate.inc(cnE);
+			eTdcGateCapture.inc(cnE);
 		}
 		// Increment spectrum gates on 477 gamma in NaI AND in the NaI TDC
 		if (goodTimeNaITDCa && gNaIsum.inGate(calibNaIsum1d)) {
-			hnE_NaIE.inc(cnE);
+			eGateNaI.inc(cnE);
 		}
 	}
 
@@ -409,13 +409,13 @@ public class YaleCAENTestSortRoutine extends AbstractSortRoutine {
 			final int calibnPSD, final int calibnTDC) {
 		// Now increment spectra depending on 2D PSD gates
 		if (gnEvsPSDa.inGate(calibnE, calibnPSD)) {
-			hnE_PSDGatea.inc(cnE);
+			ePsdGateA.inc(cnE);
 		}
 		if (gnEvsPSDb.inGate(calibnE, calibnPSD)) {
-			hnE_PSDGateb.inc(cnE);
+			ePsdGateB.inc(cnE);
 		}
 		if (gnEvsPSDa.inGate(calibnE, calibnPSD)) {
-			h2dnEvsTDC_PSD.inc(calibnE, calibnTDC);
+			eVsTdcPsd.inc(calibnE, calibnTDC);
 		}
 	}
 
@@ -424,17 +424,17 @@ public class YaleCAENTestSortRoutine extends AbstractSortRoutine {
 			final boolean vetoSciT) {
 		// Now increment the vetoed spectra if no veto flags
 		if (!goodTimeNaITDCa) {
-			hnE_NaIVeto.inc(cnE);
+			eNaIveto.inc(cnE);
 		}
 
 		if (!vetoSciE) {
-			hnE_SciVetoE.inc(cnE);
+			eScintVetoEnergy.inc(cnE);
 		}
 		if (!vetoSciT) {
-			hnE_SciVetoT.inc(cnE);
+			eScintVetoTime.inc(cnE);
 		}
 		if (!vetoSciE && !goodTimeNaITDCa) {
-			hnE_SciNaIVeto.inc(cnE);
+			eScintNaIveto.inc(cnE);
 		}
 	}
 

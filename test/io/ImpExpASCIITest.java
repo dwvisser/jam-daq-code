@@ -8,7 +8,6 @@ import jam.data.AbstractHistogram;
 import jam.data.Group;
 import jam.io.ImpExpASCII;
 import jam.io.ImpExpException;
-import jam.util.FileUtilities;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -36,7 +35,7 @@ public final class ImpExpASCIITest {// NOPMD
 
 	private static final long HIST_SUM = 14L;
 
-	private static final String histName = "oneDtest";
+	private static final String HISTNAME = "oneDtest";
 
 	private transient ImpExpASCII impExp;
 
@@ -66,7 +65,7 @@ public final class ImpExpASCIITest {// NOPMD
 
 	private void readHistDataAndCheck(final File file) throws ImpExpException {
 		impExp.openFile(file);
-		final String groupName = FileUtilities.getInstance()
+		final String groupName = GuiceInjector.getFileUtilities()
 				.removeExtensionFileName(file.getName());
 		final Group importGroup = jam.data.Warehouse.getGroupCollection().get(
 				groupName);
@@ -83,7 +82,7 @@ public final class ImpExpASCIITest {// NOPMD
 		try {
 			temp1 = File.createTempFile(ASCIITEST, ".txt");
 			final FileWriter writer = new FileWriter(temp1);
-			writer.write(histName);
+			writer.write(HISTNAME);
 			writer.append('\n');
 			appendDataAndClose(writer);
 			temp2 = File.createTempFile(ASCIITEST, ".txt");

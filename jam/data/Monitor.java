@@ -25,21 +25,21 @@ public final class Monitor {
 	/**
 	 * List of all monitors.
 	 */
-	public static final List<Monitor> monitorList = Collections
+	public static final List<Monitor> LIST = Collections
 			.synchronizedList(new ArrayList<Monitor>());
 
 	/**
 	 * Lookup table for all monitors.
 	 */
-	public static final Map<String, Monitor> monitorTable = Collections
+	public static final Map<String, Monitor> TABLE = Collections
 			.synchronizedMap(new HashMap<String, Monitor>());
 
 	/**
 	 * Clears the list of monitors.
 	 */
 	public static void clearList() {
-		monitorTable.clear();
-		monitorList.clear();
+		TABLE.clear();
+		LIST.clear();
 	}
 
 	/**
@@ -59,7 +59,7 @@ public final class Monitor {
 	 * @return the list of monitors
 	 */
 	public static List<Monitor> getMonitorList() {
-		return Collections.unmodifiableList(monitorList);
+		return Collections.unmodifiableList(LIST);
 	}
 
 	/**
@@ -84,8 +84,8 @@ public final class Monitor {
 		clearList();
 		for (Monitor monitor : inMonList) {
 			final String name = monitor.getName();
-			monitorTable.put(name, monitor);
-			monitorList.add(monitor);
+			TABLE.put(name, monitor);
+			LIST.add(monitor);
 		}
 	}
 
@@ -169,8 +169,8 @@ public final class Monitor {
 	}
 
 	private void addToCollections() {
-		monitorTable.put(name, this);
-		monitorList.add(this);
+		TABLE.put(name, this);
+		LIST.add(this);
 	}
 
 	/**

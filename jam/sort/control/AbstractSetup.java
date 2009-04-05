@@ -159,8 +159,8 @@ abstract class AbstractSetup {
 				.getPropString(PropertyKeys.EVENT_OUTSTREAM);
 		final String defSortPath = JamProperties
 				.getPropString(PropertyKeys.SORT_CLASSPATH);
-		final boolean useDefault = (defSortPath
-				.equals(JamProperties.DEFAULT_SORTPATH));
+		final boolean useDefault = defSortPath
+				.equals(JamProperties.DEFAULT_SORTPATH);
 		final String defSortRoutine = JamProperties
 				.getPropString(PropertyKeys.SORT_ROUTINE);
 

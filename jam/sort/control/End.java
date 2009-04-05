@@ -1,6 +1,6 @@
 package jam.sort.control;
 
-import jam.ui.Icons;
+import injection.GuiceInjector;
 
 import java.awt.event.ActionEvent;
 
@@ -16,7 +16,7 @@ class End extends AbstractAction {
 		this.runControl = runControl;
 		putValue(Action.NAME, "End Run");
 		putValue(Action.SHORT_DESCRIPTION, "Ends the current run.");
-		putValue(Action.SMALL_ICON, Icons.getInstance().END);
+		putValue(Action.SMALL_ICON, GuiceInjector.getIcons().END);
 		setEnabled(false);
 	}
 

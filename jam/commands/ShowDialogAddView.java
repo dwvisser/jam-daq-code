@@ -55,11 +55,11 @@ public class ShowDialogAddView extends AbstractShowDialog {
 
 		private transient final Broadcaster broadcaster;
 
-		private static final Frame parent = null;
+		private static final Frame PARENT = null;
 
 		@Inject
 		ViewNew(final PlotDisplay display, final Broadcaster broadcaster) {
-			super(parent, "New View", false);
+			super(PARENT, "New View", false);
 			this.display = display;
 			this.broadcaster = broadcaster;
 			final Container cdnew = getContentPane();

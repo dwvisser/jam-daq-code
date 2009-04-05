@@ -23,6 +23,7 @@
  **************************************************************/
 package jam.util;
 
+import injection.GuiceInjector;
 import jam.global.LoggerConfig;
 
 import java.io.BufferedInputStream;
@@ -50,14 +51,14 @@ import java.util.logging.Logger;
  */
 public final class CheckEventFiles {
 
-	private static final String packageName = CheckEventFiles.class
+	private static final String PACKAGENAME = CheckEventFiles.class
 			.getPackage().getName();
 
 	static {
-		new LoggerConfig(packageName);
+		new LoggerConfig(PACKAGENAME);
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(packageName);
+	private static final Logger LOGGER = Logger.getLogger(PACKAGENAME);
 
 	/**
 	 * @param args
@@ -66,7 +67,7 @@ public final class CheckEventFiles {
 	public static void main(final String[] args) {
 		boolean printHelp = false;
 		if (args.length >= 2) {
-			final FileUtilities fileUtil = FileUtilities.getInstance();
+			final FileUtilities fileUtil = GuiceInjector.getFileUtilities();
 			final File file1 = fileUtil.getDir(args[0]);
 			final File file2 = fileUtil.getDir(args[1]);
 			if (file1 == null || file2 == null) {

@@ -769,7 +769,7 @@ final class Painter {
 		colors.setRange(minCount, getMaximumCounts());
 		final int[] colorThresholds = colors.getColorThresholds();
 		final int numberColors = colorThresholds.length;
-		final int textHeight = (metrics.getAscent());
+		final int textHeight = metrics.getAscent();
 		/* lowest threshold for color to be drawn */
 		drawScaleKey(minCount, colorThresholds, numberColors, textHeight);
 		/* draw colors on side */
@@ -817,7 +817,7 @@ final class Painter {
 		final int upperLimit = getMaximumCounts();
 		colors.setRange(lowerLimit, upperLimit);
 		setGraphicsFont(font);
-		final int textHeight = (metrics.getAscent());
+		final int textHeight = metrics.getAscent();
 		final DiscreteColorScale dcs = DiscreteColorScale.getScale(scale);
 		dcs.setRange(lowerLimit, upperLimit);
 		final int[] colorThresholds = dcs.getColorThresholds();

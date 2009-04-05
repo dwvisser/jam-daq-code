@@ -21,11 +21,11 @@ public final class JamPropertiesTest {// NOPMD
 
 	private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
 
-	private static final String fileName = "JamConfig.ini";
+	private static final String FILENAME = "JamConfig.ini";
 
-	private static final String testProp = "test.prop";
+	private static final String TESTPROPERTY = "test.prop";
 
-	private static final String testValue = "testing";
+	private static final String TESTVALUE = "testing";
 
 	/**
 	 * Setup for tests.
@@ -33,11 +33,11 @@ public final class JamPropertiesTest {// NOPMD
 	@Before
 	public void setUp() {
 		final String tmpDir = System.getProperty(JAVA_IO_TMPDIR);
-		final File out = new File(tmpDir, fileName);
+		final File out = new File(tmpDir, FILENAME);
 		out.deleteOnExit();
 		System.setProperty("jam.home", tmpDir);
 		final Properties properties = new Properties();
-		properties.put(testProp, testValue);
+		properties.put(TESTPROPERTY, TESTVALUE);
 		FileOutputStream output = null;
 		try {
 			output = new FileOutputStream(out);
@@ -57,7 +57,7 @@ public final class JamPropertiesTest {// NOPMD
 	@Test
 	public void test() {
 		new JamProperties();
-		assertEquals("test property not what was set", testValue, JamProperties
-				.getPropString(testProp));
+		assertEquals("test property not what was set", TESTVALUE, JamProperties
+				.getPropString(TESTPROPERTY));
 	}
 }

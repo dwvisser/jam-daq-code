@@ -139,8 +139,8 @@ public final class JamInitialization {
 	private void loadIcon() {
 		final ClassLoader loader = Thread.currentThread()
 				.getContextClassLoader();
-		this.frame.setIconImage((new ImageIcon(loader
-				.getResource("jam/nukeicon.png")).getImage()));
+		this.frame.setIconImage(new ImageIcon(loader
+				.getResource("jam/nukeicon.png")).getImage());
 	}
 
 	/**

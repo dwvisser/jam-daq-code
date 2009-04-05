@@ -39,7 +39,7 @@ abstract class AbstractManipulation extends AbstractControl {
 	/** String to append to new histogram group in combo box */
 	private final static String WILD_CARD = "/.";
 
-	private static final NameValueCollection<Group> groups = jam.data.Warehouse
+	private static final NameValueCollection<Group> GROUPS = jam.data.Warehouse
 			.getGroupCollection();
 
 	/**
@@ -70,7 +70,7 @@ abstract class AbstractManipulation extends AbstractControl {
 			// Add working group new
 			comboBox.addItem(NEW_HIST + Group.WORKING_NAME + WILD_CARD);
 			// Add new histograms
-			for (Group group : groups.getList()) {
+			for (Group group : GROUPS.getList()) {
 				if (group.getType() != Group.Type.SORT
 						&& !Group.WORKING_NAME.equals(group.getName())) {
 					comboBox.addItem(NEW_HIST + group.getName() + WILD_CARD);
@@ -78,7 +78,7 @@ abstract class AbstractManipulation extends AbstractControl {
 			}
 		}
 		/* Add Existing hisograms */
-		for (Group group : groups.getList()) {
+		for (Group group : GROUPS.getList()) {
 			for (AbstractHistogram hist : group.histograms.getList()) {
 				if (hist.getType().getDimensionality() == histDim) {
 					comboBox.addItem(hist.getFullName());
@@ -124,7 +124,7 @@ abstract class AbstractManipulation extends AbstractControl {
 			final String groupName, final String histName, final int size) {
 		Group group;
 		AbstractHistogram hist;
-		group = groups.get(groupName);
+		group = GROUPS.get(groupName);
 		if (group == null) {
 			group = Factory.createGroup(groupName, Group.Type.FILE);
 		}

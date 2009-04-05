@@ -18,7 +18,7 @@ public class SortOnlineTest {
 
 	private static Session session = OnlineTestCommon.session;
 
-	private static final String sortName = "help.sortfiles.EvsDE";
+	private static final String SORTNAME = "help.sortfiles.EvsDE";
 
 	private static HistInt1D verifyEnergyHistogramExists() {
 		final HistInt1D energy = Utility.getOneDHistogramFromSortGroup("E");
@@ -40,10 +40,10 @@ public class SortOnlineTest {
 	 */
 	@Test
 	public void testSetupOnThenCancelThenSetupOn() {// NOPMD
-		OnlineTestCommon.setupWithinTimeoutPeriod(sortName);
+		OnlineTestCommon.setupWithinTimeoutPeriod(SORTNAME);
 		verifyEnergyHistogramExists();
 		session.cancelOnline();
-		OnlineTestCommon.setupWithinTimeoutPeriod(sortName);
+		OnlineTestCommon.setupWithinTimeoutPeriod(SORTNAME);
 		verifyEnergyHistogramExists();
 	}
 
@@ -53,7 +53,7 @@ public class SortOnlineTest {
 	 */
 	@Test
 	public void testSuccessfulOnlineSort() {
-		OnlineTestCommon.setupWithinTimeoutPeriod(sortName);
+		OnlineTestCommon.setupWithinTimeoutPeriod(SORTNAME);
 		final HistInt1D energy = verifyEnergyHistogramExists();
 		session.online.start();
 		try {

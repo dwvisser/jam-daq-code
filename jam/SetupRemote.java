@@ -208,8 +208,8 @@ public class SetupRemote extends JDialog implements ActionListener,
 			textName.setText(DEFAULT_URL);
 			// lock up state
 		} else if (checkLock.equals(item)) {
-			setActive((checkLock.isSelected()));
-			lockFields((checkLock.isSelected()));
+			setActive(checkLock.isSelected());
+			lockFields(checkLock.isSelected());
 
 			if (!(checkLock.isSelected())) {
 				reset();

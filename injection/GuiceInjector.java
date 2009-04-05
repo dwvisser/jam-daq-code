@@ -4,6 +4,7 @@ import jam.JamInitialization;
 import jam.Version;
 import jam.commands.CommandManager;
 import jam.commands.Commandable;
+import jam.fit.ValueAndUncertaintyFormatter;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.RuntimeSubclassIdentifier;
@@ -14,6 +15,9 @@ import jam.plot.PlotContainer;
 import jam.script.Session;
 import jam.sort.RingBufferFactory;
 import jam.ui.ConsoleLog;
+import jam.ui.Icons;
+import jam.util.FileUtilities;
+import jam.util.NumberUtilities;
 import jam.util.StringUtilities;
 
 import javax.swing.JFrame;
@@ -28,7 +32,7 @@ import com.google.inject.Injector;
  * 
  */
 public final class GuiceInjector {
-	private static final Injector injector = Guice.createInjector(new Module());
+	private static final Injector INJECTOR = Guice.createInjector(new Module());
 
 	private GuiceInjector() {
 		// static class
@@ -38,28 +42,28 @@ public final class GuiceInjector {
 	 * @return a Session object
 	 */
 	public static Session getSession() {
-		return injector.getInstance(Session.class);
+		return INJECTOR.getInstance(Session.class);
 	}
 
 	/**
 	 * @return the Jam Frame
 	 */
 	public static JamInitialization getJamInitialization() {
-		return injector.getInstance(JamInitialization.class);
+		return INJECTOR.getInstance(JamInitialization.class);
 	}
 
 	/**
 	 * @return application status
 	 */
 	public static JamStatus getJamStatus() {
-		return injector.getInstance(JamStatus.class);
+		return INJECTOR.getInstance(JamStatus.class);
 	}
 
 	/**
 	 * @return the application frame
 	 */
 	public static JFrame getFrame() {
-		return injector.getInstance(JFrame.class);
+		return INJECTOR.getInstance(JFrame.class);
 	}
 
 	/**
@@ -70,7 +74,7 @@ public final class GuiceInjector {
 	 * @return instance
 	 */
 	public static <T extends Commandable> T getInstance(final Class<T> clazz) {
-		return injector.getInstance(clazz);
+		return INJECTOR.getInstance(clazz);
 	}
 
 	/**
@@ -81,49 +85,49 @@ public final class GuiceInjector {
 	 * @return instance
 	 */
 	public static <T extends AbstractImpExp> T getInstance(final Class<T> clazz) {
-		return injector.getInstance(clazz);
+		return INJECTOR.getInstance(clazz);
 	}
 
 	/**
 	 * @return object for reading/writing Jam HDF files
 	 */
 	public static HDFIO getHDFIO() {
-		return injector.getInstance(HDFIO.class);
+		return INJECTOR.getInstance(HDFIO.class);
 	}
 
 	/**
 	 * @return object for handling plot actions
 	 */
 	public static Action getAction() {
-		return injector.getInstance(Action.class);
+		return INJECTOR.getInstance(Action.class);
 	}
 
 	/**
 	 * @return the command manager
 	 */
 	public static CommandManager getCommandManager() {
-		return injector.getInstance(CommandManager.class);
+		return INJECTOR.getInstance(CommandManager.class);
 	}
 
 	/**
 	 * @return the broadcaster object
 	 */
 	public static Broadcaster getBroadcaster() {
-		return injector.getInstance(Broadcaster.class);
+		return INJECTOR.getInstance(Broadcaster.class);
 	}
 
 	/**
 	 * @return the console log
 	 */
 	public static ConsoleLog getConsoleLog() {
-		return injector.getInstance(ConsoleLog.class);
+		return INJECTOR.getInstance(ConsoleLog.class);
 	}
 
 	/**
 	 * @return the string utilities object
 	 */
 	public static StringUtilities getStringUtilities() {
-		return injector.getInstance(StringUtilities.class);
+		return INJECTOR.getInstance(StringUtilities.class);
 	}
 
 	/**
@@ -131,28 +135,55 @@ public final class GuiceInjector {
 	 * @return the plot container object
 	 */
 	public static PlotContainer getPlotContainer() {
-		return injector.getInstance(PlotContainer.class);
+		return INJECTOR.getInstance(PlotContainer.class);
 	}
 
 	/**
 	 * @return the ring buffer factory
 	 */
 	public static RingBufferFactory getRingBufferFactory() {
-		return injector.getInstance(RingBufferFactory.class);
+		return INJECTOR.getInstance(RingBufferFactory.class);
 	}
 
 	/**
 	 * @return the subclass identifier helper object
 	 */
 	public static RuntimeSubclassIdentifier getRuntimeSubclassIdentifier() {
-		return injector.getInstance(RuntimeSubclassIdentifier.class);
+		return INJECTOR.getInstance(RuntimeSubclassIdentifier.class);
 	}
 
 	/**
 	 * @return the jam version object
 	 */
 	public static Version getVersion() {
-		return injector.getInstance(Version.class);
+		return INJECTOR.getInstance(Version.class);
 	}
 
+	/**
+	 * @return the file utility object
+	 */
+	public static FileUtilities getFileUtilities() {
+		return INJECTOR.getInstance(FileUtilities.class);
+	}
+
+	/**
+	 * @return repository of Jam's icons
+	 */
+	public static Icons getIcons() {
+		return INJECTOR.getInstance(Icons.class);
+	}
+
+	/**
+	 * @return a math and number utility object
+	 */
+	public static NumberUtilities getNumberUtilities() {
+		return INJECTOR.getInstance(NumberUtilities.class);
+	}
+
+	/**
+	 * @return object that formats numeric values and uncertainties together
+	 */
+	public static ValueAndUncertaintyFormatter getValueAndUncertaintyFormatter() {
+		return INJECTOR.getInstance(ValueAndUncertaintyFormatter.class);
+	}
 }

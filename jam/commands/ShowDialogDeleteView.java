@@ -49,11 +49,11 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 
 		private transient final Broadcaster broadcaster;
 
-		private static final Frame frame = null;
+		private static final Frame PARENT = null;
 
 		@Inject
 		ViewDelete(final PlotDisplay display, final Broadcaster broadcaster) {
-			super(frame, "Delete View", false);
+			super(PARENT, "Delete View", false);
 			this.display = display;
 			this.broadcaster = broadcaster;
 			setModal(false);

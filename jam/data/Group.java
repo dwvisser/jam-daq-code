@@ -91,13 +91,13 @@ public final class Group implements Nameable {
 		final boolean filenameNotNull = fileName != null;
 		final boolean groupNameNotNull = groupName != null;
 		if (filenameNotNull && groupNameNotNull) {
-			tempFullName = stringUtil.makeFullName(fileName, groupName);
+			tempFullName = STRINGUTIL.makeFullName(fileName, groupName);
 		} else if (filenameNotNull) {
 			tempFullName = fileName;
 		} else if (groupNameNotNull) {
 			tempFullName = groupName;
 		}
-		final String uniqueName = stringUtil.makeUniqueName(tempFullName,
+		final String uniqueName = STRINGUTIL.makeUniqueName(tempFullName,
 				COLLECTION.getNameSet());
 		this.type = type;
 		this.groupName = groupName;
@@ -160,7 +160,7 @@ public final class Group implements Nameable {
 		return fullName;
 	}
 
-	private static final StringUtilities stringUtil = GuiceInjector
+	private static final StringUtilities STRINGUTIL = GuiceInjector
 			.getStringUtilities();
 
 	protected HistDouble2D createHistDouble2D(final String name,
@@ -197,7 +197,7 @@ public final class Group implements Nameable {
 
 	private void addGroupInfoToHist(final AbstractHistogram hist,
 			final String name) {
-		hist.setName(stringUtil.makeUniqueName(name, histograms.getNameSet(),
+		hist.setName(STRINGUTIL.makeUniqueName(name, histograms.getNameSet(),
 				AbstractHistogram.NAME_LENGTH));
 		hist.updateNames(this);// puts in name map as well
 		/* Add to group */

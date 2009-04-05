@@ -1,8 +1,8 @@
 package jam.io;
 
+import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Group;
-import jam.util.FileUtilities;
 
 import java.awt.Frame;
 import java.io.BufferedInputStream;
@@ -182,8 +182,7 @@ public abstract class AbstractImpExp {
 			final File inFile = (file == null) ? getFileOpen(msg) : file;
 			if (inFile != null) { // if Open file was not canceled
 				// Create group
-				final FileUtilities fileUtil = FileUtilities.getInstance();
-				final String groupName = fileUtil
+				final String groupName = GuiceInjector.getFileUtilities()
 						.removeExtensionFileName(inFile.getName());
 				importGroup = jam.data.Factory.createGroup(groupName,
 						Group.Type.FILE);
