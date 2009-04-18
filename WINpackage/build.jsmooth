@@ -7,11 +7,12 @@
 <JVMSearchPath>exepath</JVMSearchPath>
 <JVMSearchPath>jview</JVMSearchPath>
 <arguments></arguments>
-<classPath>lib\Jam.jar</classPath>
-<classPath>lib\JamHelp.jar</classPath>
-<classPath>lib\jh.jar</classPath>
+<classPath>lib\jam-@MAJOR@.@MINOR@.@RELEASE@.jar</classPath>
+<classPath>lib\guice-1.0.jar</classPath>
+	<classPath>lib\aopalliance.jar</classPath>
+	<classPath>lib\jh.jar</classPath>
 <embeddedJar>false</embeddedJar>
-<executableName>bin\Jam.exe</executableName>
+<executableName>bin\Jam @MAJOR@.@MINOR@.@RELEASE@.exe</executableName>
 <iconLocation>nukeicon32.png</iconLocation>
 <initialMemoryHeap>8388608</initialMemoryHeap>
 <mainClassName>jam.Main</mainClassName>

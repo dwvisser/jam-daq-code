@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
     <Product Name="Jam" Id="????????-????-????-????-????????????"
             Version="@MAJOR@.@MINOR@.@RELEASE@" Manufacturer="http://jam-daq.sf.net/"
@@ -14,34 +14,36 @@
                     <Component Id="SourceCode"
                             Guid="@SOURCE_GUID@">
                         <File Id="src" Name="JamSrc.zip"
-                                DiskId="1" src="jam-@MAJOR@.@MINOR@.@RELEASE@-src.zip"/>
+                                DiskId="1" Source="jam-@MAJOR@.@MINOR@.@RELEASE@-src.zip" LongName="jam-@MAJOR@.@MINOR@.@RELEASE@-src.zip"/>
                     </Component>
                     <Directory Id="lib" Name="lib">
                         <Component Id="Libraries"
                                 Guid="@LIB_GUID@">
-                            <File Id="jamjar" Name="Jam.jar" DiskId="1" src="lib/jam-@MAJOR@.@MINOR@.@RELEASE@-lib.jar" />
-                            <File Id="helpjar" Name="JamHelp.jar" DiskId="1" src="lib/jam-@MAJOR@.@MINOR@.@RELEASE@-help.jar" />
-                            <File Id="jh" Name="jh.jar" DiskId="1" src="lib/jh.jar" />
+                            <File Id="jamjar" Name="Jam.jar" DiskId="1"
+                            	Source="lib/jam-@MAJOR@.@MINOR@.@RELEASE@.jar"
+                            	LongName="jam-@MAJOR@.@MINOR@.@RELEASE@.jar" />
+                            <File Id="guice" Name="guice.jar" DiskId="1"
+                            	Source="lib/guice-1.0.jar" LongName="guice-1.0.jar" />
+                            <File
+                            	Id="jh" Name="jh.jar" DiskId="1"
+                            	Source="lib/jh.jar">
+</File>
+                        	<File Id="aopalliance" Name="aop.jar"
+                        		DiskId="1" Source="lib/aopalliance.jar"
+                        		LongName="aopalliance.jar" />
                         </Component>
                     </Directory>
                     <Directory Id="bin" Name="bin">
                         <Component Id="Executables"
                                 Guid="@BIN_GUID@">
-                            <File Id="Main_program" Name="Jam.exe" DiskId="1"
-                                    src="bin/Jam.exe">
-                                <Shortcut Id="Program_shortcut"
-                                        Directory="ProgramMenuFolder" Name="Jam"
-                                        LongName="Jam @MAJOR@.@MINOR@.@RELEASE@"
-                                        Show="normal"
-                                        WorkingDirectory="TARGETDIR"/>
-                            </File>
-                            <File Id="Help_program" Name="JamHelp.exe" DiskId="1"
-                                    src="bin/JamHelp.exe">
-                                <Shortcut Id="Help_shortcut"
-                                        Directory="ProgramMenuFolder" Name="JamHelp"
-                                        LongName="Jam @MAJOR@.@MINOR@.@RELEASE@ Help"
-                                        Show="normal"
-                                        WorkingDirectory="TARGETDIR"/>
+                            <File Id="Main_program" Name="Jam.exe"
+                            	DiskId="1" Source="bin/Jam @MAJOR@.@MINOR@.@RELEASE@.exe"
+                            	LongName="Jam @MAJOR@.@MINOR@.@RELEASE@.exe">
+                            	<Shortcut Id="Program_shortcut"
+                            		Directory="ProgramMenuFolder" Name="Jam"
+                            		LongName="Jam @MAJOR@.@MINOR@.@RELEASE@"
+                            		Show="normal"
+                            		WorkingDirectory="TARGETDIR" />
                             </File>
                         </Component>
                     </Directory>
