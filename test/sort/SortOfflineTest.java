@@ -71,7 +71,7 @@ public class SortOfflineTest {// NOPMD
 		assertEquals("Events sorted wasn't the same as expected.",
 				expectedEvents, session.getEventsSorted());
 		assertEquals("Area in histogram wasn't the same as expected.",
-				expectedEvents, neutronE.getArea());
+				(double) expectedEvents, neutronE.getArea());
 	}
 
 	/**
