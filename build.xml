@@ -173,6 +173,12 @@
 		       </fileset> 
 		    </batchtest> 
 		</junit> 
+		<junitreport todir="${reports.dir}">
+		    <fileset dir="${reports.dir}">
+		        <include name="TEST-*.xml" />
+		    </fileset>
+		    <report todir="${reports.dir}" />
+		</junitreport>
 	  </target>
 		
 	<target name="webstart" depends="jar">
