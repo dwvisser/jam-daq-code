@@ -2,9 +2,7 @@ package jam.commands;
 
 import jam.data.AbstractHistogram;
 import jam.data.control.GateSet;
-import jam.global.BroadcastEvent;
 import jam.global.Nameable;
-import jam.ui.SelectionTree;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -15,40 +13,37 @@ import javax.swing.Icon;
 import com.google.inject.Inject;
 
 /**
- * Show the scalers dialog box
- * 
+ * Show the scalers dialog box.
  * @author Ken Swartz
- * 
  */
-final class ShowDialogSetGate extends AbstractShowDialog implements Observer {
+final class ShowDialogSetGate extends AbstractShowDialog implements Observer,
+        Predicate<Nameable> {
 
-	@Inject
-	ShowDialogSetGate(final GateSet gateSet) {
-		super();
-		dialog = gateSet;
-		putValue(NAME, "Set\u2026");
-		final Icon iGateSet = loadToolbarIcon("jam/ui/GateSet.png");
-		putValue(Action.SMALL_ICON, iGateSet);
-		putValue(Action.SHORT_DESCRIPTION, "Set Gate.");
-	}
+    private final transient Observer selectionObserver = new SelectionObserver(
+            this, this);
 
-	private void decideEnable() {
-		final Nameable named = SelectionTree.getCurrentHistogram();
-		if (named instanceof AbstractHistogram) {
-			final AbstractHistogram hist = (AbstractHistogram) named;
-			setEnabled(!hist.getGateCollection().getGates().isEmpty());
-		}
-	}
+    @Inject
+    ShowDialogSetGate(final GateSet gateSet) {
+        super();
+        dialog = gateSet;
+        putValue(NAME, "Set\u2026");
+        final Icon iGateSet = loadToolbarIcon("jam/ui/GateSet.png");
+        putValue(Action.SMALL_ICON, iGateSet);
+        putValue(Action.SHORT_DESCRIPTION, "Set Gate.");
+    }
 
-	public void update(final Observable observe, final Object obj) {
-		final BroadcastEvent event = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = event.getCommand();
-		if ((command == BroadcastEvent.Command.GROUP_SELECT)
-				|| (command == BroadcastEvent.Command.ROOT_SELECT)) {
-			setEnabled(false);
-		} else if ((command == BroadcastEvent.Command.HISTOGRAM_SELECT)
-				|| (command == BroadcastEvent.Command.GATE_SELECT)) {
-			decideEnable();
-		}
-	}
+    public void update(final Observable observe, final Object obj) {
+        this.selectionObserver.update(observe, obj);
+    }
+
+    public boolean evaluate(final Nameable selected) {
+        boolean result = false;
+        if (selected instanceof AbstractHistogram) {
+            final AbstractHistogram hist = (AbstractHistogram) selected;
+            result = hist.getGateCollection().getGates().isEmpty();
+            result ^= true; // bitwise XOR is a really fast inversion
+        }
+
+        return result;
+    }
 }
