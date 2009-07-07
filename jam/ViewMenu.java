@@ -3,6 +3,7 @@ package jam;
 import jam.commands.CommandManager;
 import jam.commands.CommandNames;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.plot.PlotDisplay;
 import jam.plot.View;
 
@@ -25,9 +26,11 @@ final class ViewMenu implements Observer {
     private transient final CommandManager commandManager;
 
     @Inject
-    ViewMenu(final PlotDisplay display, final CommandManager commandManager) {
+    ViewMenu(final PlotDisplay display, final CommandManager commandManager,
+            final Broadcaster broadcaster) {
         this.display = display;
         this.commandManager = commandManager;
+        broadcaster.addObserver(this);
         this.updateViews();
     }
 

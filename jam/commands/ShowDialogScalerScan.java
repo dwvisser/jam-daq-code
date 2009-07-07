@@ -1,14 +1,16 @@
 package jam.commands;
 
+import com.google.inject.Inject;
+
 /**
- * Show the scaler scan dialog
- * 
+ * Show the scaler scan dialog.
  * @author Ken Swartz
  */
 final class ShowDialogScalerScan extends AbstractShowDialog {
 
-	ShowDialogScalerScan() {
-		super("Scan HDF files for scalers\u2026");
-		dialog = new ScalerScan().getDialog();
-	}
+    @Inject
+    ShowDialogScalerScan(final ScalerScan scalerScan) {
+        super("Scan HDF files for scalers\u2026");
+        dialog = scalerScan.getDialog();
+    }
 }

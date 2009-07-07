@@ -288,7 +288,7 @@ final class VMECommunication extends GoodThread implements VmeSender {
     protected void sendToVME(final PacketTypes status, final String message) {
         final Object[] params = {status, message };
         LOGGER.entering(VMECommunication.class.getName(), "sendToVME", params);
-        if (socketSend == null) {
+        if (this.socketSend == null) {
             throw new IllegalStateException(
                     "Attempted to send a message without a connection.");
         }

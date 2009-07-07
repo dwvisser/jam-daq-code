@@ -14,6 +14,8 @@ import jam.plot.PlotDisplay;
 import jam.plot.PlotSelectListener;
 
 import java.awt.Frame;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.JFrame;
 
@@ -23,49 +25,50 @@ import com.google.inject.Provider;
 
 /**
  * Guice dependency injection module.
- * 
  * @author Dale Visser
  */
 public final class Module extends AbstractModule {
 
-	@Override
-	protected void configure() {
-		this.bind(JFrame.class).toInstance(new JFrame("Jam"));
-		this.bind(Frame.class).toProvider(FrameProvider.class);
-		this.bind(AcquisitionStatus.class).to(JamStatus.class);
-		this.bind(CurrentPlotAccessor.class).to(PlotDisplay.class);
-		this.bind(PlotSelectListener.class).to(PlotDisplay.class);
-		this.bind(FrontEndCommunication.class)
-				.to(FrontEndVMECommunicator.class);
-		this.bind(ScalerCommunication.class).to(ScalerVMECommunicator.class);
-		this.bind(CommandFinder.class).toProvider(CommandFinderProvider.class);
-		this.bind(CommandListener.class).annotatedWith(MapListener.class).to(
-				CommandManager.class);
-	}
+    @Override
+    protected void configure() {
+        this.bind(JFrame.class).toInstance(new JFrame("Jam"));
+        this.bind(ExecutorService.class).toInstance(
+                Executors.newCachedThreadPool());
+        this.bind(Frame.class).toProvider(FrameProvider.class);
+        this.bind(AcquisitionStatus.class).to(JamStatus.class);
+        this.bind(CurrentPlotAccessor.class).to(PlotDisplay.class);
+        this.bind(PlotSelectListener.class).to(PlotDisplay.class);
+        this.bind(FrontEndCommunication.class).to(
+                FrontEndVMECommunicator.class);
+        this.bind(ScalerCommunication.class).to(ScalerVMECommunicator.class);
+        this.bind(CommandFinder.class).toProvider(CommandFinderProvider.class);
+        this.bind(CommandListener.class).annotatedWith(MapListener.class).to(
+                CommandManager.class);
+    }
 
-	class FrameProvider implements Provider<Frame> {
-		private transient final JFrame frame;
+    class FrameProvider implements Provider<Frame> {
+        private final transient JFrame frame;
 
-		@Inject
-		protected FrameProvider(final JFrame frame) {
-			this.frame = frame;
-		}
+        @Inject
+        protected FrameProvider(final JFrame frame) {
+            this.frame = frame;
+        }
 
-		public Frame get() {
-			return this.frame;
-		}
-	}
+        public Frame get() {
+            return this.frame;
+        }
+    }
 
-	class CommandFinderProvider implements Provider<CommandFinder> {
-		private transient final CommandFinder commandFinder;
+    class CommandFinderProvider implements Provider<CommandFinder> {
+        private final transient CommandFinder commandFinder;
 
-		@Inject
-		protected CommandFinderProvider(final CommandManager commandManager) {
-			this.commandFinder = commandManager.getCommandFinder();
-		}
+        @Inject
+        protected CommandFinderProvider(final CommandManager commandManager) {
+            this.commandFinder = commandManager.getCommandFinder();
+        }
 
-		public CommandFinder get() {
-			return this.commandFinder;
-		}
-	}
+        public CommandFinder get() {
+            return this.commandFinder;
+        }
+    }
 }

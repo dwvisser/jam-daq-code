@@ -56,7 +56,6 @@ final class MenuBar implements Observer {
             final Broadcaster broadcaster, final CommandManager commandManager) {
         super();
         broadcaster.addObserver(this);
-        broadcaster.addObserver(viewMenu);
         this.commandManager = commandManager;
         menus.add(createFileMenu(importMenu));
         menus.add(this.commandManager.createMenu("Setup",
