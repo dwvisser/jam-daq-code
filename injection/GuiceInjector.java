@@ -74,7 +74,8 @@ public final class GuiceInjector {
      *            class to return an instance of
      * @return instance
      */
-    public static <T extends Commandable> T getInstance(final Class<T> clazz) {
+    public static <T extends Commandable> T getCommandableInstance(
+            final Class<T> clazz) {
         return INJECTOR.getInstance(clazz);
     }
 
@@ -85,7 +86,8 @@ public final class GuiceInjector {
      *            class to return an instance of
      * @return instance
      */
-    public static <T extends AbstractImpExp> T getInstance(final Class<T> clazz) {
+    public static <T extends AbstractImpExp> T getImpExpInstance(
+            final Class<T> clazz) {
         return INJECTOR.getInstance(clazz);
     }
 
