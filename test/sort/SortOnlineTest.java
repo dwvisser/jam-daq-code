@@ -38,7 +38,7 @@ public class SortOnlineTest {
      * sorting, then setup online sorting again.
      */
     @Test
-    public void testSetupOnThenCancelThenSetupOn() {
+    public void testSetupOnThenCancelThenSetupOn() {// NOPMD
         setupOnlineAndVerifyHistogram();
         session.cancelOnline();
         setupOnlineAndVerifyHistogram();

@@ -401,7 +401,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
             final double interceptIn, final double slopeIn,
             final double interceptOut, final double slopeOut, final int npts2)
             throws DataException {
-        double[] countsOut = new double[npts2];
+        final double[] countsOut = new double[npts2];
         for (int n = 0; n < countsIn.length; n++) {
             calculateIntermediateValues(interceptIn, slopeIn, interceptOut,
                     slopeOut, npts2, n);
@@ -413,22 +413,25 @@ public class GainShift extends AbstractManipulation implements ItemListener {
     }
 
     private void calculateErrorContribution(final double[] countsIn,
-            double[] countsOut, int n) throws DataException {
-        if (mhi == mlo) { // sp#1 chan fits within one sp#2 chan
-            countsOut[mlo] = countsOut[mlo] + countsIn[n];
-        } else if (mhi == mlo + 1) { // sp#1 chan falls into two sp#2
-            // chans
+            double[] countsOut, final int inChannel) throws DataException {
+        if (mhi == mlo) {
+            /* spectrum #1 channel fits within one spectrum #2 channel */
+            countsOut[mlo] = countsOut[mlo] + countsIn[inChannel];
+        } else if (mhi == mlo + 1) {
+            /* spectrum #1 channel falls into two spectrum #2 channels */
             countsOut[mlo] = Math.sqrt(countsOut[mlo]
                     * countsOut[mlo]
-                    + Math.pow(countsIn[n] * (mlo + BIN_CENTER_OFFSET - x2lo)
-                            / (x2hi - x2lo), 2.0));
-            countsOut[mhi] = countsOut[mhi] + countsIn[n]
+                    + Math.pow(
+                            countsIn[inChannel]
+                                    * (mlo + BIN_CENTER_OFFSET - x2lo)
+                                    / (x2hi - x2lo), 2.0));
+            countsOut[mhi] = countsOut[mhi] + countsIn[inChannel]
                     * (x2hi - mhi + BIN_CENTER_OFFSET) / (x2hi - x2lo);
-        } else if (mhi > mlo + 1) { // sp#1 chan covers several sp#2
-            // chans
-            calculateCountsInsideRange(countsIn, countsOut, n);
+        } else if (mhi > mlo + 1) {
+            /* spectrum #1 channel covers several spectrum #2 channels */
+            calculateCountsInsideRange(countsIn, countsOut, inChannel);
         } else {
-            throw new DataException("Something is wrong: n = " + n
+            throw new DataException("Something is wrong: n = " + inChannel
                     + ", mlo = " + mlo + ", mhi = " + mhi);
         }
     }

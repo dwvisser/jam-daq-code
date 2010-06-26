@@ -85,6 +85,8 @@ public final class ScalerScan implements ProgressUpdater {
 
     /**
      * Constructor.
+     * @param executor
+     *            executor service to allocate threads to tasks
      */
     @Inject
     public ScalerScan(final ExecutorService executor) {

@@ -60,6 +60,8 @@ public class YaleCAENgetScalers {
      * blocks.
      * @param frame
      *            application frame
+     * @param executor
+     *            provides threads for tasks
      */
     @Inject
     public YaleCAENgetScalers(final Frame frame, final ExecutorService executor) {
