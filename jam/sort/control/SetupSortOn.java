@@ -10,6 +10,7 @@ import jam.comm.ScalerCommunication;
 import jam.global.Broadcaster;
 import jam.global.JamException;
 import jam.global.JamProperties;
+import jam.global.JamStatus;
 import jam.global.PropertyKeys;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
@@ -91,16 +92,9 @@ public final class SetupSortOn extends AbstractSetup {
 
     private transient DiskDaemon diskDaemon;
 
-    /* strings of data entered */
-    private transient String exptName;
-
     private transient final FrontEndCommunication frontEnd;
 
     private transient final ScalerCommunication scaler;
-
-    private transient String hostDataIP;
-
-    private transient int hostDataPort;
 
     private transient NetDaemon netDaemon;
 
@@ -222,8 +216,7 @@ public final class SetupSortOn extends AbstractSetup {
                 dialog)));
         pBottom.add(checkLock);
 
-        dialog
-                .setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         dialog.pack();
     }
 
@@ -236,8 +229,7 @@ public final class SetupSortOn extends AbstractSetup {
     private JPanel createEntriesPanel(final int gap, final int topInset,
             final int noSpace, final java.awt.Container dcp) {
         final JPanel pEntries = new JPanel(new GridLayout(0, 1, gap, gap));
-        pEntries
-                .setBorder(new EmptyBorder(topInset, noSpace, noSpace, noSpace));
+        pEntries.setBorder(new EmptyBorder(topInset, noSpace, noSpace, noSpace));
         dcp.add(pEntries, BorderLayout.CENTER);
         final String defaultName = JamProperties
                 .getPropString(PropertyKeys.EXP_NAME);
@@ -250,14 +242,12 @@ public final class SetupSortOn extends AbstractSetup {
     }
 
     private void readProperties() {
-        dataFolder = new File(JamProperties
-                .getPropString(PropertyKeys.EVENT_OUTPATH));
-        histFolder = new File(JamProperties
-                .getPropString(PropertyKeys.HIST_PATH));
-        logDirectory = new File(JamProperties
-                .getPropString(PropertyKeys.LOG_PATH));
-        hostDataIP = JamProperties.getPropString(PropertyKeys.HOST_DATA_IP);
-        hostDataPort = JamProperties.getPropInt(PropertyKeys.HOST_DATA_P_RECV);
+        dataFolder = new File(
+                JamProperties.getPropString(PropertyKeys.EVENT_OUTPATH));
+        histFolder = new File(
+                JamProperties.getPropString(PropertyKeys.HIST_PATH));
+        logDirectory = new File(
+                JamProperties.getPropString(PropertyKeys.LOG_PATH));
     }
 
     /**
@@ -307,7 +297,7 @@ public final class SetupSortOn extends AbstractSetup {
             }
 
             /* lock setup so fields can't be edited */
-            if (GuiceInjector.getJamStatus().canSetup()) {
+            if (GuiceInjector.getObjectInstance(JamStatus.class).canSetup()) {
                 setup(dispose);
             } else {
                 throw new JamException("Can't setup sorting, mode locked ");
@@ -360,7 +350,6 @@ public final class SetupSortOn extends AbstractSetup {
      * histogram directories.
      */
     private boolean loadNames() {
-        exptName = textExpName.getText().trim();
         // Check directories exist
         return checkDirectories();
 
@@ -402,7 +391,8 @@ public final class SetupSortOn extends AbstractSetup {
         } else {
             name = sortRoutine.getClass().getName();
         }
-        GuiceInjector.getJamStatus().setSortMode(sortMode, name);
+        GuiceInjector.getObjectInstance(JamStatus.class).setSortMode(sortMode,
+                name);
         bbrowsef.setEnabled(notlock && btnSpecifyPath.isSelected());
         checkLock.setSelected(lock);
     }
@@ -447,6 +437,7 @@ public final class SetupSortOn extends AbstractSetup {
      */
     private void setup(final boolean dispose) throws CommunicationsException,
             JamException, IOException, SortException {
+        final String exptName = textExpName.getText().trim();
         if (clog.isSelected()) { // if needed start logging to file
             final File logPathTry = new File(textPathLog.getText(), exptName);
             final String logFile = consoleLog.setLogFileName(logPathTry
@@ -547,10 +538,15 @@ public final class SetupSortOn extends AbstractSetup {
             diskDaemon.setRingBuffer(storageRing);
         }
         /* Create the net daemon. */
+        final String hostDataIP = JamProperties
+                .getPropString(PropertyKeys.HOST_DATA_IP);
+        final int hostDataPort = JamProperties
+                .getPropInt(PropertyKeys.HOST_DATA_P_RECV);
         netDaemon = new NetDaemon(sortingRing, storageRing, hostDataIP,
                 hostDataPort);
 
         /* Tell control about everything. */
+        final String exptName = textExpName.getText().trim();
         runControl.setupOn(exptName, dataFolder, histFolder, sortDaemon,
                 netDaemon, diskDaemon);
         /* Tell the status dialog. */

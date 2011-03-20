@@ -1,29 +1,32 @@
 package jam;
 
+import injection.GuiceInjector;
+
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-
-import injection.GuiceInjector;
 
 /**
  * Launch point for Jam.
  */
 public final class Main {
 
-	private Main() {
-		// static class
-	}
+    private Main() {
+        // static class
+    }
 
-	/**
-	 * @param args
-	 *            not used
-	 */
-	public static void main(final String[] args) {
-		Main.setLookAndFeel();
-		final int displayTime = 10000; // milliseconds
-		new SplashWindow(GuiceInjector.getFrame(), displayTime);
-		GuiceInjector.getJamInitialization().showMainWindow();
-	}
+    /**
+     * @param args
+     *            not used
+     */
+    public static void main(final String[] args) {
+        Main.setLookAndFeel();
+        final int displayTime = 10000; // milliseconds
+        new SplashWindow(GuiceInjector.getObjectInstance(JFrame.class),
+                displayTime);
+        GuiceInjector.getObjectInstance(JamInitialization.class)
+                .showMainWindow();
+    }
 
     /**
      * Set look and feel for the application
@@ -38,8 +41,9 @@ public final class Main {
             }
             UIManager.setLookAndFeel(lookAndFeel);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Jam--error setting GUI appearance",
-            JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, e.getMessage(),
+                    "Jam--error setting GUI appearance",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 }

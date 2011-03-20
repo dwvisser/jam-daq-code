@@ -30,7 +30,8 @@ public final class OnlineTestCommon {
     /**
      * Scripting object to be used by tests.
      */
-    public static Session session = GuiceInjector.getSession();
+    public static Session session = GuiceInjector
+            .getObjectInstance(Session.class);
 
     private static final ExecutorService EXECUTOR = GuiceInjector
             .getExecutorService();

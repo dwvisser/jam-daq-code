@@ -19,7 +19,8 @@ import org.junit.Test;
  */
 public class SortOfflineTest {
 
-    private transient final Session session = GuiceInjector.getSession();
+    private transient final Session session = GuiceInjector
+            .getObjectInstance(Session.class);
 
     private static void assertHistogramZeroed(final AbstractHistogram histogram) {
         assertEquals("Expected '" + histogram.getName() + "' to be zeroed.",

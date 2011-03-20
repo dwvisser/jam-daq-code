@@ -42,7 +42,7 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	/**
 	 * Reference to instance of JamStatus.
 	 */
-	// protected static final JamStatus STATUS = GuiceInjector.getJamStatus();
+	// protected static final JamStatus STATUS = GuiceInjector.getObjectInstance(JamStatus.class);
 	/**
 	 * Setup all instances of <code>AbstractControl</code>.
 	 */

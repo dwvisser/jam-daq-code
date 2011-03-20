@@ -1,28 +1,22 @@
 package injection;
 
-import jam.JamInitialization;
 import jam.Version;
 import jam.commands.CommandManager;
 import jam.commands.Commandable;
 import jam.fit.ValueAndUncertaintyFormatter;
 import jam.global.Broadcaster;
-import jam.global.JamStatus;
 import jam.global.RuntimeSubclassIdentifier;
 import jam.io.AbstractImpExp;
 import jam.io.hdf.HDFIO;
 import jam.plot.Action;
 import jam.plot.PlotContainer;
-import jam.script.Session;
 import jam.sort.RingBufferFactory;
 import jam.ui.ConsoleLog;
-import jam.ui.Icons;
 import jam.util.FileUtilities;
 import jam.util.NumberUtilities;
 import jam.util.StringUtilities;
 
 import java.util.concurrent.ExecutorService;
-
-import javax.swing.JFrame;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -40,31 +34,14 @@ public final class GuiceInjector {
     }
 
     /**
-     * @return a Session object
+     * @param <T>
+     *            type parameter of class to instantiate
+     * @param clazz
+     *            class to instantiate
+     * @return an instance of the requested class
      */
-    public static Session getSession() {
-        return INJECTOR.getInstance(Session.class);
-    }
-
-    /**
-     * @return the Jam Frame
-     */
-    public static JamInitialization getJamInitialization() {
-        return INJECTOR.getInstance(JamInitialization.class);
-    }
-
-    /**
-     * @return application status
-     */
-    public static JamStatus getJamStatus() {
-        return INJECTOR.getInstance(JamStatus.class);
-    }
-
-    /**
-     * @return the application frame
-     */
-    public static JFrame getFrame() {
-        return INJECTOR.getInstance(JFrame.class);
+    public static <T> T getObjectInstance(final Class<T> clazz) {
+        return INJECTOR.getInstance(clazz);
     }
 
     /**
@@ -166,13 +143,6 @@ public final class GuiceInjector {
      */
     public static FileUtilities getFileUtilities() {
         return INJECTOR.getInstance(FileUtilities.class);
-    }
-
-    /**
-     * @return repository of Jam's icons
-     */
-    public static Icons getIcons() {
-        return INJECTOR.getInstance(Icons.class);
     }
 
     /**

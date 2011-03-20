@@ -3,6 +3,7 @@ package jam.sort.control;
 import injection.GuiceInjector;
 import jam.global.JamException;
 import jam.sort.SortException;
+import jam.ui.Icons;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -16,42 +17,43 @@ import javax.swing.text.JTextComponent;
 
 class Begin extends AbstractAction {
 
-	private static final Logger LOGGER = Logger.getLogger(Begin.class
-			.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(Begin.class
+            .getPackage().getName());
 
-	private transient final RunController runControl;
+    private transient final RunController runControl;
 
-	private transient final Component parent;
+    private transient final Component parent;
 
-	private transient final JTextComponent textRunTitle;
+    private transient final JTextComponent textRunTitle;
 
-	Begin(final Component parent, final RunController runControl,
-			final JTextComponent text) {
-		super();
-		this.parent = parent;
-		this.runControl = runControl;
-		textRunTitle = text;
-		putValue(Action.NAME, "Begin Run");
-		putValue(Action.SHORT_DESCRIPTION, "Begins the next run.");
-		putValue(Action.SMALL_ICON, GuiceInjector.getIcons().BEGIN);
-		setEnabled(false);
-	}
+    Begin(final Component parent, final RunController runControl,
+            final JTextComponent text) {
+        super();
+        this.parent = parent;
+        this.runControl = runControl;
+        textRunTitle = text;
+        putValue(Action.NAME, "Begin Run");
+        putValue(Action.SHORT_DESCRIPTION, "Begins the next run.");
+        putValue(Action.SMALL_ICON,
+                GuiceInjector.getObjectInstance(Icons.class).BEGIN);
+        setEnabled(false);
+    }
 
-	public void actionPerformed(final ActionEvent event) {
-		final String runTitle = textRunTitle.getText().trim();
-		final boolean confirm = (JOptionPane.showConfirmDialog(parent,
-				"Is this title OK? :\n" + runTitle, "Run Title Confirmation",
-				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
-		if (confirm) {
-			try {
-				runControl.beginRun();
-			} catch (SortException se) {
-				LOGGER.log(Level.SEVERE, se.getMessage(), se);
-			} catch (JamException je) {
-				LOGGER.log(Level.SEVERE, je.getMessage(), je);
-			}
+    public void actionPerformed(final ActionEvent event) {
+        final String runTitle = textRunTitle.getText().trim();
+        final boolean confirm = (JOptionPane.showConfirmDialog(parent,
+                "Is this title OK? :\n" + runTitle, "Run Title Confirmation",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
+        if (confirm) {
+            try {
+                runControl.beginRun();
+            } catch (SortException se) {
+                LOGGER.log(Level.SEVERE, se.getMessage(), se);
+            } catch (JamException je) {
+                LOGGER.log(Level.SEVERE, je.getMessage(), je);
+            }
 
-		}
-	}
+        }
+    }
 
 }

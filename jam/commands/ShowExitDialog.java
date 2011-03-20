@@ -27,7 +27,7 @@ final class ShowExitDialog extends AbstractCommand {
 	@Override
 	protected void execute(final Object[] cmdParams) {
 		boolean confirm = true;
-		final JFrame frame = GuiceInjector.getFrame();
+		final JFrame frame = GuiceInjector.getObjectInstance(JFrame.class);
 		if (cmdParams != null && !((Boolean) cmdParams[0]).booleanValue()) {
 			confirm = false;
 		}

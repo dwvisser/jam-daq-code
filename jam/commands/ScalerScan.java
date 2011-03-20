@@ -70,7 +70,7 @@ public final class ScalerScan implements ProgressUpdater {
 
     private transient ProgressMonitor pBstatus;
 
-    private final transient JFrame frame = GuiceInjector.getFrame();
+    private final transient JFrame frame = GuiceInjector.getObjectInstance(JFrame.class);
 
     private final transient JDialog dialog;
 
