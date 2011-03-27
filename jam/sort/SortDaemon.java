@@ -466,16 +466,23 @@ public class SortDaemon extends GoodThread {
         final int[] eventData = new int[eventSize];
         eventInputStatus = EventInputStatus.IGNORE;
         while (checkState()) {
-            endSort = false;
+            this.endSort = false;
             /* suspends this thread when we're done sorting all files */
-            setState(GoodThread.State.SUSPEND);
-            resumeOfflineSorting();// after we come out of suspend
+            this.setState(GoodThread.State.SUSPEND);
+            this.resumeOfflineSorting();// after we come out of suspend
             /* Loop for each new sort file. */
-            while (!offlineSortingCanceled()
+            while (!this.offlineSortingCanceled()
                     && offlineController.openNextFile()) {
-                while (!offlineSortingCanceled() && !endSort) {// buffer loop
-                    sortEventsInFile(eventData);
-                    handleStatusOffline();
+                /*
+                 * endSort gets set to true by handleStatusOffline() at the end
+                 * of a file or run in order to exit the inner loop. We need to
+                 * set it back to false so that the next file will be sorted.
+                 */
+                this.endSort = false;
+                while (!this.offlineSortingCanceled() && !this.endSort) {// buffer
+                                                                         // loop
+                    this.sortEventsInFile(eventData);
+                    this.handleStatusOffline();
                 }// end buffer loop
             }// end isSortNext loop
             offlineController.atSortEnd();
