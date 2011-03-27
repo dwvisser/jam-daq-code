@@ -27,9 +27,11 @@ public class SortOfflineTest {
                 histogram.getArea(), 0.0);
     }
 
-    private void sortEventFile(final String eventFileName) {
+    private void sortEventFile(final String eventFileName, final int repitition) {
         final File eventFile = session.defineFile(eventFileName);
-        session.addEventFile(eventFile);
+        for (int i = 0; i < repitition; i++) {
+            session.addEventFile(eventFile);
+        }
         session.beginSort();
     }
 
@@ -39,20 +41,44 @@ public class SortOfflineTest {
     @Test
     public void testYaleCAENOfflineSort() {
         try {
-            session.setupOffline("help.sortfiles.YaleCAENTestSortRoutine",
-                    YaleCAEN_InputStream.class, YaleOutputStream.class);
-            final HistInt1D neutronE = Utility
-                    .getOneDHistogramFromSortGroup("Neutron E");
-            assertHistogramZeroed(neutronE);
-            sortEventFile("test/sort/YaleCAENTestData.evn");
-            final int expectedEvents = 302;
-            assertEquals("Events sorted wasn't the same as expected.",
-                    expectedEvents, session.getEventsSorted());
-            assertEquals("Area in histogram wasn't the same as expected.",
-                    (double) expectedEvents, neutronE.getArea());
+            final HistInt1D neutronE = setupYaleCAENOfflineSort();
+            sortEventFile("test/sort/YaleCAENTestData.evn", 1);
+            assertPostConditionsForYaleCAEN(neutronE, 302);
         } finally {
             session.resetOfflineSorting();
         }
+    }
+
+    private void assertPostConditionsForYaleCAEN(final HistInt1D neutronE,
+            final int expectedEvents) {
+        assertEquals("Events sorted wasn't the same as expected.",
+                expectedEvents, session.getEventsSorted());
+        assertEquals("Area in histogram wasn't the same as expected.",
+                (double) expectedEvents, neutronE.getArea());
+    }
+
+    private HistInt1D setupYaleCAENOfflineSort() {
+        session.setupOffline("help.sortfiles.YaleCAENTestSortRoutine",
+                YaleCAEN_InputStream.class, YaleOutputStream.class);
+        final HistInt1D neutronE = Utility
+                .getOneDHistogramFromSortGroup("Neutron E");
+        assertHistogramZeroed(neutronE);
+        return neutronE;
+    }
+
+    /**
+     * Test YaleCAEN sorting two files.
+     */
+    @Test
+    public void testYaleCAENOfflineSortTwoFiles() {
+        try {
+            final HistInt1D neutronE = setupYaleCAENOfflineSort();
+            sortEventFile("test/sort/YaleCAENTestData.evn", 2);
+            assertPostConditionsForYaleCAEN(neutronE, 2 * 302);
+        } finally {
+            session.resetOfflineSorting();
+        }
+
     }
 
     /**
@@ -61,18 +87,38 @@ public class SortOfflineTest {
     @Test
     public void testYaleOfflineSort() {
         try {
-            final String sortRoutineName = "SpectrographExample";
-            session.setupOffline("help.sortfiles." + sortRoutineName,
-                    YaleInputStream.class, YaleOutputStream.class);
-            final HistInt1D cathode = Utility
-                    .getOneDHistogramFromSortGroup("Cathode");
-            assertHistogramZeroed(cathode);
-            sortEventFile("sampledata/example.evn");
-            final double expectedArea = 789.0;
+            final HistInt1D cathode = setupYaleOfflineSort();
+            sortEventFile("sampledata/example.evn", 1);
             assertEquals("Area in histogram wasn't the same as expected.",
-                    expectedArea, cathode.getArea());
+                    789.0, cathode.getArea());
         } finally {
             session.resetOfflineSorting();
         }
     }
+
+    private HistInt1D setupYaleOfflineSort() {
+        final String sortRoutineName = "SpectrographExample";
+        session.setupOffline("help.sortfiles." + sortRoutineName,
+                YaleInputStream.class, YaleOutputStream.class);
+        final HistInt1D cathode = Utility
+                .getOneDHistogramFromSortGroup("Cathode");
+        assertHistogramZeroed(cathode);
+        return cathode;
+    }
+
+    /**
+     * Test Yale stream offline sorting.
+     */
+    @Test
+    public void testYaleOfflineSortTwoFiles() {
+        try {
+            final HistInt1D cathode = setupYaleOfflineSort();
+            sortEventFile("sampledata/example.evn", 2);
+            assertEquals("Area in histogram wasn't the same as expected.",
+                    2 * 789.0, cathode.getArea());
+        } finally {
+            session.resetOfflineSorting();
+        }
+    }
+
 }
