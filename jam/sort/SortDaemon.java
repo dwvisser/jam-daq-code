@@ -475,15 +475,7 @@ public class SortDaemon extends GoodThread {
                     && offlineController.openNextFile()) {
                 while (!offlineSortingCanceled() && !endSort) {// buffer loop
                     sortEventsInFile(eventData);
-                    /* we get to this point if status was not EVENT */
                     handleStatusOffline();
-                    /*
-                     * See
-                     * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6416721
-                     * for why I think it's OK to comment out the following call
-                     * to Thread.yield(). It's probably a no-op on most systems.
-                     */
-                    // yield();
                 }// end buffer loop
             }// end isSortNext loop
             offlineController.atSortEnd();
