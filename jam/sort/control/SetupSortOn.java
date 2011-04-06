@@ -464,7 +464,7 @@ public final class SetupSortOn extends AbstractSetup {
             consoleLog
                     .messageOutln("Communications and processing daemons successfully initiated.");
             if (sortRoutine.getEventSizeMode() == EventSizeMode.CNAF) {
-                setupCamac(); // set the camac crate
+                setupCamac(); // set the CAMAC crate
                 consoleLog.messageOutln("CAMAC command lists sent.");
             } else if (sortRoutine.getEventSizeMode() == EventSizeMode.VME_MAP) {
                 setupVMEmap();

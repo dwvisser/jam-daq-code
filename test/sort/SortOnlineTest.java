@@ -3,7 +3,9 @@ package test.sort;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import injection.GuiceInjector;
 import jam.data.HistInt1D;
+import jam.global.JamProperties;
 import jam.script.Session;
 
 import org.junit.After;
@@ -16,6 +18,10 @@ import org.junit.Test;
 public class SortOnlineTest {
 
     private static Session session = OnlineTestCommon.session;
+    static {
+        // Need to make sure properties have been loaded from *.ini files.
+        GuiceInjector.getObjectInstance(JamProperties.class);
+    }
 
     private static HistInt1D setupOnlineAndVerifyHistogram() {
         final String sortRoutineName = "help.sortfiles.EvsDE";

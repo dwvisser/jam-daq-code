@@ -7,7 +7,6 @@ import jam.fit.ValueAndUncertaintyFormatter;
 import jam.global.Broadcaster;
 import jam.global.RuntimeSubclassIdentifier;
 import jam.io.AbstractImpExp;
-import jam.io.hdf.HDFIO;
 import jam.plot.Action;
 import jam.plot.PlotContainer;
 import jam.sort.RingBufferFactory;
@@ -66,13 +65,6 @@ public final class GuiceInjector {
     public static <T extends AbstractImpExp> T getImpExpInstance(
             final Class<T> clazz) {
         return INJECTOR.getInstance(clazz);
-    }
-
-    /**
-     * @return object for reading/writing Jam HDF files
-     */
-    public static HDFIO getHDFIO() {
-        return INJECTOR.getInstance(HDFIO.class);
     }
 
     /**
