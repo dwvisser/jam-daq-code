@@ -14,34 +14,34 @@ import org.junit.Test;
  */
 public class StringUtilitiesTest extends TestCase {// NOPMD
 
-	private transient final StringUtilities util = GuiceInjector
-			.getStringUtilities();
+    private transient final StringUtilities util = GuiceInjector
+            .getObjectInstance(StringUtilities.class);
 
-	/**
-	 * Tests whether makeLength() works properly.
-	 */
-	@Test
-	public final void testMakeLength() {
-		final int testLength = 8;
-		final String test1 = "Dale";
-		final String answer1 = "Dale    ";
-		assertEquals("Failed to lengthen String properly.", util.makeLength(
-				test1, testLength), answer1);
-		final String test2 = "Dale Visser";
-		final String answer2 = "Dale Vis";
-		assertEquals("Failed to shorten String properly.", util.makeLength(
-				test2, testLength), answer2);
-	}
+    /**
+     * Tests whether makeLength() works properly.
+     */
+    @Test
+    public final void testMakeLength() {
+        final int testLength = 8;
+        final String test1 = "Dale";
+        final String answer1 = "Dale    ";
+        assertEquals("Failed to lengthen String properly.",
+                util.makeLength(test1, testLength), answer1);
+        final String test2 = "Dale Visser";
+        final String answer2 = "Dale Vis";
+        assertEquals("Failed to shorten String properly.",
+                util.makeLength(test2, testLength), answer2);
+    }
 
-	/**
-	 * Tests whether getASCIIstring() works properly.
-	 */
-	@Test
-	public final void testGetASCIIstring() {
-		final byte[] hell = { 0x48, 0x65, 0x6c, 0x6c };
-		final String sHell = "Hell";
-		assertEquals("Failed to convert ASCII byte array properly.", util
-				.getASCIIstring(hell), sHell);
-	}
+    /**
+     * Tests whether getASCIIstring() works properly.
+     */
+    @Test
+    public final void testGetASCIIstring() {
+        final byte[] hell = {0x48, 0x65, 0x6c, 0x6c };
+        final String sHell = "Hell";
+        assertEquals("Failed to convert ASCII byte array properly.",
+                util.getASCIIstring(hell), sHell);
+    }
 
 }

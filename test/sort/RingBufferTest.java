@@ -1,6 +1,7 @@
 package test.sort;
 
 import injection.GuiceInjector;
+import jam.Version;
 import jam.sort.RingBuffer;
 import jam.sort.RingBufferFactory;
 
@@ -29,14 +30,14 @@ public final class RingBufferTest {// NOPMD
     private transient RingBuffer ring, emptyRing;
 
     private transient final RingBufferFactory ringFactory = GuiceInjector
-            .getRingBufferFactory();
+            .getObjectInstance(RingBufferFactory.class);
 
     private transient final String expectedClassName = GuiceInjector
-            .getVersion().isJ2SE6() ? "jam.sort.LinkedBlockingDequeRingBuffer"
+            .getObjectInstance(Version.class).isJ2SE6() ? "jam.sort.LinkedBlockingDequeRingBuffer"
             : "jam.sort.SimpleRingBuffer";
 
     private final transient ExecutorService executor = GuiceInjector
-            .getExecutorService();
+            .getObjectInstance(ExecutorService.class);
 
     /**
      * @param output
@@ -53,18 +54,18 @@ public final class RingBufferTest {// NOPMD
 
     private void assertRingBufferEmpty(final RingBuffer ring2) {
         Assert.assertTrue("Expected empty ring buffer.", ring2.isEmpty());
-        Assert.assertFalse("Expected ring buffer to not be full.", ring2
-                .isFull());
+        Assert.assertFalse("Expected ring buffer to not be full.",
+                ring2.isFull());
         Assert.assertEquals("Expected all buffers in ring to be available.",
                 RingBuffer.NUMBER_BUFFERS, ring2.getAvailableBuffers());
     }
 
     private void assertRingBufferFull(final RingBuffer ring2) {
-        Assert.assertFalse("Expected ring buffer to not be empty.", ring2
-                .isEmpty());
+        Assert.assertFalse("Expected ring buffer to not be empty.",
+                ring2.isEmpty());
         Assert.assertTrue("Expected full ring buffer.", ring2.isFull());
-        Assert.assertEquals("Expected zero available buffers.", 0, ring2
-                .getAvailableBuffers());
+        Assert.assertEquals("Expected zero available buffers.", 0,
+                ring2.getAvailableBuffers());
     }
 
     /**
@@ -142,8 +143,8 @@ public final class RingBufferTest {// NOPMD
         this.clear(ring);
         this.fillEmptyRingBuffer(ring, RingBuffer.NUMBER_BUFFERS
                 - RingBuffer.CLOSE_TO_CAPACITY + 1);
-        Assert.assertTrue("Expected buffer to be close to full.", ring
-                .isCloseToFull());
+        Assert.assertTrue("Expected buffer to be close to full.",
+                ring.isCloseToFull());
     }
 
     /**
@@ -172,8 +173,8 @@ public final class RingBufferTest {// NOPMD
         Assert.assertTrue("emptyRing explicitly 'null'", emptyRing.isNull());
         Assert.assertFalse("Allocated ring not null.", ring.isNull());
         Assert.assertTrue("'null' rings are full.", emptyRing.isFull());
-        Assert.assertTrue("'null' rings are nearly full.", emptyRing
-                .isCloseToFull());
+        Assert.assertTrue("'null' rings are nearly full.",
+                emptyRing.isCloseToFull());
         Assert.assertTrue("'null' rings are empty.", emptyRing.isEmpty());
         Assert.assertEquals("'null' rings never have used buffers.", 0,
                 emptyRing.getUsedBuffers());
@@ -202,10 +203,10 @@ public final class RingBufferTest {// NOPMD
         assertRingBufferFull(ring);
         ring.getBuffer(out);
         /* Ring buffer is FIFO. */
-        Assert.assertFalse("Expected arrays to not be equal.", Arrays.equals(
-                buffer, out));
-        Assert.assertFalse("Expected ring buffer to not be full.", ring
-                .isFull());
+        Assert.assertFalse("Expected arrays to not be equal.",
+                Arrays.equals(buffer, out));
+        Assert.assertFalse("Expected ring buffer to not be full.",
+                ring.isFull());
         putBuffer(ring, buffer, true);
         assertRingBufferFull(ring);
         putBuffer(ring, buffer, false);
@@ -224,8 +225,8 @@ public final class RingBufferTest {// NOPMD
         final Future<Boolean> putFuture = executor.submit(putter);
         final Future<byte[]> getFuture = executor.submit(getter);
         try {
-            Assert.assertTrue("Expected put to return true.", putFuture.get(
-                    timeoutMsec, TimeUnit.MILLISECONDS));
+            Assert.assertTrue("Expected put to return true.",
+                    putFuture.get(timeoutMsec, TimeUnit.MILLISECONDS));
             getFuture.get(timeoutMsec, TimeUnit.MILLISECONDS);
         } catch (InterruptedException ie) {
             Assert.fail("Test interrupted.\n" + ie.getMessage());
@@ -238,8 +239,8 @@ public final class RingBufferTest {// NOPMD
 
     static class Getter implements Callable<byte[]> {
         private transient final RingBuffer ring;
-        private static final byte[] buffer = GuiceInjector
-                .getRingBufferFactory().freshBuffer();
+        private static final byte[] buffer = GuiceInjector.getObjectInstance(
+                RingBufferFactory.class).freshBuffer();
 
         Getter(final RingBuffer ring) {
             this.ring = ring;
@@ -254,7 +255,7 @@ public final class RingBufferTest {// NOPMD
     static class Putter implements Callable<Boolean> {
 
         private transient final RingBufferFactory ringFactory = GuiceInjector
-                .getRingBufferFactory();
+                .getObjectInstance(RingBufferFactory.class);
 
         private transient final RingBuffer ring;
 

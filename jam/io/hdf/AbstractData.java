@@ -57,7 +57,7 @@ public abstract class AbstractData {
     protected static final Map<Short, Class<? extends AbstractData>> TYPES = new HashMap<Short, Class<? extends AbstractData>>();
 
     protected static final StringUtilities STRING_UTIL = GuiceInjector
-            .getStringUtilities();
+            .getObjectInstance(StringUtilities.class);
 
     // Instance members
 

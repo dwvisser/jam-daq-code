@@ -34,7 +34,7 @@ public final class Module extends AbstractModule {
         this.bind(JFrame.class).toInstance(new JFrame("Jam"));
         this.bind(ExecutorService.class).toInstance(
                 Executors.newCachedThreadPool());
-        this.bind(Frame.class).toProvider(FrameProvider.class);
+        this.bind(Frame.class).to(JFrame.class);
         this.bind(AcquisitionStatus.class).to(JamStatus.class);
         this.bind(CurrentPlotAccessor.class).to(PlotDisplay.class);
         this.bind(PlotSelectListener.class).to(PlotDisplay.class);
@@ -42,21 +42,8 @@ public final class Module extends AbstractModule {
                 FrontEndVMECommunicator.class);
         this.bind(ScalerCommunication.class).to(ScalerVMECommunicator.class);
         this.bind(CommandFinder.class).toProvider(CommandFinderProvider.class);
-        this.bind(CommandListener.class).annotatedWith(MapListener.class).to(
-                CommandManager.class);
-    }
-
-    class FrameProvider implements Provider<Frame> {
-        private final transient JFrame frame;
-
-        @Inject
-        protected FrameProvider(final JFrame frame) {
-            this.frame = frame;
-        }
-
-        public Frame get() {
-            return this.frame;
-        }
+        this.bind(CommandListener.class).annotatedWith(MapListener.class)
+                .to(CommandManager.class);
     }
 
     class CommandFinderProvider implements Provider<CommandFinder> {

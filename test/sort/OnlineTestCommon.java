@@ -34,7 +34,7 @@ public final class OnlineTestCommon {
             .getObjectInstance(Session.class);
 
     private static final ExecutorService EXECUTOR = GuiceInjector
-            .getExecutorService();
+            .getObjectInstance(ExecutorService.class);
 
     /**
      * GUI mock front end application.

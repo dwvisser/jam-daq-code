@@ -64,7 +64,7 @@ public final class CommandManager implements CommandListener, ActionCreator {
             if (created) {
                 currentCom = INSTANCES.get(strCmd);
             } else {
-                currentCom = GuiceInjector.getCommandableInstance(cmdClass);
+                currentCom = GuiceInjector.getObjectInstance(cmdClass);
                 currentCom.initCommand();
                 if (currentCom instanceof Observer) {
                     this.broadcaster.addObserver((Observer) currentCom);

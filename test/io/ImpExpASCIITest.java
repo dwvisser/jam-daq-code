@@ -8,6 +8,7 @@ import jam.data.AbstractHistogram;
 import jam.data.Group;
 import jam.io.ImpExpASCII;
 import jam.io.ImpExpException;
+import jam.util.FileUtilities;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -66,8 +67,8 @@ public final class ImpExpASCIITest {// NOPMD
 
     private void readHistDataAndCheck(final File file) throws ImpExpException {
         impExp.openFile(file);
-        final String groupName = GuiceInjector.getFileUtilities()
-                .removeExtensionFileName(file.getName());
+        final String groupName = GuiceInjector.getObjectInstance(
+                FileUtilities.class).removeExtensionFileName(file.getName());
         final Group importGroup = jam.data.Warehouse.getGroupCollection().get(
                 groupName);
         final AbstractHistogram hist = importGroup.histograms.getList().get(0);

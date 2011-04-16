@@ -32,7 +32,7 @@ public class OnlineScalerTest implements Observer {
     private transient final CountDownLatch latch = new CountDownLatch(1);
 
     private transient final Broadcaster BROADCASTER = GuiceInjector
-            .getBroadcaster();
+            .getObjectInstance(Broadcaster.class);
 
     /**
      * set up before test

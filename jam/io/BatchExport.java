@@ -246,7 +246,7 @@ public final class BatchExport extends JDialog implements Observer {
         set.remove(AbstractImpExp.class);
         for (Class<? extends AbstractImpExp> temp : set) {
             final AbstractImpExp impExp = GuiceInjector
-                    .getImpExpInstance(temp);
+                    .getObjectInstance(temp);
             if (impExp.batchExportAllowed()) {
                 rval.add(impExp);
                 impExp.setSilent();

@@ -45,212 +45,211 @@ import java.util.logging.Logger;
  * whereby the last buffer from the previous run gets put as the first buffer as
  * the next run. Give it a directory and it will print which event files have a
  * first buffer with and end-of-run character at the end of it.
- * 
  * @author Dale Visser
  * @version 6 August 2002
  */
 public final class CheckEventFiles {
 
-	private static final String PACKAGENAME = CheckEventFiles.class
-			.getPackage().getName();
+    private static final String PACKAGENAME = CheckEventFiles.class
+            .getPackage().getName();
 
-	static {
-		new LoggerConfig(PACKAGENAME);
-	}
+    static {
+        new LoggerConfig(PACKAGENAME);
+    }
 
-	private static final Logger LOGGER = Logger.getLogger(PACKAGENAME);
+    private static final Logger LOGGER = Logger.getLogger(PACKAGENAME);
 
-	/**
-	 * @param args
-	 *            one argument--directory where event files are to be checked
-	 */
-	public static void main(final String[] args) {
-		boolean printHelp = false;
-		if (args.length >= 2) {
-			final FileUtilities fileUtil = GuiceInjector.getFileUtilities();
-			final File file1 = fileUtil.getDir(args[0]);
-			final File file2 = fileUtil.getDir(args[1]);
-			if (file1 == null || file2 == null) {
-				printHelp = true;
-			} else {
-				new CheckEventFiles(file1, file2);
-			}
-		} else {
-			printHelp = true;
-		}
-		if (printHelp) {
-			LOGGER.info("CheckEventFiles needs 2 arguments:");
-			LOGGER.info("\t1st arg: directory containing event files");
-			LOGGER.info("\t2nd arg: directory for output files");
-		}
-	}
+    /**
+     * @param args
+     *            one argument--directory where event files are to be checked
+     */
+    public static void main(final String[] args) {
+        boolean printHelp = false;
+        if (args.length >= 2) {
+            final FileUtilities fileUtil = GuiceInjector
+                    .getObjectInstance(FileUtilities.class);
+            final File file1 = fileUtil.getDir(args[0]);
+            final File file2 = fileUtil.getDir(args[1]);
+            if (file1 == null || file2 == null) {
+                printHelp = true;
+            } else {
+                new CheckEventFiles(file1, file2);
+            }
+        } else {
+            printHelp = true;
+        }
+        if (printHelp) {
+            LOGGER.info("CheckEventFiles needs 2 arguments:");
+            LOGGER.info("\t1st arg: directory containing event files");
+            LOGGER.info("\t2nd arg: directory for output files");
+        }
+    }
 
-	private CheckEventFiles(final File dir, final File outDir) {
-		super();
-		final File[] eventFiles = getEventFiles(dir);
-		if (eventFiles.length > 0) {
-			LOGGER.info("Found event files, starting to examine...");
-			checkFirstBuffer(eventFiles);
-			makeScalerSummaries(eventFiles, outDir);
-		} else {
-			LOGGER.warning("Didn't find event files in " + dir);
-		}
-		LOGGER.info("Done.");
-	}
+    private CheckEventFiles(final File dir, final File outDir) {
+        super();
+        final File[] eventFiles = getEventFiles(dir);
+        if (eventFiles.length > 0) {
+            LOGGER.info("Found event files, starting to examine...");
+            checkFirstBuffer(eventFiles);
+            makeScalerSummaries(eventFiles, outDir);
+        } else {
+            LOGGER.warning("Didn't find event files in " + dir);
+        }
+        LOGGER.info("Done.");
+    }
 
-	private void checkFirstBuffer(final File eventFile) {
-		final int bytesToSkip = 256 + 8192 - 4;
-		LOGGER.info("Checking File " + eventFile);
-		try {
-			final DataInputStream instream = new DataInputStream(
-					new BufferedInputStream(new FileInputStream(eventFile)));
-			/* skip header and all but last word of first data buffer */
-			final boolean skipSuccess = (bytesToSkip == instream
-					.skip(bytesToSkip));
-			if (skipSuccess) {
-				final int word = instream.readInt();
-				final String sWord = "0x" + Integer.toHexString(word);
-				if (word == 0x01EEEEEE) { // end-of-run word
-					LOGGER.info("...[" + sWord + "]...needs fixing");
-				} else {
-					LOGGER.info("...[" + sWord + "]...OK");
-				}
-			} else {
-				LOGGER.warning("...file not long enough for one data buffer");
-			}
-			instream.close();
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
-		}
-	}
+    private void checkFirstBuffer(final File eventFile) {
+        final int bytesToSkip = 256 + 8192 - 4;
+        LOGGER.info("Checking File " + eventFile);
+        try {
+            final DataInputStream instream = new DataInputStream(
+                    new BufferedInputStream(new FileInputStream(eventFile)));
+            /* skip header and all but last word of first data buffer */
+            final boolean skipSuccess = (bytesToSkip == instream
+                    .skip(bytesToSkip));
+            if (skipSuccess) {
+                final int word = instream.readInt();
+                final String sWord = "0x" + Integer.toHexString(word);
+                if (word == 0x01EEEEEE) { // end-of-run word
+                    LOGGER.info("...[" + sWord + "]...needs fixing");
+                } else {
+                    LOGGER.info("...[" + sWord + "]...OK");
+                }
+            } else {
+                LOGGER.warning("...file not long enough for one data buffer");
+            }
+            instream.close();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
 
-	private void checkFirstBuffer(final File[] eventFiles) {
-		for (int i = 0; i < eventFiles.length; i++) {
-			checkFirstBuffer(eventFiles[i]);
-		}
-	}
+    private void checkFirstBuffer(final File[] eventFiles) {
+        for (int i = 0; i < eventFiles.length; i++) {
+            checkFirstBuffer(eventFiles[i]);
+        }
+    }
 
-	private File[] getEventFiles(final File path) {
-		return path.listFiles(new FilenameFilter() {
-			public boolean accept(final File dir, final String name) {
-				return name.endsWith("evn");
-			}
-		});
-	}
+    private File[] getEventFiles(final File path) {
+        return path.listFiles(new FilenameFilter() {
+            public boolean accept(final File dir, final String name) {
+                return name.endsWith("evn");
+            }
+        });
+    }
 
-	private void makeScalerSummaries(final File[] infiles, final File outPath) {
-		for (int j = 0; j < infiles.length; j++) {
-			makeScalerSummary(infiles[j], outPath);
-		}
-		LOGGER.info("Done.");
-	}
+    private void makeScalerSummaries(final File[] infiles, final File outPath) {
+        for (int j = 0; j < infiles.length; j++) {
+            makeScalerSummary(infiles[j], outPath);
+        }
+        LOGGER.info("Done.");
+    }
 
-	private void makeScalerSummary(final File infile, final File outPath) {
-		final File csvFile = new File(outPath, infile.getName().substring(0,
-				infile.getName().lastIndexOf(".evn"))
-				+ "_scalers.csv");
-		FileWriter csvStream = null;
-		DataInputStream fromStream = null;
-		try {
-			final FileInputStream fromFile = new FileInputStream(infile);
-			fromStream = new DataInputStream(new BufferedInputStream(fromFile));
-			LOGGER.info("Reading file: " + infile.getPath());
-			LOGGER.info("Scaler summary in: " + csvFile.getPath());
-			csvStream = new FileWriter(csvFile);
-			// skip header from input stream
-			final int headerSize = 256;
-			final int skipped = fromStream.skipBytes(headerSize);
-			if (skipped != headerSize) {
-				throw new IOException("Expected to skip " + headerSize
-						+ " bytes, only skipped " + skipped);
-			}
-			processAllScalerBlocks(csvStream, fromStream);
-		} catch (EOFException e) {
-			LOGGER
-					.warning("EOFException: End of event file reached. Closing file.");
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
-		} finally {
-			try {
-				if (fromStream != null) {
-					fromStream.close();
-				}
-				if (csvStream != null) {
-					csvStream.close();
-				}
-			} catch (IOException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			}
-		}
-	}
+    private void makeScalerSummary(final File infile, final File outPath) {
+        final File csvFile = new File(outPath, infile.getName().substring(0,
+                infile.getName().lastIndexOf(".evn"))
+                + "_scalers.csv");
+        FileWriter csvStream = null;
+        DataInputStream fromStream = null;
+        try {
+            final FileInputStream fromFile = new FileInputStream(infile);
+            fromStream = new DataInputStream(new BufferedInputStream(fromFile));
+            LOGGER.info("Reading file: " + infile.getPath());
+            LOGGER.info("Scaler summary in: " + csvFile.getPath());
+            csvStream = new FileWriter(csvFile);
+            // skip header from input stream
+            final int headerSize = 256;
+            final int skipped = fromStream.skipBytes(headerSize);
+            if (skipped != headerSize) {
+                throw new IOException("Expected to skip " + headerSize
+                        + " bytes, only skipped " + skipped);
+            }
+            processAllScalerBlocks(csvStream, fromStream);
+        } catch (EOFException e) {
+            LOGGER.warning("EOFException: End of event file reached. Closing file.");
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        } finally {
+            try {
+                if (fromStream != null) {
+                    fromStream.close();
+                }
+                if (csvStream != null) {
+                    csvStream.close();
+                }
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+    }
 
-	/**
-	 * @param SCALER_HEADER
-	 * @param csvStream
-	 * @param fromStream
-	 * @throws IOException
-	 */
-	private void processAllScalerBlocks(final FileWriter csvStream,
-			final DataInputStream fromStream) throws IOException {
-		final int SCALER_HEADER = 0x01cccccc;
-		int blockNum = 0;
-		final List<Integer> lastVal = new ArrayList<Integer>(16);
-		final List<Integer> val = new ArrayList<Integer>(16);
-		while (true) {
-			final int readVal = fromStream.readInt();
-			if (readVal == SCALER_HEADER) {
-				blockNum++;
-				final int numScalers = fromStream.readInt();
-				if (blockNum == 1) {
-					initializeLists(lastVal, val, numScalers);
-				}
-				processScalerBlock(csvStream, fromStream, blockNum, lastVal,
-						val, numScalers);
-				csvStream.write("\n");
-			}
-		}
-	}
+    /**
+     * @param SCALER_HEADER
+     * @param csvStream
+     * @param fromStream
+     * @throws IOException
+     */
+    private void processAllScalerBlocks(final FileWriter csvStream,
+            final DataInputStream fromStream) throws IOException {
+        final int SCALER_HEADER = 0x01cccccc;
+        int blockNum = 0;
+        final List<Integer> lastVal = new ArrayList<Integer>(16);
+        final List<Integer> val = new ArrayList<Integer>(16);
+        while (true) {
+            final int readVal = fromStream.readInt();
+            if (readVal == SCALER_HEADER) {
+                blockNum++;
+                final int numScalers = fromStream.readInt();
+                if (blockNum == 1) {
+                    initializeLists(lastVal, val, numScalers);
+                }
+                processScalerBlock(csvStream, fromStream, blockNum, lastVal,
+                        val, numScalers);
+                csvStream.write("\n");
+            }
+        }
+    }
 
-	/**
-	 * @param csvStream
-	 * @param fromStream
-	 * @param blockNum
-	 * @param lastVal
-	 * @param val
-	 * @param numScalers
-	 * @throws IOException
-	 */
-	private void processScalerBlock(final FileWriter csvStream,
-			final DataInputStream fromStream, final int blockNum,
-			final List<Integer> lastVal, final List<Integer> val,
-			final int numScalers) throws IOException {
-		for (int i = 0; i < numScalers; i++) {
-			final int value = fromStream.readInt();
-			val.set(i, value);
-			csvStream.write(Integer.toString(value));
-			if (i < numScalers) {
-				csvStream.write(",");
-			}
-			if (value < lastVal.get(i)) {
-				LOGGER.info("Scaler " + i + " out of sequence, block "
-						+ blockNum);
-			}
-			lastVal.set(i, value);
-		}
-	}
+    /**
+     * @param csvStream
+     * @param fromStream
+     * @param blockNum
+     * @param lastVal
+     * @param val
+     * @param numScalers
+     * @throws IOException
+     */
+    private void processScalerBlock(final FileWriter csvStream,
+            final DataInputStream fromStream, final int blockNum,
+            final List<Integer> lastVal, final List<Integer> val,
+            final int numScalers) throws IOException {
+        for (int i = 0; i < numScalers; i++) {
+            final int value = fromStream.readInt();
+            val.set(i, value);
+            csvStream.write(Integer.toString(value));
+            if (i < numScalers) {
+                csvStream.write(",");
+            }
+            if (value < lastVal.get(i)) {
+                LOGGER.info("Scaler " + i + " out of sequence, block "
+                        + blockNum);
+            }
+            lastVal.set(i, value);
+        }
+    }
 
-	/**
-	 * @param lastVal
-	 * @param val
-	 * @param numScalers
-	 */
-	private void initializeLists(final List<Integer> lastVal,
-			final List<Integer> val, final int numScalers) {
-		val.clear();
-		lastVal.clear();
-		for (int i = 0; i < numScalers; i++) {
-			lastVal.add(-1);
-			val.add(-1);
-		}
-	}
+    /**
+     * @param lastVal
+     * @param val
+     * @param numScalers
+     */
+    private void initializeLists(final List<Integer> lastVal,
+            final List<Integer> val, final int numScalers) {
+        val.clear();
+        lastVal.clear();
+        for (int i = 0; i < numScalers; i++) {
+            lastVal.add(-1);
+            val.add(-1);
+        }
+    }
 }

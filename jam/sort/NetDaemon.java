@@ -158,8 +158,8 @@ public final class NetDaemon extends GoodThread {
                     "Could not start netDeamon, socket null {NetDaemon]");
         }
         // bufferOut and dataIn keep getting re-used
-        final byte[] bufferOut = GuiceInjector.getRingBufferFactory()
-                .freshBuffer();
+        final byte[] bufferOut = GuiceInjector.getObjectInstance(
+                RingBufferFactory.class).freshBuffer();
         final DatagramPacket dataIn = new DatagramPacket(bufferOut,
                 bufferOut.length);
         while (checkState()) {// loop as long as state is RUN
