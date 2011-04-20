@@ -20,8 +20,6 @@ import java.util.concurrent.Executors;
 import javax.swing.JFrame;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 /**
  * Guice dependency injection module.
@@ -44,18 +42,5 @@ public final class Module extends AbstractModule {
         this.bind(CommandFinder.class).toProvider(CommandFinderProvider.class);
         this.bind(CommandListener.class).annotatedWith(MapListener.class)
                 .to(CommandManager.class);
-    }
-
-    class CommandFinderProvider implements Provider<CommandFinder> {
-        private final transient CommandFinder commandFinder;
-
-        @Inject
-        protected CommandFinderProvider(final CommandManager commandManager) {
-            this.commandFinder = commandManager.getCommandFinder();
-        }
-
-        public CommandFinder get() {
-            return this.commandFinder;
-        }
     }
 }

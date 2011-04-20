@@ -134,7 +134,8 @@
     			<pathelement location="${copy.dir}" />
     			<pathelement location="${copy.dir}/jh.jar" />
     			<pathelement location="${copy.dir}/junit-4.3.1.jar" />
-    			<pathelement location="${copy.dir}/guice-1.0.jar"/>
+    			<pathelement location="${copy.dir}/guice-3.0.jar"/>
+    			<pathelement location="${copy.dir}/javax.inject.jar"/>
     		</classpath>
     	</javac>
     </target> 	
@@ -163,8 +164,9 @@
 		    <classpath> 
     			<pathelement location="${copy.dir}/jh.jar" />
     			<pathelement location="${copy.dir}/aopalliance.jar" />
-    			<pathelement location="${copy.dir}/guice-1.0.jar"/>
+    			<pathelement location="${copy.dir}/guice-3.0.jar"/>
 		    	<pathelement location="${copy.dir}/junit-4.3.1.jar"/>
+    			<pathelement location="${copy.dir}/javax.inject.jar"/>
 		    	<pathelement location="${copy.dir}" />
 		    </classpath>                    
 			<batchtest fork="yes" todir="${reports.dir}"> 
@@ -201,8 +203,9 @@
     	 	<fileset dir="${build.dir}" includes="${jam.jar}" />
     	 	<fileset dir="${build.dir}" includes="${src.zip}" />
     	 	<fileset dir="${copy.dir}" includes="jh.jar" />
-    	 	<fileset dir="${copy.dir}" includes="guice-1.0.jar" />
+    	 	<fileset dir="${copy.dir}" includes="guice-3.0.jar" />
     	 	<fileset dir="${copy.dir}" includes="aopalliance.jar" />
+    		<fileset dir="${copy.dir}" includes="javax.inject.jar" />
    		</copy>
   		<copy todir="${release.dir}">
   			<fileset dir="${base.dir}/launch" includes="jam.*" />
@@ -225,7 +228,8 @@
     	<copy todir="${winlib}">
     	 	<fileset dir="${build.dir}" includes="${jam.jar}" />
     	 	<fileset dir="${copy.dir}" includes="jh.jar" />
-    	 	<fileset dir="${copy.dir}" includes="guice-1.0.jar" />
+    	 	<fileset dir="${copy.dir}" includes="guice-3.0.jar" />
+    		<fileset dir="${copy.dir}" includes="javax.inject.jar" />
     	 	<fileset dir="${copy.dir}" includes="aopalliance.jar" />
     	</copy>
     	<copy todir="${windows}" file="${fullsrc.zip}" />

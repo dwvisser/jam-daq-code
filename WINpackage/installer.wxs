@@ -23,14 +23,16 @@
                             	Source="lib/jam-@MAJOR@.@MINOR@.@RELEASE@.jar"
                             	LongName="jam-@MAJOR@.@MINOR@.@RELEASE@.jar" />
                             <File Id="guice" Name="guice.jar" DiskId="1"
-                            	Source="lib/guice-1.0.jar" LongName="guice-1.0.jar" />
+                            	Source="lib/guice-3.0.jar" LongName="guice-1.0.jar" />
                             <File
                             	Id="jh" Name="jh.jar" DiskId="1"
-                            	Source="lib/jh.jar">
-</File>
+                            	Source="lib/jh.jar" />
                         	<File Id="aopalliance" Name="aop.jar"
                         		DiskId="1" Source="lib/aopalliance.jar"
                         		LongName="aopalliance.jar" />
+                        	<File Id="inject" Name="inject.jar"
+                        		DiskId="1" Source="lib/javax.inject.jar"
+                        		LongName="javax.inject.jar" />
                         </Component>
                     </Directory>
                     <Directory Id="bin" Name="bin">
