@@ -4,6 +4,6 @@ Windows: Use jam.cmd to launch Jam.
 
 Linux, MacOS X, etc.: Use jam.sh to launch Jam.
 
-You will likely need to edit the launch file to give the correct path to java.exe.
+Make sure that the path to Java is in your system path.
 
 Help files are available from the Help menu once the application is launched.

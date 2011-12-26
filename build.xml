@@ -128,7 +128,7 @@
     </target>
        
     <target name="compile" depends="copy">
-    	<javac target="1.5" srcdir="${copy.dir}" destdir="${copy.dir}">
+    	<javac source="1.5" target="1.5" includeantruntime="false" srcdir="${copy.dir}" destdir="${copy.dir}">
     		<compilerarg value="-Xlint:unchecked" />
     		<classpath>
     			<pathelement location="${copy.dir}" />

@@ -1,1 +1,1 @@
-C:\Progra~1\Java\jdk@java.latest@\bin\java.exe -classpath @jam.jar@;jh.jar;guice-1.0.jar;aopalliance.jar jam.Main
+java -classpath @jam.jar@;jh.jar;guice-3.0.jar;aopalliance.jar;javax.inject.jar jam.Main
