@@ -15,7 +15,7 @@
 	<property name = "winlib" value="${windows}/lib" />
 	<property name = "MAJOR" value="2" />
 	<property name = "MINOR" value="4" />
-	<property name = "RELEASE" value="18" />
+	<property name = "RELEASE" value="19" />
 	<property name = "java.latest" value = "1.6.0_07" />
 	<property name = "jam.version" value = "${MAJOR}.${MINOR}.${RELEASE}" />
 	<property name="jam.jar" value="jam-${jam.version}.jar" />

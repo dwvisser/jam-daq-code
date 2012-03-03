@@ -42,9 +42,8 @@ public final class MultipleFileChooser extends JPanel {
 
 	private transient final JList listFiles = new JList(listFilesModel);
 
-	private transient File lastFile; // last file referred to in a
-
-	// JFileChooser
+	/* last file referred to in a JFileChooser */
+	private transient File lastFile;
 
 	private transient final JPanel pButtons = new JPanel(new GridLayout(0, 1,
 			5, 2));
@@ -75,10 +74,10 @@ public final class MultipleFileChooser extends JPanel {
 	public MultipleFileChooser(final Frame frame) {
 		super(new BorderLayout(5, 5));
 		this.frame = frame;
-		// Panel with list
+		// Panel with list - center of panel with the list of files
 		listFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.add(new JScrollPane(listFiles), BorderLayout.CENTER);
-		// Commands Panel
+		// Commands Panel - Left side of panel with the buttons
 		final JPanel pLeft = new JPanel();
 		pLeft.setLayout(new BoxLayout(pLeft, BoxLayout.Y_AXIS));
 		pLeft.setBorder(new EmptyBorder(0, 5, 0, 0));
@@ -124,6 +123,17 @@ public final class MultipleFileChooser extends JPanel {
 				saveList();
 			}
 		});
+	}
+
+	/**
+	 * @param frame
+	 *            parent frame
+	 * @param startFolder
+	 *            place to start browsing
+	 */
+	public MultipleFileChooser(Frame frame, File startFolder) {
+		this(frame);
+		this.lastFile = startFolder;
 	}
 
 	/**
@@ -372,6 +382,13 @@ public final class MultipleFileChooser extends JPanel {
 	 */
 	public void removeAllFiles() {
 		listFilesModel.removeAllElements();
+	}
+
+	/**
+	 * @return the folder that this instance will currently open
+	 */
+	public File getCurrentFolder() {
+		return (new JFileChooser(lastFile)).getCurrentDirectory();
 	}
 
 }

@@ -1,5 +1,6 @@
 package jam.sort.control;
 
+import static jam.global.PropertyKeys.EVENT_INPATH;
 import static jam.global.PropertyKeys.EVENT_OUTFILE;
 import static jam.global.PropertyKeys.EVENT_OUTPATH;
 import static java.util.logging.Level.SEVERE;
@@ -83,32 +84,31 @@ public final class SortControl extends javax.swing.JDialog implements
 	private transient final JFrame frame;
 
 	@Inject
-	protected SortControl(final JFrame frame, final JamStatus status,
+	public SortControl(final JFrame frame, final JamStatus status,
 			final Icons icons) {
 		super(frame, "Sorting", false);
 		this.frame = frame;
 		this.STATUS = status;
 		this.beginAction = this.createBeginAction(icons);
 		this.haltAction = this.createHaltAction(icons);
-		final String eventDefault = JamProperties.getPropString(EVENT_OUTPATH);
-		final String outDefault = JamProperties.getPropString(EVENT_OUTFILE);
 		setResizable(true);// sometimes there are long paths to files
 		setLocation(20, 50);
 		/* GUI layout */
 		final java.awt.Container contents = getContentPane();
 		contents.setLayout(new BorderLayout(10, 10));
-		/* Top Panel */
+		/* Top Panel - just a label */
 		final JPanel ptop = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		ptop.setBorder(new EmptyBorder(10, 0, 0, 0));
 		contents.add(ptop, BorderLayout.NORTH);
 		ptop.add(new javax.swing.JLabel("Event Files to Sort",
 				javax.swing.SwingConstants.RIGHT));
-		/* List Panel */
-		multiFile = new MultipleFileChooser(frame);
+		/* List Panel - center - MultipleFileChooser */
+		multiFile = new MultipleFileChooser(frame, new File(
+				JamProperties.getPropString(EVENT_INPATH)));
 		multiFile.showListSaveLoadButtons(true);
 		multiFile.setFileFilter(new ExtensionFileFilter("evn", "Event Files"));
 		contents.add(multiFile, BorderLayout.CENTER);
-		/* Bottom Panel */
+		/* Bottom Panel - output file and buttons to begin and halt sorting */
 		final JPanel pbottom = new JPanel(new GridLayout(0, 1, 5, 5));
 		pbottom.setBorder(new EmptyBorder(0, 5, 0, 10));
 		contents.add(pbottom, BorderLayout.SOUTH);
@@ -124,6 +124,8 @@ public final class SortControl extends javax.swing.JDialog implements
 		});
 		pout.add(cout);
 
+		final String eventDefault = JamProperties.getPropString(EVENT_OUTPATH);
+		final String outDefault = JamProperties.getPropString(EVENT_OUTFILE);
 		textOutFile = new JTextField(eventDefault + File.separator + outDefault);
 		textOutFile.setColumns(28);
 		pout.add(textOutFile);
@@ -264,11 +266,10 @@ public final class SortControl extends javax.swing.JDialog implements
 				try {
 					outputDaemon.writeHeader();
 				} catch (Exception e) {
-					LOGGER
-							.log(
-									SEVERE,
-									"Sort|Control.Begin: couldn't write header to event output file.",
-									e);
+					LOGGER.log(
+							SEVERE,
+							"Sort|Control.Begin: couldn't write header to event output file.",
+							e);
 				}
 			}
 		} else {
@@ -412,11 +413,8 @@ public final class SortControl extends javax.swing.JDialog implements
 			try {
 				outputDaemon.closeEventOutputFile();
 			} catch (SortException e) {
-				LOGGER
-						.log(
-								SEVERE,
-								"Sort|Control...: couldn't close event output file.",
-								e);
+				LOGGER.log(SEVERE,
+						"Sort|Control...: couldn't close event output file.", e);
 			}
 			LOGGER.info("Closed pre-sorted file: " + fileOut.getPath());
 		}
@@ -483,5 +481,12 @@ public final class SortControl extends javax.swing.JDialog implements
 		textOutFile.setEnabled(state);
 		bbrowse.setEnabled(state);
 		writeEvents = state;
+	}
+
+	/**
+	 * @return the file chooser being used, for testing purposes
+	 */
+	public MultipleFileChooser getFileChooser() {
+		return this.multiFile;
 	}
 }

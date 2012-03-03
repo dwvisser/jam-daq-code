@@ -90,7 +90,10 @@ public final class Icons {
 	 */
 	public final transient ImageIcon END;
 
-	protected Icons() {
+	/**
+	 * Default constructor, public for testing purposes.
+	 */
+	public Icons() {
 		super();
 		final ClassLoader LOADER = ClassLoader.getSystemClassLoader();
 		final URL urlStop = LOADER.getResource("jam/ui/stop.png");
