@@ -46,7 +46,7 @@ public final class GateSet extends AbstractControl {
 
 	private transient final JButton addP, removeP, unset, save, cancel;
 
-	private transient final JComboBox cgate;
+	private transient final JComboBox<Object> cgate;
 
 	private transient Gate currentGate;
 
@@ -82,7 +82,7 @@ public final class GateSet extends AbstractControl {
 		/* panel with chooser */
 		final JPanel pChooser = new JPanel();
 		pChooser.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
-		cgate = new JComboBox(new GateComboBoxModel());
+		cgate = new JComboBox<Object>(new GateComboBoxModel());
 		final java.awt.Dimension dimset = cgate.getPreferredSize();
 		dimset.width = 200;
 		cgate.setPreferredSize(dimset);
@@ -221,9 +221,8 @@ public final class GateSet extends AbstractControl {
 							gatePoints.add(pChannel);
 							setLowerUpperText();
 						} else {
-							LOGGER
-									.severe(getClass().getName()
-											+ ".addPoint(): setting 1 d gate should not be here.");
+							LOGGER.severe(getClass().getName()
+									+ ".addPoint(): setting 1 d gate should not be here.");
 						}
 					}
 				} else if (currentHistogram instanceof AbstractHist2D) {

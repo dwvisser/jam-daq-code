@@ -1,7 +1,7 @@
 package jam.data.control;
 
-import jam.data.Gate;
 import jam.data.AbstractHistogram;
+import jam.data.Gate;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
 
@@ -17,7 +17,7 @@ import javax.swing.DefaultComboBoxModel;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 1.4.2 RC 3
  */
-final class GateComboBoxModel extends DefaultComboBoxModel {
+final class GateComboBoxModel extends DefaultComboBoxModel<Object> {
 
 	/**
 	 * Class representing the possible modes of GateComboBoxModel's. Only two
@@ -83,12 +83,10 @@ final class GateComboBoxModel extends DefaultComboBoxModel {
 	@Override
 	public Object getElementAt(final int index) {
 		final int nonNegIndex = Math.max(index, 0);
-		final String NO_GATES = "No Gates";
-		final String CHOOSE_A_GATE = "Choose a gate";
-		Object rval = NO_GATES; // default value if no gates
+		Object rval = "No Gates"; // default value if no gates
 		if (numGates() > 0) {
 			if (index == 0) {
-				rval = CHOOSE_A_GATE;
+				rval = "Choose a gate";
 			} else {
 				final AbstractHistogram his = (AbstractHistogram) SelectionTree
 						.getCurrentHistogram();

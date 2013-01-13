@@ -29,16 +29,17 @@ import javax.swing.SwingConstants;
 import com.google.inject.Inject;
 
 /**
- * The toolbar that goes with the display.
+ * The tool bar that goes with the display.
  * 
  * @author Dale Visser
  */
 final class Toolbar extends JToolBar implements ActionListener {
 
 	/**
-	 * Class to render rebin selections
+	 * Class to render re-bin selections
 	 */
-	class ReBinComboBoxRenderer extends JLabel implements ListCellRenderer {
+	class ReBinComboBoxRenderer extends JLabel implements
+			ListCellRenderer<Integer> {
 
 		ReBinComboBoxRenderer() {
 			super();
@@ -50,12 +51,13 @@ final class Toolbar extends JToolBar implements ActionListener {
 		 * This method finds the image and text corresponding to the selected
 		 * value and returns the label, set up to display the text and image.
 		 */
-		public Component getListCellRendererComponent(final JList list,
-				final Object value, final int index, final boolean isSelected,
+		public Component getListCellRendererComponent(
+				final JList<? extends Integer> list, final Integer value,
+				final int index, final boolean isSelected,
 				final boolean cellHasFocus) {
 			// Get the selected index. (The index param isn't
 			// always valid, so just use the value.)
-			final int selectedIndex = ((Integer) value).intValue();
+			final int selectedIndex = value.intValue();
 			// Set foreground and background
 			if (isSelected) {
 				setBackground(list.getSelectionBackground());
@@ -86,7 +88,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 
 	private transient JButton bnetarea, bgoto;
 
-	private transient JComboBox comboBinRatio;
+	private transient JComboBox<Integer> comboBinRatio;
 
 	private final transient Icon iRebin;
 
@@ -120,21 +122,18 @@ final class Toolbar extends JToolBar implements ActionListener {
 		setRollover(false);
 		try {
 			final JButton bupdate = getButton(iUpdate, "<u>U</u>pdate");
-			bupdate
-					.setToolTipText(getHTML("<u>U</u>pdate display with most current data."));
+			bupdate.setToolTipText(getHTML("<u>U</u>pdate display with most current data."));
 			bupdate.setActionCommand(PlotCommands.UPDATE);
 			bupdate.addActionListener(this);
 			add(bupdate);
 			final JButton blinear = getButton(iLinLog,
 					"<u>Li</u>near/<u>Lo</u>g");
-			blinear
-					.setToolTipText(getHTML("<u>Li</u>near/<u>Lo</u>g scale toggle."));
+			blinear.setToolTipText(getHTML("<u>Li</u>near/<u>Lo</u>g scale toggle."));
 			blinear.setActionCommand(PlotCommands.SCALE);
 			blinear.addActionListener(this);
 			add(blinear);
 			final JButton bauto = getButton(iAutoScale, "<u>A</u>utoscale");
-			bauto
-					.setToolTipText(getHTML("<u>A</u>utomatically set the counts scale."));
+			bauto.setToolTipText(getHTML("<u>A</u>utomatically set the counts scale."));
 			bauto.setActionCommand(PlotCommands.AUTO);
 			bauto.addActionListener(this);
 			add(bauto);
@@ -148,7 +147,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 			for (int i = 0; i < REBIN_RATIOS.length; i++) {
 				intVector.add(i, i);
 			}
-			comboBinRatio = new JComboBox(intVector);
+			comboBinRatio = new JComboBox<Integer>(intVector);
 			final Dimension dimMax = comboBinRatio.getMaximumSize();
 			final Dimension dimPref = comboBinRatio.getPreferredSize();
 			dimMax.width = dimPref.width + 40;
@@ -158,9 +157,10 @@ final class Toolbar extends JToolBar implements ActionListener {
 					.setToolTipText(getHTML("<u>Re</u>bin, enter a bin width in the console."));
 			comboBinRatio.addActionListener(new ActionListener() {
 				public void actionPerformed(final ActionEvent ae) {
-					final Object item = ((JComboBox) ae.getSource())
-							.getSelectedItem();
-					selectionReBin((Integer) item);
+					@SuppressWarnings("unchecked")
+					final Integer item = (Integer) ((JComboBox<Integer>) ae
+							.getSource()).getSelectedItem();
+					selectionReBin(item);
 				}
 			});
 			add(comboBinRatio);
@@ -232,11 +232,10 @@ final class Toolbar extends JToolBar implements ActionListener {
 							final Integer newValue = (Integer) evt
 									.getNewValue();
 							/* place an appropriate value in the user prefs */
-							PlotPreferences.PREFS
-									.put(
-											LOCATION_KEY,
-											(newValue.intValue() == SwingConstants.HORIZONTAL) ? BorderLayout.NORTH
-													: BorderLayout.WEST);
+							PlotPreferences.PREFS.put(
+									LOCATION_KEY,
+									(newValue.intValue() == SwingConstants.HORIZONTAL) ? BorderLayout.NORTH
+											: BorderLayout.WEST);
 							fitToolbar();
 						}
 					});
@@ -277,13 +276,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 	}
 
 	private JButton getButton(final Icon icon, final String altText) {
-		final JButton rval;
-		if (icon == null) {
-			rval = new JButton(getHTML(altText));
-		} else {
-			rval = new JButton(icon);
-		}
-		return rval;
+		return icon == null ? new JButton(getHTML(altText)) : new JButton(icon);
 
 	}
 

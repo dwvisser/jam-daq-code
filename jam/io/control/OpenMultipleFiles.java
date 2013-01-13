@@ -50,9 +50,9 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 
 	private transient final JDialog dialog;
 
-	private transient JList histList;
+	private transient JList<String> histList;
 
-	private transient DefaultListModel hListModel;
+	private transient DefaultListModel<String> hListModel;
 
 	private transient JTextField txtListFile;
 
@@ -164,8 +164,8 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 		txtListFile.setEditable(false);
 		pOption.add(txtListFile);
 		panel.add(pOption, BorderLayout.NORTH);
-		hListModel = new DefaultListModel();
-		histList = new JList(hListModel);
+		hListModel = new DefaultListModel<String>();
+		histList = new JList<String>(hListModel);
 		histList.setSelectedIndex(0);
 		histList.setVisibleRowCount(10);
 		final JScrollPane listPane = new JScrollPane(histList);
@@ -210,7 +210,7 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	}
 
 	private void checkSelectionIsNone() {
-		final ListModel listModel = histList.getModel();
+		final ListModel<String> listModel = histList.getModel();
 		int[] selected = histList.getSelectedIndices();
 		selected = histList.getSelectedIndices();
 		if (selected.length == 0) {
@@ -226,7 +226,7 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 * Check there are histogram in the histogram list.
 	 */
 	private void checkHistogramsLoaded() {
-		final ListModel listModel = histList.getModel();
+		final ListModel<String> listModel = histList.getModel();
 		final int size = listModel.getSize();
 		if (size == 0) {
 			refreshHistList();
@@ -287,12 +287,11 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 
 	private List<HistogramAttributes> createSelectedHistogramNamesList() {
 		checkSelectionIsNone();
-		final Object[] selected = histList.getSelectedValues();
+		final List<String> selected = histList.getSelectedValuesList();
 		final List<HistogramAttributes> histAttrList = new ArrayList<HistogramAttributes>();
 		/* Put selected histograms into a list */
-		for (int i = 0; i < selected.length; i++) {
+		for (String histFullName : selected) {
 			// Get name from full name
-			final String histFullName = (String) selected[i];
 			final HistogramAttributes histAttrib = HistogramAttributes
 					.getHistogramAttribute(histFullName);
 			histAttrList.add(histAttrib);
@@ -301,7 +300,7 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	}
 
 	private void defaultSelection() {
-		final ListModel listModel = histList.getModel();
+		final ListModel<String> listModel = histList.getModel();
 		/* Non-selected select all */
 		final int[] selectIndex = histList.getSelectedIndices();
 		if (selectIndex.length == 0) {

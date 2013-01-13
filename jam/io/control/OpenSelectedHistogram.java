@@ -55,9 +55,9 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 
 	private transient final JTextField txtFile;
 
-	private transient final JList histList;
+	private transient final JList<String> histList;
 
-	private transient final DefaultListModel histListData;
+	private transient final DefaultListModel<String> histListData;
 
 	/**
 	 * File to read histogram information from
@@ -106,10 +106,9 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 		pFileInd.add(txtFile);
 		container.add(pFileInd, BorderLayout.NORTH);
 		/* Selection list */
-		histListData = new DefaultListModel();
-		histList = new JList(histListData);
-		histList
-				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		histListData = new DefaultListModel<String>();
+		histList = new JList<String>(histListData);
+		histList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		histList.setSelectedIndex(0);
 		histList.setVisibleRowCount(10);
 		final JScrollPane listPane = new JScrollPane(histList);
@@ -186,16 +185,15 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	 * non-javadoc: Load the histograms in the selected list.
 	 */
 	private void loadHistograms() {
-		final Object[] selected = histList.getSelectedValues();
+		final List<String> selected = histList.getSelectedValuesList();
 		final List<HistogramAttributes> histAttrList = new ArrayList<HistogramAttributes>();
 		// No histograms selected
-		if (selected.length == 0) {
+		if (selected.isEmpty()) {
 			LOGGER.severe("No histograms selected");
 		} else {
 			/* Put selected histograms into a list */
 			final List<String> selectNames = new ArrayList<String>();
-			for (int i = 0; i < selected.length; i++) {
-				final String histFullName = (String) selected[i];
+			for (String histFullName : selected) {
 				final HistogramAttributes histAttrib = HistogramAttributes
 						.getHistogramAttribute(histFullName);
 				histAttrList.add(histAttrib);

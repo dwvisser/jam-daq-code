@@ -51,20 +51,22 @@ public class HistogramNew extends AbstractControl {
 
 	private static final int CHOOSER_SIZE = 200;
 
-	private transient final DefaultComboBoxModel comboGroupModel;
+	private transient final DefaultComboBoxModel<String> comboGroupModel;
 
 	private transient final JTextField textName;
 
 	private transient final JTextField textTitle;
 
-	private transient final JComboBox comboSize;
+	private transient final JComboBox<Integer> comboSize;
 
 	private transient final JCheckBox coneInt, coneDbl, ctwoInt, ctwoDbl;
 
 	private transient final JamStatus status;
 
-	private final static String[] DEFAULT_SIZES = { "64", "128", "256", "512",
-			"1024", "2048", "4096", "8192", };
+	private final static Integer[] DEFAULT_SIZES = { Integer.valueOf(64),
+			Integer.valueOf(128), Integer.valueOf(256), Integer.valueOf(512),
+			Integer.valueOf(1024), Integer.valueOf(2048),
+			Integer.valueOf(4096), Integer.valueOf(8192) };
 
 	/**
 	 * Construct a new "new histogram" dialog.
@@ -101,8 +103,9 @@ public class HistogramNew extends AbstractControl {
 		cdialogNew.add(pEntires, BorderLayout.CENTER);
 		final JPanel pGroup = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		pEntires.add(pGroup);
-		comboGroupModel = new DefaultComboBoxModel();
-		final JComboBox comboGroup = new JComboBox(comboGroupModel);
+		comboGroupModel = new DefaultComboBoxModel<String>();
+		final JComboBox<String> comboGroup = new JComboBox<String>(
+				comboGroupModel);
 		final Dimension dim = comboGroup.getPreferredSize();
 		dim.width = CHOOSER_SIZE;
 		comboGroup.setPreferredSize(dim);
@@ -140,7 +143,7 @@ public class HistogramNew extends AbstractControl {
 		pEntires.add(pradio);
 		final JPanel pSize = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		pEntires.add(pSize);
-		comboSize = new JComboBox(DEFAULT_SIZES);
+		comboSize = new JComboBox<Integer>(DEFAULT_SIZES);
 		comboSize.setEditable(true);
 		pSize.add(comboSize);
 		/* panel for buttons */
@@ -211,9 +214,8 @@ public class HistogramNew extends AbstractControl {
 		final String groupName = (String) comboGroupModel.getSelectedItem();
 		final String name = textName.getText().trim();
 		final String title = textTitle.getText().trim();
-		final int size = Integer
-				.parseInt(((String) comboSize.getSelectedItem()).trim());
-		final Object array;
+		final int size = ((Integer) comboSize.getSelectedItem()).intValue();
+		Object array;
 		if (coneInt.isSelected()) {
 			array = new int[size];
 		} else if (coneDbl.isSelected()) {

@@ -36,7 +36,7 @@ final class GateListCellRenderer extends DefaultListCellRenderer {
 	 *      java.lang.Object, int, boolean, boolean)
 	 */
 	@Override
-	public Component getListCellRendererComponent(final JList list,
+	public Component getListCellRendererComponent(final JList<?> list,
 			final Object value, final int index, final boolean isSelected,
 			final boolean cellHasFocus) {
 		setComponentOrientation(list.getComponentOrientation());

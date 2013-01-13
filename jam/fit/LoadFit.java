@@ -72,13 +72,10 @@ public class LoadFit {
 		this.rtsi = rtsi;
 		jamMain = frame;
 		this.display = display;
-		final String dialogName = "Load Fit Routine";
-		dialog = new JDialog(jamMain, dialogName, false);
+		dialog = new JDialog(jamMain, "Load Fit Routine", false);
 		final Container contents = dialog.getContentPane();
 		dialog.setResizable(false);
-		final int posx = 20;
-		final int posy = 50;
-		dialog.setLocation(posx, posy);
+		dialog.setLocation(20, 50);
 		contents.setLayout(new BorderLayout());
 		// panel for fit file
 		final JPanel pFit = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -86,6 +83,7 @@ public class LoadFit {
 		pFit.setBorder(border);
 		final JLabel lFit = new JLabel("Fit class: ", SwingConstants.RIGHT);
 		pFit.add(lFit);
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		final JComboBox chooseFit = new JComboBox(this.getFitClasses());
 		final Dimension dim = chooseFit.getPreferredSize();
 		dim.width = 200;
@@ -113,11 +111,9 @@ public class LoadFit {
 	}
 
 	private Object[] getFitClasses() {
-		final String package1 = "jam.fit";
-		final String package2 = "fit";
-		final Set<Class<? extends AbstractFit>> set = rtsi.find(package1,
+		final Set<Class<? extends AbstractFit>> set = rtsi.find("jam.fit",
 				AbstractFit.class, false);
-		set.addAll(rtsi.find(package2, AbstractFit.class, false));
+		set.addAll(rtsi.find("fit", AbstractFit.class, false));
 		return set.toArray();
 	}
 

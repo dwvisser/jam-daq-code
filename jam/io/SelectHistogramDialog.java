@@ -9,6 +9,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.DefaultListModel;
@@ -28,9 +29,9 @@ class SelectHistogramDialog {
 
 	private transient final JDialog dialog;
 
-	private transient final JList histList;
+	private transient final JList<AbstractHistogram> histList;
 
-	private transient JList lstHists;
+	private transient JList<AbstractHistogram> lstHists;
 
 	@Inject
 	SelectHistogramDialog(final JFrame frame) {
@@ -41,10 +42,9 @@ class SelectHistogramDialog {
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
 		/* Selection list */
-		final DefaultListModel histListData = new DefaultListModel();
-		histList = new JList(histListData);
-		histList
-				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		final DefaultListModel<AbstractHistogram> histListData = new DefaultListModel<AbstractHistogram>();
+		histList = new JList<AbstractHistogram>(histListData);
+		histList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		histList.setSelectedIndex(0);
 		histList.setVisibleRowCount(10);
 		final JScrollPane listPane = new JScrollPane(histList);
@@ -65,24 +65,26 @@ class SelectHistogramDialog {
 		dialog.pack();
 	}
 
-	protected void setExternalList(final JList list) {
+	protected void setExternalList(final JList<AbstractHistogram> list) {
 		this.lstHists = list;
 	}
 
 	private void addToSelection() {
-		final Object[] selected = histList.getSelectedValues();
+		final List<AbstractHistogram> selected = histList
+				.getSelectedValuesList();
 		final HashSet<Object> histFullSet = new HashSet<Object>();
 		/* now combine this with stuff already in list. */
-		final ListModel model = lstHists.getModel();
+		final ListModel<AbstractHistogram> model = lstHists.getModel();
 		for (int i = 0; i < model.getSize(); i++) {
 			histFullSet.add(model.getElementAt(i));
 		}
-		for (int i = 0; i < selected.length; i++) {
-			if (!histFullSet.contains(selected[i])) {
-				histFullSet.add(selected[i]);
+		for (AbstractHistogram histogram : selected) {
+			if (!histFullSet.contains(histogram)) {
+				histFullSet.add(histogram);
 			}
 		}
-		lstHists.setListData(histFullSet.toArray());
+		lstHists.setListData(histFullSet
+				.toArray(new AbstractHistogram[histFullSet.size()]));
 	}
 
 	protected void show() {
@@ -90,7 +92,8 @@ class SelectHistogramDialog {
 		CollectionsUtil.getSingletonInstance().addConditional(
 				AbstractHistogram.getHistogramList(), histSet,
 				BatchExport.HIST_COND_1D);
-		histList.setListData(histSet.toArray());
+		histList.setListData(histSet.toArray(new AbstractHistogram[histSet
+				.size()]));
 		dialog.setVisible(true);
 	}
 }

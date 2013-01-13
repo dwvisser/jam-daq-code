@@ -40,7 +40,7 @@ public final class SaveSelectedHistogram {
 
 	private transient final JDialog dialog;
 
-	private transient final JList listHist;
+	private transient final JList<String> listHist;
 
 	private transient final HDFIO hdfio;
 
@@ -63,10 +63,9 @@ public final class SaveSelectedHistogram {
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
 		/* Selection list */
-		final DefaultListModel listModel = new DefaultListModel();
-		listHist = new JList(listModel);
-		listHist
-				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		final DefaultListModel<String> listModel = new DefaultListModel<String>();
+		listHist = new JList<String>(listModel);
+		listHist.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		listHist.setSelectedIndex(0);
 		listHist.setVisibleRowCount(10);
 		final JScrollPane listPane = new JScrollPane(listHist);
@@ -137,10 +136,9 @@ public final class SaveSelectedHistogram {
 		final List<AbstractHistogram> listSelected = new ArrayList<AbstractHistogram>();
 		File file = null;
 		/* Add selected histograms to a list. */
-		final Object[] selected = listHist.getSelectedValues();
-		for (int i = 0; i < selected.length; i++) {
-			listSelected.add(AbstractHistogram
-					.getHistogram((String) selected[i]));
+		final List<String> selected = listHist.getSelectedValuesList();
+		for (String name : selected) {
+			listSelected.add(AbstractHistogram.getHistogram(name));
 		}
 		/* Select file */
 		final JFileChooser chooser = new JFileChooser(HDFIO.getLastValidFile());

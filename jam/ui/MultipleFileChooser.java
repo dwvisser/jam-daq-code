@@ -38,9 +38,10 @@ public final class MultipleFileChooser extends JPanel {
 	private static final Logger LOGGER = Logger
 			.getLogger(MultipleFileChooser.class.getPackage().getName());
 
-	private transient final DefaultListModel listFilesModel = new DefaultListModel();
+	private transient final DefaultListModel<File> listFilesModel = new DefaultListModel<File>();
 
-	private transient final JList listFiles = new JList(listFilesModel);
+	private transient final JList<File> listFiles = new JList<File>(
+			listFilesModel);
 
 	/* last file referred to in a JFileChooser */
 	private transient File lastFile;
@@ -183,10 +184,10 @@ public final class MultipleFileChooser extends JPanel {
 	 * @return the selected file
 	 */
 	public File getSelectedFile() {
-		File file = (File) listFiles.getSelectedValue();
+		File file = listFiles.getSelectedValue();
 		if (file == null && listFilesModel.getSize() > 0) {
 			listFiles.setSelectedIndex(0);
-			file = (File) listFiles.getSelectedValue();
+			file = listFiles.getSelectedValue();
 		}
 		return file;
 	}
@@ -233,7 +234,7 @@ public final class MultipleFileChooser extends JPanel {
 			try {
 				saveStream = new FileWriter(lastFile);
 				for (int i = 0; i < listFilesModel.size(); i++) {
-					final File file = (File) listFilesModel.elementAt(i);
+					final File file = listFilesModel.elementAt(i);
 					saveStream.write(file.getAbsolutePath());
 					saveStream.write("\n");
 				}
@@ -370,9 +371,9 @@ public final class MultipleFileChooser extends JPanel {
 	 * remove a file from the list
 	 */
 	private void removeFile() {
-		final Object[] removeList = listFiles.getSelectedValues();
-		for (int i = 0; i < removeList.length; i++) {
-			listFilesModel.removeElement(removeList[i]);
+		final List<File> removeList = listFiles.getSelectedValuesList();
+		for (File file : removeList) {
+			listFilesModel.removeElement(file);
 		}
 	}
 
@@ -388,7 +389,7 @@ public final class MultipleFileChooser extends JPanel {
 	 * @return the folder that this instance will currently open
 	 */
 	public File getCurrentFolder() {
-		return (new JFileChooser(lastFile)).getCurrentDirectory();
+		return new JFileChooser(lastFile).getCurrentDirectory();
 	}
 
 }
