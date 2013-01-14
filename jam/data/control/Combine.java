@@ -44,7 +44,7 @@ import com.google.inject.Inject;
  */
 public class Combine extends AbstractManipulation implements Observer {
 
-	private transient final JComboBox cfrom1, cfrom2, cto;
+	private transient final JComboBox<Object> cfrom1, cfrom2, cto;
 
 	private transient JCheckBox cnorm;
 
@@ -83,11 +83,11 @@ public class Combine extends AbstractManipulation implements Observer {
 		this.numberUtilities = numberUtilities;
 		setResizable(false);
 		Dimension dim;
-		final int hgap = 5;
-		final int vgap = 5;
 		int meanCharWidth;
 		// UI
 		final Container cdmanip = getContentPane();
+		int hgap = 5;
+		int vgap = 5;
 		cdmanip.setLayout(new BorderLayout(hgap, vgap));
 		setLocation(20, 50);
 
@@ -109,7 +109,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		// From Panel
 		final JPanel pfrom1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pfrom1);
-		cfrom1 = new JComboBox();
+		cfrom1 = new JComboBox<Object>();
 		meanCharWidth = getMeanCharWidth(cfrom1
 				.getFontMetrics(cfrom1.getFont()));
 		dim = cfrom1.getPreferredSize();
@@ -168,7 +168,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		// With panel
 		final JPanel pfrom2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pfrom2);
-		cfrom2 = new JComboBox();
+		cfrom2 = new JComboBox<Object>();
 		meanCharWidth = getMeanCharWidth(cfrom2
 				.getFontMetrics(cfrom2.getFont()));
 		dim = cfrom2.getPreferredSize();
@@ -184,7 +184,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		// To panel
 		final JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pto);
-		cto = new JComboBox();
+		cto = new JComboBox<Object>();
 		meanCharWidth = getMeanCharWidth(cfrom1
 				.getFontMetrics(cfrom1.getFont()));
 		dim = cto.getPreferredSize();
@@ -244,29 +244,25 @@ public class Combine extends AbstractManipulation implements Observer {
 	 * non-javadoc: Does the work of manipulating histograms
 	 */
 	private void combine() throws DataException {
-		final double[] in1, err1;
-		final double[] in2, err2;
-		final double[] out, errOut;
 		String operation = "";
 		validateFactors();
 		final AbstractHist1D hfrom1 = (AbstractHist1D) AbstractHistogram
 				.getHistogram((String) cfrom1.getSelectedItem());
 		AbstractHist1D hfrom2 = null;
-		in1 = doubleCountsArray(hfrom1);
-		err1 = hfrom1.getErrors();
+		double[] in1 = doubleCountsArray(hfrom1);
+		double[] err1 = hfrom1.getErrors();
+		double[] in2 = null;
+		double[] err2 = null;
 		if (cfrom2.isEnabled()) {
 			hfrom2 = (AbstractHist1D) AbstractHistogram
 					.getHistogram((String) cfrom2.getSelectedItem());
 			in2 = doubleCountsArray(hfrom2);
 			err2 = hfrom2.getErrors();
-		} else {
-			in2 = null;
-			err2 = null;
 		}
 		assignDestinationHistogram(hfrom1);
 		hto.setZero();
-		out = doubleCountsArray(hto);
-		errOut = hto.getErrors();
+		double[] out = doubleCountsArray(hto);
+		double[] errOut = hto.getErrors();
 		final int numChannels = getNumChannels(in1, in2, out);
 		// Do calculation
 		if (cnorm.isSelected()) {

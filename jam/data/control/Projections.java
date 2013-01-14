@@ -54,7 +54,7 @@ public final class Projections extends AbstractManipulation implements
 
 	private static final String BETWEEN = "Between Channels";
 
-	private transient final JComboBox cfrom, cto, cchan;
+	private transient final JComboBox<Object> cfrom, cto, cchan;
 
 	private transient final JCheckBox cdown;
 
@@ -87,9 +87,9 @@ public final class Projections extends AbstractManipulation implements
 		super(frame, "Project 2D Histogram", false, broadcaster);
 		this.numberUtilities = numberUtilities;
 		setResizable(false);
-		final int hgap = 5;
-		final int vgap = 10;
 		final Container cdproject = getContentPane();
+		int hgap = 5;
+		int vgap = 10;
 		cdproject.setLayout(new BorderLayout(hgap, vgap));
 		setLocation(20, 50);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -107,7 +107,7 @@ public final class Projections extends AbstractManipulation implements
 		cdproject.add(pEntries, BorderLayout.CENTER);
 		/* From histogram */
 		final JPanel phist = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		cfrom = new JComboBox(new HistogramComboBoxModel(
+		cfrom = new JComboBox<Object>(new HistogramComboBoxModel(
 				HistogramComboBoxModel.Mode.TWO_D));
 		int meanWidth = getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
 		Dimension dim = cfrom.getPreferredSize();
@@ -131,7 +131,7 @@ public final class Projections extends AbstractManipulation implements
 				new FlowLayout(FlowLayout.LEFT, 5, 0));
 		tlim1 = new JTextField(5);
 		tlim2 = new JTextField(5);
-		cchan = new JComboBox();
+		cchan = new JComboBox<Object>();
 		dim = cchan.getPreferredSize();
 		dim.width = CHOOSER_SIZE;
 		cchan.setPreferredSize(dim);
@@ -149,7 +149,7 @@ public final class Projections extends AbstractManipulation implements
 		pEntries.add(pchannel);
 		/* To histogram */
 		final JPanel ptextto = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		cto = new JComboBox();
+		cto = new JComboBox<Object>();
 		meanWidth = getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
 		dim = cto.getPreferredSize();
 		dim.width = CHAR_LENGTH * meanWidth;
@@ -319,13 +319,12 @@ public final class Projections extends AbstractManipulation implements
 	 * non-javadoc: Does the work of projecting a histogram
 	 */
 	private void project() throws DataException {
-		final double[][] counts2d;
+		double[][] counts2d;
 		final AbstractHistogram hfrom = AbstractHistogram
 				.getHistogram(hfromname);
 		counts2d = (hfrom.getType() == HistogramType.TWO_D_DOUBLE) ? ((HistDouble2D) hfrom)
-				.getCounts()
-				: this.numberUtilities.intToDouble2DArray(((HistInt2D) hfrom)
-						.getCounts());
+				.getCounts() : this.numberUtilities
+				.intToDouble2DArray(((HistInt2D) hfrom).getCounts());
 		final String name = (String) cto.getSelectedItem();
 		final Object selected = cchan.getSelectedItem();
 		final boolean between = BETWEEN.equals(selected);

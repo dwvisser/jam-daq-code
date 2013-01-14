@@ -19,7 +19,7 @@ import javax.swing.event.ListDataListener;
  * @author Ken Swartz
  * @version 1.4.2 RC 3
  */
-final class CalibrationComboBoxModel implements ComboBoxModel {
+final class CalibrationComboBoxModel implements ComboBoxModel<Object> {
 
 	private transient Object selection;
 
@@ -39,8 +39,7 @@ final class CalibrationComboBoxModel implements ComboBoxModel {
 	 */
 	public Object getElementAt(final int index) {
 		synchronized (selectSync) {
-			return CalibrationFunctionCollection.getListNames().get(
-					index);
+			return CalibrationFunctionCollection.getListNames().get(index);
 		}
 	}
 
@@ -66,8 +65,8 @@ final class CalibrationComboBoxModel implements ComboBoxModel {
 		synchronized (selectSync) {
 			String selectionNew;
 			if (anItem == null) {
-				selectionNew = CalibrationFunctionCollection
-						.getListNames().get(0);
+				selectionNew = CalibrationFunctionCollection.getListNames()
+						.get(0);
 			} else if (anItem instanceof String) {
 				selectionNew = (String) anItem;
 			} else if (anItem instanceof AbstractCalibrationFunction) {

@@ -58,7 +58,8 @@ public class CalibrationFit extends AbstractControl {
 	/* GUI stuff */
 	private transient final JTabbedPane tabPane;// Tabbed for fit type
 
-	private transient final JComboBox funcChooser;// Chooser for function type
+	private transient final JComboBox<Object> funcChooser;// Chooser for
+															// function type
 
 	private transient final JLabel lcalibEq;
 
@@ -107,7 +108,7 @@ public class CalibrationFit extends AbstractControl {
 		/* Equation chooser */
 		final JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		pChoose.add(new JLabel("Function: "));
-		funcChooser = new JComboBox(new CalibrationComboBoxModel());
+		funcChooser = new JComboBox<Object>(new CalibrationComboBoxModel());
 		funcChooser.setRenderer(new CalibrationListCellRenderer());
 		funcChooser.addItemListener(new ItemListener() {
 			public void itemStateChanged(final ItemEvent event) {
@@ -286,11 +287,10 @@ public class CalibrationFit extends AbstractControl {
 	}
 
 	private void updateSelection() {
-		final String name;
 		boolean isCalPts = true;
 		calibFunc = getCurrentCalibrationFunction();
 		/* Select name. */
-		name = calibFunc.getName();
+		String name = calibFunc.getName();
 		/* Set fit type. */
 		if (calibFunc.isFitPoints()) {
 			isCalPts = true;
@@ -386,10 +386,8 @@ public class CalibrationFit extends AbstractControl {
 				fitText = calibFunc.getFormula(numFormatCoeff);
 				currentHist.setCalibration(calibFunc);
 				broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
-				LOGGER
-						.info("Calibrated histogram "
-								+ currentHist.getFullName().trim() + " with "
-								+ fitText);
+				LOGGER.info("Calibrated histogram "
+						+ currentHist.getFullName().trim() + " with " + fitText);
 			} else {
 				LOGGER.severe("Need at least 2 points");
 			}

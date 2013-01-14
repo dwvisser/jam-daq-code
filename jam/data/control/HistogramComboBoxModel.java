@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 1.4.2 RC3
  */
-final class HistogramComboBoxModel extends DefaultComboBoxModel {
+final class HistogramComboBoxModel extends DefaultComboBoxModel<Object> {
 
 	private transient Object selection = null;
 
@@ -91,8 +91,7 @@ final class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 */
 	@Override
 	public Object getElementAt(final int index) {
-		final String NO_HISTS = "No Histograms";
-		Object rval = NO_HISTS; // default value if no histograms
+		Object rval = "No Histograms"; // default value if no histograms
 		final int size = getSize();
 		if (index < 0 || index >= size) {
 			JOptionPane.showMessageDialog(null, "WARNING: "

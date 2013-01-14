@@ -63,8 +63,8 @@ abstract class AbstractManipulation extends AbstractControl {
 	/*
 	 * non-javadoc: add histograms of type type1 and type2 to chooser
 	 */
-	protected void loadAllHists(final JComboBox comboBox, final boolean addNew,
-			final int histDim) {
+	protected void loadAllHists(final JComboBox<Object> comboBox,
+			final boolean addNew, final int histDim) {
 		comboBox.removeAllItems();
 		if (addNew) {
 			// Add working group new
@@ -103,9 +103,8 @@ abstract class AbstractManipulation extends AbstractControl {
 	 */
 	protected String parseGroupName(final String name) {
 		final StringBuilder builder = new StringBuilder(name);
-		final String groupName = builder.substring(NEW_HIST.length(), name
-				.length()
-				- WILD_CARD.length());
+		final String groupName = builder.substring(NEW_HIST.length(),
+				name.length() - WILD_CARD.length());
 		return groupName;
 	}
 
@@ -140,9 +139,9 @@ abstract class AbstractManipulation extends AbstractControl {
 	 * @return mean width of a character in pixels
 	 */
 	protected int getMeanCharWidth(final FontMetrics fontMetrics) {
-		final int numWidths = 256; // ASCII set
 		final int[] widths = fontMetrics.getWidths();
 		double sum = 0.0;
+		int numWidths = 256; // ASCII set
 		for (int i = 0; i < numWidths; i++) {
 			sum += widths[i];
 		}

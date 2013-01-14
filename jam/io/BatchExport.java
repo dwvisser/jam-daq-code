@@ -485,13 +485,14 @@ public final class BatchExport extends JDialog implements Observer {
 	 * remove a histogram from the list
 	 */
 	private void removeSelectedHist() {
-		final Object[] removeList = lstHists.getSelectedValues();
-		final ListModel model = lstHists.getModel();
+		final List<AbstractHistogram> removeList = lstHists
+				.getSelectedValuesList();
+		final ListModel<AbstractHistogram> model = lstHists.getModel();
 		final List<Object> list = new ArrayList<Object>();
 		for (int i = 0; i < model.getSize(); i++) {
 			list.add(model.getElementAt(i));
 		}
-		list.removeAll(java.util.Arrays.asList(removeList));
+		list.removeAll(removeList);
 		lstHists.setListData(list.toArray(EMPTY));
 	}
 
