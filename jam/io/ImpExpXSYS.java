@@ -415,7 +415,7 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 
 		int outInt;
 		// for unsigned integers clear not in loop
-		outInt = (inByte[position + 0] << 0) | (inByte[position + 1] << 8)
+		outInt = (inByte[position]) | (inByte[position + 1] << 8)
 				| (inByte[position + 2] << 16) | (inByte[position + 3] << 24);
 
 		return outInt;

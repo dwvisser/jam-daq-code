@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 
-    private static enum BufferStatus {
+    private enum BufferStatus {
         /**
          * Indicates the state where flushing of the remaining contents of the
          * buffer is occuring.
@@ -66,7 +66,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
      * Type of pointer in FIFO buffer.
      * @author Dale Visser
      */
-    private static enum FifoPointer {
+    private enum FifoPointer {
         /**
          * where next get operation will be
          */
@@ -90,7 +90,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 
     // event counter/event should be retrieved
     // from
-    private transient final int[] eventNumbers = new int[CAEN_StreamFields.BUFFER_DEPTH];;
+    private transient final int[] eventNumbers = new int[CAEN_StreamFields.BUFFER_DEPTH];
 
     /**
      * Keys are the event numbers, values are the array indices.

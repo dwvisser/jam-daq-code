@@ -66,7 +66,7 @@ import com.google.inject.Singleton;
 public final class RunControl extends JDialog implements Controller,
 		RunController {
 
-	private static enum Device {
+	private enum Device {
 		/**
 		 * Indicates running to or from disk.
 		 */
@@ -86,9 +86,9 @@ public final class RunControl extends JDialog implements Controller,
 	private transient final Begin begin;
 
 	private transient final JCheckBox cHistZero = new JCheckBox("Histograms",
-			true);;
+			true);
 
-	private transient File dataPath, histPath;
+    private transient File dataPath, histPath;
 
 	private transient Device device;
 
@@ -486,6 +486,6 @@ public final class RunControl extends JDialog implements Controller,
 	}
 
 	private boolean storageCaughtUp() {
-		return device == Device.FRONT_END ? true : diskDaemon.caughtUpOnline();
+		return device == Device.FRONT_END || diskDaemon.caughtUpOnline();
 	}
 }

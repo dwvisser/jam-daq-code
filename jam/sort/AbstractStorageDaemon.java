@@ -32,9 +32,9 @@ public abstract class AbstractStorageDaemon extends GoodThread {
 		 * Mode value indicating this daemon is set for online
 		 */
 		ONLINE
-	};
+	}
 
-	/**
+    /**
 	 * Number of buffers processed.
 	 */
 	protected int bufferCount = 0;

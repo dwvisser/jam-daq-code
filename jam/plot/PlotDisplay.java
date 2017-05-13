@@ -139,7 +139,7 @@ public final class PlotDisplay extends JPanel implements
         /* Create embedded grid panel */
         gridPanel = new JPanel(new GridLayout(1, 1));
         add(gridPanel, BorderLayout.CENTER);
-    };
+    }
 
     /**
      * Create some plots.

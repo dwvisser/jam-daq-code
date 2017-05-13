@@ -319,14 +319,14 @@ public final class VData extends AbstractData {
 
 	private void setDoubleColumn(final int col, final boolean order1) {
 		for (int row = 0; row < nvert; row++) {
-			setCell(col, row, order1 ? (Object) getDouble(row, col)
+			setCell(col, row, order1 ? getDouble(row, col)
 					: new Double[1]);// NOPMD
 		}
 	}
 
 	private void setFloatColumn(final int col, final boolean order1) {
 		for (int row = 0; row < nvert; row++) {
-			setCell(col, row, order1 ? (Object) getFloat(row, col)
+			setCell(col, row, order1 ? getFloat(row, col)
 					: new Float[1]);// NOPMD
 		}
 	}
@@ -340,7 +340,7 @@ public final class VData extends AbstractData {
 
 	private void setShortColumn(final int col, final boolean order1) {
 		for (int row = 0; row < nvert; row++) {
-			setCell(col, row, order1 ? (Object) getShort(row, col)
+			setCell(col, row, order1 ? getShort(row, col)
 					: new Short[1]);// NOPMD
 		}
 	}

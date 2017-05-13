@@ -139,11 +139,10 @@ public final class FileUtilities {
 	 * @return True if file does not exist or overwrite confirmed
 	 */
 	public boolean overWriteExistsConfirm(final File file) {
-		final boolean writeConfirm = file.exists() ? JOptionPane.YES_OPTION == JOptionPane
-				.showConfirmDialog(null, "Replace the existing file? \n"
-						+ file.getName(), "Save " + file.getName(),
-						JOptionPane.YES_NO_OPTION)
-				: true;
+		final boolean writeConfirm = !file.exists() || JOptionPane.YES_OPTION == JOptionPane
+                .showConfirmDialog(null, "Replace the existing file? \n"
+                                + file.getName(), "Save " + file.getName(),
+                        JOptionPane.YES_NO_OPTION);
 		if (writeConfirm) {
 			// we've confirmed overwrite with the user.
 			file.delete();

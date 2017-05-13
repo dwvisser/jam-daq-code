@@ -18,9 +18,9 @@ final class GraphicsLayout {
 		 * plot w/o labels
 		 */
 		WO_LABELS
-	};
+	}
 
-	static class Border {
+    static class Border {
 		final transient int top;// NOPMD
 
 		final transient int left;// NOPMD

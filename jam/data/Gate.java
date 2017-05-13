@@ -481,11 +481,8 @@ public final class Gate implements DataElement {
         // set points true if in polygon
         for (int i = 0; i < sizeX; i++) {
             for (int j = 0; j < sizeY; j++) {
-                if (gatePoly.contains(i, j)) {
-                    insideGate[i][j] = true;
-                } else { // to make sure we zero all (old) points
-                    insideGate[i][j] = false;
-                }
+                // to make sure we zero all (old) points
+                insideGate[i][j] = gatePoly.contains(i, j);
             }
         }
         isSet = true;

@@ -105,9 +105,8 @@ public final class Action {
     }
 
     private static boolean existsAndIsCalibrated(final AbstractHistogram hist) {
-        return hist != null && hist instanceof AbstractHist1D ? ((AbstractHist1D) hist)
-                .isCalibrated()
-                : false;
+        return (hist != null && hist instanceof AbstractHist1D) && ((AbstractHist1D) hist)
+                .isCalibrated();
     }
 
     private final transient List<Bin> clicks = new ArrayList<Bin>();

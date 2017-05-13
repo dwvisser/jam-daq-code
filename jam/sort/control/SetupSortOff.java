@@ -30,8 +30,6 @@ import javax.swing.border.EmptyBorder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-;
-
 /**
  * Class to setup the offline sort process.
  * 

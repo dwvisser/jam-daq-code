@@ -110,11 +110,11 @@ public final class HistogramType {
 	public Object getSampleArray(final int sizeX, final int sizeY) {
 		final Object rval;
 		if (sizeY == 0) {
-			rval = isInteger() ? (Object) new int[sizeX]
-					: (Object) new double[sizeX];
+			rval = isInteger() ? new int[sizeX]
+					: new double[sizeX];
 		} else {
-			rval = isInteger() ? (Object) new int[sizeX][sizeY]
-					: (Object) new double[sizeX][sizeY];
+			rval = isInteger() ? new int[sizeX][sizeY]
+					: new double[sizeX][sizeY];
 		}
 		return rval;
 	}

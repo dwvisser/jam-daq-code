@@ -147,9 +147,9 @@ public final class BroadcastEvent {
 		 * @see jam.plot.View
 		 */
 		VIEW_NEW
-	};
+	}
 
-	private transient final Object content;
+    private transient final Object content;
 
 	private transient final Command command;
 

@@ -28,7 +28,7 @@ final class HistogramComboBoxModel extends DefaultComboBoxModel<Object> {
 	 * 
 	 * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
 	 */
-	static public enum Mode {
+	public enum Mode {
 		/**
 		 * Show 1D histograms only.
 		 */

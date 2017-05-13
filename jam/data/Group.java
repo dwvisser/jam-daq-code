@@ -16,7 +16,7 @@ public final class Group implements Nameable {
     /**
      * Enumeration of types of groups.
      */
-    public static enum Type {
+    public enum Type {
         /**
          * Group comes from a file.
          */

@@ -18,7 +18,7 @@
 </dd>
 <dl>
 <dt>Order of locations from which attempts are made to read <code>JamConfig.ini</code></dt>
-</dd>
+
 <ol>
 <li>
 The directory defined by the property <code>jam.home</code> defined at startup. 
@@ -28,13 +28,15 @@ The directory defined by the property <code>jam.home</code> defined at startup.
 The directory Jam was started in.
 </li>
 </ol>
-</dd>
+
 </dl>
 <dt><code>JamUser.ini</code>
 </dt>
-<dd>This file is a user defined file and tells jam what the default sort class, startup directories for opening files opening, etc., should be.  A number of attempts are made to read <code>JamUser.ini</code> from different locations. 
+<dd>This file is a user defined file and tells jam what the default sort class, startup directories for opening files
+    opening, etc., should be.  A number of attempts are made to read <code>JamUser.ini</code> from different
+    locations.</dd>
 <dl>
-</dd>
+
 <dt>Order of locations from which attempts are made to read <code>JamUser.ini</code>
 </dt>
 <dd>
@@ -54,7 +56,7 @@ The directory defined by the property <code>jam.home</code> defined at startup.
 </dl>
 </dl>
 
-<p>
+
 <dl>
 <dt><a name="definejamhome">Defining property <code>jam.home</code> at startup
 </dt>
@@ -63,7 +65,7 @@ The property <code>jam.home</code> is set at startup by an <code>-D</code> optio
 <blockquote><code>java -Djam.home=/home/user/datacq/jam jam.JamMain</code></blockquote>
 </dd>
 </dl>
-</p>
+
 <P>See also:</p>
 <ul>
     <li><a href="jamconfig.html">Customizing JamConfig.ini</a></li>

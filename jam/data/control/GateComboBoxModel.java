@@ -26,7 +26,7 @@ final class GateComboBoxModel extends DefaultComboBoxModel<Object> {
 	 * @version 1.4.2 (RC3)
 	 * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
 	 */
-	static public enum Mode {
+	public enum Mode {
 		/**
 		 * The mode for which all gates of the same dimensionality of the
 		 * displayed histogram.
@@ -38,9 +38,9 @@ final class GateComboBoxModel extends DefaultComboBoxModel<Object> {
 		 * are listed.
 		 */
 		DISPLAYED_HIST
-	};
+	}
 
-	private transient final List<Object> lastValue = Collections
+    private transient final List<Object> lastValue = Collections
 			.synchronizedList(new ArrayList<Object>());
 
 	private transient final Mode mode;

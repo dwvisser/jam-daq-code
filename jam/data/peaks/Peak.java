@@ -7,7 +7,7 @@ package jam.data.peaks;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 2001-02-14
  */
-public final class Peak extends Object implements Comparable<Peak>, Cloneable {
+public final class Peak implements Comparable<Peak>, Cloneable {
 
 	private static final String AREA = "\n  Area = ";
 

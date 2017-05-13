@@ -113,6 +113,6 @@ public class XsysInputStream extends AbstractEventInputStream {
 	private int readVaxShort() throws IOException {
 		final int ch1 = dataInput.read();
 		final int ch2 = dataInput.read();
-		return ((ch1 | ch2) < 0) ? -1 : (ch2 << 8) + (ch1 << 0);
+		return ((ch1 | ch2) < 0) ? -1 : (ch2 << 8) + (ch1);
 	}
 }

@@ -26,9 +26,9 @@ public final class WindowCancelAction extends AbstractAction {
 		 * call a canceller's cancel method
 		 */
 		canceller
-	};
+	}
 
-	private transient Type type;
+    private transient Type type;
 
 	private WindowCancelAction() {
 		super("Cancel");

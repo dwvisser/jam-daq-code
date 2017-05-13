@@ -325,7 +325,7 @@ public final class JamProperties {
 	 * @throws IOException
 	 */
 	private void loadUserPropertiesFromCurrentDirectory()
-			throws FileNotFoundException, IOException {
+			throws IOException {
 		userFile = new File(userCurrentDir, FILE_USER);
 		if (userFile.exists()) {
 			inputStream = new FileInputStream(userFile);

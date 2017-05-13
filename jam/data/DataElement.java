@@ -27,9 +27,9 @@ public interface DataElement extends Nameable, Dimensional {
 		 * Represents a scaler.
 		 */
 		SCALER
-	};
+	}
 
-	/**
+    /**
 	 * 
 	 * @return ???
 	 */

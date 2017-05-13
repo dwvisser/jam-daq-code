@@ -186,7 +186,7 @@ public final class L003InputStream extends AbstractEventInputStream {
 		final int ch2 = dataInput.read();
 		final int ch3 = dataInput.read();
 		final int ch4 = dataInput.read();
-		return (ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0);
+		return (ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1);
 	}
 
 	/*
@@ -196,7 +196,7 @@ public final class L003InputStream extends AbstractEventInputStream {
 	private short readVaxShort() throws IOException {
 		final int ch1 = dataInput.read();
 		final int ch2 = dataInput.read();
-		return ((ch1 | ch2) < 0) ? -1 : (short) ((ch2 << 8) + (ch1 << 0));
+		return ((ch1 | ch2) < 0) ? -1 : (short) ((ch2 << 8) + (ch1));
 	}
 
 	/*

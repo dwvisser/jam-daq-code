@@ -412,8 +412,8 @@ public class SortDaemon extends GoodThread {
      * @throws Exception
      * @throws EventException
      */
-    private void sortEvent(final int[] eventData) throws Exception, // NOPMD
-            EventException {// NOPMD
+    private void sortEvent(final int[] eventData) throws Exception // NOPMD
+    {// NOPMD
         if (offlineSortingCanceled()) {
             eventInputStatus = EventInputStatus.END_RUN;
         } else if (eventInputStatus == EventInputStatus.EVENT) {
@@ -442,7 +442,7 @@ public class SortDaemon extends GoodThread {
      * @throws Exception
      */
     private void sortEventsInFile(final int[] eventData)// NOPMD
-            throws EventException, Exception {// NOPMD
+            throws Exception {// NOPMD
         /* Zero the event container. */
         Arrays.fill(eventData, 0);
         /* Loop to read & sort one event at a time. */

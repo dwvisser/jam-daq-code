@@ -27,9 +27,9 @@ public final class VME_Channel {
 		 * scaler parameter type
 		 */
 		SCALER
-	};
+	}
 
-	/**
+    /**
 	 * Creates an event parameter. V775/V785 TDC's/ADC's can have base addresses
 	 * from 0x20000000-0xe0ff0000.
 	 * 

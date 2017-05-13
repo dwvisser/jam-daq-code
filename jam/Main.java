@@ -31,7 +31,7 @@ public final class Main {
     /**
      * Set look and feel for the application
      */
-    public static void setLookAndFeel() {
+    private static void setLookAndFeel() {
         try {
             String lookAndFeel = UIManager.getSystemLookAndFeelClassName();
             // Override system look and feel for gtk

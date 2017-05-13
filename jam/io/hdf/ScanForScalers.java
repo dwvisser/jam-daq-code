@@ -41,7 +41,7 @@ public class ScanForScalers {
 	 */
 	public void processFile(final char carriage, final StringBuffer outText,
 			final int firstRun, final int index, final File infile)
-			throws FileNotFoundException, IOException, HDFException {
+			throws IOException, HDFException {
 		updater.updateProgressBar("Processing " + infile.getName(), index);
 		final HDFile inHDF = new HDFile(infile, "r");
 		inHDF.seek(0);

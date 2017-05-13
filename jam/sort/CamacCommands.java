@@ -108,9 +108,9 @@ public class CamacCommands {
 			return paramID;
 		}
 
-	};
+	}
 
-	/**
+    /**
 	 * <p>
 	 * The various lists of CNAF commands are initialized by the constructor and
 	 * initially contain no commands.

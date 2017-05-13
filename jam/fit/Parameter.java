@@ -243,7 +243,7 @@ final class Parameter<T> {
 
     protected boolean isEstimate() {
         synchronized (monitor) {
-            return (fix ? false : estimate);
+            return (!fix && estimate);
         }
     }
 

@@ -101,7 +101,7 @@ public abstract class AbstractHistogram implements DataElement {
      */
     public static AbstractHistogram getHistogram(final String name) {
         final AbstractHistogram rval = name == null ? null
-                : (AbstractHistogram) NAME_MAP.get(name);
+                : NAME_MAP.get(name);
         return rval;
     }
 

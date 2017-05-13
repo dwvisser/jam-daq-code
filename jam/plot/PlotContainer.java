@@ -38,9 +38,9 @@ public final class PlotContainer implements PlotContainerSelectListener {
 		NO_LABELS,
 		/** Layout not axis labels but with border */
 		NO_LABELS_BORDER
-	};
+	}
 
-	/**
+    /**
 	 * Zoom direction.
 	 * 
 	 * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>

@@ -43,7 +43,7 @@ import com.google.inject.Inject;
 public class SetupRemote extends JDialog implements ActionListener,
 		ItemListener {
 
-	private static enum Mode {
+	private enum Mode {
 		/**
 		 * linked to a remote server process
 		 */

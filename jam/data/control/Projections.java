@@ -215,9 +215,9 @@ public final class Projections extends AbstractManipulation implements
 				setUseLimits(cchan.getSelectedItem().equals(BETWEEN));
 			}
 		}
-	};
+	}
 
-	/**
+    /**
 	 * 
 	 */
 	private void addWindowOpenListener() {

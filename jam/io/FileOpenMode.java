@@ -27,8 +27,7 @@ public final class FileOpenMode {
 
 	@Override
 	public boolean equals(final Object object) {
-		return object instanceof FileOpenMode ? value == ((FileOpenMode) object).value
-				: false;
+		return object instanceof FileOpenMode && value == ((FileOpenMode) object).value;
 	}
 
 	@Override
