@@ -94,7 +94,7 @@
     <target name="copy" depends="prepare">
     	<copy todir="${copy.dir}">
     		<fileset dir="${base.dir}" 
-    		includes="**/*.java,**/*.html,**/*.txt, **/*.jnlp, **/*.jsmooth, **/*.wxs, **/*.hs, **/*.css, **/*.jhm, **/*.xml, **/*.ini" />
+    		includes="**/*.java,**/*.html,README.md,LICENSE, **/*.jnlp, **/*.jsmooth, **/*.wxs, **/*.hs, **/*.css, **/*.jhm, **/*.xml, **/*.ini" />
             <filterset>
     			<filter token="MAJOR" value="${MAJOR}" />
     			<filter token="MINOR" value="${MINOR}" />
@@ -110,12 +110,12 @@
 		</copy>    		
         <copy todir="${build.dir}" flatten="true" >
             <fileset dir = "${copy.dir}"
-                includes="*.txt,*.html,help/config/*.ini" >
+                includes="README.md,LICENSE,*.html,help/config/*.ini" >
             </fileset>
         </copy>
         <copy todir="${build.dir}" flatten="true" >
             <fileset dir = "${copy.dir}"
-                includes="*.txt,*.html,help/config/*.ini" >
+                includes="README.md,LICENSE,*.html,help/config/*.ini" >
             </fileset>
         </copy>
     </target>    
@@ -123,7 +123,7 @@
 	<target name="srczip" depends="copy">
         <zip zipfile="${fullsrc.zip}"
             basedir="${copy.dir}"
-            includes="jam\**\*.java,jam\**\*.png,jam\**\*.gif, *.txt,jam/**/*.html,help\**\*,sampledata\**\*,test\**\*,injection\**\*"
+            includes="jam\**\*.java,jam\**\*.png,jam\**\*.gif,README.md,LICENSE,jam/**/*.html,help\**\*,sampledata\**\*,test\**\*,injection\**\*"
         />    
     </target>
        
@@ -215,12 +215,12 @@
            	</filterset>
   		</copy>
   		<copy todir="${release.dir}">
-  			<fileset dir="${base.dir}/readme" includes="readme.txt" />
+  			<fileset dir="${base.dir}" includes="README.md,LICENSE" />
   		</copy>
         <zip 
         	zipfile="${release.dir}/${jam.zip}" 
         	basedir="${release.dir}" 
-        	includes="*.jar,jam.*,readme.txt" 
+        	includes="*.jar,jam.*,README.md,LICENSE"
         />    
  	</target>
 	

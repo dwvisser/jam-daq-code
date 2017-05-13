@@ -12,3 +12,5 @@ Trendy_1.8.jar
 reports
 .byecycle
 *.*~
+.idea/
+*.iml
