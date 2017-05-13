@@ -17,7 +17,7 @@ final class LicenseReader {
 
 	protected String getLicenseText() {
 		final InputStream license_in = Thread.currentThread()
-				.getContextClassLoader().getResourceAsStream("license.txt");
+				.getContextClassLoader().getResourceAsStream("LICENSE");
 		final Reader reader = new InputStreamReader(license_in);
 		int length = 0;
 		final char[] textarray = new char[2000];

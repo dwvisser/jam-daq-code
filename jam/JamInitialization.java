@@ -53,8 +53,6 @@ public final class JamInitialization {
 	 *            global status
 	 * @param properties
 	 *            accessor for Jam's properties files
-	 * @param plotDisplay
-	 *            plot display internal frame
 	 * @param broadcaster
 	 *            handles application-wide events
 	 * @param menuBar
@@ -144,10 +142,7 @@ public final class JamInitialization {
 	}
 
 	/**
-	 * Show the main window
-	 * 
-	 * @param show
-	 *            true to show GUI
+	 * Show the main window.
 	 */
 	protected void showMainWindow() {
 		final int posx = 50;
