@@ -140,16 +140,8 @@ public class MessageSender {
 
     private DatagramPacket constructPacket(final SocketAddress socketAddress,
             final byte[] msgBuffer) {
-        DatagramPacket packetMessage = null;
-
-        try {
-            /* Associates this.buffer with packetMessage. */
-            packetMessage = new DatagramPacket(msgBuffer, msgBuffer.length,
+        return new DatagramPacket(msgBuffer, msgBuffer.length,
                     socketAddress);
-        } catch (SocketException se) {
-            console.errorOutln("Problem setting up packet: " + se.getMessage());
-        }
-        return packetMessage;
     }
 
     /**
