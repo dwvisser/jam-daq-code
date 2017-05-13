@@ -381,9 +381,9 @@ final class LevenbergMarquadt {
         /* debug message */
         messages.messageOut(iterationCount + " ", MessageHandler.NEW);
         messages.messageOut(round(chiSq / dof, 3) + " ");
-        for (int i = 0; i < params.length; i++) {
+        for (Parameter<Double> param : params) {
             final Parameter<Double> nlfParam = (Parameter<Double>) nonLinFit
-                    .getParameter(params[i].getName());
+                    .getParameter(param.getName());
             messages.messageOut(round(nlfParam.getValue(), 3) + " ");
         }
         messages.messageOut("", MessageHandler.END);
@@ -401,8 +401,8 @@ final class LevenbergMarquadt {
     private void outputParameters(final Parameter<?>[] params) {
         if (iterationCount == 0) {
             messages.messageOut("Iteration ChiSq/dof ", MessageHandler.NEW);
-            for (int i = 0; i < params.length; i++) {
-                messages.messageOut(params[i].getName() + " ");
+            for (Parameter<?> param : params) {
+                messages.messageOut(param.getName() + " ");
             }
             messages.messageOut("", MessageHandler.END);
         }
@@ -413,8 +413,8 @@ final class LevenbergMarquadt {
      */
     private void setParameters(final Parameter<Double>[] params) {
         /* set parameter values in function */
-        for (int i = 0; i < params.length; i++) {
-            nonLinFit.setParameter(params[i].getName(), params[i].getValue());
+        for (Parameter<Double> param : params) {
+            nonLinFit.setParameter(param.getName(), param.getValue());
         }
     }
 

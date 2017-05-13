@@ -901,8 +901,8 @@ public final class HDFIO implements DataIO {
 			final List<Group> groupList,
 			final List<HistogramAttributes> histAttributeList) {
 		boolean rval = true;
-		fileLoop: for (int i = 0; i < inFiles.size(); i++) {
-			final File infile = inFiles.get(i);
+		fileLoop:
+		for (final File infile : inFiles) {
 			if (!infile.isFile()) {
 				LOGGER.severe("Cannot find file " + infile + ".");
 				rval = false;

@@ -71,7 +71,7 @@ public final class StringUtilities {
 	 * @return <code>String</code> with <code>length</code> characters
 	 */
 	public String makeLength(final String input, final int length) {
-		final StringBuffer temp = new StringBuffer(input);
+		final StringBuilder temp = new StringBuilder(input);
 		for (int i = input.length(); i < length; i++) {
 			temp.append(' ');
 		}
@@ -127,7 +127,7 @@ public final class StringUtilities {
 	 */
 	public String makeUniqueName(final String name, final Set<String> nameSet,
 			final int nameLength) {
-		final StringBuffer rval = new StringBuffer(makeLength(name, nameLength));
+		final StringBuilder rval = new StringBuilder(makeLength(name, nameLength));
 		boolean warn = name.length() > rval.length();
 		boolean isUnique = false;
 		int prime = 1;

@@ -206,8 +206,8 @@ public final class SpectrographExample extends AbstractSortRoutine {
 
 	public void initialize() throws SortException {
 		vmeMap.setScalerInterval(3);
-		for (int i = 0; i < TDC_BASE.length; i++) {
-			vmeMap.setV775Range(TDC_BASE[i], TIME_RANGE);
+		for (int aTDC_BASE : TDC_BASE) {
+			vmeMap.setV775Range(aTDC_BASE, TIME_RANGE);
 		}
 
 		vmeMap.eventParameter(2, ADC_BASE[0], 0, 0);

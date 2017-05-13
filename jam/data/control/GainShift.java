@@ -504,8 +504,8 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 		}
 		// test debug
 		double sum = 0;
-		for (int i = 0; i < countsOut.length; i++) {
-			sum = sum + countsOut[i];
+		for (double aCountsOut : countsOut) {
+			sum = sum + aCountsOut;
 		}
 
 		return countsOut;

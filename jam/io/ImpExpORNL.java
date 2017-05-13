@@ -192,7 +192,7 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
         }
         byteOrder = ByteOrder.nativeOrder(); // assume file was created
         // locally
-        final StringBuffer msg = new StringBuffer(40);
+        final StringBuilder msg = new StringBuilder(40);
         msg.append("Native byte order: ");
         msg.append(byteOrder).append(", ");// NOPMD
         getCorrectByteOrder(numHistByte);
@@ -505,15 +505,13 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
          * words
          */
         numHalfWords = 0;
-        for (int i = 0; i < allHists.size(); i++) {
-            final AbstractHistogram hist = allHists.get(i);
+        for (final AbstractHistogram hist : allHists) {
             final int sizeX = hist.getSizeX();
-            final int sizeY = hist.getSizeY(); // will be zero for 1-d
             final int histDim = hist.getDimensionality();
             if (histDim == 1) {
                 numHalfWords = numHalfWords + 2 * sizeX;
             } else if (histDim == 2) {
-                numHalfWords = numHalfWords + 2 * sizeX * sizeY;
+                numHalfWords = numHalfWords + 2 * sizeX * hist.getSizeY();
             } else {
                 throw new IOException(
                         "Unrecognized histogram type [ImpExpORNL]");
@@ -620,19 +618,15 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
 
     private void writeHist1dInt(final DataOutputStream dosHis,
             final HistInt1D hist) throws IOException {
-        final int[] countsInt = hist.getCounts();
-        final int len = countsInt.length;
-        for (int i = 0; i < len; i++) {
-            dosHis.writeInt(countsInt[i]);
+        for (int aCountsInt : hist.getCounts()) {
+            dosHis.writeInt(aCountsInt);
         }
     }
 
     private void writeHist1dDouble(final DataOutputStream dosHis,
             final HistDouble1D hist) throws IOException {
-        final double[] countsDbl = hist.getCounts();
-        final int len = countsDbl.length;
-        for (int i = 0; i < len; i++) {
-            dosHis.writeInt((int) (countsDbl[i] + 0.5));
+        for (double aCountsDbl : hist.getCounts()) {
+            dosHis.writeInt((int) (aCountsDbl + 0.5));
         }
     }
 

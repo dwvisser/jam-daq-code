@@ -64,7 +64,7 @@ public final class RuntimeSubclassIdentifier {
      */
     private static String filenameToClassname(final String fileName,
             final String pckg) {
-        final StringBuffer rval = new StringBuffer(pckg);
+        final StringBuilder rval = new StringBuilder(pckg);
         rval.append('.');
         rval.append(fileName.substring(0,
                 fileName.length() - CLASS_EXT.length()));
@@ -205,7 +205,7 @@ public final class RuntimeSubclassIdentifier {
      */
     public <T> Set<Class<? extends T>> find(final String pckgname,
             final Class<T> tosubclass, final boolean recurse) {
-        final StringBuffer errmessage = new StringBuffer("Searching in ")
+        final StringBuilder errmessage = new StringBuilder("Searching in ")
                 .append(pckgname)
                 .append("\nYou've probably incorrectly specified a classpath,\n")
                 .append("or moved/renamed an existing .class file.\n");
@@ -267,8 +267,8 @@ public final class RuntimeSubclassIdentifier {
                     space));
             if (directory.exists()) {
                 final File[] files = directory.listFiles();
-                for (int i = 0; i < files.length; i++) {
-                    final String fname = files[i].getName();
+                for (File file : files) {
+                    final String fname = file.getName();
                     if (fname.endsWith(CLASS_EXT)) {
                         final String classname = filenameToClassname(fname,
                                 pckgname);
@@ -278,9 +278,9 @@ public final class RuntimeSubclassIdentifier {
                         /* recursively add the results of the jar file? */
                     } else {
                         /* if a folder and recursing, add it's results */
-                        if (recurse && files[i].isDirectory()) {
+                        if (recurse && file.isDirectory()) {
                             rval.addAll(findClassNames(pckgname + PERIOD
-                                    + files[i].getName(), tosubclass, true));
+                                    + file.getName(), tosubclass, true));
                         }
                     }
                 }
@@ -348,9 +348,9 @@ public final class RuntimeSubclassIdentifier {
         if (file.isDirectory()) {
             final File[] list = file.listFiles();
             if (list != null) { // In case we don't have permission
-                for (int i = 0; i < list.length; i++) {
+                for (File currentFile : list) {
                     rval.addAll(getClassesRecursively(tosubclass, classpath,
-                            list[i], loader));
+                            currentFile, loader));
                 }
             }
         } else { // we are only interested in .class files

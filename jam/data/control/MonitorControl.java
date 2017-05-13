@@ -109,8 +109,8 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		pupdate.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		pLower.add(pupdate);
 		pupdate.add(new JLabel("Update every", RIGHT));
-		final Integer one = Integer.valueOf(1);
-		final Integer init = Integer.valueOf(1);
+		final Integer one = 1;
+		final Integer init = 1;
 		spinnerUpdate = new JSpinner(new SpinnerNumberModel(init, one, null,
 				one));
 		spinnerUpdate.setPreferredSize(new Dimension(50, spinnerUpdate
@@ -167,7 +167,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	protected void configure() {
 		try {
 			/* set update interval */
-			interval = ((Integer) spinnerUpdate.getValue()).intValue();
+			interval = (Integer) spinnerUpdate.getValue();
 			if (interval < 1) {
 				throw new IllegalArgumentException(
 						"Update interval must be greater than 1");
@@ -244,7 +244,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	 */
 	protected void recall() {
 		/* update interval */
-		spinnerUpdate.setValue(Integer.valueOf(interval));
+		spinnerUpdate.setValue(interval);
 		/* get the Monitor parameters */
 		final List<Monitor> monitors = Monitor.getMonitorList();
 		for (int i = 0; i < monitors.size(); i++) {

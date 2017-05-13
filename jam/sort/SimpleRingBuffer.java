@@ -62,7 +62,7 @@ public final class SimpleRingBuffer implements RingBuffer {
 		synchronized (this) {
 			assert !isNull() : "Attempted putBuffer() on 'null' ring buffer.";
 			if (isFull()) {
-				final StringBuffer message = new StringBuffer(50);
+				final StringBuilder message = new StringBuilder(50);
 				message.append("Lost a buffer in thread \"");
 				message.append(Thread.currentThread().getName());
 				message

@@ -89,7 +89,7 @@ public final class HistogramAttributes {
 	 *            the basic name of the histogram
 	 */
 	private String createFullName(final String nameIn) {
-		final StringBuffer rval = new StringBuffer();
+		final StringBuilder rval = new StringBuilder();
 		if (groupName != null) {
 			rval.append(groupName).append('/');
 		}

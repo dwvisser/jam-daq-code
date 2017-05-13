@@ -88,10 +88,10 @@ public class ShowDialogAddView extends AbstractShowDialog {
 			final JPanel pRows = new JPanel(new FlowLayout(FlowLayout.LEFT, 0,
 					0));
 			pEntires.add(pRows);
-			final Integer[] defaultNumbers = { Integer.valueOf(1),
-					Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(4),
-					Integer.valueOf(4), Integer.valueOf(5), Integer.valueOf(6),
-					Integer.valueOf(7) };
+			final Integer[] defaultNumbers = {1,
+					2, 3, 4,
+					4, 5, 6,
+					7};
 			comboRows = new JComboBox<Integer>(defaultNumbers);
 			pRows.add(comboRows);
 			/* Cols Combo */
@@ -121,10 +121,8 @@ public class ShowDialogAddView extends AbstractShowDialog {
 		private void makeView() {
 			String name = textName.getText();
 			View viewNew;
-			final int nRows = ((Integer) comboRows.getSelectedItem())
-					.intValue();
-			final int nCols = ((Integer) comboCols.getSelectedItem())
-					.intValue();
+			final int nRows = (Integer) comboRows.getSelectedItem();
+			final int nCols = (Integer) comboCols.getSelectedItem();
 			/* Check for blank name */
 			if (name.trim().equals("")) {
 				name = "View " + nRows + "x" + nCols;

@@ -105,8 +105,8 @@ final class ConvertHDFObjToJamObj {
                 double[] ptsEnergy = new double[numbPts];
 
                 for (int i = 0; i < numPts; i++) {
-                    ptsChannel[i] = data.getDouble(i, 0).doubleValue();
-                    ptsEnergy[i] = data.getDouble(i, 1).doubleValue();
+                    ptsChannel[i] = data.getDouble(i, 0);
+                    ptsEnergy[i] = data.getDouble(i, 1);
                 }
                 calFunc.setPoints(ptsChannel, ptsEnergy);
                 try {
@@ -119,7 +119,7 @@ final class ConvertHDFObjToJamObj {
             } else if (dataTypeName.equals(TYPE_COEFF)) {
                 double[] coeff = new double[numbPts];
                 for (int i = 0; i < numPts; i++) {
-                    coeff[i] = data.getDouble(i, 0).doubleValue();
+                    coeff[i] = data.getDouble(i, 0);
                 }
                 calFunc.setCoeff(coeff);
             } else {
@@ -446,7 +446,7 @@ final class ConvertHDFObjToJamObj {
             /* make if OPEN, retrieve if RELOAD */
             final DataParameter param = produceParameter(mode, pname);
             if (param != null) {
-                param.setValue(data.getFloat(i, 1).floatValue());
+                param.setValue(data.getFloat(i, 1));
             }
         }
         return numParams;

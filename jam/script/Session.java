@@ -172,10 +172,9 @@ public final class Session implements Observer {
                     "You may not call loadHDF() before calling setupOffline().");
         }
         if (hdf.isDirectory()) {
-            final File[] files = hdf.listFiles(filter);
-            for (int i = 0; i < files.length; i++) {
-                hdfio.readFile(FileOpenMode.ADD, files[i]);
-                LOGGER.log(Level.INFO, "Added HDF file: " + files[i]);
+            for (File file : hdf.listFiles(filter)) {
+                hdfio.readFile(FileOpenMode.ADD, file);
+                LOGGER.log(Level.INFO, "Added HDF file: " + file);
             }
         } else if (filter.accept(hdf)) {
             hdfio.readFile(FileOpenMode.ADD, hdf);

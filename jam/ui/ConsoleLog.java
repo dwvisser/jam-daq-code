@@ -275,7 +275,7 @@ public final class ConsoleLog implements MessageHandler {
 
 	private void promptOutln(final String _message, final AttributeSet attr) {
 		synchronized (this) {
-			final StringBuffer mbuff = new StringBuffer();
+			final StringBuilder mbuff = new StringBuilder();
 			/*
 			 * Dont wait for lock. Output message right away.
 			 */

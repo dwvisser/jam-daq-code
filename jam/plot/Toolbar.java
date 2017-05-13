@@ -57,7 +57,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 				final boolean cellHasFocus) {
 			// Get the selected index. (The index param isn't
 			// always valid, so just use the value.)
-			final int selectedIndex = value.intValue();
+			final int selectedIndex = value;
 			// Set foreground and background
 			if (isSelected) {
 				setBackground(list.getSelectionBackground());
@@ -234,7 +234,7 @@ final class Toolbar extends JToolBar implements ActionListener {
 							/* place an appropriate value in the user prefs */
 							PlotPreferences.PREFS.put(
 									LOCATION_KEY,
-									(newValue.intValue() == SwingConstants.HORIZONTAL) ? BorderLayout.NORTH
+									(newValue == SwingConstants.HORIZONTAL) ? BorderLayout.NORTH
 											: BorderLayout.WEST);
 							fitToolbar();
 						}
@@ -281,9 +281,8 @@ final class Toolbar extends JToolBar implements ActionListener {
 	}
 
 	private String getHTML(final String body) {
-		final StringBuffer rval = new StringBuffer("<html><body>").append(body)
-				.append("</html></body>");
-		return rval.toString();
+		return new StringBuilder("<html><body>").append(body)
+				.append("</html></body>").toString();
 	}
 
 	/*

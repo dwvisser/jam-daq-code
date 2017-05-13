@@ -47,7 +47,7 @@ public class CubicFunction extends AbstractGaussJordanFunction {
 
 	@Override
 	public String updateFormula(final NumberFormat numFormat) {
-		final StringBuffer buffer = new StringBuffer(32);
+		final StringBuilder buffer = new StringBuilder(32);
 		buffer.append("E = ").append(numFormat.format(coeff[0])).append(" + ")
 				.append(numFormat.format(coeff[1])).append("\u2219ch + ")
 				.append(numFormat.format(coeff[2])).append("\u2219ch^2 + ")

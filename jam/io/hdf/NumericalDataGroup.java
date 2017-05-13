@@ -76,7 +76,7 @@ final class NumericalDataGroup extends AbstractData {
 
 	@Override
 	public String toString() {
-		final StringBuffer rval = new StringBuffer();
+		final StringBuilder rval = new StringBuilder();
 		rval.append("NDG[");
 		final String separator = ", ";
 		for (Object data : elements) {

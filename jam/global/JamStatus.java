@@ -209,7 +209,7 @@ public final class JamStatus implements AcquisitionStatus, QuerySortMode {
 			if ((mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK
 					|| mode == SortMode.OFFLINE || mode == SortMode.REMOTE)
 					&& !canSetup()) {
-				final StringBuffer etext = new StringBuffer(
+				final StringBuilder etext = new StringBuilder(
 						"Can't setup, setup is locked for ");
 				if (sortMode == SortMode.ONLINE_DISK
 						|| sortMode == SortMode.ON_NO_DISK) {

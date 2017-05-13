@@ -113,7 +113,7 @@ public class FitConsole extends JPanel implements MessageHandler {
 	 */
 	public void messageOut(final String _message, final int part) {
 		synchronized (this) {
-			final StringBuffer message = new StringBuffer(_message);
+			final StringBuilder message = new StringBuilder(_message);
 			if (part == NEW) {
 				msgLock = true;
 				message.insert(0, END_LINE);
@@ -166,7 +166,7 @@ public class FitConsole extends JPanel implements MessageHandler {
 	 */
 	public void messageOutln(final String _message) {
 		synchronized (this) {
-			final StringBuffer message = new StringBuffer(_message);
+			final StringBuilder message = new StringBuilder(_message);
 			msgLock = true;
 			message.insert(0, END_LINE);
 			try {
@@ -186,7 +186,7 @@ public class FitConsole extends JPanel implements MessageHandler {
 
 	private void promptOutln(final String _message, final AttributeSet attr) {
 		synchronized (this) {
-			final StringBuffer message = new StringBuffer(_message);
+			final StringBuilder message = new StringBuilder(_message);
 			/*
 			 * Don't wait for lock. Output message right away.
 			 */

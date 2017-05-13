@@ -118,7 +118,7 @@ final class ScientificDataDimension extends AbstractData {
 
 	@Override
 	public String toString() {
-		final StringBuffer rval = new StringBuffer();
+		final StringBuilder rval = new StringBuilder();
 		final String type = numberType == NumberType.DOUBLE ? "Double"
 				: "Integer";
 		final String times = " x ";

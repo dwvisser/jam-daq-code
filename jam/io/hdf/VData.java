@@ -66,7 +66,7 @@ public final class VData extends AbstractData {
 	protected void addDouble(final int column, final int row,
 			final double indata) {
 		if (description.getType(column) == VDataDescription.DFNT_DBL64) {
-			final Object temp = new Double(indata);
+			final Object temp = indata;
 			setCell(column, row, temp);
 		} else { // uh oh... not right type
 			throw new IllegalStateException(WDFC + column + "!");
@@ -75,7 +75,7 @@ public final class VData extends AbstractData {
 
 	protected void addFloat(final int column, final int row, final float indata) {
 		if (description.getType(column) == VDataDescription.DFNT_FLT32) {
-			final Object temp = new Float(indata);
+			final Object temp = indata;
 			setCell(column, row, temp);
 		} else { // uh oh... not right type
 			throw new IllegalStateException(WDFC + column + "!");
@@ -84,7 +84,7 @@ public final class VData extends AbstractData {
 
 	protected void addInteger(final int column, final int row, final int indata) {
 		if (description.getType(column) == VDataDescription.DFNT_INT32) {
-			final Object temp = Integer.valueOf(indata);
+			final Object temp = indata;
 			setCell(column, row, temp);
 		} else { // uh oh... not right type
 			throw new UnsupportedOperationException(WDFC + column + "!");
@@ -93,14 +93,14 @@ public final class VData extends AbstractData {
 
 	private void putShortLoop(final ByteBuffer out, final int row, final int col) {
 		for (int i = 0; i < order[col]; i++) {
-			final short shortValue = ((Short) (cells[col][row])).shortValue();
+			final short shortValue = (Short) (cells[col][row]);
 			out.putShort(shortValue);
 		}
 	}
 
 	private void putIntLoop(final ByteBuffer out, final int row, final int col) {
 		for (int i = 0; i < order[col]; i++) {
-			final int intValue = ((Integer) (cells[col][row])).intValue();
+			final int intValue = (Integer) (cells[col][row]);
 			out.putInt(intValue);
 		}
 	}
@@ -124,15 +124,13 @@ public final class VData extends AbstractData {
 			break;
 		case VDataDescription.DFNT_FLT32:
 			for (int i = 0; i < order[col]; i++) {
-				final float floatValue = ((Float) (cells[col][row]))
-						.floatValue();
+				final float floatValue = (Float) (cells[col][row]);
 				out.putFloat(floatValue);
 			}
 			break;
 		case VDataDescription.DFNT_DBL64:
 			for (int i = 0; i < order[col]; i++) {
-				final double doubleValue = ((Double) (cells[col][row]))
-						.doubleValue();
+				final double doubleValue = (Double) (cells[col][row]);
 				out.putDouble(doubleValue);
 			}
 			break;
@@ -155,8 +153,7 @@ public final class VData extends AbstractData {
 		Double out = null;
 		if (types[col] == VDataDescription.DFNT_DBL64) {
 			final int location = row * ivsize + offsets[col];
-			final double tempDouble = bytes.getDouble(location);// dis.readDouble();
-			out = new Double(tempDouble);
+			out = bytes.getDouble(location);
 		} else {
 			throw new IllegalStateException(VS_STRING + getTag() + "/"
 					+ getRef() + ".getFloat(" + row + "," + col
@@ -173,8 +170,7 @@ public final class VData extends AbstractData {
 		Float out = null;
 		if (types[col] == VDataDescription.DFNT_FLT32) {
 			final int location = row * ivsize + offsets[col];
-			final float tempFloat = bytes.getFloat(location);
-			out = new Float(tempFloat);
+			out = bytes.getFloat(location);
 		} else {
 			throw new IllegalStateException(VS_STRING + getTag() + "/"
 					+ getRef() + ".getFloat(" + row + "," + col
@@ -212,8 +208,7 @@ public final class VData extends AbstractData {
 		Short rval = null;
 		if (types[col] == VDataDescription.DFNT_INT32) {
 			final int location = row * ivsize + offsets[col];
-			final short value = bytes.getShort(location);
-			rval = Short.valueOf(value);
+			rval = bytes.getShort(location);
 		} else {
 			throw new IllegalStateException(VS_STRING + getTag() + "/"
 					+ getRef() + ".getShort(" + row + "," + col

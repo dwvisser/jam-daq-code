@@ -142,7 +142,7 @@ public final class FrontEndVMECommunicator implements FrontEndCommunication,
      *             if there are no parameters in the map
      */
     public void setupVMEmap(final VME_Map vmeMap) {
-        final StringBuffer temp = new StringBuffer();
+        final StringBuilder temp = new StringBuilder();
         final List<VME_Channel> eventParams = vmeMap.getEventParameters();
         final Map<Integer, Byte> hRanges = vmeMap.getV775Ranges();
         if (eventParams.isEmpty()) {

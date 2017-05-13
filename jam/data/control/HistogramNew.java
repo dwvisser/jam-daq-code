@@ -63,10 +63,10 @@ public class HistogramNew extends AbstractControl {
 
 	private transient final JamStatus status;
 
-	private final static Integer[] DEFAULT_SIZES = { Integer.valueOf(64),
-			Integer.valueOf(128), Integer.valueOf(256), Integer.valueOf(512),
-			Integer.valueOf(1024), Integer.valueOf(2048),
-			Integer.valueOf(4096), Integer.valueOf(8192) };
+	private final static Integer[] DEFAULT_SIZES = {64,
+			128, 256, 512,
+			1024, 2048,
+			4096, 8192};
 
 	/**
 	 * Construct a new "new histogram" dialog.
@@ -214,7 +214,7 @@ public class HistogramNew extends AbstractControl {
 		final String groupName = (String) comboGroupModel.getSelectedItem();
 		final String name = textName.getText().trim();
 		final String title = textTitle.getText().trim();
-		final int size = ((Integer) comboSize.getSelectedItem()).intValue();
+		final int size = (Integer) comboSize.getSelectedItem();
 		Object array;
 		if (coneInt.isSelected()) {
 			array = new int[size];
@@ -237,7 +237,7 @@ public class HistogramNew extends AbstractControl {
 		SelectionTree.setCurrentHistogram(hist);
 		this.status.setCurrentGroup(histGroup);
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
-		final StringBuffer msg = new StringBuffer("New histogram created, ");
+		final StringBuilder msg = new StringBuilder("New histogram created, ");
 		msg.append(name).append(", type: ");
 		if (coneInt.isSelected()) {
 			LOGGER.info(msg.append(coneInt.getText()).toString());

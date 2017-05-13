@@ -476,7 +476,7 @@ public abstract class AbstractSortRoutine implements Sorter, Beginner, Ender,
 	 *             if called inappropriately
 	 */
 	public void setEventSizeMode(final EventSizeMode mode) throws SortException {
-		final StringBuffer mess = new StringBuffer();
+		final StringBuilder mess = new StringBuilder();
 		if ((!evtSizeMode.equals(mode))
 				&& (!evtSizeMode.equals(EventSizeMode.INIT))) {
 			final String part1 = "Illegal attempt to set event size a second time. ";

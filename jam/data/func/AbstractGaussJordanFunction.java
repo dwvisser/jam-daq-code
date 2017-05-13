@@ -40,8 +40,8 @@ public abstract class AbstractGaussJordanFunction extends
 		}
 		// Find mean x to shift fit around mean
 		double sum = 0.0;
-		for (int k = 0; k < xVal.length; k++) {
-			sum += xVal[k];
+		for (double aXVal : xVal) {
+			sum += aXVal;
 		}
 		final double xMean = sum / xVal.length;
 		// Shift x data around mean

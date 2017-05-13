@@ -125,8 +125,8 @@ public final class CheckEventFiles {
     }
 
     private void checkFirstBuffer(final File[] eventFiles) {
-        for (int i = 0; i < eventFiles.length; i++) {
-            checkFirstBuffer(eventFiles[i]);
+        for (File eventFile : eventFiles) {
+            checkFirstBuffer(eventFile);
         }
     }
 
@@ -139,8 +139,8 @@ public final class CheckEventFiles {
     }
 
     private void makeScalerSummaries(final File[] infiles, final File outPath) {
-        for (int j = 0; j < infiles.length; j++) {
-            makeScalerSummary(infiles[j], outPath);
+        for (File infile : infiles) {
+            makeScalerSummary(infile, outPath);
         }
         LOGGER.info("Done.");
     }

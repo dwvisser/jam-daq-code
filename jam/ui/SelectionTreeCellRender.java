@@ -95,7 +95,7 @@ public final class SelectionTreeCellRender extends DefaultTreeCellRenderer {
 
 	private void renderHistogram(final AbstractHistogram hist) {
 		setBackgroundSelectionColor(defaultBackground);
-		final StringBuffer tip = new StringBuffer();
+		final StringBuilder tip = new StringBuilder();
 		tip.append(hist.getNumber()).append(". ").append(hist.getTitle());
 		tip.append(" (").append(hist.getSizeX());
 		if (hist.getDimensionality() == 1) {

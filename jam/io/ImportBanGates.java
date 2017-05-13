@@ -79,12 +79,10 @@ public final class ImportBanGates extends AbstractImpExp {
 	 */
 	@Override
 	protected void readData(final InputStream inStream) throws ImpExpException {
-		final int[] gates;
 		final Reader reader = new InputStreamReader(inStream);
 		final StreamTokenizer tokens = new StreamTokenizer(reader);
 		try {
-			gates = readHeader(tokens);
-			for (int i = 0; i < gates.length; i++) {
+			for (int i = 0; i < readHeader(tokens).length; i++) {
 				readGate(tokens);
 			}
 		} catch (IOException e) {

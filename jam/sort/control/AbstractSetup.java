@@ -305,7 +305,7 @@ abstract class AbstractSetup {
 	 *             error given with useful error message to the final user
 	 */
 	protected final void initializeSorter() throws JamException {
-		final StringBuffer message = new StringBuffer(400);
+		final StringBuilder message = new StringBuilder(400);
 		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
 		final String sortName = sortRoutine.getClass().getName();
 		try {

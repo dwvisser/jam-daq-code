@@ -135,8 +135,8 @@ final class Tickmarks {
 			// count number of tick points
 			numberTicks = 0;
 			decade = countInDecadeMin;
-			for (int i = 0; i < ticks.length; i++) {
-				if (ticks[i] % (decade * 10) == 0) {
+			for (int tick : ticks) {
+				if (tick % (decade * 10) == 0) {
 					numberTicks++;
 					decade *= 10;
 				}
@@ -145,9 +145,9 @@ final class Tickmarks {
 			outTicks = new int[numberTicks + 1];
 			decade = countInDecadeMin;
 			int countTick = 0;
-			for (int i = 0; i < ticks.length; i++) {
-				if (ticks[i] % (decade * 10) == 0) {
-					outTicks[countTick] = ticks[i];
+			for (int tick : ticks) {
+				if (tick % (decade * 10) == 0) {
+					outTicks[countTick] = tick;
 					countTick++;
 					decade *= 10;
 				} // for we at exactly a power of 10

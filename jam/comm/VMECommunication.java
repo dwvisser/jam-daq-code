@@ -252,8 +252,7 @@ final class VMECommunication extends GoodThread implements VmeSender {
         // put length of CNAF list in packet
         byteBuff.putInt(cnafList.size());
         // put list of CNAF commands into packet
-        for (int i = 0; i < cnafList.size(); i++) {
-            final CNAF cnaf = cnafList.get(i);
+        for (final CNAF cnaf : cnafList) {
             byteBuff.put(cnaf.getParamID());
             byteBuff.put(cnaf.getCrate());
             byteBuff.put(cnaf.getNumber());

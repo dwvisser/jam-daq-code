@@ -82,8 +82,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {// N
 			if (cmdParams != null && cmdParams.length > 0) {
 				final Object param0 = cmdParams[0];
 				if (param0 instanceof Boolean) {
-					final Boolean bParam0 = (Boolean) param0;
-					state = bParam0.booleanValue();
+					state = (Boolean) param0;
 				}
 			} else {
 				state = !state;// NOPMD
@@ -128,7 +127,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {// N
 					pass[0] = Boolean.FALSE;
 				}
 			} else {
-				pass[0] = Boolean.valueOf(!state);
+				pass[0] = !state;
 			}
 			execute(pass);
 		}

@@ -322,8 +322,8 @@ public final class BatchExport extends JDialog implements Observer {
 		status = checkFileOverwrite(status, already);
 		// create group directories
 		if (status) {
-			for (int i = 0; i < exportDirList.size(); i++) {
-				final boolean statusTemp = createExportDir(exportDirList.get(i));
+			for (String anExportDirList : exportDirList) {
+				final boolean statusTemp = createExportDir(anExportDirList);
 				status = status && statusTemp;
 			}
 		}

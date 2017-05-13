@@ -390,9 +390,9 @@ public final class SortControl extends javax.swing.JDialog implements
 
 	private int addFiles(final FileFilter fileFilter, final File[] files) {
 		int rval = 0;
-		for (int i = 0; i < files.length; i++) {
-			if (fileFilter.accept(files[i])) {
-				multiFile.addFile(files[i]);
+		for (File file : files) {
+			if (fileFilter.accept(file)) {
+				multiFile.addFile(file);
 			}
 			rval++;
 		}

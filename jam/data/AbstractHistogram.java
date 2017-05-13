@@ -369,8 +369,7 @@ public abstract class AbstractHistogram implements DataElement {
     public abstract void addCounts(Object countsIn);
 
     private void assignNewNumber() {
-        final int last = NUMBER_MAP.isEmpty() ? 0 : (NUMBER_MAP.lastKey())
-                .intValue();
+        final int last = NUMBER_MAP.isEmpty() ? 0 : NUMBER_MAP.lastKey();
         number = last + 1;
         NUMBER_MAP.put(number, this);
     }

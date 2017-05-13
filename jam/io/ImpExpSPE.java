@@ -143,7 +143,7 @@ public final class ImpExpSPE extends AbstractImpExp {// NOPMD
 		try {
 			final DataOutputStream dos = new DataOutputStream(outStream);
 			/* get data from histogram */
-			final StringBuffer name = new StringBuffer(hist.getFullName());
+			final StringBuilder name = new StringBuilder(hist.getFullName());
 			while (name.length() < NAME_LENGTH) {
 				name.append(' ');
 			}

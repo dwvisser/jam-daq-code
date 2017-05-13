@@ -325,8 +325,8 @@ public final class MultipleFileChooser extends JPanel {
 			if (selectFileOnly) {
 				if (fileChooser.isMultiSelectionEnabled()) {
 					final File[] files = fileChooser.getSelectedFiles();
-					for (int i = 0; i < files.length; i++) {
-						listFilesModel.addElement(files[i]);
+					for (File file : files) {
+						listFilesModel.addElement(file);
 					}
 				} else {
 					addFile(fileChooser.getSelectedFile());
@@ -356,9 +356,9 @@ public final class MultipleFileChooser extends JPanel {
 				numFiles++;
 			} else if (file.isDirectory()) {
 				final File[] dirArray = file.listFiles();
-				for (int i = 0; i < dirArray.length; i++) {
-					if (fileFilter.accept(dirArray[i])) {
-						addFile(dirArray[i]);
+				for (File aDirArray : dirArray) {
+					if (fileFilter.accept(aDirArray)) {
+						addFile(aDirArray);
 					}
 					numFiles++;
 				}

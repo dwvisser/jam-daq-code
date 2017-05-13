@@ -53,11 +53,10 @@ public final class GainCalibration {
 	public int adjust(final int param, final int value) {
 		int rval = suppress ? 0 : value;
 		if (gains.containsKey(param) && offsets.containsKey(param)) {
-			final double gain = gains.get(param).doubleValue();
-			final double offset = gains.get(param).doubleValue();
+			final double gain = gains.get(param);
+			final double offset = gains.get(param);
 			final double randomOffset = (Math.random() - 0.5) * gain;
-			final double dval = gain * value + offset + randomOffset;
-			rval = (int) Math.round(dval);
+			rval = (int) Math.round(gain * value + offset + randomOffset);
 		}
 		return rval;
 	}

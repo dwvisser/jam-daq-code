@@ -121,8 +121,7 @@ public final class PeakFinder {
 		// multiplets
 		final int len = multiplets.size();
 		if (len > 1) {
-			for (int i = 0; i < len; i++) {
-				final Multiplet mult_i = multiplets.get(i);
+			for (final Multiplet mult_i : multiplets) {
 				final int npeaks = mult_i.size();
 				if (npeaks > 1) {
 					for (int j = 0; j < npeaks; j++) {
@@ -136,22 +135,20 @@ public final class PeakFinder {
 	}
 
 	private void renormalize(final List<Multiplet> multiplets) {
-		for (int m = 0; m < multiplets.size(); m++) {
+		for (Multiplet multiplet : multiplets) {
 			double trueArea = 0.0;
 			double estArea = 0.0;
-			final Multiplet currMult = multiplets.get(m);
-			for (int p = 0; p < currMult.size(); p++) {
-				estArea += currMult.get(p).getArea();
+			for (Peak peak : multiplet) {
+				estArea += peak.getArea();
 			}
-			for (int ch = (int) Math.round(currMult.get(0).getPosition()
-					- width * MAX_SEP); ch < (int) Math.round(currMult.get(
-					currMult.size() - 1).getPosition()
+			for (int ch = (int) Math.round(multiplet.get(0).getPosition()
+					- width * MAX_SEP); ch < (int) Math.round(multiplet.get(
+					multiplet.size() - 1).getPosition()
 					+ width * MAX_SEP); ch++) {
 				trueArea += spectrum[ch];
 			}
 			final double factor = trueArea / estArea;
-			for (int p = 0; p < currMult.size(); p++) {
-				final Peak peak = currMult.get(p);
+			for (final Peak peak : multiplet) {
 				peak.setArea(factor * peak.getArea());
 			}
 		}

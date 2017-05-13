@@ -33,11 +33,10 @@ public class PolynomialFunction extends AbstractGaussJordanFunction {
 	 */
 	@Override
 	public double getValue(final double channel) {
-		double chanMult;
 		double value = 0.0;
-		chanMult = 1.0;
-		for (int i = 0; i < coeff.length; i++) {
-			value = value + coeff[i] * chanMult;
+		double chanMult = 1.0;
+		for (double aCoeff : coeff) {
+			value = value + aCoeff * chanMult;
 			chanMult = chanMult * channel;
 		}
 		return value;

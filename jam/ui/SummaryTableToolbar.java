@@ -93,7 +93,7 @@ class SummaryTableToolbar extends JToolBar {
 	}
 
 	private String getHTML(final String body) {
-		final StringBuffer rval = new StringBuffer("<html><body>").append(body)
+		final StringBuilder rval = new StringBuilder("<html><body>").append(body)
 				.append("</html></body>");
 		return rval.toString();
 	}

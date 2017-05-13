@@ -495,8 +495,8 @@ final class Plot1d extends AbstractPlot {
 	private void paintFitSignals(final Graphics graphics) {
 		if (fitSignals != null) {
 			graphics.setColor(colorMap.getFitSignal());
-			for (int sig = 0; sig < fitSignals.length; sig++) {
-				painter.drawLine(fitChannels, fitSignals[sig]);
+			for (double[] fitSignal : fitSignals) {
+				painter.drawLine(fitChannels, fitSignal);
 			}
 		}
 	}

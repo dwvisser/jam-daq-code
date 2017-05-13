@@ -485,16 +485,12 @@ final class Limits {
 	 */
 	@Override
 	public String toString() {
-		final String limitsof = "Limits of \"";
-		final String colon = "\": ";
-		final String xmin = "MinX: ";
-		final String xmax = ", MaxX: ";
-		final StringBuffer temp = new StringBuffer(limitsof);
+		final StringBuilder temp = new StringBuilder("Limits of \"");
 		temp.append(histName);
-		temp.append(colon);
-		temp.append(xmin);
+		temp.append("\": ");
+		temp.append("MinX: ");
 		temp.append(getMinimumX());
-		temp.append(xmax);
+		temp.append(", MaxX: ");
 		temp.append(getMaximumX());
 		return temp.toString();
 	}

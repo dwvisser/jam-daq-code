@@ -23,11 +23,11 @@ final class NewHistogramCmd extends AbstractCommand {
     protected void execute(final Object[] cmdParams) {
         final String name = (String) cmdParams[0];
         final String title = (String) cmdParams[1];
-        final int type = ((Integer) cmdParams[2]).intValue();
+        final int type = (Integer) cmdParams[2];
         final HistogramType hType = type == 1 ? HistogramType.ONE_D_DOUBLE
                 : HistogramType.TWO_D_DOUBLE;
-        final int sizeX = ((Integer) cmdParams[3]).intValue();
-        final int sizeY = ((Integer) cmdParams[4]).intValue();
+        final int sizeX = (Integer) cmdParams[3];
+        final int sizeY = (Integer) cmdParams[4];
         final Group currentGroup = (Group) GuiceInjector.getObjectInstance(
                 JamStatus.class).getCurrentGroup();
         Factory.createHistogram(currentGroup,

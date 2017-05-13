@@ -267,16 +267,15 @@ public final class RingBufferTest {// NOPMD
         }
 
         public Boolean call() {
-            Boolean rval = Boolean.FALSE;
+            Boolean result = Boolean.FALSE;
             try {
                 Thread.sleep(this.msecToSleep);
-                final boolean result = ring.tryPutBuffer(ringFactory
+                result = ring.tryPutBuffer(ringFactory
                         .freshBuffer());
-                rval = Boolean.valueOf(result);
             } catch (InterruptedException ie) {
                 // failure
             }
-            return rval;
+            return result;
         }
     }
 }

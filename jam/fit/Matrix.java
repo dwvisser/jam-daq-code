@@ -86,7 +86,7 @@ final class Matrix {
 	 * @param frac displayed fractional digits
 	 */
 	protected String toStringUL(final int frac) {
-		final StringBuffer outPut = new StringBuffer(); // return value
+		final StringBuilder outPut = new StringBuilder(); // return value
 		if (rows == columns) {
 			final NumberFormat formatter = NumberFormat.getInstance();
 			formatter.setMaximumFractionDigits(frac);

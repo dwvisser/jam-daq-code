@@ -105,7 +105,7 @@ public class GoodThread extends Thread {
 
     @Override
     public String toString() {
-        final StringBuffer rval = new StringBuffer(super.toString());
+        final StringBuilder rval = new StringBuilder(super.toString());
         rval.append(": state=");
         synchronized (stateLock) {
             return rval.append(state).toString();

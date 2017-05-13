@@ -267,7 +267,7 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 
 	private void updateSample() {
 		final int sample = sortDaemon.getSortInterval();
-		final StringBuffer buffer = new StringBuffer();
+		final StringBuilder buffer = new StringBuilder();
 		if (sample > 1) {
 			buffer.append("1/");
 		}

@@ -363,8 +363,8 @@ final class Painter {
 		final Scale scale = Scale.LINEAR;
 		final int[] ticks = tickmarks.getTicks(lowerLimit, upperLimit, scale,
 				Tickmarks.Type.MINOR);
-		for (int i = 0; i < ticks.length; i++) {
-			final int xOrigin = toViewHorzLin(ticks[i]);
+		for (int tick : ticks) {
+			final int xOrigin = toViewHorzLin(tick);
 			int bottom = view.getBottom();
 			graphics2d.drawLine(xOrigin, bottom, xOrigin, bottom
 					- graphLayout.tick.minor);
@@ -374,8 +374,8 @@ final class Painter {
 		}
 		final int[] ticksMajor = tickmarks.getTicks(lowerLimit, upperLimit,
 				scale, Tickmarks.Type.MAJOR);
-		for (int i = 0; i < ticksMajor.length; i++) {
-			final int xOrigin = toViewHorzLin(ticksMajor[i]);
+		for (int aTicksMajor : ticksMajor) {
+			final int xOrigin = toViewHorzLin(aTicksMajor);
 			int bottom = view.getBottom();
 			graphics2d.drawLine(xOrigin, bottom, xOrigin, bottom
 					- graphLayout.tick.major);
@@ -400,11 +400,11 @@ final class Painter {
 
 		final int[] ticks = tickmarks.getTicks(lowerLimit, upperLimit, scale,
 				Tickmarks.Type.MINOR);
-		for (int i = 0; i < ticks.length; i++) {
+		for (int tick : ticks) {
 			if (scale == Scale.LINEAR) {
-				yCoordinate = toViewVertLin(ticks[i]);
+				yCoordinate = toViewVertLin(tick);
 			} else {
-				yCoordinate = toViewVertLog(ticks[i]);
+				yCoordinate = toViewVertLog(tick);
 			}
 			xCoordinate = border.left;
 			graphics2d.drawLine(xCoordinate, yCoordinate, xCoordinate
@@ -415,11 +415,11 @@ final class Painter {
 		}
 		final int[] ticksMajor = tickmarks.getTicks(lowerLimit, upperLimit,
 				scale, Tickmarks.Type.MAJOR);
-		for (int i = 0; i < ticksMajor.length; i++) {
+		for (int aTicksMajor : ticksMajor) {
 			if (scale == Scale.LINEAR) {
-				yCoordinate = toViewVertLin(ticksMajor[i]);
+				yCoordinate = toViewVertLin(aTicksMajor);
 			} else {
-				yCoordinate = toViewVertLog(ticksMajor[i]);
+				yCoordinate = toViewVertLog(aTicksMajor);
 			}
 			xCoordinate = border.left;
 			graphics2d.drawLine(xCoordinate, yCoordinate, xCoordinate
@@ -460,10 +460,10 @@ final class Painter {
 		final Scale scale = Scale.LINEAR;
 		final int[] ticksMajor = tickmarks.getTicks(lowerLimit, upperLimit,
 				scale, Tickmarks.Type.MAJOR);
-		for (int i = 0; i < ticksMajor.length; i++) {
-			final String label = Integer.toString(ticksMajor[i]);
+		for (int aTicksMajor : ticksMajor) {
+			final String label = Integer.toString(aTicksMajor);
 			final int offset = metrics.stringWidth(label); // length of string
-			final int xCoordinate = toViewHorzLin(ticksMajor[i]) - offset / 2;
+			final int xCoordinate = toViewHorzLin(aTicksMajor) - offset / 2;
 			final int yCoordinate = view.getBottom() + metrics.getAscent()
 					+ graphLayout.labelOffsets.bottom;
 			graphics2d.drawString(label, xCoordinate, yCoordinate);
@@ -481,14 +481,14 @@ final class Painter {
 			final Scale scale) {
 		final int[] ticksMajor = tickmarks.getTicks(lowerLimit, upperLimit,
 				scale, Tickmarks.Type.MAJOR);
-		for (int i = 0; i < ticksMajor.length; i++) {
-			final String label = Integer.toString(ticksMajor[i]);
+		for (int aTicksMajor : ticksMajor) {
+			final String label = Integer.toString(aTicksMajor);
 			final int offset = metrics.stringWidth(label);
 			int yCoordinate = metrics.getAscent() / 2;
 			if (scale == Scale.LINEAR) {
-				yCoordinate += toViewVertLin(ticksMajor[i]);
+				yCoordinate += toViewVertLin(aTicksMajor);
 			} else {
-				yCoordinate += toViewVertLog(ticksMajor[i]);
+				yCoordinate += toViewVertLog(aTicksMajor);
 			}
 			final int xCoordinate = border.left - offset
 					- graphLayout.labelOffsets.left;
@@ -645,32 +645,31 @@ final class Painter {
 	private double[] getDrawCounts(final double[] counts, final double bin) {
 		/* bin assumed >= 1.0 */
 		final double one = 1.0;
-		final int clen = counts.length;
 		final int len = (int) Math.ceil(counts.length / bin);
-		double[] rval = new double[len];
+		double[] result = new double[len];
 		if ((bin - 1.0) <= EPSILON) {
-			rval = counts;
+			result = counts;
 		} else {
 			double remain = bin;
 			int index = 0;
-			for (int i = 0; i < clen; i++) {
+			for (double count : counts) {
 				if (remain > one) {
-					rval[index] += counts[i];
+					result[index] += count;
 					remain -= one;
 				} else {
-					rval[index] += counts[i] * remain;
+					result[index] += count * remain;
 					if (index < len - 1) {
 						index++;
 					}
-					rval[index] += counts[i] * (one - remain);
+					result[index] += count * (one - remain);
 					remain += bin - one;
 				}
 			}
 			for (int i = 0; i < len; i++) {
-				rval[i] /= bin;
+				result[i] /= bin;
 			}
 		}
-		return rval;
+		return result;
 	}
 
 	/**

@@ -50,9 +50,8 @@ public class ScanForScalers {
 			writeHeaderLine(carriage, outText);
 		}
 		outText.append(index);
-		final int[] values = getScalerValues();
-		for (int j = 0; j < values.length; j++) {
-			outText.append(TAB).append(values[j]);
+		for (int value : getScalerValues()) {
+			outText.append(TAB).append(value);
 		}
 		outText.append(carriage);
 	}
@@ -63,9 +62,8 @@ public class ScanForScalers {
 	 */
 	private void writeHeaderLine(final char carriage, final StringBuffer outText) {
 		outText.append("Run");
-		final String[] names = getScalerNames();
-		for (int j = 0; j < names.length; j++) {
-			outText.append(TAB).append(names[j]);
+		for (String name : getScalerNames()) {
+			outText.append(TAB).append(name);
 		}
 		outText.append(carriage);
 	}

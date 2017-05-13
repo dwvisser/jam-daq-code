@@ -364,10 +364,8 @@ public final class GateSet extends AbstractControl {
 		gatePoints.add(gatePoints.get(0));
 		/* make a polygon from data points */
 		final Polygon gatePoly2d = new Polygon();
-		for (int i = 0; i < gatePoints.size(); i++) {
-			final int pointX = gatePoints.get(i).getX();
-			final int pointY = gatePoints.get(i).getY();
-			gatePoly2d.addPoint(pointX, pointY);
+		for (Bin gatePoint : gatePoints) {
+			gatePoly2d.addPoint(gatePoint.getX(), gatePoint.getY());
 		}
 		currentGate.setLimits(gatePoly2d);
 		LOGGER.info("Gate Set " + currentGate.getName());

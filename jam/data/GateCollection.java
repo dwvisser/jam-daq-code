@@ -66,8 +66,8 @@ public final class GateCollection {
 	public boolean hasGate(final DataElement gate) {
 		boolean rval = false;// default return value
 		synchronized (this) {
-			for (int i = 0; i < gates.size(); i++) {
-				if (gates.get(i) == gate) {
+			for (DataElement gate1 : gates) {
+				if (gate1 == gate) {
 					rval = true;
 					break;// drop out of loop
 				}
