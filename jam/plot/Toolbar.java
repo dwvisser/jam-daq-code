@@ -143,11 +143,11 @@ final class Toolbar extends JToolBar implements ActionListener {
 			brange.addActionListener(this);
 			add(brange);
 			// Combox for Re Bin
-			Vector<Integer> intVector = new Vector<Integer>(REBIN_RATIOS.length);// NOPMD
+			Vector<Integer> intVector = new Vector<>(REBIN_RATIOS.length);// NOPMD
 			for (int i = 0; i < REBIN_RATIOS.length; i++) {
 				intVector.add(i, i);
 			}
-			comboBinRatio = new JComboBox<Integer>(intVector);
+			comboBinRatio = new JComboBox<>(intVector);
 			final Dimension dimMax = comboBinRatio.getMaximumSize();
 			final Dimension dimPref = comboBinRatio.getPreferredSize();
 			dimMax.width = dimPref.width + 40;

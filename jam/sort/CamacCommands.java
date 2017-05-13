@@ -26,13 +26,13 @@ import java.util.List;
  * @see jam.sort.AbstractSortRoutine#cnafCommands
  */
 public class CamacCommands {
-	private transient final List<CNAF> eventCmds = new ArrayList<CNAF>();
+	private transient final List<CNAF> eventCmds = new ArrayList<>();
 
-	private transient final List<CNAF> initCommands = new ArrayList<CNAF>();
+	private transient final List<CNAF> initCommands = new ArrayList<>();
 
-	private transient final List<CNAF> scalerCmds = new ArrayList<CNAF>();
+	private transient final List<CNAF> scalerCmds = new ArrayList<>();
 
-	private transient final List<CNAF> clearCmds = new ArrayList<CNAF>();
+	private transient final List<CNAF> clearCmds = new ArrayList<>();
 
 	private transient final EventSizeModeClient client;
 

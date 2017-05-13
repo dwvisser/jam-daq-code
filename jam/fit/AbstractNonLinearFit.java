@@ -71,13 +71,13 @@ public abstract class AbstractNonLinearFit extends AbstractFit implements
 	 */
 	public AbstractNonLinearFit(final String name) {
 		super(name);
-		chisq = new Parameter<Double>("ChiSq/dof", Parameter.DOUBLE,
+		chisq = new Parameter<>("ChiSq/dof", Parameter.DOUBLE,
 				Parameter.KNOWN, Parameter.OUTPUT);
 		parameters.add(chisq);
-		lowChannel = new Parameter<Integer>(FIT_LOW, Parameter.INT,
+		lowChannel = new Parameter<>(FIT_LOW, Parameter.INT,
 				Parameter.KNOWN, Parameter.MOUSE);
 		parameters.add(lowChannel);
-		highChannel = new Parameter<Integer>(FIT_HIGH, Parameter.INT,
+		highChannel = new Parameter<>(FIT_HIGH, Parameter.INT,
 				Parameter.KNOWN, Parameter.MOUSE);
 		parameters.add(highChannel);
 	}

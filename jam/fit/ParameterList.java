@@ -33,7 +33,7 @@ public class ParameterList implements Iterable<Parameter<?>> {
 	 * 
 	 * @see Parameter
 	 */
-	private transient final List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
+	private transient final List<Parameter<?>> parameters = new ArrayList<>();
 	/**
 	 * The list of <code>Parameter</code> objects accessible by name.
 	 * 
@@ -44,23 +44,23 @@ public class ParameterList implements Iterable<Parameter<?>> {
 	/**
 	 * Data field values.
 	 */
-	private transient final Map<Parameter<?>, JTextComponent> textData = new HashMap<Parameter<?>, JTextComponent>();
+	private transient final Map<Parameter<?>, JTextComponent> textData = new HashMap<>();
 	/**
 	 * Fit error field values.
 	 */
-	private transient final Map<Parameter<?>, JLabel> textError = new HashMap<Parameter<?>, JLabel>();
+	private transient final Map<Parameter<?>, JLabel> textError = new HashMap<>();
 	/**
 	 * Checkboxes for finding initial estimates.
 	 */
-	private transient final Map<Parameter<?>, JCheckBox> cEstimate = new HashMap<Parameter<?>, JCheckBox>();
+	private transient final Map<Parameter<?>, JCheckBox> cEstimate = new HashMap<>();
 	/**
 	 * Checkboxes for parameter fixing.
 	 */
-	private transient final Map<Parameter<?>, JCheckBox> cFixValue = new HashMap<Parameter<?>, JCheckBox>();
+	private transient final Map<Parameter<?>, JCheckBox> cFixValue = new HashMap<>();
 	/**
 	 * Checkboxes for miscellaneous options.
 	 */
-	private transient final Map<Parameter<?>, JCheckBox> cOption = new HashMap<Parameter<?>, JCheckBox>();
+	private transient final Map<Parameter<?>, JCheckBox> cOption = new HashMap<>();
 
 	/**
 	 * @param newParameter
@@ -106,7 +106,7 @@ public class ParameterList implements Iterable<Parameter<?>> {
 	}
 
 	protected void highlightFields(final JLabel statusOut) {
-		final List<Parameter<?>> tempList = new ArrayList<Parameter<?>>();
+		final List<Parameter<?>> tempList = new ArrayList<>();
 		for (Parameter<?> parameter : this.parameters) {
 			if (parameter.isMouseClickable() && (!parameter.isFixed())) {
 				this.textData.get(parameter).setForeground(Color.RED);

@@ -164,8 +164,8 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 		txtListFile.setEditable(false);
 		pOption.add(txtListFile);
 		panel.add(pOption, BorderLayout.NORTH);
-		hListModel = new DefaultListModel<String>();
-		histList = new JList<String>(hListModel);
+		hListModel = new DefaultListModel<>();
+		histList = new JList<>(hListModel);
 		histList.setSelectedIndex(0);
 		histList.setVisibleRowCount(10);
 		final JScrollPane listPane = new JScrollPane(histList);
@@ -288,7 +288,7 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	private List<HistogramAttributes> createSelectedHistogramNamesList() {
 		checkSelectionIsNone();
 		final List<String> selected = histList.getSelectedValuesList();
-		final List<HistogramAttributes> histAttrList = new ArrayList<HistogramAttributes>();
+		final List<HistogramAttributes> histAttrList = new ArrayList<>();
 		/* Put selected histograms into a list */
 		for (String histFullName : selected) {
 			// Get name from full name

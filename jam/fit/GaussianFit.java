@@ -58,40 +58,40 @@ public final class GaussianFit extends AbstractNonLinearFit {
 	public GaussianFit() {
 		super("GaussianFit");
 
-		final Parameter<String> background = new Parameter<String>(
+		final Parameter<String> background = new Parameter<>(
 				"Background: ", Parameter.TEXT);
 		background.setValue("A+B(x-Centroid)+C(x-Centroid)\u00b2");
-		final Parameter<String> equation = new Parameter<String>("Peak: ",
+		final Parameter<String> equation = new Parameter<>("Peak: ",
 				Parameter.TEXT);
 		equation
 				.setValue("2.354\u2219Area/(\u221a(2\u03c0)Width)\u2219exp[-2.354\u00b2(x-Centroid)\u00b2/(2 Width\u00b2)]");
-		area = new Parameter<Double>(AREA, Parameter.DOUBLE, Parameter.FIX,
+		area = new Parameter<>(AREA, Parameter.DOUBLE, Parameter.FIX,
 				Parameter.ESTIMATE);
 		area.setEstimate(true);
 		/**
 		 * function <code>Parameter</code> --centroid of peak
 		 */
-		centroid = new Parameter<Double>(CENTROID, Parameter.DOUBLE,
+		centroid = new Parameter<>(CENTROID, Parameter.DOUBLE,
 				Parameter.FIX, Parameter.MOUSE);
-		width = new Parameter<Double>(WIDTH, Parameter.DOUBLE, Parameter.FIX,
+		width = new Parameter<>(WIDTH, Parameter.DOUBLE, Parameter.FIX,
 				Parameter.ESTIMATE);
 		width.setEstimate(true);
 		/**
 		 * function <code>Parameter</code> --constant background term
 		 */
-		paramA = new Parameter<Double>("A", Parameter.DOUBLE, Parameter.FIX,
+		paramA = new Parameter<>("A", Parameter.DOUBLE, Parameter.FIX,
 				Parameter.ESTIMATE);
 		paramA.setEstimate(true);
 		/**
 		 * function <code>Parameter</code> --linear background term
 		 */
-		final Parameter<Double> paramB = new Parameter<Double>("B",
+		final Parameter<Double> paramB = new Parameter<>("B",
 				Parameter.FIX);
 		paramB.setFixed(true);
 		/**
 		 * function <code>Parameter</code> --quadratic background term
 		 */
-		final Parameter<Double> paramC = new Parameter<Double>("C",
+		final Parameter<Double> paramC = new Parameter<>("C",
 				Parameter.FIX);
 		paramC.setFixed(true);
 

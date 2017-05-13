@@ -53,7 +53,7 @@ public final class GateSet extends AbstractControl {
 	private transient Nameable currentHistogram = UnNamed
 			.getSingletonInstance();
 
-	private transient final List<Bin> gatePoints = new ArrayList<Bin>();
+	private transient final List<Bin> gatePoints = new ArrayList<>();
 
 	private transient final JLabel lLower, lUpper;
 
@@ -82,7 +82,7 @@ public final class GateSet extends AbstractControl {
 		/* panel with chooser */
 		final JPanel pChooser = new JPanel();
 		pChooser.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
-		cgate = new JComboBox<Object>(new GateComboBoxModel());
+		cgate = new JComboBox<>(new GateComboBoxModel());
 		final java.awt.Dimension dimset = cgate.getPreferredSize();
 		dimset.width = 200;
 		cgate.setPreferredSize(dimset);

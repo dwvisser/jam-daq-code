@@ -27,7 +27,7 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	private transient int countEvent = 0;// NOPMD
 
 	// event sizes
-	private transient final List<Short> eventsze = new ArrayList<Short>(5);
+	private transient final List<Short> eventsze = new ArrayList<>(5);
 
 	private transient boolean newBlock = true;// NOPMD
 
@@ -141,9 +141,6 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 				// we got to the end of a file or stream
 			} catch (EOFException e) {
 				eventInputStatus = EventInputStatus.END_FILE;
-			} catch (IOException ioe) {
-				LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
-				eventInputStatus = EventInputStatus.ERROR;
 			} catch (Exception e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				eventInputStatus = EventInputStatus.ERROR;

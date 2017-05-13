@@ -68,7 +68,7 @@ public final class BatchExport extends JDialog implements Observer {
 
 	private transient final JButton bExport = new JButton("Export");
 
-	private transient final JComboBox<String> cbHist = new JComboBox<String>();
+	private transient final JComboBox<String> cbHist = new JComboBox<>();
 
 	private transient final ActionListener cbHistListen = new ActionListener() {// NOPMD
 		public void actionPerformed(final ActionEvent actionEvent) {
@@ -82,8 +82,8 @@ public final class BatchExport extends JDialog implements Observer {
 
 	private transient File lastListFile = null;
 
-	private transient final JList<AbstractHistogram> lstHists = new JList<AbstractHistogram>(
-			new DefaultListModel<AbstractHistogram>());
+	private transient final JList<AbstractHistogram> lstHists = new JList<>(
+			new DefaultListModel<>());
 
 	private transient final SelectHistogramDialog selectHistDlg;
 
@@ -131,7 +131,7 @@ public final class BatchExport extends JDialog implements Observer {
 	 * Add all 1 d histograms to the list
 	 */
 	private void addAllHists() {
-		final Set<AbstractHistogram> histSet = new HashSet<AbstractHistogram>();
+		final Set<AbstractHistogram> histSet = new HashSet<>();
 		CollectionsUtil.getSingletonInstance().addConditional(
 				AbstractHistogram.getHistogramList(), histSet, HIST_COND_1D);
 		lstHists.setListData(histSet.toArray(EMPTY));
@@ -142,7 +142,7 @@ public final class BatchExport extends JDialog implements Observer {
 	 */
 	private void addSelectedHist() {
 		final String name = cbHist.getSelectedItem().toString();
-		final HashSet<Object> histSet = new HashSet<Object>();
+		final HashSet<Object> histSet = new HashSet<>();
 		/* now combine this with stuff already in list. */
 		final ListModel<AbstractHistogram> model = lstHists.getModel();
 		for (int i = 0; i < model.getSize(); i++) {
@@ -242,7 +242,7 @@ public final class BatchExport extends JDialog implements Observer {
 	}
 
 	private List<AbstractImpExp> createExportList() {
-		final List<AbstractImpExp> rval = new ArrayList<AbstractImpExp>();
+		final List<AbstractImpExp> rval = new ArrayList<>();
 		final Set<Class<? extends AbstractImpExp>> set = rtsi.find("jam.io",
 				AbstractImpExp.class, false);
 		set.remove(AbstractImpExp.class);
@@ -289,7 +289,7 @@ public final class BatchExport extends JDialog implements Observer {
 	private void export() {
 		boolean status;
 		boolean already = false;
-		final List<String> exportDirList = new ArrayList<String>();
+		final List<String> exportDirList = new ArrayList<>();
 		/* select the format */
 		final AbstractImpExp exportFormat = selectedExportFormat();
 		// Check or create export dir
@@ -453,7 +453,7 @@ public final class BatchExport extends JDialog implements Observer {
 				&& chooser.getSelectedFile() != null) {
 			lastListFile = chooser.getSelectedFile(); // save current
 			// directory
-			final List<AbstractHistogram> list = new ArrayList<AbstractHistogram>();
+			final List<AbstractHistogram> list = new ArrayList<>();
 			try {
 				final java.io.BufferedReader reader = new java.io.BufferedReader(
 						new java.io.FileReader(lastListFile));
@@ -488,7 +488,7 @@ public final class BatchExport extends JDialog implements Observer {
 		final List<AbstractHistogram> removeList = lstHists
 				.getSelectedValuesList();
 		final ListModel<AbstractHistogram> model = lstHists.getModel();
-		final List<Object> list = new ArrayList<Object>();
+		final List<Object> list = new ArrayList<>();
 		for (int i = 0; i < model.getSize(); i++) {
 			list.add(model.getElementAt(i));
 		}

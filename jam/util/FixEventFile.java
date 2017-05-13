@@ -119,7 +119,7 @@ public class FixEventFile {
             dir = tokenizer.sval;
             LOGGER.info("Directory containing output event files: " + dir);
             outDir = fileUtil.getDir(dir);
-            runNumberSet = new TreeSet<Integer>();
+            runNumberSet = new TreeSet<>();
             LOGGER.info("Run numbers to move 1st buffer from: ");
             do {
                 tokenizer.nextToken();

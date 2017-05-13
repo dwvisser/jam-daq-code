@@ -16,7 +16,7 @@ import java.util.List;
  */
 final class PlotMouse extends MouseAdapter {
 	/* list of listeners for PlotMouse */
-	private transient final List<PlotMouseListener> listeners = new ArrayList<PlotMouseListener>();
+	private transient final List<PlotMouseListener> listeners = new ArrayList<>();
 
 	/* converts screen pixels to data values */
 	private transient final Painter painter;

@@ -69,12 +69,8 @@ public class Help extends JDialog {
 				}
 			});
 			proxy.doClick();
-		} catch (HelpSetException helpSetException) {
+		} catch (HelpSetException | InvocationTargetException | InterruptedException helpSetException) {
 			showErrorDialog(helpSetException);
-		} catch (InvocationTargetException itException) {
-			showErrorDialog(itException);
-		} catch (InterruptedException iException) {
-			showErrorDialog(iException);
 		}
 	}
 

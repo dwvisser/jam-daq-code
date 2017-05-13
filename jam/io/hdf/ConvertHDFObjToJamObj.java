@@ -542,7 +542,7 @@ final class ConvertHDFObjToJamObj {
      * dimensions @return number of histograms
      */
     protected List<VirtualGroup> findGroups(final List<Group> existingGroupList) {
-        final List<VirtualGroup> groupList = new ArrayList<VirtualGroup>();
+        final List<VirtualGroup> groupList = new ArrayList<>();
         /* Get VirtualGroup that is root of all groups */
         final VirtualGroup groupsInRoot = VirtualGroup
                 .ofName(JamFileFields.GRP_SECTION);
@@ -605,7 +605,7 @@ final class ConvertHDFObjToJamObj {
     private List<VirtualGroup> findSubGroups(
             final VirtualGroup virtualGroupGroup, final String groupType,
             final List<String> groupNameList) {
-        final List<VirtualGroup> groupSubList = new ArrayList<VirtualGroup>();
+        final List<VirtualGroup> groupSubList = new ArrayList<>();
         for (AbstractData hData : virtualGroupGroup.getObjects()) {
             // Is a virtual group
             if (hData instanceof VirtualGroup) {
@@ -624,7 +624,7 @@ final class ConvertHDFObjToJamObj {
 
     private List<VirtualGroup> findSubGroupsName(
             final VirtualGroup virtualGroupGroup, final String groupName) {
-        final List<VirtualGroup> groupSubList = new ArrayList<VirtualGroup>();
+        final List<VirtualGroup> groupSubList = new ArrayList<>();
         for (AbstractData hData : virtualGroupGroup.getObjects()) {
             // Is a virtual group
             if (hData instanceof VirtualGroup) {
@@ -659,7 +659,7 @@ final class ConvertHDFObjToJamObj {
             final String groupName,
             final List<HistogramAttributes> histAttributeList) {
         boolean rtnVal = true;
-        final List<String> nameList = new ArrayList<String>();
+        final List<String> nameList = new ArrayList<>();
         // Check group has histograms
         if (histAttributeList != null) {
             for (HistogramAttributes histAttribute : histAttributeList) {
@@ -703,9 +703,7 @@ final class ConvertHDFObjToJamObj {
             if (calMap.containsKey(funcName)) {
                 calFunc = calMap.get(funcName).newInstance();
             }
-        } catch (InstantiationException e) {
-            throw new HDFException("Cannot create calibration  " + funcName, e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new HDFException("Cannot create calibration  " + funcName, e);
         }
         return calFunc;

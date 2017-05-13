@@ -27,7 +27,7 @@ final class Multiplet extends ArrayList<Peak> {
 	}
 
 	protected List<Double> getAllCentroids() {
-		final List<Double> centroids = new ArrayList<Double>();
+		final List<Double> centroids = new ArrayList<>();
 		for (Peak peak : this) {
 			centroids.add(peak.getPosition());
 		}

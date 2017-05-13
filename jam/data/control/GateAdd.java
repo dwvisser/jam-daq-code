@@ -58,8 +58,8 @@ public final class GateAdd extends AbstractControl {
 		final JPanel ptadd = new JPanel();
 		ptadd.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
 		cdadd.add(ptadd, BorderLayout.CENTER);
-		cadd = new JComboBox<Object>(new GateComboBoxModel(
-				GateComboBoxModel.Mode.ALL));
+		cadd = new JComboBox<>(new GateComboBoxModel(
+                GateComboBoxModel.Mode.ALL));
 		cadd.setRenderer(gateListRender);
 		cadd.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {

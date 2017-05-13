@@ -44,7 +44,7 @@ public class CommandMap implements CommandFinder {
 	public Collection<String> getSimilar(final String string,
 			final boolean onlyEnabled) {
 		final String lowerCase = string.toLowerCase(Locale.US);
-		final TreeSet<String> rval = new TreeSet<String>();
+		final TreeSet<String> rval = new TreeSet<>();
 		for (int i = lowerCase.length(); i >= 1; i--) {
 			final String com = lowerCase.substring(0, i);
 			for (String element : this.map.keySet()) {
@@ -72,7 +72,7 @@ public class CommandMap implements CommandFinder {
 	 * @return all commands in the map in alphabetical order
 	 */
 	public Collection<String> getAll() {
-		return new TreeSet<String>(map.keySet());
+		return new TreeSet<>(map.keySet());
 	}
 
 	protected boolean containsKey(final String key) {
@@ -113,14 +113,8 @@ public class CommandMap implements CommandFinder {
 
 				success = true;
 			}
-		} catch (ParserConfigurationException pce) {
+		} catch (ParserConfigurationException | IOException | ClassNotFoundException | SAXException pce) {
 			throwable = pce;
-		} catch (IOException ioe) {
-			throwable = ioe;
-		} catch (SAXException saxe) {
-			throwable = saxe;
-		} catch (ClassNotFoundException cnfe) {
-			throwable = cnfe;
 		}
 
 		// Fail fast and hard.

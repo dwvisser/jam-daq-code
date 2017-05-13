@@ -26,7 +26,7 @@ final class SortChooser extends JComboBox<Object> {
 
 	private transient AbstractSortRoutine sortRoutine;
 
-	private transient final List<Class<? extends AbstractSortRoutine>> listClasses = new ArrayList<Class<? extends AbstractSortRoutine>>();
+	private transient final List<Class<? extends AbstractSortRoutine>> listClasses = new ArrayList<>();
 
 	private transient final RuntimeSubclassIdentifier rtsi = GuiceInjector
 			.getObjectInstance(RuntimeSubclassIdentifier.class);
@@ -176,7 +176,7 @@ final class SortChooser extends JComboBox<Object> {
 	 * @return set of available sort routines
 	 */
 	private Set<Class<? extends AbstractSortRoutine>> findSortClassesDefault() {
-		final Set<Class<? extends AbstractSortRoutine>> set = new LinkedHashSet<Class<? extends AbstractSortRoutine>>();
+		final Set<Class<? extends AbstractSortRoutine>> set = new LinkedHashSet<>();
 		set.addAll(rtsi.find("help", AbstractSortRoutine.class, true));
 		set.addAll(rtsi.find("sort", AbstractSortRoutine.class, true));
 		return set;

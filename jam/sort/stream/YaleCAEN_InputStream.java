@@ -297,7 +297,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
         synchronized (this) {
             EventInputStatus rval = EventInputStatus.EVENT;
             int lastParameterRead = 0;
-            final List<Integer> scalerValues = new ArrayList<Integer>(32);
+            final List<Integer> scalerValues = new ArrayList<>(32);
             try {
                 /*
                  * internal_status may also be in a "flush" mode in which case

@@ -89,12 +89,8 @@ public final class OnlineTestCommon {
                 inputStream, outputStream);
         try {
             setupOnlineFuture.get(10L, TimeUnit.SECONDS);
-        } catch (TimeoutException te) {
+        } catch (TimeoutException | InterruptedException | ExecutionException te) {
             fail(te.getMessage());
-        } catch (ExecutionException ee) {
-            fail(ee.getMessage());
-        } catch (InterruptedException ie) {
-            fail(ie.getMessage());
         }
     }
 

@@ -193,8 +193,8 @@ public final class CheckEventFiles {
             final DataInputStream fromStream) throws IOException {
         final int SCALER_HEADER = 0x01cccccc;
         int blockNum = 0;
-        final List<Integer> lastVal = new ArrayList<Integer>(16);
-        final List<Integer> val = new ArrayList<Integer>(16);
+        final List<Integer> lastVal = new ArrayList<>(16);
+        final List<Integer> val = new ArrayList<>(16);
         while (true) {
             final int readVal = fromStream.readInt();
             if (readVal == SCALER_HEADER) {

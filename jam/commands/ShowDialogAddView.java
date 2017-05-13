@@ -92,13 +92,13 @@ public class ShowDialogAddView extends AbstractShowDialog {
 					2, 3, 4,
 					4, 5, 6,
 					7};
-			comboRows = new JComboBox<Integer>(defaultNumbers);
+			comboRows = new JComboBox<>(defaultNumbers);
 			pRows.add(comboRows);
 			/* Cols Combo */
 			final JPanel pCols = new JPanel(new FlowLayout(FlowLayout.LEFT, 0,
 					0));
 			pEntires.add(pCols);
-			comboCols = new JComboBox<Integer>(defaultNumbers);
+			comboCols = new JComboBox<>(defaultNumbers);
 			pCols.add(comboCols);
 
 			/* panel for buttons */

@@ -50,9 +50,9 @@ final class SummaryTableModel implements TableModel {
 	/** The titles of the columns */
 	private transient String[] columnTitles;
 
-	private transient final List<RowDataElement> dataList = new ArrayList<RowDataElement>();
+	private transient final List<RowDataElement> dataList = new ArrayList<>();
 
-	private transient final Collection<TableModelListener> listeners = new HashSet<TableModelListener>();
+	private transient final Collection<TableModelListener> listeners = new HashSet<>();
 
 	/** The number of columns */
 	private transient int numColumns;

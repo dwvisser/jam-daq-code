@@ -48,7 +48,7 @@ final class NumericalDataGroup extends AbstractData {
 		bytes.rewind();
 		/* 2 for each tag, 2 for each ref */
 		final int numItems = bytes.capacity() / 4;
-		elements = new ArrayList<AbstractData>(numItems);
+		elements = new ArrayList<>(numItems);
 		for (int i = 0; i < numItems; i++) {
 			final short tagType = bytes.getShort();
 			final short reference = bytes.getShort();

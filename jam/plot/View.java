@@ -25,8 +25,8 @@ public final class View {
     private final static Map<String, View> MAP;
 
     static {
-        NAME_LIST = new ArrayList<String>();
-        MAP = new TreeMap<String, View>();
+        NAME_LIST = new ArrayList<>();
+        MAP = new TreeMap<>();
     }
 
     /**

@@ -17,9 +17,9 @@ public final class HistogramCollection implements
 		NameValueCollection<AbstractHistogram> {
 
 	/** children of group */
-	private transient final Map<String, AbstractHistogram> histogramMap = new HashMap<String, AbstractHistogram>();
+	private transient final Map<String, AbstractHistogram> histogramMap = new HashMap<>();
 	/** children histograms of group */
-	private transient final List<AbstractHistogram> histList = new ArrayList<AbstractHistogram>();
+	private transient final List<AbstractHistogram> histList = new ArrayList<>();
 
 	/**
 	 * @return list of histograms in this group

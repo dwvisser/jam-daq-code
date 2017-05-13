@@ -63,8 +63,8 @@ public final class SaveSelectedHistogram {
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
 		/* Selection list */
-		final DefaultListModel<String> listModel = new DefaultListModel<String>();
-		listHist = new JList<String>(listModel);
+		final DefaultListModel<String> listModel = new DefaultListModel<>();
+		listHist = new JList<>(listModel);
 		listHist.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		listHist.setSelectedIndex(0);
 		listHist.setVisibleRowCount(10);
@@ -133,7 +133,7 @@ public final class SaveSelectedHistogram {
 	 * 
 	 */
 	private void saveHistListToFile() {
-		final List<AbstractHistogram> listSelected = new ArrayList<AbstractHistogram>();
+		final List<AbstractHistogram> listSelected = new ArrayList<>();
 		File file = null;
 		/* Add selected histograms to a list. */
 		final List<String> selected = listHist.getSelectedValuesList();

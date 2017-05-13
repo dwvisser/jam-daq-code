@@ -106,8 +106,8 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 		pFileInd.add(txtFile);
 		container.add(pFileInd, BorderLayout.NORTH);
 		/* Selection list */
-		histListData = new DefaultListModel<String>();
-		histList = new JList<String>(histListData);
+		histListData = new DefaultListModel<>();
+		histList = new JList<>(histListData);
 		histList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		histList.setSelectedIndex(0);
 		histList.setVisibleRowCount(10);
@@ -186,13 +186,13 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	 */
 	private void loadHistograms() {
 		final List<String> selected = histList.getSelectedValuesList();
-		final List<HistogramAttributes> histAttrList = new ArrayList<HistogramAttributes>();
+		final List<HistogramAttributes> histAttrList = new ArrayList<>();
 		// No histograms selected
 		if (selected.isEmpty()) {
 			LOGGER.severe("No histograms selected");
 		} else {
 			/* Put selected histograms into a list */
-			final List<String> selectNames = new ArrayList<String>();
+			final List<String> selectNames = new ArrayList<>();
 			for (String histFullName : selected) {
 				final HistogramAttributes histAttrib = HistogramAttributes
 						.getHistogramAttribute(histFullName);

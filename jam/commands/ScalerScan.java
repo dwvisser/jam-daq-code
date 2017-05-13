@@ -209,9 +209,7 @@ public final class ScalerScan implements ProgressUpdater {
                 }
                 updateProgressBar("Done", lastRun);
             }
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        } catch (HDFException e) {
+        } catch (IOException | HDFException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
     }

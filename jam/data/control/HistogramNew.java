@@ -103,8 +103,8 @@ public class HistogramNew extends AbstractControl {
 		cdialogNew.add(pEntires, BorderLayout.CENTER);
 		final JPanel pGroup = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		pEntires.add(pGroup);
-		comboGroupModel = new DefaultComboBoxModel<String>();
-		final JComboBox<String> comboGroup = new JComboBox<String>(
+		comboGroupModel = new DefaultComboBoxModel<>();
+		final JComboBox<String> comboGroup = new JComboBox<>(
 				comboGroupModel);
 		final Dimension dim = comboGroup.getPreferredSize();
 		dim.width = CHOOSER_SIZE;
@@ -143,7 +143,7 @@ public class HistogramNew extends AbstractControl {
 		pEntires.add(pradio);
 		final JPanel pSize = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		pEntires.add(pSize);
-		comboSize = new JComboBox<Integer>(DEFAULT_SIZES);
+		comboSize = new JComboBox<>(DEFAULT_SIZES);
 		comboSize.setEditable(true);
 		pSize.add(comboSize);
 		/* panel for buttons */

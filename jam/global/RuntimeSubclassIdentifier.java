@@ -153,7 +153,7 @@ public final class RuntimeSubclassIdentifier {
     public <T> Set<Class<? extends T>> find(final File classpath,
             final Class<T> superclass) {
         /* used linked hash set to guarantee order is preserved */
-        final Set<Class<? extends T>> rval = new LinkedHashSet<Class<? extends T>>();
+        final Set<Class<? extends T>> rval = new LinkedHashSet<>();
         ClassLoader loader = DEF_LOADER;
         URL url = null;
         if (classpath != null) {
@@ -210,7 +210,7 @@ public final class RuntimeSubclassIdentifier {
                 .append("\nYou've probably incorrectly specified a classpath,\n")
                 .append("or moved/renamed an existing .class file.\n");
         final Set<String> names = findClassNames(pckgname, tosubclass, recurse);
-        final Set<Class<? extends T>> rval = new LinkedHashSet<Class<? extends T>>(); // preserves
+        final Set<Class<? extends T>> rval = new LinkedHashSet<>(); // preserves
         // order of
         // add()'s
         try {
@@ -218,11 +218,7 @@ public final class RuntimeSubclassIdentifier {
                 final Class<?> clazz = DEF_LOADER.loadClass(name);
                 rval.add(clazz.asSubclass(tosubclass));
             }
-        } catch (ClassNotFoundException e) {
-            errmessage.append(e.getMessage());
-            JOptionPane.showMessageDialog(null, errmessage.toString(),
-                    rtsiName, JOptionPane.ERROR_MESSAGE);
-        } catch (LinkageError e) {
+        } catch (ClassNotFoundException | LinkageError e) {
             errmessage.append(e.getMessage());
             JOptionPane.showMessageDialog(null, errmessage.toString(),
                     rtsiName, JOptionPane.ERROR_MESSAGE);
@@ -246,7 +242,7 @@ public final class RuntimeSubclassIdentifier {
         /*
          * Code from JWhich Translate the package name into an absolute path
          */
-        final SortedSet<String> rval = new TreeSet<String>();
+        final SortedSet<String> rval = new TreeSet<>();
         final String name = (pckgname.startsWith(SLASH) ? pckgname : SLASH
                 + pckgname).replace('.', '/');
         final URL url = RuntimeSubclassIdentifier.class.getResource(name);
@@ -295,7 +291,7 @@ public final class RuntimeSubclassIdentifier {
     private Set<String> findClassNamesFromJarConnection(
             final Enumeration<JarEntry> enumeration,
             final Class<?> tosubclass, final String starts) {
-        final SortedSet<String> rval = new TreeSet<String>();
+        final SortedSet<String> rval = new TreeSet<>();
         while (enumeration.hasMoreElements()) {
             final JarEntry entry = enumeration.nextElement();
             final String classname = jarEntryToClassname(entry, starts);
@@ -310,7 +306,7 @@ public final class RuntimeSubclassIdentifier {
             final Class<?> tosubclass, final String starts) {
         JarURLConnection conn = null;
         JarFile jfile = null;
-        final SortedSet<String> rval = new TreeSet<String>();
+        final SortedSet<String> rval = new TreeSet<>();
         try {
             /*
              * It does not work with the filesystem: we must be in the case of a
@@ -344,7 +340,7 @@ public final class RuntimeSubclassIdentifier {
      */
     private SortedSet<String> getClassesRecursively(final Class<?> tosubclass,
             final String classpath, final File file, final ClassLoader loader) {
-        final SortedSet<String> rval = new TreeSet<String>();
+        final SortedSet<String> rval = new TreeSet<>();
         if (file.isDirectory()) {
             final File[] list = file.listFiles();
             if (list != null) { // In case we don't have permission
@@ -361,9 +357,7 @@ public final class RuntimeSubclassIdentifier {
                     if (canUseClassAs(tosubclass, clazz)) {
                         rval.add(temp);
                     }
-                } catch (ClassNotFoundException cnfex) {// NOPMD
-                    // fall through and return what we have
-                } catch (LinkageError le) {// NOPMD
+                } catch (ClassNotFoundException | LinkageError cnfex) {// NOPMD
                     // fall through and return what we have
                 }
             }
@@ -411,19 +405,19 @@ public final class RuntimeSubclassIdentifier {
 
     private Set<Class<?>> nameSetToClassSet(final SortedSet<String> names,
             final ClassLoader loader) {
-        final Set<Class<?>> rval = new LinkedHashSet<Class<?>>();
-        final StringBuffer errmessage = new StringBuffer(
+        final Set<Class<?>> result = new LinkedHashSet<>();
+        final StringBuffer errorMessage = new StringBuffer(
                 "\nYou've probably incorrectly specified a classpath,\n")
                 .append("or moved/renamed an existing .class file.\n");
         try {
             for (String name : names) {
-                rval.add(loader.loadClass(name));
+                result.add(loader.loadClass(name));
             }
         } catch (ClassNotFoundException e) {
-            errmessage.append(e.getMessage());
-            JOptionPane.showMessageDialog(null, errmessage, rtsiName,
+            errorMessage.append(e.getMessage());
+            JOptionPane.showMessageDialog(null, errorMessage, rtsiName,
                     JOptionPane.ERROR_MESSAGE);
         }
-        return rval;
+        return result;
     }
 }

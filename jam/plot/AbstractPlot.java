@@ -60,7 +60,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
     /**
      * Channels that have been marked by clicking or typing.
      */
-    protected transient final List<Bin> markedChannels = new ArrayList<Bin>();
+    protected transient final List<Bin> markedChannels = new ArrayList<>();
 
     protected transient final Options options = new Options();
 

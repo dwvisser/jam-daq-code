@@ -47,10 +47,8 @@ class Begin extends AbstractAction {
         if (confirm) {
             try {
                 runControl.beginRun();
-            } catch (SortException se) {
+            } catch (SortException | JamException se) {
                 LOGGER.log(Level.SEVERE, se.getMessage(), se);
-            } catch (JamException je) {
-                LOGGER.log(Level.SEVERE, je.getMessage(), je);
             }
 
         }

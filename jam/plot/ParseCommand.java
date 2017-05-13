@@ -18,7 +18,7 @@ import java.util.Map;
  */
 final class ParseCommand implements CommandListener {
 
-	private static final Map<String, String> CMD_MAP = new HashMap<String, String>();
+	private static final Map<String, String> CMD_MAP = new HashMap<>();
 
 	private transient final CurrentPlotAccessor plotAccessor;
 
@@ -72,7 +72,7 @@ final class ParseCommand implements CommandListener {
 	 * non-javadoc: Convert the parameters to doubles.
 	 */
 	private List<Double> convertParameters(final String[] cmdParams) {
-		final List<Double> rval = new ArrayList<Double>(cmdParams.length);
+		final List<Double> rval = new ArrayList<>(cmdParams.length);
 		/*
 		 * The parameters must be numbers or a NumberFormatException can be
 		 * thrown.

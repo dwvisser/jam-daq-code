@@ -57,9 +57,7 @@ public final class RingBufferFactory {
                         .asSubclass(RingBuffer.class);
                 result = (Constructor<? extends RingBuffer>) ringClass
                         .getDeclaredConstructors()[0];
-            } catch (ClassNotFoundException e) {
-                LOGGER.log(Level.WARNING, warning, e);
-            } catch (IllegalArgumentException e) {
+            } catch (ClassNotFoundException | IllegalArgumentException e) {
                 LOGGER.log(Level.WARNING, warning, e);
             }
         }
@@ -86,13 +84,7 @@ public final class RingBufferFactory {
             final String warning = "Could not instantiate the expected RingBuffer implementation. Instantiating an alternate implementation instead.";
             try {
                 result = ringConstructor.newInstance(empty);
-            } catch (IllegalArgumentException e) {
-                LOGGER.log(Level.WARNING, warning, e);
-            } catch (InstantiationException e) {
-                LOGGER.log(Level.WARNING, warning, e);
-            } catch (IllegalAccessException e) {
-                LOGGER.log(Level.WARNING, warning, e);
-            } catch (InvocationTargetException e) {
+            } catch (IllegalArgumentException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
                 LOGGER.log(Level.WARNING, warning, e);
             }
         }

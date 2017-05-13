@@ -107,7 +107,7 @@ public final class Projections extends AbstractManipulation implements
 		cdproject.add(pEntries, BorderLayout.CENTER);
 		/* From histogram */
 		final JPanel phist = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		cfrom = new JComboBox<Object>(new HistogramComboBoxModel(
+		cfrom = new JComboBox<>(new HistogramComboBoxModel(
 				HistogramComboBoxModel.Mode.TWO_D));
 		int meanWidth = getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
 		Dimension dim = cfrom.getPreferredSize();
@@ -131,7 +131,7 @@ public final class Projections extends AbstractManipulation implements
 				new FlowLayout(FlowLayout.LEFT, 5, 0));
 		tlim1 = new JTextField(5);
 		tlim2 = new JTextField(5);
-		cchan = new JComboBox<Object>();
+		cchan = new JComboBox<>();
 		dim = cchan.getPreferredSize();
 		dim.width = CHOOSER_SIZE;
 		cchan.setPreferredSize(dim);
@@ -149,7 +149,7 @@ public final class Projections extends AbstractManipulation implements
 		pEntries.add(pchannel);
 		/* To histogram */
 		final JPanel ptextto = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		cto = new JComboBox<Object>();
+		cto = new JComboBox<>();
 		meanWidth = getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
 		dim = cto.getPreferredSize();
 		dim.width = CHAR_LENGTH * meanWidth;

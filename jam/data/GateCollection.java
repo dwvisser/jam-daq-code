@@ -17,7 +17,7 @@ public final class GateCollection {
 	/**
 	 * gates that belong to this histogram
 	 */
-	private transient final List<DataElement> gates = new ArrayList<DataElement>();
+	private transient final List<DataElement> gates = new ArrayList<>();
 
 	GateCollection(final int dim) {
 		this.dimensions = dim;

@@ -23,9 +23,9 @@ import java.util.Map;
  */
 public final class GainCalibration {
 
-	private transient final Map<Integer, Double> gains = new HashMap<Integer, Double>();
+	private transient final Map<Integer, Double> gains = new HashMap<>();
 
-	private transient final Map<Integer, Double> offsets = new HashMap<Integer, Double>();
+	private transient final Map<Integer, Double> offsets = new HashMap<>();
 
 	private transient boolean suppress = false;
 

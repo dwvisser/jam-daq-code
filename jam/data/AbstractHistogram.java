@@ -35,22 +35,22 @@ import java.util.TreeMap;
  */
 public abstract class AbstractHistogram implements DataElement {
 
-    private final static List<List<AbstractHistogram>> DIM_LIST = new ArrayList<List<AbstractHistogram>>(
+    private final static List<List<AbstractHistogram>> DIM_LIST = new ArrayList<>(
             2);
 
     private static final String EMPTY_STRING = "";
 
     /* histogramList is ordered by the creation of the histograms */
-    private final static List<AbstractHistogram> LIST = new ArrayList<AbstractHistogram>();
+    private final static List<AbstractHistogram> LIST = new ArrayList<>();
 
     /**
      * Maximum number of characters in the histogram name.
      */
     public static final int NAME_LENGTH = 20;
 
-    private final static Map<String, AbstractHistogram> NAME_MAP = new HashMap<String, AbstractHistogram>();
+    private final static Map<String, AbstractHistogram> NAME_MAP = new HashMap<>();
 
-    private final static SortedMap<Integer, AbstractHistogram> NUMBER_MAP = new TreeMap<Integer, AbstractHistogram>();
+    private final static SortedMap<Integer, AbstractHistogram> NUMBER_MAP = new TreeMap<>();
 
     /**
      * default axis labels
@@ -62,8 +62,8 @@ public abstract class AbstractHistogram implements DataElement {
     private static final String Y_LABEL_2D = "Channels";
 
     static {
-        DIM_LIST.add(0, new ArrayList<AbstractHistogram>());
-        DIM_LIST.add(1, new ArrayList<AbstractHistogram>());
+        DIM_LIST.add(0, new ArrayList<>());
+        DIM_LIST.add(1, new ArrayList<>());
     }
 
     private transient final GateCollection gates;
@@ -137,19 +137,19 @@ public abstract class AbstractHistogram implements DataElement {
      */
     public static <T extends AbstractHistogram> List<T> getHistogramList(
             final List<String> names, final Class<T> type) {
-        final List<T> rval = new ArrayList<T>();
+        final List<T> result = new ArrayList<>();
         for (String name : names) {
             if (NAME_MAP.containsKey(name)) {
                 final AbstractHistogram hist = getHistogram(name);
                 if (type.isInstance(hist)) {
-                    rval.add(type.cast(hist));
+                    result.add(type.cast(hist));
                 }
             } else {
                 throw new IllegalArgumentException('\"' + name
                         + "\" is not of type " + type.getName());
             }
         }
-        return Collections.unmodifiableList(rval);
+        return Collections.unmodifiableList(result);
     }
 
     /**

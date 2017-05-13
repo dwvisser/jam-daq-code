@@ -107,7 +107,7 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 			throws RemoteException {
 		final AbstractHistogram hist = AbstractHistogram.getHistogram(histName);
 		final List<DataElement> gates = hist.getGateCollection().getGates();
-		final List<String> names = new ArrayList<String>();
+		final List<String> names = new ArrayList<>();
 		for (Nameable gate : gates) {
 			names.add(gate.getName());
 		}
@@ -150,7 +150,7 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 */
 	public List<Double> getMonitorValues() throws RemoteException {
 		final List<Monitor> monitors = Monitor.getMonitorList();
-		final List<Double> values = new ArrayList<Double>();
+		final List<Double> values = new ArrayList<>();
 		for (Monitor monitor : monitors) {
 			values.add(monitor.getValue());
 		}

@@ -16,7 +16,7 @@ public final class LinkedBlockingDequeRingBuffer implements RingBuffer {
 
 	private transient ArrayBlockingQueue<byte[]> ring;
 
-	private transient final LinkedBlockingDeque<byte[]> poolStack = new LinkedBlockingDeque<byte[]>(
+	private transient final LinkedBlockingDeque<byte[]> poolStack = new LinkedBlockingDeque<>(
 			NUMBER_BUFFERS);
 
 	private transient final boolean hasRing;
@@ -31,7 +31,7 @@ public final class LinkedBlockingDequeRingBuffer implements RingBuffer {
 		super();
 		hasRing = !empty; // NOPMD
 		if (hasRing) {
-			ring = new ArrayBlockingQueue<byte[]>(NUMBER_BUFFERS);
+			ring = new ArrayBlockingQueue<>(NUMBER_BUFFERS);
 		}
 	}
 

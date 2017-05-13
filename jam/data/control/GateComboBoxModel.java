@@ -41,7 +41,7 @@ final class GateComboBoxModel extends DefaultComboBoxModel<Object> {
 	}
 
     private transient final List<Object> lastValue = Collections
-			.synchronizedList(new ArrayList<Object>());
+			.synchronizedList(new ArrayList<>());
 
 	private transient final Mode mode;
 

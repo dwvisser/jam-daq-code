@@ -77,7 +77,7 @@ public final class UconnInputStream extends AbstractEventInputStream {
                     + blockCurrSize + " number " + blockNumber
                     + "number event " + blockNumEvnt);
             /* read in scalers */
-            final List<Integer> scalerValues = new ArrayList<Integer>(
+            final List<Integer> scalerValues = new ArrayList<>(
                     UconnStreamConstants.NUMBER_SCALERS);
             for (int i = 0; i < UconnStreamConstants.NUMBER_SCALERS; i++) {
                 scalerValues.add(dataInput.readInt()
@@ -149,9 +149,6 @@ public final class UconnInputStream extends AbstractEventInputStream {
                     eventInputStatus = EventInputStatus.EVENT;
                     // we got to the end of a file or stream
                 }
-            } catch (EOFException eof) {
-                eventInputStatus = EventInputStatus.END_FILE;
-                throw new EventException("Reading event.", eof);
             } catch (IOException io) {
                 eventInputStatus = EventInputStatus.END_FILE;
                 throw new EventException("Reading event.", io);

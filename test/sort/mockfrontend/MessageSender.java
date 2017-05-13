@@ -60,7 +60,7 @@ public class MessageSender {
     private transient final EventGenerator eventGenerator;
 
     Future<?> startSendingEventData() {// NOPMD
-        final BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(
+        final BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(
                 1);
         final ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 200L,
                 TimeUnit.MILLISECONDS, queue);

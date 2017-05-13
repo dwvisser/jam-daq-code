@@ -16,19 +16,19 @@ public class PeakIntensity extends AbstractFit {
 	/**
 	 * input <code>Parameter</code>
 	 */
-	private transient final Parameter<Integer> lowChannel = new Parameter<Integer>(
+	private transient final Parameter<Integer> lowChannel = new Parameter<>(
 			"Low Channel", Parameter.MOUSE, Parameter.NO_OUTPUT, Parameter.INT,
 			Parameter.KNOWN);
 
-	private transient final Parameter<Integer> highChannel = new Parameter<Integer>(
+	private transient final Parameter<Integer> highChannel = new Parameter<>(
 			"High Channel", Parameter.MOUSE, Parameter.NO_OUTPUT,
 			Parameter.INT, Parameter.KNOWN);
 
-	private transient final Parameter<Integer> lowPeak = new Parameter<Integer>(
+	private transient final Parameter<Integer> lowPeak = new Parameter<>(
 			"Low Peak", Parameter.MOUSE, Parameter.NO_OUTPUT, Parameter.INT,
 			Parameter.KNOWN);
 
-	private transient final Parameter<Integer> highPeak = new Parameter<Integer>(
+	private transient final Parameter<Integer> highPeak = new Parameter<>(
 			"High Peak", Parameter.MOUSE, Parameter.NO_OUTPUT, Parameter.INT,
 			Parameter.KNOWN);
 
@@ -44,21 +44,21 @@ public class PeakIntensity extends AbstractFit {
 	 */
 	public PeakIntensity() {
 		super("Peak Intensity");
-		final Parameter<String> comment = new Parameter<String>("Comment",
+		final Parameter<String> comment = new Parameter<>("Comment",
 				Parameter.TEXT);
 		comment.setValue("Checking \"Fixed\" on Slope fixes the value to 0.");
 		parameters.add(lowChannel);
 		parameters.add(highChannel);
 		parameters.add(lowPeak);
 		parameters.add(highPeak);
-		paramA = new Parameter<Double>("Constant", Parameter.DOUBLE);
+		paramA = new Parameter<>("Constant", Parameter.DOUBLE);
 		parameters.add(paramA);
-		paramB = new Parameter<Double>("Slope", Parameter.DOUBLE, Parameter.FIX);
+		paramB = new Parameter<>("Slope", Parameter.DOUBLE, Parameter.FIX);
 		parameters.add(paramB);
 		parameters.add(comment);
-		paramPeakArea = new Parameter<Double>("Peak Area", Parameter.DOUBLE);
+		paramPeakArea = new Parameter<>("Peak Area", Parameter.DOUBLE);
 		parameters.add(paramPeakArea);
-		paramPeakCentroid = new Parameter<Double>("Peak Centroid",
+		paramPeakCentroid = new Parameter<>("Peak Centroid",
 				Parameter.DOUBLE);
 		parameters.add(paramPeakCentroid);
 	}

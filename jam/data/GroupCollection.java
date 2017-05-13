@@ -33,9 +33,9 @@ final class GroupCollection implements NameValueCollection<Group>,
 	}
 
 	/** Map of all groups using name */
-	private transient final Map<String, Group> map = new HashMap<String, Group>();
+	private transient final Map<String, Group> map = new HashMap<>();
 	/** List of all groups */
-	private transient final List<Group> list = new ArrayList<Group>();
+	private transient final List<Group> list = new ArrayList<>();
 
 	private transient final Object lock = new Object();
 	/** The sort group, group with sort histogram */

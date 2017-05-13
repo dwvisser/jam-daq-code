@@ -68,7 +68,7 @@ public final class PlotDisplay extends JPanel implements
     private transient boolean isScrolling;
 
     /** Array of all available plots */
-    private transient final List<PlotContainer> plotContainers = new ArrayList<PlotContainer>();
+    private transient final List<PlotContainer> plotContainers = new ArrayList<>();
 
     private transient final Object plotLock = new Object();
 

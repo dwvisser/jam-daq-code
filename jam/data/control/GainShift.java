@@ -135,7 +135,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 				thinInset));
 		cdgain.add(pEntries, BorderLayout.CENTER);
 		final JPanel pfrom = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-		cfrom = new JComboBox<Object>(new HistogramComboBoxModel(
+		cfrom = new JComboBox<>(new HistogramComboBoxModel(
 				HistogramComboBoxModel.Mode.ONE_D));
 		meanCharWidth = getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
 		dim = cfrom.getPreferredSize();
@@ -175,7 +175,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 		poutfields.add(text4);
 		pEntries.add(poutfields);
 		final JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-		cto = new JComboBox<Object>();
+		cto = new JComboBox<>();
 		meanCharWidth = getMeanCharWidth(cto.getFontMetrics(cto.getFont()));
 		dim = cto.getPreferredSize();
 		dim.width = CHAR_LENGTH * meanCharWidth;

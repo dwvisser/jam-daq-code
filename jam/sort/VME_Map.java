@@ -15,7 +15,7 @@ import java.util.Map;
 public final class VME_Map {
 
 	/** Contains all event parameters. */
-	private transient final List<VME_Channel> eventParams = new ArrayList<VME_Channel>();
+	private transient final List<VME_Channel> eventParams = new ArrayList<>();
 
 	private transient final EventSizeModeClient esmClient;
 
@@ -25,7 +25,7 @@ public final class VME_Map {
 	 */
 	private transient int interval = 1;
 
-	private transient final Map<Integer, Byte> V775ranges = new HashMap<Integer, Byte>();
+	private transient final Map<Integer, Byte> V775ranges = new HashMap<>();
 
 	private transient int maxParamNum = 0;
 

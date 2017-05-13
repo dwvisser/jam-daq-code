@@ -65,7 +65,7 @@ public final class ScalerDisplay extends AbstractControl {
 
 	private transient final JamStatus status;
 
-	private transient final List<JTextField> textScaler = new ArrayList<JTextField>();
+	private transient final List<JTextField> textScaler = new ArrayList<>();
 
 	private transient final BroadcastUtilities broadcast;
 

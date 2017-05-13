@@ -42,8 +42,8 @@ class SelectHistogramDialog {
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
 		/* Selection list */
-		final DefaultListModel<AbstractHistogram> histListData = new DefaultListModel<AbstractHistogram>();
-		histList = new JList<AbstractHistogram>(histListData);
+		final DefaultListModel<AbstractHistogram> histListData = new DefaultListModel<>();
+		histList = new JList<>(histListData);
 		histList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		histList.setSelectedIndex(0);
 		histList.setVisibleRowCount(10);
@@ -72,7 +72,7 @@ class SelectHistogramDialog {
 	private void addToSelection() {
 		final List<AbstractHistogram> selected = histList
 				.getSelectedValuesList();
-		final HashSet<Object> histFullSet = new HashSet<Object>();
+		final HashSet<Object> histFullSet = new HashSet<>();
 		/* now combine this with stuff already in list. */
 		final ListModel<AbstractHistogram> model = lstHists.getModel();
 		for (int i = 0; i < model.getSize(); i++) {
@@ -88,7 +88,7 @@ class SelectHistogramDialog {
 	}
 
 	protected void show() {
-		final Set<AbstractHistogram> histSet = new HashSet<AbstractHistogram>();
+		final Set<AbstractHistogram> histSet = new HashSet<>();
 		CollectionsUtil.getSingletonInstance().addConditional(
 				AbstractHistogram.getHistogramList(), histSet,
 				BatchExport.HIST_COND_1D);

@@ -27,7 +27,7 @@ public final class JamStatus implements AcquisitionStatus, QuerySortMode {
 
 	private File openFile = null;
 
-	private transient final Set<String> overlayNames = new HashSet<String>();
+	private transient final Set<String> overlayNames = new HashSet<>();
 
 	private QuerySortMode sortMode = SortMode.NO_SORT;
 
@@ -96,7 +96,7 @@ public final class JamStatus implements AcquisitionStatus, QuerySortMode {
 	 */
 	public List<String> getOverlayHistograms() {
 		synchronized (this) {
-			return Collections.unmodifiableList(new ArrayList<String>(
+			return Collections.unmodifiableList(new ArrayList<>(
 					overlayNames));
 		}
 	}

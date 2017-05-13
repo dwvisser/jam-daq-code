@@ -38,9 +38,9 @@ public final class MultipleFileChooser extends JPanel {
 	private static final Logger LOGGER = Logger
 			.getLogger(MultipleFileChooser.class.getPackage().getName());
 
-	private transient final DefaultListModel<File> listFilesModel = new DefaultListModel<File>();
+	private transient final DefaultListModel<File> listFilesModel = new DefaultListModel<>();
 
-	private transient final JList<File> listFiles = new JList<File>(
+	private transient final JList<File> listFiles = new JList<>(
 			listFilesModel);
 
 	/* last file referred to in a JFileChooser */
@@ -199,7 +199,7 @@ public final class MultipleFileChooser extends JPanel {
 	 */
 	public List<File> getFileList() {
 		final List<?> tempList = Collections.list(listFilesModel.elements());
-		final List<File> rval = new ArrayList<File>(tempList.size());
+		final List<File> rval = new ArrayList<>(tempList.size());
 		for (Object object : tempList) {
 			rval.add((File) object);
 		}

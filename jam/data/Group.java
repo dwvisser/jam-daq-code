@@ -67,7 +67,7 @@ public final class Group implements Nameable {
     private transient final String groupName;
 
     /** children scalers of group */
-    private transient final List<Scaler> scalerList = new ArrayList<Scaler>();
+    private transient final List<Scaler> scalerList = new ArrayList<>();
 
     /** Type of group, file or sort */
     private transient final Type type;

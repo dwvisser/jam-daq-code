@@ -49,12 +49,12 @@ public abstract class AbstractData {
     /**
      * inverse of TYPES map
      */
-    protected static final Map<Class<? extends AbstractData>, Short> TAGS = new HashMap<Class<? extends AbstractData>, Short>();
+    protected static final Map<Class<? extends AbstractData>, Short> TAGS = new HashMap<>();
 
     /**
      * Map of 2 byte tags to data type objects.
      */
-    protected static final Map<Short, Class<? extends AbstractData>> TYPES = new HashMap<Short, Class<? extends AbstractData>>();
+    protected static final Map<Short, Class<? extends AbstractData>> TYPES = new HashMap<>();
 
     protected static final StringUtilities STRING_UTIL = GuiceInjector
             .getObjectInstance(StringUtilities.class);
@@ -153,12 +153,9 @@ public abstract class AbstractData {
         if (TYPES.containsValue(tag)) {
             try {
                 rval = tag.newInstance();
-            } catch (InstantiationException ie) {
+            } catch (InstantiationException | IllegalAccessException ie) {
                 throw new HDFException("Couldn't create " + tag.getName()
                         + " instance.", ie);
-            } catch (IllegalAccessException iae) {
-                throw new HDFException("Couldn't create " + tag.getName()
-                        + " instance.", iae);
             }
         }
         return rval;
@@ -247,13 +244,13 @@ public abstract class AbstractData {
      */
     protected static <T extends AbstractData> List<T> ofType(
             final Collection<AbstractData> collection, final Class<T> type) {
-        final List<T> rval = new ArrayList<T>();
+        final List<T> result = new ArrayList<>();
         for (AbstractData data : collection) {
             if (type.isInstance(data)) {
-                rval.add(type.cast(data));
+                result.add(type.cast(data));
             }
         }
-        return rval;
+        return result;
     }
 
     /**

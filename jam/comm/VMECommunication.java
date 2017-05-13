@@ -177,7 +177,7 @@ final class VMECommunication extends GoodThread implements VmeSender {
             final DatagramPacket packetIn = new DatagramPacket(bufferIn,
                     bufferIn.length);
             /* 8 is a typical scaler unit size */
-            final List<Integer> unpackedValues = new ArrayList<Integer>(8);
+            final List<Integer> unpackedValues = new ArrayList<>(8);
             while (checkState()) { // loop forever receiving packets
                 try {
                     synchronized (LOCK) {

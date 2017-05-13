@@ -197,7 +197,7 @@ public final class ColorSettingsFrame extends JDialog implements ChangeListener 
 	}
 
 	private JComboBox<String> defineColorSchemeChooser() {
-		final JComboBox<String> csChooser = new JComboBox<String>();
+		final JComboBox<String> csChooser = new JComboBox<>();
 		csChooser.addItemListener(new ItemListener() {
 			public void itemStateChanged(final ItemEvent itemEvent) {
 				final String selection = (String) csChooser.getSelectedItem();

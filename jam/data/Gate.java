@@ -23,7 +23,7 @@ import java.util.TreeSet;
  */
 public final class Gate implements DataElement {
 
-    private static final List<List<Gate>> DIM_LIST = new ArrayList<List<Gate>>();
+    private static final List<List<Gate>> DIM_LIST = new ArrayList<>();
 
     private static final List<Gate> LIST = Collections
             .synchronizedList(new ArrayList<Gate>());
@@ -40,8 +40,8 @@ public final class Gate implements DataElement {
             .synchronizedMap(new HashMap<String, Gate>());
 
     static {// 1- and 2-dimensional gate lists
-        DIM_LIST.add(Collections.synchronizedList(new ArrayList<Gate>()));
-        DIM_LIST.add(Collections.synchronizedList(new ArrayList<Gate>()));
+        DIM_LIST.add(Collections.synchronizedList(new ArrayList<>()));
+        DIM_LIST.add(Collections.synchronizedList(new ArrayList<>()));
     }
 
     /**
@@ -163,7 +163,7 @@ public final class Gate implements DataElement {
                 .getObjectInstance(StringUtilities.class);
         histUniqueName = hist.getFullName();
         // Set of names of gates for histogram this gate belongs to
-        final Set<String> gateNames = new TreeSet<String>();
+        final Set<String> gateNames = new TreeSet<>();
         for (Nameable gate : hist.getGateCollection().getGates()) {
             gateNames.add(gate.getName());
         }

@@ -97,7 +97,7 @@ public final class Factory {
     public static Scaler createScaler(final Group group, final String nameIn,
             final int idNum) {
         // Set of names of gates for histogram this gate belongs to
-        final Set<String> scalerNames = new TreeSet<String>();
+        final Set<String> scalerNames = new TreeSet<>();
         for (Scaler scaler : group.getScalerList()) {
             scalerNames.add(scaler.getName());
         }

@@ -108,7 +108,7 @@ public class CalibrationFit extends AbstractControl {
 		/* Equation chooser */
 		final JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		pChoose.add(new JLabel("Function: "));
-		funcChooser = new JComboBox<Object>(new CalibrationComboBoxModel());
+		funcChooser = new JComboBox<>(new CalibrationComboBoxModel());
 		funcChooser.setRenderer(new CalibrationListCellRenderer());
 		funcChooser.addItemListener(new ItemListener() {
 			public void itemStateChanged(final ItemEvent event) {
@@ -265,10 +265,7 @@ public class CalibrationFit extends AbstractControl {
 				calibFunc.setSizeHistogram(currentHistogram.getSizeX());
 			}
 			updateFields(calibFunc, rbFitPoints.isSelected());
-		} catch (InstantiationException e) {
-			LOGGER.log(Level.SEVERE, "Creating fit function "
-					+ getClass().getName() + " " + e.toString(), e);
-		} catch (IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			LOGGER.log(Level.SEVERE, "Creating fit function "
 					+ getClass().getName() + " " + e.toString(), e);
 		}

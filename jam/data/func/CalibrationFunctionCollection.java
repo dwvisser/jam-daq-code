@@ -18,9 +18,9 @@ import javax.swing.ImageIcon;
  */
 public final class CalibrationFunctionCollection {
 
-	private static final Map<String, Class<? extends AbstractCalibrationFunction>> FUNCTIONS = new TreeMap<String, Class<? extends AbstractCalibrationFunction>>();
+	private static final Map<String, Class<? extends AbstractCalibrationFunction>> FUNCTIONS = new TreeMap<>();
 
-	private static final Map<String, ImageIcon> ICONS = new HashMap<String, ImageIcon>();
+	private static final Map<String, ImageIcon> ICONS = new HashMap<>();
 
 	/**
 	 * Calibration function representing no calibration at all.
@@ -68,8 +68,7 @@ public final class CalibrationFunctionCollection {
 	 * @return the list of function names
 	 */
 	public static List<String> getListNames() {
-		return Collections.unmodifiableList(new ArrayList<String>(FUNCTIONS
-				.keySet()));
+		return Collections.unmodifiableList(new ArrayList<>(FUNCTIONS.keySet()));
 	}
 
 	/**

@@ -226,18 +226,14 @@ abstract class AbstractSetup {
 		// Input streams
 		final Set<Class<? extends AbstractEventInputStream>> inStreams = getClasses(
 				"jam.sort.stream", AbstractEventInputStream.class);
-		inChooser = new JComboBox<Class<? extends AbstractEventInputStream>>(
-				new Vector<Class<? extends AbstractEventInputStream>>(inStreams));
-
+		inChooser = new JComboBox<>(new Vector<>(inStreams));
 		inChooser.setToolTipText("Select input event data format.");
 		selectName(inChooser, inStreams, defInStream);
 
 		// Output streams
 		final Set<Class<? extends AbstractEventOutputStream>> outStreams = getClasses(
 				"jam.sort.stream", AbstractEventOutputStream.class);
-		outChooser = new JComboBox<Class<? extends AbstractEventOutputStream>>(
-				new Vector<Class<? extends AbstractEventOutputStream>>(
-						outStreams));
+		outChooser = new JComboBox<>(new Vector<>(outStreams));
 		outChooser.setToolTipText("Select output event format.");
 		selectName(outChooser, outStreams, defOutStream);
 
@@ -283,7 +279,7 @@ abstract class AbstractSetup {
 			final Class<T> inClass) {
 		final RuntimeSubclassIdentifier classFinder = GuiceInjector
 				.getObjectInstance(RuntimeSubclassIdentifier.class);
-		final Set<Class<? extends T>> lhs = new java.util.LinkedHashSet<Class<? extends T>>(
+		final Set<Class<? extends T>> lhs = new java.util.LinkedHashSet<>(
 				classFinder.find(inPackage, inClass, false));
 		lhs.remove(inClass);
 		return lhs;

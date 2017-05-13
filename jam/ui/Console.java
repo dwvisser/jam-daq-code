@@ -47,7 +47,7 @@ public class Console extends JPanel {
 	 */
 	private final static int STACK_SIZE = 50;
 
-	private transient final LinkedList<String> cmdStack = new LinkedList<String>();// NOPMD
+	private transient final LinkedList<String> cmdStack = new LinkedList<>();// NOPMD
 
 	private transient final CommandFinder commandFinder;
 
@@ -221,7 +221,7 @@ public class Console extends JPanel {
 	 * @return a array of the command tokens
 	 */
 	private List<String> parseExpression(final String strCmd) {
-		final List<String> rval = new ArrayList<String>();
+		final List<String> rval = new ArrayList<>();
 		/* match anything between quotes or words (not spaces) */
 		final String regex = "\"([^\"]*?)\"|(\\S+)\\s*";
 		final Pattern pattern = Pattern.compile(regex);

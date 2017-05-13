@@ -189,11 +189,8 @@ public final class DiskDaemon extends AbstractStorageDaemon {
                 LOGGER.severe("File does not have correct header. File: "
                         + file.getAbsolutePath());
             }
-        } catch (EventException ee) {
+        } catch (EventException | SortException ee) {
             LOGGER.log(Level.SEVERE, ee.getMessage(), ee);
-            rval = false;
-        } catch (SortException je) {
-            LOGGER.log(Level.SEVERE, je.getMessage(), je);
             rval = false;
         }
         return rval;

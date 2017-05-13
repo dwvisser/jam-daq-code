@@ -69,14 +69,14 @@ public final class Action {
     private static final Logger LOGGER = Logger.getLogger(Action.class
             .getPackage().getName());
 
-    private final static Map<String, Method> NO_ARG_MAP = new HashMap<String, Method>();
+    private final static Map<String, Method> NO_ARG_MAP = new HashMap<>();
 
     private static final String S_TO = " to ";
 
     private static final String UNUSED = "unused";
 
     static {
-        final List<String> NO_ARG_CMDS = new ArrayList<String>();
+        final List<String> NO_ARG_CMDS = new ArrayList<>();
         NO_ARG_CMDS.add(PlotCommands.HELP);
         NO_ARG_CMDS.add(PlotCommands.EXPAND);
         NO_ARG_CMDS.add(PlotCommands.ZOOMIN);
@@ -109,7 +109,7 @@ public final class Action {
                 .isCalibrated();
     }
 
-    private final transient List<Bin> clicks = new ArrayList<Bin>();
+    private final transient List<Bin> clicks = new ArrayList<>();
 
     /** Is there a command present */
     private transient boolean commandPresent;
@@ -436,10 +436,8 @@ public final class Action {
             try {
                 final Method method = NO_ARG_MAP.get(currentCommand);
                 method.invoke(this);
-            } catch (IllegalAccessException iae) {
+            } catch (IllegalAccessException | InvocationTargetException iae) {
                 LOGGER.log(Level.SEVERE, iae.getMessage(), iae);
-            } catch (InvocationTargetException ite) {
-                LOGGER.log(Level.SEVERE, ite.getMessage(), ite);
             }
         } else {
             done();

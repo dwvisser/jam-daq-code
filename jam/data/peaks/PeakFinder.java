@@ -106,7 +106,7 @@ public final class PeakFinder {
 	}
 
 	private List<Multiplet> breakUp(final Multiplet peaks) {
-		final List<Multiplet> multiplets = new ArrayList<Multiplet>();
+		final List<Multiplet> multiplets = new ArrayList<>();
 		Multiplet currMult = Multiplet.createMultiplet();
 		for (int i = 0; i < peaks.size(); i++) {
 			if (i == 0
@@ -195,7 +195,7 @@ public final class PeakFinder {
 
 	private List<Double> getCentroids() {
 		final List<Multiplet> multiplets = peakFind();
-		final List<Double> rval = new ArrayList<Double>();
+		final List<Double> rval = new ArrayList<>();
 		for (Multiplet multiplet : multiplets) {
 			rval.addAll(multiplet.getAllCentroids());
 		}

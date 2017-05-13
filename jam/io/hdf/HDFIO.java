@@ -785,7 +785,7 @@ public final class HDFIO implements DataIO {
 	 */
 	private List<HistogramAttributes> loadHistogramAttributesGroup()
 			throws HDFException {
-		final ArrayList<HistogramAttributes> lstHistAtt = new ArrayList<HistogramAttributes>();
+		final ArrayList<HistogramAttributes> lstHistAtt = new ArrayList<>();
 		final FileOpenMode mode = FileOpenMode.ATTRIBUTES;
 		hdfToJam.setInFile(inHDF);
 		// Find groups
@@ -820,7 +820,7 @@ public final class HDFIO implements DataIO {
 	 */
 	private List<HistogramAttributes> loadHistogramAttributesOriginal()
 			throws HDFException {
-		final List<HistogramAttributes> lstHistAtt = new ArrayList<HistogramAttributes>();
+		final List<HistogramAttributes> lstHistAtt = new ArrayList<>();
 		hdfToJam.setInFile(inHDF);
 		final VirtualGroup hists = VirtualGroup
 				.ofName(JamFileFields.HIST_SECTION);
@@ -931,7 +931,7 @@ public final class HDFIO implements DataIO {
 	 */
 	public List<HistogramAttributes> readHistogramAttributes(final File infile)
 			throws HDFException {
-		final List<HistogramAttributes> rval = new ArrayList<HistogramAttributes>();
+		final List<HistogramAttributes> rval = new ArrayList<>();
 		if (!HDFile.isHDFFile(infile)) {
 			rval.clear();
 			throw new HDFException("File:" + infile.getPath()
@@ -1150,13 +1150,13 @@ public final class HDFIO implements DataIO {
 		final boolean haveHists = !histograms.isEmpty();
 		if (haveGroups) {
 			groupsToUse = groups;
-			histsToUse = new ArrayList<AbstractHistogram>();
+			histsToUse = new ArrayList<>();
 			for (Group currGroup : groups) {
 				histsToUse.addAll(currGroup.histograms.getList());
 			}
 		} else if (haveHists) {
 			/* Histograms specified determines groups. */
-			groupsToUse = new ArrayList<Group>();
+			groupsToUse = new ArrayList<>();
 			histsToUse = histograms;
 			for (AbstractHistogram hist : histsToUse) {
 				final Group group = DataUtility.getGroup(hist);
@@ -1167,7 +1167,7 @@ public final class HDFIO implements DataIO {
 		} else {
 			/* Neither groups nor histograms specified */
 			groupsToUse = GROUPS.getList();
-			histsToUse = new ArrayList<AbstractHistogram>();
+			histsToUse = new ArrayList<>();
 			for (Group currGroup : groupsToUse) {
 				histsToUse.addAll(currGroup.histograms.getList());
 			}

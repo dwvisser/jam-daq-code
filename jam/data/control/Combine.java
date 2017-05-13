@@ -109,7 +109,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		// From Panel
 		final JPanel pfrom1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pfrom1);
-		cfrom1 = new JComboBox<Object>();
+		cfrom1 = new JComboBox<>();
 		meanCharWidth = getMeanCharWidth(cfrom1
 				.getFontMetrics(cfrom1.getFont()));
 		dim = cfrom1.getPreferredSize();
@@ -168,7 +168,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		// With panel
 		final JPanel pfrom2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pfrom2);
-		cfrom2 = new JComboBox<Object>();
+		cfrom2 = new JComboBox<>();
 		meanCharWidth = getMeanCharWidth(cfrom2
 				.getFontMetrics(cfrom2.getFont()));
 		dim = cfrom2.getPreferredSize();
@@ -184,7 +184,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		// To panel
 		final JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pto);
-		cto = new JComboBox<Object>();
+		cto = new JComboBox<>();
 		meanCharWidth = getMeanCharWidth(cfrom1
 				.getFontMetrics(cfrom1.getFont()));
 		dim = cto.getPreferredSize();
