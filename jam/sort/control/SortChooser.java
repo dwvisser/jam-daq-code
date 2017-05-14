@@ -7,8 +7,6 @@ import jam.global.JamException;
 import jam.global.RuntimeSubclassIdentifier;
 import jam.sort.AbstractSortRoutine;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -18,7 +16,7 @@ import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
-final class SortChooser extends JComboBox<Object> {
+final class SortChooser extends JComboBox<Class<? extends AbstractSortRoutine>> {
 
 	private transient File classPath;
 
@@ -28,13 +26,13 @@ final class SortChooser extends JComboBox<Object> {
 
 	private transient final List<Class<? extends AbstractSortRoutine>> listClasses = new ArrayList<>();
 
-	private transient final RuntimeSubclassIdentifier rtsi = GuiceInjector
+	private transient final RuntimeSubclassIdentifier subclassIdentifier = GuiceInjector
 			.getObjectInstance(RuntimeSubclassIdentifier.class);
 
 	SortChooser() {
 		super();
 		setToolTipText("Select sort routine class");
-		addActionListener(event -> sortClass = (Class<? extends AbstractSortRoutine>) getSelectedItem());
+		addActionListener(event -> sortClass = getItemAt(getSelectedIndex()));
 	}
 
 	protected AbstractSortRoutine getSortRoutine() {
@@ -70,7 +68,7 @@ final class SortChooser extends JComboBox<Object> {
 		try {
 			if (userSpecifiedPath) {
 				synchronized (this) {
-					sortRoutine = (AbstractSortRoutine) rtsi.loadClass(
+					sortRoutine = (AbstractSortRoutine) subclassIdentifier.loadClass(
 							classPath, sortClass.getName()).newInstance();
 				}
 			} else {// use default loader
@@ -162,7 +160,7 @@ final class SortChooser extends JComboBox<Object> {
 	 */
 	private Set<Class<? extends AbstractSortRoutine>> findSortClasses(
 			final File path) {
-		return rtsi.find(path, AbstractSortRoutine.class);
+		return subclassIdentifier.find(path, AbstractSortRoutine.class);
 	}
 
 	/**
@@ -172,8 +170,8 @@ final class SortChooser extends JComboBox<Object> {
 	 */
 	private Set<Class<? extends AbstractSortRoutine>> findSortClassesDefault() {
 		final Set<Class<? extends AbstractSortRoutine>> set = new LinkedHashSet<>();
-		set.addAll(rtsi.find("help", AbstractSortRoutine.class, true));
-		set.addAll(rtsi.find("sort", AbstractSortRoutine.class, true));
+		set.addAll(subclassIdentifier.find("help", AbstractSortRoutine.class, true));
+		set.addAll(subclassIdentifier.find("sort", AbstractSortRoutine.class, true));
 		return set;
 	}
 }
