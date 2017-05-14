@@ -38,29 +38,13 @@ class SummaryTableToolbar extends JToolBar {
 		add(bupdate);
 		bupdate
 				.setToolTipText(getHTML("<u>U</u>pdate display with most current data."));
-		bupdate.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				refresh();
-			}
-		});
+		bupdate.addActionListener(actionEvent -> refresh());
 		addSeparator();
-		chkShowScaler.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				refresh();
-			}
-		});
+		chkShowScaler.addActionListener(actionEvent -> refresh());
 		add(chkShowScaler);
-		chkShowHistogram.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				refresh();
-			}
-		});
+		chkShowHistogram.addActionListener(actionEvent -> refresh());
 		add(chkShowHistogram);
-		chkShowGate.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				refresh();
-			}
-		});
+		chkShowGate.addActionListener(actionEvent -> refresh());
 		add(chkShowGate);
 	}
 

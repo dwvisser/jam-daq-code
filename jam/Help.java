@@ -57,17 +57,11 @@ public class Help extends JDialog {
 			final JFrame frame = new JFrame("Jam User Guide");
 			final JButton exit = new JButton("Exit");
 			frame.getContentPane().add(exit, BorderLayout.CENTER);
-			exit.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent e) {
-					System.exit(0);
-				}
-			});
-			SwingUtilities.invokeAndWait(new Runnable() {
-				public void run() {
-					frame.pack();
-					frame.setVisible(true);
-				}
-			});
+			exit.addActionListener(e -> System.exit(0));
+			SwingUtilities.invokeAndWait(() -> {
+                frame.pack();
+                frame.setVisible(true);
+            });
 			proxy.doClick();
 		} catch (HelpSetException | InvocationTargetException | InterruptedException helpSetException) {
 			showErrorDialog(helpSetException);
@@ -143,11 +137,7 @@ public class Help extends JDialog {
 		final JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		contents.add(south, BorderLayout.SOUTH);
 		final JButton bok = new JButton("OK");
-		bok.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				dispose();
-			}
-		});
+		bok.addActionListener(event -> dispose());
 		south.add(bok);
 		this.pack();
 		final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();

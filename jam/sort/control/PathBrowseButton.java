@@ -25,12 +25,10 @@ final class PathBrowseButton extends JButton {
 		path = file;
 		text = textComponent;
 		text.setText(path.getPath());
-		addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				browsePath();
-				text.setText(path.getPath());
-			}
-		});
+		addActionListener(actionEvent -> {
+            browsePath();
+            text.setText(path.getPath());
+        });
 	}
 
 	/*

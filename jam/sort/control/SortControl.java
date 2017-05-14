@@ -116,12 +116,7 @@ public final class SortControl extends javax.swing.JDialog implements
 		final JPanel pout = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		pbottom.add(pout);
 		cout = new JCheckBox("Output Events to File:", false);
-		cout.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(
-					final java.awt.event.ItemEvent itemEvent) {
-				setWriteEvents(cout.isSelected());
-			}
-		});
+		cout.addItemListener(itemEvent -> setWriteEvents(cout.isSelected()));
 		pout.add(cout);
 
 		final String eventDefault = JamProperties.getPropString(EVENT_OUTPATH);
@@ -131,11 +126,7 @@ public final class SortControl extends javax.swing.JDialog implements
 		pout.add(textOutFile);
 
 		bbrowse = new JButton("Browse..");
-		bbrowse.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				textOutFile.setText(getOutFile().getPath());
-			}
-		});
+		bbrowse.addActionListener(actionEvent -> textOutFile.setText(getOutFile().getPath()));
 		pout.add(bbrowse);
 
 		final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));

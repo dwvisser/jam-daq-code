@@ -635,11 +635,7 @@ final class Plot1d extends AbstractPlot {
 		} else {
 			super.preferenceChange(pce);
 		}
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				panel.repaint();
-			}
-		});
+		SwingUtilities.invokeLater(panel::repaint);
 	}
 
 	@Override
@@ -682,13 +678,11 @@ final class Plot1d extends AbstractPlot {
 	}
 
 	private void warning(final String mess) {
-		final Runnable task = new Runnable() {
-			public void run() {
-				final String plotErrorTitle = "Plot Warning";
-				JOptionPane.showMessageDialog(panel, mess, plotErrorTitle,
-						JOptionPane.WARNING_MESSAGE);
-			}
-		};
+		final Runnable task = () -> {
+            final String plotErrorTitle = "Plot Warning";
+            JOptionPane.showMessageDialog(panel, mess, plotErrorTitle,
+                    JOptionPane.WARNING_MESSAGE);
+        };
 		SwingUtilities.invokeLater(task);
 	}
 

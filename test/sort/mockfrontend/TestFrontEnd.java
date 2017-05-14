@@ -79,11 +79,9 @@ public class TestFrontEnd extends JFrame {
 
         receiver.start();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        final Runnable showWindow = new Runnable() {
-            public void run() {
-                pack();
-                setVisible(true);
-            }
+        final Runnable showWindow = () -> {
+            pack();
+            setVisible(true);
         };
         SwingUtilities.invokeLater(showWindow);
     }

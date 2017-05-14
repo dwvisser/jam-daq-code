@@ -155,13 +155,11 @@ public final class Projections extends AbstractManipulation implements
 		dim.width = CHAR_LENGTH * meanWidth;
 		cto.setPreferredSize(dim);
 		cto.addItem("1DHISTOGRAM");
-		cto.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent itemEvent) {
-				if (cto.getSelectedItem() != null) {
-					setUseHist((String) cto.getSelectedItem());
-				}
-			}
-		});
+		cto.addItemListener(itemEvent -> {
+            if (cto.getSelectedItem() != null) {
+                setUseHist((String) cto.getSelectedItem());
+            }
+        });
 		ptextto.add(cto);
 		lname = new JLabel("Name");
 		ptextto.add(lname);
@@ -187,19 +185,17 @@ public final class Projections extends AbstractManipulation implements
 		final PanelOKApplyCancelButtons buttons = new PanelOKApplyCancelButtons(
 				listener);
 		cdproject.add(buttons.getComponent(), BorderLayout.SOUTH);
-		cfrom.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				final Object selected = cfrom.getSelectedItem();
-				if (selected == null || selected instanceof String) {
-					hfromname = "";
-					buttons.setButtonsEnabled(false, false, true);
-				} else {
-					hfromname = ((AbstractHistogram) selected).getFullName();
-					buttons.setButtonsEnabled(true, true, true);
-					setupCuts(FULL);
-				}
-			}
-		});
+		cfrom.addActionListener(actionEvent -> {
+            final Object selected = cfrom.getSelectedItem();
+            if (selected == null || selected instanceof String) {
+                hfromname = "";
+                buttons.setButtonsEnabled(false, false, true);
+            } else {
+                hfromname = ((AbstractHistogram) selected).getFullName();
+                buttons.setButtonsEnabled(true, true, true);
+                setupCuts(FULL);
+            }
+        });
 		cfrom.setSelectedIndex(0);
 		pack();
 	}

@@ -165,15 +165,13 @@ public class YaleCAENgetScalers {
      *            file to scan
      */
     public void processEventFile(final File events) {
-        final Runnable runnable = new Runnable() {
-            public void run() {
-                StringBuilder error = new StringBuilder();
-                if (doIt(events, error)) {
-                    display();
-                } else {
-                    LOGGER.severe("Reading Yale CAEN Scalers "
-                            + error.toString());
-                }
+        final Runnable runnable = () -> {
+            StringBuilder error = new StringBuilder();
+            if (doIt(events, error)) {
+                display();
+            } else {
+                LOGGER.severe("Reading Yale CAEN Scalers "
+                        + error.toString());
             }
         };
         this.executor.submit(runnable);

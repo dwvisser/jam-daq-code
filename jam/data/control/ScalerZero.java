@@ -74,15 +74,13 @@ public class ScalerZero extends AbstractControl {
 		pButton.add(bzero2);
 
 		chkDisable = new JCheckBox("Disable Zero", true);
-		chkDisable.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent event) {
-				if (chkDisable.isSelected()) {
-					bzero2.setEnabled(false);
-				} else {
-					bzero2.setEnabled(true);
-				}
-			}
-		});
+		chkDisable.addItemListener(event -> {
+            if (chkDisable.isSelected()) {
+                bzero2.setEnabled(false);
+            } else {
+                bzero2.setEnabled(true);
+            }
+        });
 		pZero.add(chkDisable);
 
 		addWindowListener(new WindowAdapter() {

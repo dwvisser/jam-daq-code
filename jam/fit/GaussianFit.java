@@ -215,36 +215,43 @@ public final class GaussianFit extends AbstractNonLinearFit {
 	 */
 	@Override
 	public double derivative(final double val, final String parName) {
-		final double rval;
+		final double result;
 		final double diff = diff(val);
 		final double exp = exp(diff);
-		if (parName.equals(AREA)) {
-			rval = MAGIC_A / getValue(WIDTH) * exp;
-		} else if (parName.equals(CENTROID)) {
-			rval = MAGIC_2AB * getValue(AREA) * exp * diff
-					/ (getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH))
-					- getValue("B") - 2 * getValue("C") * diff;
-		} else if (parName.equals(WIDTH)) {
-			final double temp = -MAGIC_A * getValue(AREA) * exp
-					/ (getValue(WIDTH) * getValue(WIDTH));
-			rval = temp
-					+ MAGIC_2AB
-					* getValue(AREA)
-					* exp
-					* diff
-					* diff
-					/ (getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH));
-		} else if ("A".equals(parName)) {
-			rval = 1.0;
-		} else if ("B".equals(parName)) {
-			rval = diff;
-		} else if ("C".equals(parName)) {
-			rval = diff * diff;
-		} else { // not valid
-			throw new IllegalArgumentException("Invalid derivative argument: "
-					+ parName);
+		switch (parName) {
+			case AREA:
+				result = MAGIC_A / getValue(WIDTH) * exp;
+				break;
+			case CENTROID:
+				result = MAGIC_2AB * getValue(AREA) * exp * diff
+						/ (getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH))
+						- getValue("B") - 2 * getValue("C") * diff;
+				break;
+			case WIDTH:
+				final double temp = -MAGIC_A * getValue(AREA) * exp
+						/ (getValue(WIDTH) * getValue(WIDTH));
+				result = temp
+						+ MAGIC_2AB
+						* getValue(AREA)
+						* exp
+						* diff
+						* diff
+						/ (getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH) * getValue(WIDTH));
+				break;
+			case "A":
+				result = 1.0;
+				break;
+			case "B":
+				result = diff;
+				break;
+			case "C":
+				result = diff * diff;
+				break;
+			default:  // not valid
+				throw new IllegalArgumentException("Invalid derivative argument: "
+						+ parName);
 		}
-		return rval;
+		return result;
 	}
 
 }

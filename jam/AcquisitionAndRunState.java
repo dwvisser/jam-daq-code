@@ -32,11 +32,7 @@ final class AcquisitionAndRunState implements Observer {
 	AcquisitionAndRunState(final Frame frame, final JamStatus status) {
 		this.frame = frame;
 		this.status = status;
-		this.status.setAcquisitionStatus(new AcquisitionStatus() {
-			public boolean isAcqOn() {
-				return AcquisitionAndRunState.this.getRunState().isAcqOn();
-			}
-		});
+		this.status.setAcquisitionStatus(() -> AcquisitionAndRunState.this.getRunState().isAcqOn());
 	}
 
 	/**

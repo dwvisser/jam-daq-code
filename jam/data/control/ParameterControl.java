@@ -100,19 +100,11 @@ public final class ParameterControl extends AbstractControl {
 		final JPanel pLoadSave = new JPanel(new GridLayout(1, 0, 5, 5));
 		pButtonsTop.add(pLoadSave);
 		final JButton bload = new JButton("Load\u2026");
-		bload.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				load();
-			}
-		});
+		bload.addActionListener(event -> load());
 		pLoadSave.add(bload);
 
 		final JButton bsave = new JButton("Save\u2026");
-		bsave.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				save();
-			}
-		});
+		bsave.addActionListener(event -> save());
 		pLoadSave.add(bsave);
 
 		final JPanel pButtonsBottom = new JPanel(new FlowLayout(
@@ -122,26 +114,16 @@ public final class ParameterControl extends AbstractControl {
 		pButtonsBottom.add(pOKApplyCancel);
 
 		final JButton brecall = new JButton("Recall");
-		brecall.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				read();
-			}
-		});
+		brecall.addActionListener(event -> read());
 		pOKApplyCancel.add(brecall);
 		final JButton bok = new JButton("OK");
-		bok.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				set();
-				dispose();
-			}
-		});
+		bok.addActionListener(event -> {
+            set();
+            dispose();
+        });
 		pOKApplyCancel.add(bok);
 		final JButton bapply = new JButton("Apply");
-		bapply.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				set();
-			}
-		});
+		bapply.addActionListener(event -> set());
 		pOKApplyCancel.add(bapply);
 		final JButton bcancel = new JButton(new jam.ui.WindowCancelAction(this));
 		pOKApplyCancel.add(bcancel);

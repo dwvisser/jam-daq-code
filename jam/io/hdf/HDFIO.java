@@ -125,11 +125,9 @@ public final class HDFIO implements DataIO {
 
 	private transient final AsyncProgressMonitor asyncMonitor;
 
-	private static final AsyncListener DO_NOTHING = new AsyncListener() {
-		public void completedIO(final String message, final String errorMessage) {
-			// do nothing
-		}
-	};
+	private static final AsyncListener DO_NOTHING = (message, errorMessage) -> {
+        // do nothing
+    };
 
 	private transient AsyncListener asListener = DO_NOTHING;
 
@@ -750,17 +748,15 @@ public final class HDFIO implements DataIO {
 	}
 
 	private void displayMessage() {
-		final Runnable runner = new Runnable() {
-			public void run() {
-				if (uiErrorMsg.length() == 0) {
-					LOGGER.info(uiMessage);
-				} else {
-					LOGGER.severe(uiErrorMsg);
-				}
-				uiMessage = "";
-				uiErrorMsg = "";
-			}
-		};
+		final Runnable runner = () -> {
+            if (uiErrorMsg.length() == 0) {
+                LOGGER.info(uiMessage);
+            } else {
+                LOGGER.severe(uiErrorMsg);
+            }
+            uiMessage = "";
+            uiErrorMsg = "";
+        };
 
 		try {
 			SwingUtilities.invokeAndWait(runner);

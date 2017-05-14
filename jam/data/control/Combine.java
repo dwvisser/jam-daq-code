@@ -130,38 +130,22 @@ public class Combine extends AbstractManipulation implements Observer {
 		addNormCheckbox(pradio, cbg);
 
 		cplus = new JCheckBox("Add", false);
-		cplus.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent event) {
-				enableInputWith(true);
-			}
-		});
+		cplus.addItemListener(event -> enableInputWith(true));
 		cbg.add(cplus);
 		pradio.add(cplus);
 
 		cminus = new JCheckBox("Subtract", false);
-		cminus.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent event) {
-				enableInputWith(true);
-			}
-		});
+		cminus.addItemListener(event -> enableInputWith(true));
 		cbg.add(cminus);
 		pradio.add(cminus);
 
 		ctimes = new JCheckBox("Multiply", false);
-		ctimes.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent event) {
-				enableInputWith(true);
-			}
-		});
+		ctimes.addItemListener(event -> enableInputWith(true));
 		cbg.add(ctimes);
 		pradio.add(ctimes);
 
 		cdiv = new JCheckBox("Divide", false);
-		cdiv.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent event) {
-				enableInputWith(true);
-			}
-		});
+		cdiv.addItemListener(event -> enableInputWith(true));
 		cbg.add(cdiv);
 		pradio.add(cdiv);
 
@@ -191,13 +175,11 @@ public class Combine extends AbstractManipulation implements Observer {
 		dim.width = CHAR_LENGTH * meanCharWidth;
 		cto.setPreferredSize(dim);
 		cto.addItem(NEW_HIST);
-		cto.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent event) {
-				if (cto.getSelectedItem() != null) {
-					setUseHist((String) cto.getSelectedItem());
-				}
-			}
-		});
+		cto.addItemListener(event -> {
+            if (cto.getSelectedItem() != null) {
+                setUseHist((String) cto.getSelectedItem());
+            }
+        });
 		ttextto = new JTextField("combine", TEXT_LENGTH);
 		pto.add(cto);
 		lname = new JLabel("Name");
@@ -231,11 +213,7 @@ public class Combine extends AbstractManipulation implements Observer {
 	 */
 	private void addNormCheckbox(final JPanel pradio, final ButtonGroup cbg) {
 		cnorm = new JCheckBox("Renormalize", true);
-		cnorm.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent event) {
-				enableInputWith(false);
-			}
-		});
+		cnorm.addItemListener(event -> enableInputWith(false));
 		cbg.add(cnorm);
 		pradio.add(cnorm);
 	}

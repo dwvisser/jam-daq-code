@@ -122,11 +122,6 @@ public abstract class AbstractSwingWorker {
 	 */
 	public AbstractSwingWorker() {
 		super();
-		final Runnable doFinished = new Runnable() {
-			public void run() {
-				finished();
-			}
-		};
 		final Runnable doConstruct = new Runnable() {
 			public void run() {
 				try {
@@ -135,7 +130,7 @@ public abstract class AbstractSwingWorker {
 					threadVar.clear();
 				}
 
-				SwingUtilities.invokeLater(doFinished);
+				SwingUtilities.invokeLater(AbstractSwingWorker.this::finished);
 			}
 		};
 		final Thread tempThread = new Thread(doConstruct);

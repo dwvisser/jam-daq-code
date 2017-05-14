@@ -57,11 +57,7 @@ public class AboutDialog {
         final JPanel pbut = new JPanel(new FlowLayout(FlowLayout.CENTER));
         cad.add(pbut, BorderLayout.SOUTH);
         final JButton bok = new JButton("OK");
-        bok.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent event) {
-                dialog.dispose();
-            }
-        });
+        bok.addActionListener(event -> dialog.dispose());
         pbut.add(bok);
         dialog.pack();
         /* Receives events for closing the dialog box and closes it. */

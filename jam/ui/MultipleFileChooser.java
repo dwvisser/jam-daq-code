@@ -91,39 +91,15 @@ public final class MultipleFileChooser extends JPanel {
 		pLeft.add(Box.createVerticalGlue());
 		pLeft.add(Box.createVerticalGlue());
 		pButtons.add(bAddfile);
-		bAddfile.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				selectFile(true);
-			}
-		});
+		bAddfile.addActionListener(actionEvent -> selectFile(true));
 		pButtons.add(bAddDir);
-		bAddDir.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				selectFile(false);
-			}
-		});
+		bAddDir.addActionListener(actionEvent -> selectFile(false));
 		pButtons.add(bRemove);
-		bRemove.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				removeFile();
-			}
-		});
+		bRemove.addActionListener(actionEvent -> removeFile());
 		pButtons.add(bRemoveAll);
-		bRemoveAll.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				removeAllFiles();
-			}
-		});
-		bLoadList.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				loadList();
-			}
-		});
-		bSaveList.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				saveList();
-			}
-		});
+		bRemoveAll.addActionListener(actionEvent -> removeAllFiles());
+		bLoadList.addActionListener(actionEvent -> loadList());
+		bSaveList.addActionListener(actionEvent -> saveList());
 	}
 
 	/**

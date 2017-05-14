@@ -301,11 +301,7 @@ public class ParameterList implements Iterable<Parameter<?>> {
 			final JCheckBox option = new JCheckBox(boolParam.getName(),
 					boolParam.getValue());
 			associateOptionCheckbox(boolParam, option);
-			option.addItemListener(new ItemListener() {
-				public void itemStateChanged(final ItemEvent event) {
-					boolParam.setValue(option.isSelected());
-				}
-			});
+			option.addItemListener(event -> boolParam.setValue(option.isSelected()));
 			middle.add(option);
 			west.add(new JPanel());
 		} else if (parameter.isText()) {
@@ -334,11 +330,7 @@ public class ParameterList implements Iterable<Parameter<?>> {
 			final JCheckBox fixed = new JCheckBox("Fixed", parameter.isFixed());
 			final Parameter<Double> paramDouble = (Parameter<Double>) parameter;
 			associateFixCheckbox(paramDouble, fixed);
-			fixed.addItemListener(new ItemListener() {
-				public void itemStateChanged(final ItemEvent event) {
-					setFixed(paramDouble);
-				}
-			});
+			fixed.addItemListener(event -> setFixed(paramDouble));
 			right.add(fixed);
 		}
 		if (parameter.canBeEstimated()) {
@@ -346,11 +338,7 @@ public class ParameterList implements Iterable<Parameter<?>> {
 					parameter.estimate);
 			final Parameter<Double> paramDouble = (Parameter<Double>) parameter;
 			associateEstimateCheckbox(paramDouble, estimate);
-			estimate.addItemListener(new ItemListener() {
-				public void itemStateChanged(final ItemEvent event) {
-					setEstimate(paramDouble);
-				}
-			});
+			estimate.addItemListener(event -> setEstimate(paramDouble));
 			right.add(estimate);
 		}
 		if (parameter.isOutputOnly()) {

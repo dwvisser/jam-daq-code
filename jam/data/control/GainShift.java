@@ -208,18 +208,16 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 				});
 		cdgain.add(pApply.getComponent(), BorderLayout.SOUTH);
 		pack();
-		cfrom.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				final Object selected = cfrom.getSelectedItem();
-				if (selected == null || selected instanceof String) {
-					hfrom = null; // NOPMD
-					pApply.setButtonsEnabled(false, false, true);
-				} else {
-					hfrom = (AbstractHist1D) selected;
-					pApply.setButtonsEnabled(true, true, true);
-				}
-			}
-		});
+		cfrom.addActionListener(event -> {
+            final Object selected = cfrom.getSelectedItem();
+            if (selected == null || selected instanceof String) {
+                hfrom = null; // NOPMD
+                pApply.setButtonsEnabled(false, false, true);
+            } else {
+                hfrom = (AbstractHist1D) selected;
+                pApply.setButtonsEnabled(true, true, true);
+            }
+        });
 		cfrom.setSelectedIndex(0);
 		pack();
 		setUILabels(true);

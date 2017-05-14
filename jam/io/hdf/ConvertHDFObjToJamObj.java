@@ -98,32 +98,32 @@ final class ConvertHDFObjToJamObj {
         final AbstractCalibrationFunction calFunc = makeCalibration(funcName);
         if (calFunc != null) {
             final int numPts = vdd.getNumRows();
-
-            if (dataTypeName.equals(TYPE_POINTS)) {
-
-                double[] ptsChannel = new double[numbPts];
-                double[] ptsEnergy = new double[numbPts];
-
-                for (int i = 0; i < numPts; i++) {
-                    ptsChannel[i] = data.getDouble(i, 0);
-                    ptsEnergy[i] = data.getDouble(i, 1);
-                }
-                calFunc.setPoints(ptsChannel, ptsEnergy);
-                try {
-                    calFunc.fit();
-                } catch (CalibrationFitException de) {
-                    throw new HDFException(
-                            "Cannot create fit for calibration function "
-                                    + funcName, de);
-                }
-            } else if (dataTypeName.equals(TYPE_COEFF)) {
-                double[] coeff = new double[numbPts];
-                for (int i = 0; i < numPts; i++) {
-                    coeff[i] = data.getDouble(i, 0);
-                }
-                calFunc.setCoeff(coeff);
-            } else {
-                throw new HDFException("Unrecognized calibration type");
+            switch (dataTypeName) {
+                case TYPE_POINTS:
+                    double[] ptsChannel = new double[numbPts];
+                    double[] ptsEnergy = new double[numbPts];
+                    for (int i = 0; i < numPts; i++) {
+                        ptsChannel[i] = data.getDouble(i, 0);
+                        ptsEnergy[i] = data.getDouble(i, 1);
+                    }
+                    calFunc.setPoints(ptsChannel, ptsEnergy);
+                    try {
+                        calFunc.fit();
+                    } catch (CalibrationFitException de) {
+                        throw new HDFException(
+                                "Cannot create fit for calibration function "
+                                        + funcName, de);
+                    }
+                    break;
+                case TYPE_COEFF:
+                    double[] coeff = new double[numbPts];
+                    for (int i = 0; i < numPts; i++) {
+                        coeff[i] = data.getDouble(i, 0);
+                    }
+                    calFunc.setCoeff(coeff);
+                    break;
+                default:
+                    throw new HDFException("Unrecognized calibration type");
             }
         }
 

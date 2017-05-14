@@ -106,82 +106,78 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 
 	private JButton getClearButton() {
 		final JButton bclear = new JButton("Clear");
-		bclear.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				final String space = " ";
-				if (status.getSortMode().isOnline()) {
-					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_ZERO);
-					pBuffSort.setText(space);
-					sortDaemon.setBufferCount(0);
-					pBuffSort.setText(String.valueOf(sortDaemon
-							.getBufferCount()));
-					pEvntSent.setText(space);
-					sortDaemon.setEventCount(0);
-					sortDaemon.setSortedCount(0);
-					pEvntRecv.setText(String
-							.valueOf(sortDaemon.getEventCount()));
-					pEvntSort.setText(String.valueOf(sortDaemon
-							.getSortedCount()));
-					pBuffSent.setText(space); // value update method
-					pEvntSent.setText(space); // value update method
-					pBuffRecv.setText(space);
-					netDaemon.setPacketCount(0);
-					pBuffRecv.setText(String
-							.valueOf(netDaemon.getPacketCount()));
-					pBuffWrit.setText(space);
-					storeDaemon.setBufferCount(0);
-					pBuffWrit.setText(String.valueOf(storeDaemon
-							.getBufferCount()));
-					pSortSample.setText(space);
-					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_READ);
+		bclear.addActionListener(event -> {
+            final String space = " ";
+            if (status.getSortMode().isOnline()) {
+                broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_ZERO);
+                pBuffSort.setText(space);
+                sortDaemon.setBufferCount(0);
+                pBuffSort.setText(String.valueOf(sortDaemon
+                        .getBufferCount()));
+                pEvntSent.setText(space);
+                sortDaemon.setEventCount(0);
+                sortDaemon.setSortedCount(0);
+                pEvntRecv.setText(String
+                        .valueOf(sortDaemon.getEventCount()));
+                pEvntSort.setText(String.valueOf(sortDaemon
+                        .getSortedCount()));
+                pBuffSent.setText(space); // value update method
+                pEvntSent.setText(space); // value update method
+                pBuffRecv.setText(space);
+                netDaemon.setPacketCount(0);
+                pBuffRecv.setText(String
+                        .valueOf(netDaemon.getPacketCount()));
+                pBuffWrit.setText(space);
+                storeDaemon.setBufferCount(0);
+                pBuffWrit.setText(String.valueOf(storeDaemon
+                        .getBufferCount()));
+                pSortSample.setText(space);
+                broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_READ);
 
-				} else { // offline
-					pBuffSort.setText(space);
-					sortDaemon.setBufferCount(0);
-					pBuffSort.setText(String.valueOf(sortDaemon
-							.getBufferCount()));
-					pEvntSent.setText(space);
-					sortDaemon.setEventCount(0);
-					sortDaemon.setSortedCount(0);
-					pEvntSort.setText(String
-							.valueOf(sortDaemon.getEventCount()));
-					pFileRead.setText(space);
-					storeDaemon.setFileCount(0);
-					pFileRead.setText(String
-							.valueOf(storeDaemon.getFileCount()));
-				}
-			}
-		});
+            } else { // offline
+                pBuffSort.setText(space);
+                sortDaemon.setBufferCount(0);
+                pBuffSort.setText(String.valueOf(sortDaemon
+                        .getBufferCount()));
+                pEvntSent.setText(space);
+                sortDaemon.setEventCount(0);
+                sortDaemon.setSortedCount(0);
+                pEvntSort.setText(String
+                        .valueOf(sortDaemon.getEventCount()));
+                pFileRead.setText(space);
+                storeDaemon.setFileCount(0);
+                pFileRead.setText(String
+                        .valueOf(storeDaemon.getFileCount()));
+            }
+        });
 		return bclear;
 	}
 
 	private JButton getUpdateButton() {
 		final JButton bupdate = new JButton("Update");
-		bupdate.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				if (status.getSortMode().isOnline()) {
-					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_READ);
-					pBuffRecv.setText(String
-							.valueOf(netDaemon.getPacketCount()));
-					pBuffSort.setText(String.valueOf(sortDaemon
-							.getBufferCount()));
-					pBuffWrit.setText(String.valueOf(storeDaemon
-							.getBufferCount()));
-					pEvntRecv.setText(String
-							.valueOf(sortDaemon.getEventCount()));
-					pEvntSort.setText(String.valueOf(sortDaemon
-							.getSortedCount()));
-					updateSample();
-				} else { // offline
-					pEvntSort.setText(String.valueOf(sortDaemon
-							.getSortedCount()));
-					pBuffSort.setText(String.valueOf(sortDaemon
-							.getBufferCount()));
-					pFileRead.setText(String
-							.valueOf(storeDaemon.getFileCount()));
-				}
-			}
-		});
+		bupdate.addActionListener(event -> {
+            if (status.getSortMode().isOnline()) {
+                broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_READ);
+                pBuffRecv.setText(String
+                        .valueOf(netDaemon.getPacketCount()));
+                pBuffSort.setText(String.valueOf(sortDaemon
+                        .getBufferCount()));
+                pBuffWrit.setText(String.valueOf(storeDaemon
+                        .getBufferCount()));
+                pEvntRecv.setText(String
+                        .valueOf(sortDaemon.getEventCount()));
+                pEvntSort.setText(String.valueOf(sortDaemon
+                        .getSortedCount()));
+                updateSample();
+            } else { // offline
+                pEvntSort.setText(String.valueOf(sortDaemon
+                        .getSortedCount()));
+                pBuffSort.setText(String.valueOf(sortDaemon
+                        .getBufferCount()));
+                pFileRead.setText(String
+                        .valueOf(storeDaemon.getFileCount()));
+            }
+        });
 		return bupdate;
 	}
 

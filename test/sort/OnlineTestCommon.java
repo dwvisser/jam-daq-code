@@ -55,11 +55,7 @@ public final class OnlineTestCommon {
     private static Runnable createSetupRunner(final String sortName,
             final Class<? extends AbstractEventInputStream> inputStream,
             final Class<? extends AbstractEventOutputStream> outputStream) {
-        return new Runnable() {
-            public void run() {
-                session.online.setup(sortName, inputStream, outputStream);
-            }
-        };
+        return () -> session.online.setup(sortName, inputStream, outputStream);
     }
 
     /**

@@ -32,11 +32,7 @@ public class AsyncProgressMonitor {
 	}
 
 	protected void close() {
-		final Runnable runner = new Runnable() {
-			public void run() {
-				monitor.close();
-			}
-		};
+		final Runnable runner = () -> monitor.close();
 		try {
 			SwingUtilities.invokeAndWait(runner);
 		} catch (Exception e) {
@@ -46,11 +42,7 @@ public class AsyncProgressMonitor {
 
 	protected void increment() {
 		count++;
-		final Runnable runner = new Runnable() {
-			public void run() {
-				monitor.setProgress(count);
-			}
-		};
+		final Runnable runner = () -> monitor.setProgress(count);
 		try {
 			SwingUtilities.invokeAndWait(runner);
 		} catch (Exception e) {
@@ -60,11 +52,7 @@ public class AsyncProgressMonitor {
 	}
 
 	protected void setNote(final String note) {
-		final Runnable runner = new Runnable() {
-			public void run() {
-				monitor.setNote(note);
-			}
-		};
+		final Runnable runner = () -> monitor.setNote(note);
 		try {
 			SwingUtilities.invokeAndWait(runner);
 		} catch (Exception e) {
@@ -73,11 +61,7 @@ public class AsyncProgressMonitor {
 	}
 
 	protected void setProgress(final int value) {
-		final Runnable runner = new Runnable() {
-			public void run() {
-				monitor.setProgress(value);
-			}
-		};
+		final Runnable runner = () -> monitor.setProgress(value);
 		try {
 			SwingUtilities.invokeAndWait(runner);
 		} catch (Exception e) {
@@ -88,12 +72,10 @@ public class AsyncProgressMonitor {
 
 	protected void setup(final String message, final String note, final int max) {
 		count = 0;
-		final Runnable runner = new Runnable() {
-			public void run() {
-				monitor = new ProgressMonitor(frame, message, note, MIN, max);
-				monitor.setMillisToPopup(100);
-			}
-		};
+		final Runnable runner = () -> {
+            monitor = new ProgressMonitor(frame, message, note, MIN, max);
+            monitor.setMillisToPopup(100);
+        };
 		try {
 			SwingUtilities.invokeAndWait(runner);
 		} catch (Exception e) {

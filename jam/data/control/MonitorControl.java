@@ -121,38 +121,28 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		final JPanel pbutton = new JPanel(new GridLayout(1, 0, 5, 5));
 		pLower.add(pbutton);
 		final JButton brecall = new JButton("Recall");
-		brecall.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				recall();
-			}
-		});
+		brecall.addActionListener(event -> recall());
 		pbutton.add(brecall);
 		final JButton bok = new JButton("OK");
-		bok.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				configure();
-				startLoopThread();
-				dispose();
-			}
-		});
+		bok.addActionListener(event -> {
+            configure();
+            startLoopThread();
+            dispose();
+        });
 		pbutton.add(bok);
 		final JButton bapply = new JButton("Apply");
-		bapply.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				configure();
-				startLoopThread();
-			}
-		});
+		bapply.addActionListener(event -> {
+            configure();
+            startLoopThread();
+        });
 		pbutton.add(bapply);
-		final Canceller canceller = new Canceller() {
-			public void cancel() {
-				configured = false;
-				/* stop monitor thread if running */
-				if (loopThread != null) {
-					loopThread.setState(GoodThread.State.STOP);
-				}
-			}
-		};
+		final Canceller canceller = () -> {
+            configured = false;
+            /* stop monitor thread if running */
+            if (loopThread != null) {
+                loopThread.setState(GoodThread.State.STOP);
+            }
+        };
 		final JButton bcancel = new JButton(new WindowCancelAction(canceller));
 		pbutton.add(bcancel);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);

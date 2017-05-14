@@ -119,17 +119,15 @@ public final class SetupSortOff extends AbstractSetup {
 				dialog));
 		panelB.add(bcancel);
 		checkLock.setEnabled(false);
-		checkLock.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(final ItemEvent event) {
-				if (!checkLock.isSelected()) {
-					try {
-						resetSort();
-					} catch (Exception e) {
-						LOGGER.log(Level.SEVERE, e.getMessage(), e);
-					}
-				}
-			}
-		});
+		checkLock.addItemListener(event -> {
+            if (!checkLock.isSelected()) {
+                try {
+                    resetSort();
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                }
+            }
+        });
 		panelB.add(checkLock);
 		dialog
 				.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);

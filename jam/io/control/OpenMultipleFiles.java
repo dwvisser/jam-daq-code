@@ -103,13 +103,11 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 		final JPanel histPanel = createHistSelectPanel();
 		tabPane.addTab("Histograms", null, histPanel,
 				"Select Histograms to open");
-		tabPane.addChangeListener(new ChangeListener() {
-			// This method is called whenever the selected tab changes
-			public void stateChanged(final ChangeEvent evt) {
-				final JTabbedPane pane = (JTabbedPane) evt.getSource();
-				changeSelectedTab(pane.getSelectedIndex());
-			}
-		});
+        // This method is called whenever the selected tab changes
+        tabPane.addChangeListener(evt -> {
+            final JTabbedPane pane = (JTabbedPane) evt.getSource();
+            changeSelectedTab(pane.getSelectedIndex());
+        });
 		/* Lower panel with buttons */
 		final JPanel pLower = new JPanel(new BorderLayout(5, 5));
 		container.add(pLower, BorderLayout.SOUTH);
@@ -120,21 +118,13 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 		pLoad.add(pLoadButtons, BorderLayout.NORTH);
 		final JButton bLoadlist = new JButton("Load List");
 		pLoadButtons.add(bLoadlist);
-		bLoadlist.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				multiChooser.loadList();
-			}
-		});
+		bLoadlist.addActionListener(actionEvent -> multiChooser.loadList());
 		final JButton bSavelist = new JButton("Save List");
 		pLoadButtons.add(bSavelist);
 		chkBoxAdd = new JCheckBox("Sum Histograms");
 		pLoad.add(chkBoxAdd);
 
-		bSavelist.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				multiChooser.saveList();
-			}
-		});
+		bSavelist.addActionListener(actionEvent -> multiChooser.saveList());
 		final jam.ui.PanelOKApplyCancelButtons okApply = new jam.ui.PanelOKApplyCancelButtons(
 				new jam.ui.PanelOKApplyCancelButtons.AbstractListener(dialog) {
 					public void apply() {

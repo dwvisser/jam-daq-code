@@ -48,31 +48,23 @@ public class HistogramZero extends AbstractControl {
 		pButton.setBorder(border);
 
 		final JButton one = new JButton("Displayed");
-		one.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				final AbstractHistogram currentHistogram = (AbstractHistogram) SelectionTree
-						.getCurrentHistogram();
-				currentHistogram.setZero();
-				broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
-				LOGGER.info("Zero Histogram: " + currentHistogram.getTitle());
-				dispose();
-			}
-		});
+		one.addActionListener(actionEvent -> {
+            final AbstractHistogram currentHistogram = (AbstractHistogram) SelectionTree
+                    .getCurrentHistogram();
+            currentHistogram.setZero();
+            broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
+            LOGGER.info("Zero Histogram: " + currentHistogram.getTitle());
+            dispose();
+        });
 		pButton.add(one);
 		final JButton all = new JButton("   All   ");
-		all.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				zeroAll();
-				dispose();
-			}
-		});
+		all.addActionListener(event -> {
+            zeroAll();
+            dispose();
+        });
 		pButton.add(all);
 		final JButton cancel = new JButton(" Cancel ");
-		cancel.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				dispose();
-			}
-		});
+		cancel.addActionListener(event -> dispose());
 		pButton.add(cancel);
 		dzc.add(pButton);
 		pack();

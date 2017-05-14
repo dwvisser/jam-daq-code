@@ -184,36 +184,30 @@ abstract class AbstractSetup {
 		btnSpecifyPath = new JRadioButton("Specify a classpath", !useDefault);
 		btnSpecifyPath
 				.setToolTipText("Specify a path to load your sort routine from.");
-		btnSpecifyPath.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent itemEvent) {
-				if (btnSpecifyPath.isSelected()) {
-					selectPath(!btnSpecifyPath.isSelected());
-				}
-			}
-		});
+		btnSpecifyPath.addItemListener(itemEvent -> {
+            if (btnSpecifyPath.isSelected()) {
+                selectPath(!btnSpecifyPath.isSelected());
+            }
+        });
 		btnDefaultPath = new JRadioButton(
 				"Use help.* and sort.* in default classpath", useDefault);
 		btnDefaultPath
 				.setToolTipText("Don't include your sort routines in the default"
 						+ " classpath\n if you want to be able to edit, recompile and reload "
 						+ " without first quitting Jam.");
-		btnDefaultPath.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent event) {
-				if (btnDefaultPath.isSelected()) {
-					selectPath(btnDefaultPath.isSelected());
-				}
-			}
-		});
+		btnDefaultPath.addItemListener(event -> {
+            if (btnDefaultPath.isSelected()) {
+                selectPath(btnDefaultPath.isSelected());
+            }
+        });
 
 		sortChooser = new SortChooser();
 
-		bbrowsef.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				userClassPath = browseSortPath();
-				textSortPath.setText(userClassPath.getPath());
-				sortChooser.loadChooserClassPath(userClassPath);
-			}
-		});
+		bbrowsef.addActionListener(event -> {
+            userClassPath = browseSortPath();
+            textSortPath.setText(userClassPath.getPath());
+            sortChooser.loadChooserClassPath(userClassPath);
+        });
 		bbrowsef.setEnabled(false);
 		textSortPath.setToolTipText("Use Browse button to change. \n"
 				+ "May fail if classes have unresolvable references."

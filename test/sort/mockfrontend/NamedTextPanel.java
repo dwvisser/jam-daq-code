@@ -49,11 +49,7 @@ public class NamedTextPanel extends JPanel {
 	}
 
 	private void updateLabel() {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				NamedTextPanel.this.label.setText(text);
-			}
-		});
+		SwingUtilities.invokeLater(() -> NamedTextPanel.this.label.setText(text));
 	}
 
 }

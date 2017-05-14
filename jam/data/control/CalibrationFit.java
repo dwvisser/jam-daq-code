@@ -110,11 +110,7 @@ public class CalibrationFit extends AbstractControl {
 		pChoose.add(new JLabel("Function: "));
 		funcChooser = new JComboBox<>(new CalibrationComboBoxModel());
 		funcChooser.setRenderer(new CalibrationListCellRenderer());
-		funcChooser.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent event) {
-				selectionChange();
-			}
-		});
+		funcChooser.addItemListener(event -> selectionChange());
 		pChoose.add(funcChooser);
 		pSelection.add(pChoose);
 		/* Equation */
@@ -125,23 +121,19 @@ public class CalibrationFit extends AbstractControl {
 				10, 0));
 		final ButtonGroup gFitType = new ButtonGroup();
 		rbFitPoints = new JRadioButton("Fit Points", true);
-		rbFitPoints.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent itemEvent) {
-				if (rbFitPoints.isSelected()) {
-					setFitTypePoints(true);
-				}
-			}
-		});
+		rbFitPoints.addItemListener(itemEvent -> {
+            if (rbFitPoints.isSelected()) {
+                setFitTypePoints(true);
+            }
+        });
 		gFitType.add(rbFitPoints);
 		pFitType.add(rbFitPoints);
 		rbSetCoeffs = new JRadioButton("Set Coefficients", false);
-		rbSetCoeffs.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent itemEvent) {
-				if (rbSetCoeffs.isSelected()) {
-					setFitTypePoints(false);
-				}
-			}
-		});
+		rbSetCoeffs.addItemListener(itemEvent -> {
+            if (rbSetCoeffs.isSelected()) {
+                setFitTypePoints(false);
+            }
+        });
 		gFitType.add(rbSetCoeffs);
 		pFitType.add(rbSetCoeffs);
 		pSelection.add(pFitType);
@@ -211,11 +203,7 @@ public class CalibrationFit extends AbstractControl {
 		cUse[index] = new JCheckBox("use");
 		cUse[index].setSelected(true);
 		pPoint[index].add(cUse[index]);
-		cUse[index].addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent itemEvent) {
-				setPointFieldActive(index, cUse[index].isSelected());
-			}
-		});
+		cUse[index].addItemListener(itemEvent -> setPointFieldActive(index, cUse[index].isSelected()));
 	}
 
 	// Create panel with the coefficients

@@ -128,15 +128,13 @@ public final class ScalerScan implements ProgressUpdater {
 
         final JButton browse = new JButton("Browse...");
         browse.setActionCommand("browse");
-        browse.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent event) {
-                final String command = event.getActionCommand();
-                if ("browse".equals(command)) {
-                    final File temp = getFile(true);
-                    if (temp.getPath().length() > 0) {
-                        txtPath.setText(temp.getAbsolutePath());
-                        pathToRuns = temp;
-                    }
+        browse.addActionListener(event -> {
+            final String command = event.getActionCommand();
+            if ("browse".equals(command)) {
+                final File temp = getFile(true);
+                if (temp.getPath().length() > 0) {
+                    txtPath.setText(temp.getAbsolutePath());
+                    pathToRuns = temp;
                 }
             }
         });
@@ -155,11 +153,9 @@ public final class ScalerScan implements ProgressUpdater {
                 new PanelOKApplyCancelButtons.AbstractListener(dialog) {
                     public void apply() {
                         setButtonsEnable(false);
-                        final Runnable runnable = new Runnable() {
-                            public void run() {
-                                doIt();
-                                setButtonsEnable(true);
-                            }
+                        final Runnable runnable = () -> {
+                            doIt();
+                            setButtonsEnable(true);
                         };
                         executor.submit(runnable);
                     }

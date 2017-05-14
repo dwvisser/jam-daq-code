@@ -166,11 +166,7 @@ public final class RuntimeSubclassIdentifier {
             if (url != null) {
                 final URL passUrl = url;
                 loader = AccessController
-                        .doPrivileged(new PrivilegedAction<ClassLoader>() {
-                            public ClassLoader run() {
-                                return new URLClassLoader(new URL[] {passUrl });
-                            }
-                        });
+                        .doPrivileged((PrivilegedAction<ClassLoader>) () -> new URLClassLoader(new URL[] {passUrl }));
             }
         }
         if (classpath != null) {
@@ -388,11 +384,7 @@ public final class RuntimeSubclassIdentifier {
         if (url != null) {
             final URL passUrl = url;
             final ClassLoader loader = AccessController
-                    .doPrivileged(new PrivilegedAction<ClassLoader>() {
-                        public ClassLoader run() {
-                            return new URLClassLoader(new URL[] {passUrl });
-                        }
-                    });
+                    .doPrivileged((PrivilegedAction<ClassLoader>) () -> new URLClassLoader(new URL[] {passUrl }));
             try {
                 rval = loader.loadClass(className);
             } catch (ClassNotFoundException e) {

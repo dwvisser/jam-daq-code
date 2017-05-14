@@ -143,28 +143,20 @@ public abstract class AbstractFit implements Fit {
         final JButton bGo = createDoFitButton(status);
         pbut.add(bGo);
         final JButton bDraw = new JButton("Draw Fit");
-        bDraw.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent event) {
-                try {
-                    drawFit();
-                } catch (FitException fe) {
-                    status.setText(fe.getMessage());
-                }
+        bDraw.addActionListener(event -> {
+            try {
+                drawFit();
+            } catch (FitException fe) {
+                status.setText(fe.getMessage());
             }
         });
         pbut.add(bDraw);
         final JButton bReset = new JButton("Reset");
-        bReset.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent event) {
-                plotInteraction.reset();
-            }
-        });
+        bReset.addActionListener(event -> plotInteraction.reset());
         pbut.add(bReset);
-        final Canceller canceller = new Canceller() {
-            public void cancel() {
-                plotInteraction.setMouseActive(false);
-                dfit.dispose();
-            }
+        final Canceller canceller = () -> {
+            plotInteraction.setMouseActive(false);
+            dfit.dispose();
         };
         final JButton bCancel = new JButton(new WindowCancelAction(canceller));
         pbut.add(bCancel);
@@ -246,11 +238,9 @@ public abstract class AbstractFit implements Fit {
      */
     private JButton createGetMouseButton(final JLabel status) {
         final JButton bMouseGet = new JButton("Get Mouse");
-        bMouseGet.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent event) {
-                AbstractFit.this.initializeMouse(status);
-                AbstractFit.this.plotInteraction.setMouseActive(true);
-            }
+        bMouseGet.addActionListener(event -> {
+            AbstractFit.this.initializeMouse(status);
+            AbstractFit.this.plotInteraction.setMouseActive(true);
         });
         return bMouseGet;
     }

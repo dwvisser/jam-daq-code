@@ -155,14 +155,12 @@ final class Toolbar extends JToolBar implements ActionListener {
 			comboBinRatio.setRenderer(new ReBinComboBoxRenderer());
 			comboBinRatio
 					.setToolTipText(getHTML("<u>Re</u>bin, enter a bin width in the console."));
-			comboBinRatio.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent ae) {
-					@SuppressWarnings("unchecked")
-					final Integer item = (Integer) ((JComboBox<Integer>) ae
-							.getSource()).getSelectedItem();
-					selectionReBin(item);
-				}
-			});
+			comboBinRatio.addActionListener(ae -> {
+                @SuppressWarnings("unchecked")
+                final Integer item = (Integer) ((JComboBox<Integer>) ae
+                        .getSource()).getSelectedItem();
+                selectionReBin(item);
+            });
 			add(comboBinRatio);
 			addSeparator();
 			final JButton bfull = getButton(iFullScale, "<u>F</u>ull");
@@ -225,20 +223,17 @@ final class Toolbar extends JToolBar implements ActionListener {
 			add(bcancel);
 			/* Listen for changes in orientation */
 			addPropertyChangeListener("orientation",
-					new java.beans.PropertyChangeListener() {
-						public void propertyChange(
-								final java.beans.PropertyChangeEvent evt) {
-							/* Get the new orientation */
-							final Integer newValue = (Integer) evt
-									.getNewValue();
-							/* place an appropriate value in the user prefs */
-							PlotPreferences.PREFS.put(
-									LOCATION_KEY,
-									(newValue == SwingConstants.HORIZONTAL) ? BorderLayout.NORTH
-											: BorderLayout.WEST);
-							fitToolbar();
-						}
-					});
+                    evt -> {
+                        /* Get the new orientation */
+                        final Integer newValue = (Integer) evt
+                                .getNewValue();
+                        /* place an appropriate value in the user prefs */
+                        PlotPreferences.PREFS.put(
+                                LOCATION_KEY,
+                                (newValue == SwingConstants.HORIZONTAL) ? BorderLayout.NORTH
+                                        : BorderLayout.WEST);
+                        fitToolbar();
+                    });
 			fitToolbar();
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);

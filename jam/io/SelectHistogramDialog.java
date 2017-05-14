@@ -55,12 +55,10 @@ class SelectHistogramDialog {
 		container.add(pLower, BorderLayout.SOUTH);
 		final JButton bButton = new JButton("OK");
 		pLower.add(bButton);
-		bButton.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				addToSelection();
-				dialog.dispose();
-			}
-		});
+		bButton.addActionListener(actionEvent -> {
+            addToSelection();
+            dialog.dispose();
+        });
 		dialog.setResizable(false);
 		dialog.pack();
 	}

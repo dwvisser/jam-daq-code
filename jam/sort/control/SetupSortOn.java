@@ -312,11 +312,9 @@ public final class SetupSortOn extends AbstractSetup {
     }
 
     private void initCheckLock() {
-        checkLock.addItemListener(new ItemListener() {
-            public void itemStateChanged(final ItemEvent itemEvent) {
-                if (!checkLock.isSelected()) {
-                    cancelOnlineSetup();
-                }
+        checkLock.addItemListener(itemEvent -> {
+            if (!checkLock.isSelected()) {
+                cancelOnlineSetup();
             }
         });
         checkLock.setEnabled(false);
@@ -324,24 +322,22 @@ public final class SetupSortOn extends AbstractSetup {
 
     private void initDiskCheckbox() {
         cdisk.setToolTipText("Send events to disk.");
-        cdisk.addItemListener(new ItemListener() {
-            public void itemStateChanged(final ItemEvent itemEvent) {
-                boolean store = cdisk.isSelected();
-                if (!store) {
-                    final boolean oops = JOptionPane.showConfirmDialog(dialog,
-                            "De-selecting this checkbox means Jam won't store events to disk.\n"
-                                    + "Is this what you really want?",
-                            "Event Storage Disabled",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION;
-                    if (oops) {
-                        cdisk.setSelected(true);
-                        store = true;
-                    }
+        cdisk.addItemListener(itemEvent -> {
+            boolean store = cdisk.isSelected();
+            if (!store) {
+                final boolean oops = JOptionPane.showConfirmDialog(dialog,
+                        "De-selecting this checkbox means Jam won't store events to disk.\n"
+                                + "Is this what you really want?",
+                        "Event Storage Disabled",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION;
+                if (oops) {
+                    cdisk.setSelected(true);
+                    store = true;
                 }
-                textPathData.setEnabled(store);
-                bbrowsed.setEnabled(store);
             }
+            textPathData.setEnabled(store);
+            bbrowsed.setEnabled(store);
         });
     }
 

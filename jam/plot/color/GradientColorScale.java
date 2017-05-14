@@ -73,30 +73,28 @@ public final class GradientColorScale implements ColorScale {
 			GradientSpecFieldsRGB.ARED.toString(), 0.25);
 
 	{// NOPMD
-		COLOR_PREFS.addPreferenceChangeListener(new PreferenceChangeListener() {
-			public void preferenceChange(final PreferenceChangeEvent pce) {
-				final String key = pce.getKey();
-				if (!key.equals(ColorPrefs.SMOOTH_SCALE)) {
-					final double newValue = Double.parseDouble(pce
-							.getNewValue());
-					if (GradientSpecFieldsRGB.ABLUE.toString().equals(key)) {
-						blueSpread = newValue;
-					} else if (GradientSpecFieldsRGB.AGREEN.toString().equals(
-							key)) {
-						greenSpread = newValue;
-					} else if (GradientSpecFieldsRGB.ARED.toString()
-							.equals(key)) {
-						redSpread = newValue;
-					} else if (GradientSpecFieldsRGB.X0B.toString().equals(key)) {
-						blueCenter = newValue;
-					} else if (GradientSpecFieldsRGB.X0R.toString().equals(key)) {
-						redCenter = newValue;
-					} else if (GradientSpecFieldsRGB.X0G.toString().equals(key)) {
-						greenCenter = newValue;
-					}
-				}
-			}
-		});
+		COLOR_PREFS.addPreferenceChangeListener(pce -> {
+            final String key = pce.getKey();
+            if (!key.equals(ColorPrefs.SMOOTH_SCALE)) {
+                final double newValue = Double.parseDouble(pce
+                        .getNewValue());
+                if (GradientSpecFieldsRGB.ABLUE.toString().equals(key)) {
+                    blueSpread = newValue;
+                } else if (GradientSpecFieldsRGB.AGREEN.toString().equals(
+                        key)) {
+                    greenSpread = newValue;
+                } else if (GradientSpecFieldsRGB.ARED.toString()
+                        .equals(key)) {
+                    redSpread = newValue;
+                } else if (GradientSpecFieldsRGB.X0B.toString().equals(key)) {
+                    blueCenter = newValue;
+                } else if (GradientSpecFieldsRGB.X0R.toString().equals(key)) {
+                    redCenter = newValue;
+                } else if (GradientSpecFieldsRGB.X0G.toString().equals(key)) {
+                    greenCenter = newValue;
+                }
+            }
+        });
 	}
 
 	/**

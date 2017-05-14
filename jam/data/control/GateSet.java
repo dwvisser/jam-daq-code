@@ -87,14 +87,12 @@ public final class GateSet extends AbstractControl {
 		dimset.width = 200;
 		cgate.setPreferredSize(dimset);
 		cgate.setRenderer(gateListRender);
-		cgate.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				final Object item = cgate.getSelectedItem();
-				if (item instanceof Gate) {
-					selectGate((Gate) item);
-				}
-			}
-		});
+		cgate.addActionListener(actionEvent -> {
+            final Object item = cgate.getSelectedItem();
+            if (item instanceof Gate) {
+                selectGate((Gate) item);
+            }
+        });
 		pChooser.add(cgate);
 		// panel with data fields
 		final JPanel pFields = new JPanel();
@@ -117,27 +115,15 @@ public final class GateSet extends AbstractControl {
 		final Border border = new EmptyBorder(0, 0, 10, 30);
 		pedit.setBorder(border);
 		addP = new JButton("Add");
-		addP.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				addPoint();
-			}
-		});
+		addP.addActionListener(actionEvent -> addPoint());
 		addP.setEnabled(false);
 		pedit.add(addP);
 		removeP = new JButton("Remove");
-		removeP.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				removePoint();
-			}
-		});
+		removeP.addActionListener(actionEvent -> removePoint());
 		removeP.setEnabled(false);
 		pedit.add(removeP);
 		unset = new JButton("Unset");
-		unset.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				unset();
-			}
-		});
+		unset.addActionListener(actionEvent -> unset());
 		unset.setEnabled(false);
 		pedit.add(unset);
 		// panel with OK, Cancel buttons
@@ -146,11 +132,7 @@ public final class GateSet extends AbstractControl {
 		pButtons.setLayout(new GridLayout(1, 0, 5, 5));
 		pokcancel.add(pButtons);
 		save = new JButton("Save");
-		save.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				save();
-			}
-		});
+		save.addActionListener(actionEvent -> save());
 		save.setEnabled(false);
 		pButtons.add(save);
 		cancel = new JButton(new jam.ui.WindowCancelAction(canceller));

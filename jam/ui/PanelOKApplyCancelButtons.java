@@ -33,17 +33,9 @@ public final class PanelOKApplyCancelButtons {
         callback = listener;
         final JPanel grid = new JPanel(new GridLayout(1, 0, 5, 5));
         panel.add(grid);
-        bok.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent actionEvent) {
-                callback.doOK();
-            }
-        });
+        bok.addActionListener(actionEvent -> callback.doOK());
         grid.add(bok);
-        bapply.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent actionEvent) {
-                callback.apply();
-            }
-        });
+        bapply.addActionListener(actionEvent -> callback.apply());
         grid.add(bapply);
         bcancel = new JButton(new WindowCancelAction(callback));
         grid.add(bcancel);

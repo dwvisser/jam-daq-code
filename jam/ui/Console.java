@@ -82,14 +82,12 @@ public class Console extends JPanel {
 		textIn
 				.setToolTipText("Enter underlined characters from buttons to start a command.");
 		this.add(textIn, BorderLayout.SOUTH);
-		textIn.addActionListener(new ActionListener() {
-			/* Processes event when a return is hit in input field */
-			public void actionPerformed(final ActionEvent event) {
-				addCommand(textIn.getText());
-				parseCommand(textIn.getText());
-				textIn.setText(null);
-			}
-		});
+		/* Processes event when a return is hit in input field */
+        textIn.addActionListener(event -> {
+            addCommand(textIn.getText());
+            parseCommand(textIn.getText());
+            textIn.setText(null);
+        });
 		/* Handle up and down arrows */
 		textIn.addKeyListener(new KeyAdapter() {
 			@Override

@@ -223,12 +223,10 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
             Point pPixel);
 
     protected void error(final String mess) {
-        final Runnable task = new Runnable() {
-            public void run() {
-                final String plotErrorTitle = "Plot Error";
-                JOptionPane.showMessageDialog(panel, mess, plotErrorTitle,
-                        JOptionPane.ERROR_MESSAGE);
-            }
+        final Runnable task = () -> {
+            final String plotErrorTitle = "Plot Error";
+            JOptionPane.showMessageDialog(panel, mess, plotErrorTitle,
+                    JOptionPane.ERROR_MESSAGE);
         };
         SwingUtilities.invokeLater(task);
     }
@@ -509,22 +507,26 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
      * @see PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
      */
     public void preferenceChange(final PreferenceChangeEvent pce) {
-        final String key = pce.getKey();
         final boolean newValue = Boolean.parseBoolean(pce.getNewValue());
-        if (key.equals(PlotPreferences.AUTO_IGNORE_ZERO)) {
-            options.setIgnoreChZero(newValue);
-            if (plotDataExists()) {
-                autoCounts();
-            }
-        } else if (key.equals(PlotPreferences.AUTO_IGNORE_FULL)) {
-            options.setIgnoreChFull(newValue);
-            if (plotDataExists()) {
-                autoCounts();
-            }
-        } else if (key.equals(PlotPreferences.BLACK_BACKGROUND)) {
-            panel.setColorMode(newValue);
-        } else if (key.equals(PlotPreferences.HIGHLIGHT_GATE)) {
-            options.setNoFillMode(!newValue);
+        switch (pce.getKey()) {
+            case PlotPreferences.AUTO_IGNORE_ZERO:
+                options.setIgnoreChZero(newValue);
+                if (plotDataExists()) {
+                    autoCounts();
+                }
+                break;
+            case PlotPreferences.AUTO_IGNORE_FULL:
+                options.setIgnoreChFull(newValue);
+                if (plotDataExists()) {
+                    autoCounts();
+                }
+                break;
+            case PlotPreferences.BLACK_BACKGROUND:
+                panel.setColorMode(newValue);
+                break;
+            case PlotPreferences.HIGHLIGHT_GATE:
+                options.setNoFillMode(!newValue);
+                break;
         }
     }
 

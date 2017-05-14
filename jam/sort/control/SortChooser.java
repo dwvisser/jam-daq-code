@@ -34,12 +34,7 @@ final class SortChooser extends JComboBox<Object> {
 	SortChooser() {
 		super();
 		setToolTipText("Select sort routine class");
-		addActionListener(new ActionListener() {
-			@SuppressWarnings("unchecked")
-			public void actionPerformed(final ActionEvent event) {
-				sortClass = (Class<? extends AbstractSortRoutine>) getSelectedItem();
-			}
-		});
+		addActionListener(event -> sortClass = (Class<? extends AbstractSortRoutine>) getSelectedItem());
 	}
 
 	protected AbstractSortRoutine getSortRoutine() {

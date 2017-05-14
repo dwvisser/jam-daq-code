@@ -77,11 +77,7 @@ public final class SaveSelectedHistogram {
 		final JPanel pButtons = new JPanel(new GridLayout(1, 0, 5, 5));
 		pLower.add(pButtons);
 		final AbstractButton bSave = new JButton("Save");
-		bSave.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				doSave();
-			}
-		});
+		bSave.addActionListener(actionEvent -> doSave());
 		pButtons.add(bSave);
 		final AbstractButton bCancel = new JButton(new WindowCancelAction(
 				dialog));

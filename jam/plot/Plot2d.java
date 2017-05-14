@@ -610,11 +610,7 @@ final class Plot2d extends AbstractPlot {
 		} else {
 			super.preferenceChange(pce);
 		}
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				panel.repaint();
-			}
-		});
+		SwingUtilities.invokeLater(panel::repaint);
 	}
 
 	@Override

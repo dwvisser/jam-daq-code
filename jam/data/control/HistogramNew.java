@@ -153,19 +153,13 @@ public class HistogramNew extends AbstractControl {
 		final JPanel bottom = new JPanel(new GridLayout(1, 0, 5, 5));
 		pbOuter.add(bottom);
 		final JButton bok = new JButton("OK");
-		bok.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				makeHistogram();
-				dispose();
-			}
-		});
+		bok.addActionListener(event -> {
+            makeHistogram();
+            dispose();
+        });
 		bottom.add(bok);
 		final JButton bapply = new JButton("Apply");
-		bapply.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				makeHistogram();
-			}
-		});
+		bapply.addActionListener(event -> makeHistogram());
 		bottom.add(bapply);
 		final JButton bcancel = new JButton(new WindowCancelAction(this));
 		bottom.add(bcancel);

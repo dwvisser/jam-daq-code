@@ -127,27 +127,17 @@ public final class ScalerDisplay extends AbstractControl {
 		// dialog
 		buttonPanel.setLayout(new GridLayout(1, 0, 10, 10));
 		cddisp.add(plower, BorderLayout.SOUTH);
-		bupdate.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				read();
-			}
-		});
+		bupdate.addActionListener(event -> read());
 		buttonPanel.add(bupdate);
-		bzero.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				checkDisabled.setSelected(true);
-				bzero.setEnabled(false);
-				ScalerDisplay.this.broadcast.zeroScalers();
-			}
-		});
+		bzero.addActionListener(event -> {
+            checkDisabled.setSelected(true);
+            bzero.setEnabled(false);
+            ScalerDisplay.this.broadcast.zeroScalers();
+        });
 		bzero.setEnabled(false);
 		buttonPanel.add(bzero);
 		plower.add(buttonPanel);
-		checkDisabled.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent event) {
-				bzero.setEnabled(!checkDisabled.isSelected());
-			}
-		});
+		checkDisabled.addItemListener(event -> bzero.setEnabled(!checkDisabled.isSelected()));
 		plower.add(checkDisabled);
 	}
 

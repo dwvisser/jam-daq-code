@@ -150,15 +150,13 @@ public final class JamInitialization {
 		this.frame.setLocation(posx, posy);
 		this.frame.setResizable(true);
 		/* Important to initially display in the AWT/Swing thread. */
-		final Runnable showWindow = new Runnable() {
-			public void run() {
-				JamInitialization.this.frame.pack();
-				JamInitialization.this.frame.setVisible(true);
+		final Runnable showWindow = () -> {
+            JamInitialization.this.frame.pack();
+            JamInitialization.this.frame.setVisible(true);
 
-				/* print out where configuration files were read from */
-				properties.outputMessages();
-			}
-		};
+            /* print out where configuration files were read from */
+            properties.outputMessages();
+        };
 		SwingUtilities.invokeLater(showWindow);
 	}
 }

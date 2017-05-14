@@ -83,11 +83,7 @@ public class ConfigurationDisplay extends JDialog {
 		buttonPanel.add(help);
 		final JButton btnClose = new JButton("Close");
 		buttonPanel.add(btnClose);
-		btnClose.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				close();
-			}
-		});
+		btnClose.addActionListener(actionEvent -> close());
 
 	}
 

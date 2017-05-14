@@ -198,58 +198,56 @@ public final class ColorSettingsFrame extends JDialog implements ChangeListener 
 
 	private JComboBox<String> defineColorSchemeChooser() {
 		final JComboBox<String> csChooser = new JComboBox<>();
-		csChooser.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent itemEvent) {
-				final String selection = (String) csChooser.getSelectedItem();
-				if ("Greyscale".equals(selection)) {
-					x0RSlider.setValue(100);
-					x0GSlider.setValue(100);
-					x0BSlider.setValue(100);
-					aRSlider.setValue(100);
-					aGSlider.setValue(100);
-					aBSlider.setValue(100);
-				} else if (selection.equals(RAINBOW)) {
-					x0RSlider.setValue(80);
-					x0GSlider.setValue(60);
-					x0BSlider.setValue(20);
-					aRSlider.setValue(50);
-					aGSlider.setValue(40);
-					aBSlider.setValue(30);
-				} else if ("Purple Haze".equals(selection)) {
-					x0RSlider.setValue(100);
-					x0GSlider.setValue(0);
-					x0BSlider.setValue(100);
-					aRSlider.setValue(84);
-					aGSlider.setValue(0);
-					aBSlider.setValue(84);
-				} else {// current
-					final int x0red = (int) Math.round(100 * COLOR_PREFS
-							.getDouble(GradientSpecFieldsRGB.X0R.toString(),
-									.80));
-					final int x0green = (int) Math.round(100 * COLOR_PREFS
-							.getDouble(GradientSpecFieldsRGB.X0G.toString(),
-									.60));
-					final int x0blue = (int) Math.round(100 * COLOR_PREFS
-							.getDouble(GradientSpecFieldsRGB.X0B.toString(),
-									.20));
-					final int aRedD = (int) Math.round(100 * COLOR_PREFS
-							.getDouble(GradientSpecFieldsRGB.ARED.toString(),
-									.50));
-					final int aGreenD = (int) Math.round(100 * COLOR_PREFS
-							.getDouble(GradientSpecFieldsRGB.AGREEN.toString(),
-									.40));
-					final int aBlueD = (int) Math.round(100 * COLOR_PREFS
-							.getDouble(GradientSpecFieldsRGB.ABLUE.toString(),
-									.30));
-					x0RSlider.setValue(x0red);
-					x0GSlider.setValue(x0green);
-					x0BSlider.setValue(x0blue);
-					aRSlider.setValue(aRedD);
-					aGSlider.setValue(aGreenD);
-					aBSlider.setValue(aBlueD);
-				}
-			}
-		});
+		csChooser.addItemListener(itemEvent -> {
+            final String selection = (String) csChooser.getSelectedItem();
+            if ("Greyscale".equals(selection)) {
+                x0RSlider.setValue(100);
+                x0GSlider.setValue(100);
+                x0BSlider.setValue(100);
+                aRSlider.setValue(100);
+                aGSlider.setValue(100);
+                aBSlider.setValue(100);
+            } else if (selection.equals(RAINBOW)) {
+                x0RSlider.setValue(80);
+                x0GSlider.setValue(60);
+                x0BSlider.setValue(20);
+                aRSlider.setValue(50);
+                aGSlider.setValue(40);
+                aBSlider.setValue(30);
+            } else if ("Purple Haze".equals(selection)) {
+                x0RSlider.setValue(100);
+                x0GSlider.setValue(0);
+                x0BSlider.setValue(100);
+                aRSlider.setValue(84);
+                aGSlider.setValue(0);
+                aBSlider.setValue(84);
+            } else {// current
+                final int x0red = (int) Math.round(100 * COLOR_PREFS
+                        .getDouble(GradientSpecFieldsRGB.X0R.toString(),
+                                .80));
+                final int x0green = (int) Math.round(100 * COLOR_PREFS
+                        .getDouble(GradientSpecFieldsRGB.X0G.toString(),
+                                .60));
+                final int x0blue = (int) Math.round(100 * COLOR_PREFS
+                        .getDouble(GradientSpecFieldsRGB.X0B.toString(),
+                                .20));
+                final int aRedD = (int) Math.round(100 * COLOR_PREFS
+                        .getDouble(GradientSpecFieldsRGB.ARED.toString(),
+                                .50));
+                final int aGreenD = (int) Math.round(100 * COLOR_PREFS
+                        .getDouble(GradientSpecFieldsRGB.AGREEN.toString(),
+                                .40));
+                final int aBlueD = (int) Math.round(100 * COLOR_PREFS
+                        .getDouble(GradientSpecFieldsRGB.ABLUE.toString(),
+                                .30));
+                x0RSlider.setValue(x0red);
+                x0GSlider.setValue(x0green);
+                x0BSlider.setValue(x0blue);
+                aRSlider.setValue(aRedD);
+                aGSlider.setValue(aGreenD);
+                aBSlider.setValue(aBlueD);
+            }
+        });
 		String current = "Current";
 		csChooser.addItem(current);
 		csChooser.addItem(RAINBOW);

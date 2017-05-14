@@ -61,14 +61,12 @@ public final class GateAdd extends AbstractControl {
 		cadd = new JComboBox<>(new GateComboBoxModel(
                 GateComboBoxModel.Mode.ALL));
 		cadd.setRenderer(gateListRender);
-		cadd.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				final Object item = cadd.getSelectedItem();
-				if (item instanceof Gate) {
-					selectGateAdd((Gate) item);
-				}
-			}
-		});
+		cadd.addActionListener(event -> {
+            final Object item = cadd.getSelectedItem();
+            if (item instanceof Gate) {
+                selectGateAdd((Gate) item);
+            }
+        });
 		final Dimension dimadd = cadd.getPreferredSize();
 		dimadd.width = 200;
 		cadd.setPreferredSize(dimadd);
@@ -80,19 +78,13 @@ public final class GateAdd extends AbstractControl {
 		pbadd.setLayout(new GridLayout(1, 0, 5, 5));
 		pbuttonAdd.add(pbadd);
 		final JButton bokadd = new JButton("OK");
-		bokadd.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				addGate();
-				dispose();
-			}
-		});
+		bokadd.addActionListener(event -> {
+            addGate();
+            dispose();
+        });
 		pbadd.add(bokadd);
 		final JButton bapplyadd = new JButton("Apply");
-		bapplyadd.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				addGate();
-			}
-		});
+		bapplyadd.addActionListener(event -> addGate());
 		pbadd.add(bapplyadd);
 		final JButton bcanceladd = new JButton(new WindowCancelAction(this));
 		pbadd.add(bcanceladd);

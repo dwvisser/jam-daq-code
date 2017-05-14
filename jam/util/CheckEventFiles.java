@@ -131,11 +131,7 @@ public final class CheckEventFiles {
     }
 
     private File[] getEventFiles(final File path) {
-        return path.listFiles(new FilenameFilter() {
-            public boolean accept(final File dir, final String name) {
-                return name.endsWith("evn");
-            }
-        });
+        return path.listFiles((dir, name) -> name.endsWith("evn"));
     }
 
     private void makeScalerSummaries(final File[] infiles, final File outPath) {

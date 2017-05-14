@@ -51,11 +51,7 @@ final class ViewMenu implements Observer {
 
     private JMenuItem namedMenuItem(final String name) {
         final JMenuItem rval = new JMenuItem(name);
-        rval.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent event) {
-                ViewMenu.this.display.setView(View.getView(name));
-            }
-        });
+        rval.addActionListener(event -> ViewMenu.this.display.setView(View.getView(name)));
         return rval;
     }
 
