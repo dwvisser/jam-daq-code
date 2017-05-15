@@ -471,12 +471,6 @@ public class CalibrationFit extends AbstractControl {
 
 	}
 
-	/**
-	 * @param ptsChannel
-	 * @param ptsEnergy
-	 * @param labels
-	 * @param coeff
-	 */
 	private void setCalibratedWithPoints(final double[] ptsChannel,
 			final double[] ptsEnergy, final String[] labels,
 			final double[] coeff) {

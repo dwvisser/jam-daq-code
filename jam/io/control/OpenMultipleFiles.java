@@ -60,8 +60,6 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 *            application status
 	 * @param hdfio
 	 *            for opening HDF files
-	 * @param console
-	 *            where to print messages
 	 * @param broadcaster
 	 *            broadcasts state changes
 	 */
@@ -157,7 +155,7 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	/**
 	 * Change of selected tab
 	 * 
-	 * @param tabIndex
+	 * @param tabIndex index of tab to select
 	 */
 	public void changeSelectedTab(final int tabIndex) {
 		if (tabIndex == 1) {

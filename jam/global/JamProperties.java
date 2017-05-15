@@ -320,10 +320,6 @@ public final class JamProperties {
 		}
 	}
 
-	/**
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 */
 	private void loadUserPropertiesFromCurrentDirectory()
 			throws IOException {
 		userFile = new File(userCurrentDir, FILE_USER);

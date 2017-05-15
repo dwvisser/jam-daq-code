@@ -109,7 +109,7 @@ public final class MultipleFileChooser extends JPanel {
 	/**
 	 * Activate the save and load list buttons
 	 * 
-	 * @param state
+	 * @param state whether to show the save and load list buttons
 	 */
 	public void showListSaveLoadButtons(final boolean state) {
 		if (state) {

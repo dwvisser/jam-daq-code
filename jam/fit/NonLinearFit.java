@@ -25,7 +25,7 @@ public interface NonLinearFit extends Fit {
 	 *            the name of the parameter to differentiate with respect to
 	 * @param xValue
 	 *            value to evaluate at
-	 * @return df(<code>x</code>)/d(<code>parameterName</code>) at x
+	 * @return df(x)/d(parameterName) at x
 	 */
 	double derivative(double xValue, String parameterName);
 

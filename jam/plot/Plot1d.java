@@ -337,10 +337,6 @@ final class Plot1d extends AbstractPlot {
 		return plotHist.getCalibration().getValue(channel);
 	}
 
-	/**
-	 * @param hOver
-	 * @return
-	 */
 	private double[] getOverlayCounts(final AbstractHist1D hOver) {
 		final int sizex = hOver.getSizeX();
 		double[] ctOver;
@@ -475,9 +471,6 @@ final class Plot1d extends AbstractPlot {
 		}
 	}
 
-	/**
-	 * @param graphics
-	 */
 	private void paintFitSignals(final Graphics graphics) {
 		if (fitSignals != null) {
 			graphics.setColor(colorMap.getFitSignal());
@@ -638,11 +631,6 @@ final class Plot1d extends AbstractPlot {
 
 	/* Preferences */
 
-	/**
-	 * @param signals
-	 * @param background
-	 * @param length
-	 */
 	private void setBackgroundAndSignals(final double[][] signals,
 			final double[] background, final int length) {
 		this.fitBackground = new double[length];

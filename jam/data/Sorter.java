@@ -31,8 +31,6 @@ public interface Sorter {
 	 * Returns size of an event.
 	 * 
 	 * @return the size of the events
-	 * @throws SortException
-	 *             when there is no event size yet
 	 */
 	int getEventSize();
 

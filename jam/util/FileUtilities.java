@@ -151,21 +151,20 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * 
-	 * @param dir
+	 * Get a directory corresponding to the given path string.
+	 * @param dir path to get a directory for
 	 * @return given file if a directory, parent directory otherwise, null if
 	 *         given file doesn't exist
 	 */
-	public File getDir(final String dir) {
-		File rval = new File(dir);
-		if (rval.exists()) {
-			if (!rval.isDirectory()) {
-				rval = rval.getParentFile();
+	File getDir(final String dir) {
+		File result = new File(dir);
+		if (result.exists()) {
+			if (!result.isDirectory()) {
+				result = result.getParentFile();
 			}
 		} else {
-			rval = null;// NOPMD
+			result = null;// NOPMD
 		}
-		return rval;
+		return result;
 	}
-
 }

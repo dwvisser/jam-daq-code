@@ -6,7 +6,7 @@ package jam.global;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version May 9, 2004
  * @since 1.5.1
- * @see jam.global.JamStatus#setSortMode(SortMode,String)
+ * @see jam.global.JamStatus#setSortMode(QuerySortMode, String)
  */
 public final class SortMode implements QuerySortMode {
 

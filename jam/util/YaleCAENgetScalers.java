@@ -1,4 +1,4 @@
-/***************************************************************
+/*---------------------------------------------------------------
  * Nuclear Simulation Java Class Libraries
  * Copyright (C) 2003 Yale University
  * 
@@ -20,7 +20,7 @@
  * You should have received a copy of the University of 
  * Illinois/NCSA Open Source License along with this program; if 
  * not, see http://www.opensource.org/
- **************************************************************/
+ *-------------------------------------------------------------*/
 package jam.util;
 
 import com.google.inject.Inject;
@@ -131,14 +131,6 @@ public class YaleCAENgetScalers {
         return rtnState;
     }
 
-    /**
-     * @param strBuff
-     * @param dis
-     * @param counter
-     * @param numScalers
-     * @return
-     * @throws IOException
-     */
     private int appendScalerValues(final StringBuffer strBuff,
             final DataInputStream dis, final int counter, final int numScalers)
             throws IOException {

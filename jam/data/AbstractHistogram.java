@@ -154,7 +154,7 @@ public abstract class AbstractHistogram implements DataElement {
 
     /**
      * Histogram is a valid histogram
-     * @param hist
+     * @param hist histogram to check
      * @return <code>true</code> if this histogram remains in the name mapping
      */
     public static boolean isValid(final AbstractHistogram hist) {
@@ -222,13 +222,6 @@ public abstract class AbstractHistogram implements DataElement {
 
     /**
      * Master constructor invoked by all other constructors.
-     * @param group
-     *            group this histogram belongs to
-     * @param nameIn
-     *            unique name of histogram, should be limited to
-     *            <code>NAME_LENGTH</code> characters, used in both .jhf and
-     *            .hdf files as the unique identifier for reloading the
-     *            histogram
      * @param type
      *            type and dimensionality of data
      * @param sizeX
@@ -266,13 +259,6 @@ public abstract class AbstractHistogram implements DataElement {
 
     /**
      * Contructor with no number given, but axis labels are given.
-     * @param group
-     *            group this histogram belongs to
-     * @param name
-     *            unique name of histogram, should be limited to
-     *            <code>NAME_LENGTH</code> characters, used in both .jhf and
-     *            .hdf files as the unique identifier for reloading the
-     *            histogram
      * @param type
      *            dimensionality of histogram, 1 or 2
      * @param sizeX
@@ -298,13 +284,6 @@ public abstract class AbstractHistogram implements DataElement {
 
     /**
      * Constructor with no number given, but axis labels are given.
-     * @param group
-     *            group this histogram belongs to
-     * @param nameIn
-     *            unique name of histogram, should be limited to
-     *            <code>NAME_LENGTH</code> characters, used in both .jhf and
-     *            .hdf files as the unique identifier for reloading the
-     *            histogram
      * @param type
      *            dimensionality of histogram, 1 or 2
      * @param size
@@ -321,13 +300,6 @@ public abstract class AbstractHistogram implements DataElement {
 
     /**
      * Contructor with no number given, but axis labels are given.
-     * @param group
-     *            group this histogram belongs to
-     * @param name
-     *            unique name of histogram, should be limited to
-     *            <code>NAME_LENGTH</code> characters, used in both .jhf and
-     *            .hdf files as the unique identifier for reloading the
-     *            histogram
      * @param type
      *            dimensionality of histogram, 1 or 2
      * @param size
@@ -385,18 +357,6 @@ public abstract class AbstractHistogram implements DataElement {
 
     public abstract double getCount();
 
-    /**
-     * Returns the counts in the histogram as an array of the appropriate type.
-     * It is necessary to cast the returned array as follows:
-     * <ul>
-     * <li><code>ONE_DIM_INT</code> cast with <code>(int [])</code></li>
-     * <li><code>TWO_DIM_INT</code> cast with <code>(int [][])</code></li>
-     * <li><code>ONE_DIM_DOUBLE</code> cast with <code>(double [])</code></li>
-     * <li><code>TWO_DIM_DOUBLE</code> cast with <code>(double [][])</code></li>
-     * </ul>
-     * @return <code>Object</code> which must be cast as indicated above
-     */
-    // public abstract Object getCounts();
     /**
      * Returns the number of dimensions in this histogram.
      * @return the number of dimensions in this histogram.

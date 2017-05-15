@@ -1,13 +1,13 @@
-/**
- * 
- */
 package jam.plot;
 
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
 final class AutoCounts implements PreferenceChangeListener {
-	/* reference auto scale on expand */
+
+    /**
+	 * reference auto scale on expand
+     */
 	public transient boolean autoOnExpand = true;
 
 	/**

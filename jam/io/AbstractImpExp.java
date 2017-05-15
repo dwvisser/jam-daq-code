@@ -247,9 +247,9 @@ public abstract class AbstractImpExp {
 
     /**
      * Save the given histogram to the given file.
-     * @param outFile
-     * @param hist
-     * @throws ImpExpException
+     * @param outFile to save to
+     * @param hist the histogram
+     * @throws ImpExpException if an issue occurs while trying to write the file
      */
     public void saveFile(final File outFile, final AbstractHistogram hist)
             throws ImpExpException {

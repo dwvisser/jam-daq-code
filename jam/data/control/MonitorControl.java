@@ -270,11 +270,6 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		}
 	}
 
-	/**
-	 * @param index
-	 * @param monitor
-	 * @return
-	 */
 	private JPanel updateMonitor(final int index, final Monitor monitor) {
 		JPanel pRow;
 		pRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
@@ -301,19 +296,19 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		return pRow;
 	}
 
-	/**
-	 * @throws InterruptedException
-	 */
 	private void updatePeriodically() throws InterruptedException {
 		final int waitForResults = 500;
 		final int waitAfterRepaint = interval * 1000 - waitForResults;
+
 		/* read scalers and wait */
 		broadcaster.broadcast(BroadcastEvent.Command.SCALERS_READ);
 		Thread.sleep(waitForResults);
+
 		// loop for each monitor
 		for (Monitor monitor : Monitor.getMonitorList()) {
 			monitor.update();// update the monitor
 		} // end loop monitors
+
 		/* Broadcast event on UI thread */
 		SwingUtilities.invokeLater(monitorUpdate);
 		Thread.sleep(waitAfterRepaint);

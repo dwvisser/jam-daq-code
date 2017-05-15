@@ -381,10 +381,6 @@ public final class Projections extends AbstractManipulation implements
 		return limits;
 	}
 
-	/**
-	 * @param hfrom
-	 * @param name
-	 */
 	private void getDestinationHistogram(final AbstractHistogram hfrom,
 			final String name) {
 		if (isNewHistogram(name)) {
@@ -400,10 +396,6 @@ public final class Projections extends AbstractManipulation implements
 		}
 	}
 
-	/**
-	 * @param counts2d
-	 * @param limits
-	 */
 	private void setLimitsFull(final double[][] counts2d, final int[] limits) {
 		limits[0] = 0;
 		if (cdown.isSelected()) {

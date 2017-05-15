@@ -1,4 +1,4 @@
-/***************************************************************
+/*---------------------------------------------------------------
  * Nuclear Simulation Java Class Libraries
  * Copyright (C) 2003 Yale University
  * 
@@ -20,7 +20,7 @@
  * You should have received a copy of the University of 
  * Illinois/NCSA Open Source License along with this program; if 
  * not, see http://www.opensource.org/
- **************************************************************/
+ *--------------------------------------------------------------*/
 package jam.commands;
 
 import com.google.inject.Inject;

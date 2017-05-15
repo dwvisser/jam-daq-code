@@ -99,7 +99,7 @@ public class Console extends JPanel {
 	/**
 	 * Add a command to the command stack
 	 * 
-	 * @param cmdStr
+	 * @param cmdStr command to add
 	 */
 	private void addCommand(final String cmdStr) {
 		cmdStack.add(cmdStr);
@@ -207,7 +207,7 @@ public class Console extends JPanel {
 	/**
 	 * Parse the input string
 	 * 
-	 * @param strCmd
+	 * @param strCmd command string to parse
 	 * @return a array of the command tokens
 	 */
 	private List<String> parseExpression(final String strCmd) {

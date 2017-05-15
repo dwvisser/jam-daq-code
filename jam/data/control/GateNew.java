@@ -62,8 +62,6 @@ public class GateNew extends AbstractControl {
 
     /**
      * Make a new gate, and add it to the current histogram.
-     * @throws GlobalException
-     *             if there's a problem
      */
     private void makeGate() {
         final AbstractHistogram hist = (AbstractHistogram) SelectionTree

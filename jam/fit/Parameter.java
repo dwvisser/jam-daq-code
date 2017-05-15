@@ -1,5 +1,3 @@
-/**
- */
 package jam.fit;
 
 import injection.GuiceInjector;

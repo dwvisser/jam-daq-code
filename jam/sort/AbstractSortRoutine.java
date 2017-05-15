@@ -355,7 +355,7 @@ public abstract class AbstractSortRoutine implements Sorter, Beginner, Ender,
 	 * Returns size of a event.
 	 * 
 	 * @return the size of the events
-	 * @throws SortException
+	 * @throws IllegalStateException
 	 *             when there is no event size yet
 	 */
 	public int getEventSize() {

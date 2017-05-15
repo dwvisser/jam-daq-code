@@ -302,10 +302,7 @@ public final class PlotDisplay extends JPanel implements
         getPlotContainer().repaint();
     }
 
-    /**
-     * Set a plot as the current plot
-     * @param container
-     */
+    /* Set a plot as the current plot */
     private void setPlotContainer(final PlotContainer container) {
         synchronized (plotLock) {
             /* Only do something if the plot has changed */

@@ -66,10 +66,6 @@ public class MonitorDisplay extends AbstractControl {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
-	/**
-	 * @param monitor
-	 * @return
-	 */
 	private JPanel createPanel(final Monitor monitor) {
 		JPanel pMonitors;
 		pMonitors = new JPanel();

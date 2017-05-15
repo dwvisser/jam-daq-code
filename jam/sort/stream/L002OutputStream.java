@@ -71,7 +71,7 @@ public final class L002OutputStream extends AbstractL002HeaderWriter {
 	/**
 	 * Implemented <code>EventOutputStream</code> abstract method.
 	 * 
-	 * @exception EventException
+	 * @exception IOException
 	 *                thrown for unrecoverable errors
 	 */
 	public void writeEvent(final int[] input) throws IOException {
@@ -85,7 +85,7 @@ public final class L002OutputStream extends AbstractL002HeaderWriter {
 	 * Writes out a event in the L002 format Implemented
 	 * <code>EventOutputStream</code> abstract method.
 	 * 
-	 * @exception EventException
+	 * @exception IOException
 	 *                thrown for unrecoverable errors
 	 */
 	public void writeEvent(final short[] input) throws IOException {

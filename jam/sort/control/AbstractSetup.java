@@ -249,7 +249,7 @@ abstract class AbstractSetup {
 	/**
 	 * Get list of classes implemented a interface
 	 * 
-	 * @param <T>
+	 * @param <T> superclass or interface of interest
 	 */
 	private <T> Set<Class<? extends T>> getClasses(final String inPackage,
 			final Class<T> inClass) {
@@ -395,10 +395,8 @@ abstract class AbstractSetup {
 	}
 
 	/**
-	 * Provided so setup offline sort can be scriptable.
+	 * Provided so setup offline sort can be script-able.
 	 * 
-	 * @param classPath
-	 *            path to sort routine classpath base
 	 * @param sortName
 	 *            name of sort routine class
 	 * @param inStream

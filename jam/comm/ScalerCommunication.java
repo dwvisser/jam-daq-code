@@ -22,7 +22,7 @@ public interface ScalerCommunication {
 	 * Send the number of milliseconds between blocks of scaler values in the
 	 * event stream.
 	 * 
-	 * @param milliseconds
+	 * @param milliseconds desired interval between scaler blocks
 	 */
 	void sendScalerInterval(int milliseconds);
 }

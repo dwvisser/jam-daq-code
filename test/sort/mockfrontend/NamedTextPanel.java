@@ -1,6 +1,3 @@
-/**
- * 
- */
 package test.sort.mockfrontend;
 
 import javax.swing.BorderFactory;

@@ -44,7 +44,7 @@ public final class RingBufferTest {// NOPMD
      *            result of getBuffer
      * @param input
      *            passed to putBuffer
-     * @throws ArrayComparisonFailure
+     * @throws ArrayComparisonFailure if array comparison is impossible
      */
     private void assertArraysEqualButNotSame(final byte[] output,
             final byte[] input) throws ArrayComparisonFailure {
@@ -87,7 +87,9 @@ public final class RingBufferTest {// NOPMD
     }
 
     /**
-     * @returns last buffer inserted
+     * @param ring2 an empty ring buffer
+     * @param numBuffers number of byte buffers to fill in
+     * @return last buffer inserted
      */
     private byte[] fillEmptyRingBuffer(final RingBuffer ring2,
             final int numBuffers) {
@@ -101,8 +103,8 @@ public final class RingBufferTest {// NOPMD
     }
 
     /**
-     * @param ring2
-     * @param buffer
+     * @param ring2 a ring buffer
+     * @param buffer byte buffer to attempt to put in
      */
     private void putBuffer(final RingBuffer ring2, final byte[] buffer,
             final boolean expectedSuccess) {
@@ -184,7 +186,7 @@ public final class RingBufferTest {// NOPMD
      * Test for <code>putBuffer()</code>.
      * @throws InterruptedException
      *             if a get buffer operation fails
-     * @see RingBuffer#tryPutBuffer(byte [])
+     * @see RingBuffer#tryPutBuffer(byte[])
      */
     @Test
     public void testPut() throws InterruptedException {

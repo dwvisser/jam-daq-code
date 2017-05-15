@@ -1,6 +1,3 @@
-/**
- * 
- */
 package jam.fit;
 
 import jam.plot.Bin;

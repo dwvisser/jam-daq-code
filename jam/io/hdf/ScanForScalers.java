@@ -30,14 +30,13 @@ public class ScanForScalers {
 	}
 
 	/**
-	 * @param carriage
-	 * @param outText
-	 * @param firstRun
-	 * @param index
-	 * @param infile
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws HDFException
+	 * @param carriage ??
+	 * @param outText output text destination
+	 * @param firstRun ??
+	 * @param index ??
+	 * @param infile file to scan
+	 * @throws IOException if an error occurs reading the file
+	 * @throws HDFException if an error occurs parsing the HDF format
 	 */
 	public void processFile(final char carriage, final StringBuffer outText,
 			final int firstRun, final int index, final File infile)
@@ -56,10 +55,6 @@ public class ScanForScalers {
 		outText.append(carriage);
 	}
 
-	/**
-	 * @param carriage
-	 * @param outText
-	 */
 	private void writeHeaderLine(final char carriage, final StringBuffer outText) {
 		outText.append("Run");
 		for (String name : getScalerNames()) {

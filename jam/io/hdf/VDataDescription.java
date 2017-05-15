@@ -18,7 +18,6 @@ public final class VDataDescription extends AbstractData {
 	 * Specifies how data records are interlaced in the Vdata record.
 	 * 
 	 * @see #INTERLACE
-	 * @see #NO_INTERLACE
 	 */
 	private transient short interlace;
 
@@ -176,10 +175,6 @@ public final class VDataDescription extends AbstractData {
 		bytes.put((byte) 0); // unused additional (undocumented) byte
 	}
 
-	/**
-	 * @param byteLength
-	 * @return
-	 */
 	private int setOffsets(final int byteLength) {
 		int rval = byteLength;
 		for (int i = 1; i < nfields; i++) {
@@ -189,9 +184,6 @@ public final class VDataDescription extends AbstractData {
 		return rval;
 	}
 
-	/**
-	 * @param types
-	 */
 	private void setSizes(final short[] types) {
 		for (int i = 0; i < nfields; i++) {// NOPMD
 			isize[i] = getColumnByteLength(types[i], order[i]);

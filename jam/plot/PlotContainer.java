@@ -111,7 +111,7 @@ public final class PlotContainer implements PlotContainerSelectListener {
 	/**
 	 * Select this plot as the current plot
 	 * 
-	 * @param selectedState
+	 * @param selectedState whether selected
 	 */
 	protected void select(final boolean selectedState) {
 		final Border border = ((layoutType == LayoutType.LABELS_BORDER) || (layoutType == LayoutType.NO_LABELS_BORDER)) ? (selectedState ? BorderFactory
@@ -124,7 +124,7 @@ public final class PlotContainer implements PlotContainerSelectListener {
 	/**
 	 * Set the layout to include or not include the margins
 	 * 
-	 * @param type
+	 * @param type type of layout
 	 */
 	protected void setLayoutType(final LayoutType type) {
 		layoutType = type;
@@ -288,7 +288,7 @@ public final class PlotContainer implements PlotContainerSelectListener {
 	 *            the fit background
 	 * @param residuals
 	 *            the fit residuals
-	 * @param lowerLimit
+	 * @param lowerLimit lower limit
 	 */
 	public void displayFit(final double[][] signals, final double[] background,
 			final double[] residuals, final int lowerLimit) {
@@ -403,8 +403,8 @@ public final class PlotContainer implements PlotContainerSelectListener {
 	/**
 	 * Expand a region
 	 * 
-	 * @param channel1
-	 * @param channel2
+	 * @param channel1 one boundary channel
+	 * @param channel2 the other boundary channel
 	 */
 	protected void expand(final Bin channel1, final Bin channel2) {
 		getPlot().expand(channel1, channel2);

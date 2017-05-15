@@ -306,11 +306,6 @@ public final class BatchExport extends JDialog implements Observer {
 		}
 	}
 
-	/**
-	 * @param status
-	 * @param already
-	 * @return
-	 */
 	private boolean checkFileOverwrite(final boolean status,
 			final boolean already) {
 		boolean rval = status;

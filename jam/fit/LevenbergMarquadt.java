@@ -194,11 +194,9 @@ final class LevenbergMarquadt {
      *            indicates first, middle, or final iteration
      * @throws ArithmeticException
      *             if a math error occurs
-     * @exception Exception
-     *                trying to diagonalize singular matrices
-     * @see #FIRST_ITERATION
-     * @see #NEXT_ITERATION
-     * @see #LAST_ITERATION
+     * @see Iteration#FIRST_ITERATION
+     * @see Iteration#NEXT_ITERATION
+     * @see Iteration#LAST_ITERATION
      * @see AbstractNonLinearFit#doFit
      */
     public void iterate(final Iteration iteration) throws ArithmeticException {
@@ -373,9 +371,6 @@ final class LevenbergMarquadt {
         outputParamsPostFit(params);
     }
 
-    /**
-     * @param params
-     */
     @SuppressWarnings("unchecked")
     private void outputParamsPostFit(final Parameter<Double>[] params) {
         /* debug message */
@@ -395,9 +390,6 @@ final class LevenbergMarquadt {
         }
     }
 
-    /**
-     * @param params
-     */
     private void outputParameters(final Parameter<?>[] params) {
         if (iterationCount == 0) {
             messages.messageOut("Iteration ChiSq/dof ", MessageHandler.NEW);
@@ -408,9 +400,6 @@ final class LevenbergMarquadt {
         }
     }
 
-    /**
-     * @param params
-     */
     private void setParameters(final Parameter<Double>[] params) {
         /* set parameter values in function */
         for (Parameter<Double> param : params) {

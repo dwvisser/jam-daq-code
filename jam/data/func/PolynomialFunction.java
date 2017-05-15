@@ -61,11 +61,7 @@ public class PolynomialFunction extends AbstractGaussJordanFunction {
 		return "Polynomial fit not yet implemented";
 	}
 
-	/**
-	 * Test of polynomial fit
-	 * 
-	 * @param args
-	 */
+	/* Test of polynomial fit */
 	public static void main(final String args[]) {
 
 		final PolynomialFunction function = new PolynomialFunction(1);

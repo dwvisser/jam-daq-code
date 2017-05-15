@@ -139,8 +139,6 @@ public final class Action {
 
     /**
      * Master constructor has no broadcaster.
-     * @param disp
-     *            the histogram displayer
      * @param console
      *            Jam's console component
      */
@@ -191,9 +189,6 @@ public final class Action {
         }
     }
 
-    /**
-     * @param currentPlot
-     */
     private void areaCommandPresent() {
         final PlotContainer currentPlot = plotAccessor.getPlotContainer();
         if (clicks.isEmpty()) {
@@ -464,9 +459,6 @@ public final class Action {
         }
     }
 
-    /**
-     * @param currentPlot
-     */
     private void updateSelectedAreaForClick(final PlotContainer currentPlot) {
         if (clicks.isEmpty()) {
             synchronized (cursorBin) {
@@ -498,13 +490,6 @@ public final class Action {
         done();
     }
 
-    /**
-     * @param currentPlot
-     * @param hist
-     * @param fwhm
-     * @param centroidError
-     * @param centroid
-     */
     private void getCalibratedPeakStatistics(final PlotContainer currentPlot,
             final AbstractHistogram hist, final double[] fwhm,
             final double[] centroidError, final double[] centroid) {
@@ -662,17 +647,6 @@ public final class Action {
         done();
     }
 
-    /**
-     * @param currentPlot
-     * @param hist
-     * @param netArea
-     * @param netAreaError
-     * @param fwhm
-     * @param centroidError
-     * @param centroid
-     * @param channelBackground
-     * @param crt
-     */
     private void handleClick6(final PlotContainer currentPlot,
             final AbstractHistogram hist) {
         final double[] netArea = new double[1];
@@ -763,10 +737,6 @@ public final class Action {
         done();
     }
 
-    /**
-     * @param currentPlot
-     * @param crt
-     */
     private void markClick1inUI(final PlotContainer currentPlot) {
         final String crt = "\n\t";
         if (currentPlot.getDimensionality() == 1) {
@@ -778,10 +748,6 @@ public final class Action {
         }
     }
 
-    /**
-     * @param currentPlot
-     * @param bin1
-     */
     private void markClick2inUI(final PlotContainer currentPlot, final Bin bin1) {
         if (currentPlot.getDimensionality() == 1) {
             currentPlot.markArea(bin1, cursorBin);
@@ -792,9 +758,6 @@ public final class Action {
         }
     }
 
-    /**
-     * @param currentPlot
-     */
     private void markClick3inUI(final PlotContainer currentPlot) {
         if (currentPlot.getDimensionality() == 1) {
             textOut.messageOut(" and " + cursorBin.getX() + S_TO);
@@ -805,10 +768,6 @@ public final class Action {
         }
     }
 
-    /**
-     * @param currentPlot
-     * @param bin1
-     */
     private void markClick4inUI(final PlotContainer currentPlot, final Bin bin1) {
         if (currentPlot.getDimensionality() == 1) {
             currentPlot.markArea(bin1, cursorBin);
@@ -820,10 +779,6 @@ public final class Action {
         }
     }
 
-    /**
-     * @param currentPlot
-     * @param crt
-     */
     private void markClick5inUI(final PlotContainer currentPlot) {
         final String crt = "\n\t";
         if (currentPlot.getDimensionality() == 1) {
@@ -836,10 +791,6 @@ public final class Action {
         }
     }
 
-    /**
-     * @param currentPlot
-     * @param bin4
-     */
     private void markClick6inUI(final PlotContainer currentPlot, final Bin bin4) {
         if (currentPlot.getDimensionality() == 1) {
             currentPlot.markArea(bin4, cursorBin);
@@ -918,10 +869,6 @@ public final class Action {
         }
     }
 
-    /**
-     * Overlay a histogram
-     * @param hist
-     */
     private void overlay(final List<Double> hist) {
         if (!commandPresent) {
             cursorCommand = false;

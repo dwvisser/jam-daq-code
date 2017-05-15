@@ -18,15 +18,11 @@ public final class HistogramType {
 	/**
 	 * Value of histogram type for one dimensional <code>double</code>
 	 * histograms.
-	 * 
-	 * @see #getType()
 	 */
 	public static final HistogramType ONE_D_DOUBLE = new HistogramType(2);
 
 	/**
 	 * Value of histogram type for one dimensional <code>int</code> histograms.
-	 * 
-	 * @see #getType()
 	 */
 	public static final HistogramType ONE_DIM_INT = new HistogramType(0);
 
@@ -41,15 +37,11 @@ public final class HistogramType {
 	/**
 	 * Value of histogram type for two dimensional <code>double</code>
 	 * histograms.
-	 * 
-	 * @see #getType()
 	 */
 	public static final HistogramType TWO_D_DOUBLE = new HistogramType(3);
 
 	/**
 	 * Value of histogram type for two dimensional <code>int</code> histograms.
-	 * 
-	 * @see #getType()
 	 */
 	public static final HistogramType TWO_DIM_INT = new HistogramType(1);
 

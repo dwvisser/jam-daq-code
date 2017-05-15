@@ -46,7 +46,7 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
      * Read in an HDF file.
      * @param file
      *            a file reference or null
-     * @param load
+     * @param load group to load HDF data into (?)
      * @return whether file was read
      */
     protected final boolean loadHDFFile(final File file, final Group load) {

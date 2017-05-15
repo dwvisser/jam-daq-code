@@ -228,11 +228,6 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 
 	}
 
-	/**
-	 * @param countsIn
-	 * @param countsOut
-	 * @param index
-	 */
 	private void calculateCountsInsideRange(final double[] countsIn,
 			final double[] countsOut, final int index) {
 		for (int i = mlo + 1; i <= mhi - 1; i++) {
@@ -244,37 +239,21 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 				* (x2hi - mhi + BIN_CENTER_OFFSET) / (x2hi - x2lo);
 	}
 
-	/**
-	 * @param interceptIn
-	 * @param slopeIn
-	 * @param interceptOut
-	 * @param slopeOut
-	 * @param npts2
-	 * @param index
-	 */
 	private void calculateIntermediateValues(final double interceptIn,
 			final double slopeIn, final double interceptOut,
 			final double slopeOut, final int npts2, final int index) {
-		final double e1lo = interceptIn + slopeIn * (index - BIN_CENTER_OFFSET); // energy
-																					// at
-		// lower
-		// edge
-		// of
-		// spec#1
-		// channel
-		final double e1hi = interceptIn + slopeIn * (index + BIN_CENTER_OFFSET); // energy
-																					// at
-		// upper
-		// edge
-		// of
-		// spec#1
-		// channel
-		x2lo = (e1lo - interceptOut) / slopeOut; // fractional chan#2
-		// corresponding to
-		// e1lo
-		x2hi = (e1hi - interceptOut) / slopeOut; // fractional chan#2
-		// corresponding to
-		// e1hi
+		// energy at lower edge of spec#1 channel
+		final double e1lo = interceptIn + slopeIn * (index - BIN_CENTER_OFFSET);
+
+        // energy at upper edge of spec#1 channel
+		final double e1hi = interceptIn + slopeIn * (index + BIN_CENTER_OFFSET);
+
+        // fractional chan#2 corresponding to e1lo
+		x2lo = (e1lo - interceptOut) / slopeOut;
+
+		// fractional chan#2 corresponding to e1hi
+		x2hi = (e1hi - interceptOut) / slopeOut;
+
 		mlo = (int) (x2lo + BIN_CENTER_OFFSET);
 		mhi = (int) (x2hi + BIN_CENTER_OFFSET);
 		mlo = Math.max(mlo, 0);

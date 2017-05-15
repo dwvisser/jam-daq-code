@@ -198,12 +198,6 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
         disDrr.close();
     }
 
-    /**
-     * @param parLabelb
-     * @param titleb
-     * @param disDrr
-     * @throws IOException
-     */
     private void readDrrInfo(final byte[] parLabelb, final byte[] titleb,
             final DataInputStream disDrr) throws IOException {
         /* Histogram info in Drr file */
@@ -290,10 +284,6 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
         }
     }
 
-    /**
-     * @param disDrr
-     * @throws IOException
-     */
     private void readIgnoredSection(final DataInputStream disDrr)
             throws IOException {
         readInt(disDrr); // space nothing defined
@@ -305,9 +295,6 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
         readInt(disDrr); // seconds
     }
 
-    /**
-     * @param numHistByte
-     */
     private void getCorrectByteOrder(final byte[] numHistByte) {
         if (!isCorrectByteOrder(numberUtilities.bytesToInt(numHistByte, 0,
                 byteOrder))) {
@@ -342,15 +329,6 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
         }
     }
 
-    /**
-     * @param fileHis
-     * @param index
-     * @param name
-     * @param number
-     * @param wordCh
-     * @param sizeX
-     * @throws IOException
-     */
     private void read1dHistogram(final RandomAccessFile fileHis,
             final int index, final String name, final int number,
             final int wordCh, final int sizeX) throws IOException {
@@ -386,16 +364,6 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
         hist.setNumber(number);
     }
 
-    /**
-     * @param fileHis
-     * @param index
-     * @param name
-     * @param number
-     * @param wordCh
-     * @param sizeX
-     * @param sizeY
-     * @throws IOException
-     */
     private void read2dHistogram(final RandomAccessFile fileHis,
             final int index, final String name, final int number,
             final int wordCh, final int sizeX, final int sizeY)

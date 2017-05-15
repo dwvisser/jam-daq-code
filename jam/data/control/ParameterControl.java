@@ -146,12 +146,6 @@ public final class ParameterControl extends AbstractControl {
 		return allValid;
 	}
 
-	/**
-	 * @param name
-	 * @param listNotLoaded
-	 * @param saveProperties
-	 * @return
-	 */
 	private String copyPropertiesToParameters(final String name,
 			final StringBuilder listNotLoaded, final Properties saveProperties) {
 		// copy from properties to parameters
@@ -172,19 +166,11 @@ public final class ParameterControl extends AbstractControl {
 		return rval;
 	}
 
-	/**
-	 * @param count
-	 * @param currentParameter
-	 */
 	private JLabel createParameterLabel(final DataParameter currentParameter) {
 		return new JLabel(currentParameter.getName().trim(),
 				SwingConstants.RIGHT);
 	}
 
-	/**
-	 * @param count
-	 * @param pParam
-	 */
 	private JPanel createParameterPanel() {
 		return new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 	}

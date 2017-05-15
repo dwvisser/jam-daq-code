@@ -114,10 +114,6 @@ public abstract class AbstractL002HeaderReader extends
         return rval;
     }
 
-    /**
-     * @param exception
-     * @throws EventException
-     */
     protected void handleGeneralException(final Exception exception)
             throws EventException {
         status = EventInputStatus.UNKNOWN_WORD;
@@ -125,9 +121,6 @@ public abstract class AbstractL002HeaderReader extends
                 + ".readEvent() parameter = " + parameter, exception);
     }
 
-    /**
-	 * 
-	 */
     protected void handleEndOfFileException() {
         // we got to the end of a file or stream
         status = EventInputStatus.END_FILE;

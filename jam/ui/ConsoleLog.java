@@ -208,9 +208,6 @@ public final class ConsoleLog implements MessageHandler {
 		}
 	}
 
-	/**
-	 * @param mbuff
-	 */
 	private void appendBuffer(final StringBuffer mbuff) {
 		try {
 			doc.insertString(doc.getLength(), mbuff.toString(),

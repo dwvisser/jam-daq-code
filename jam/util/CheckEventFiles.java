@@ -1,4 +1,4 @@
-/***************************************************************
+/*--------------------------------------------------------------
  * Nuclear Simulation Java Class Libraries
  * Copyright (C) 2003 Yale University
  * 
@@ -20,7 +20,7 @@
  * You should have received a copy of the University of 
  * Illinois/NCSA Open Source License along with this program; if 
  * not, see http://www.opensource.org/
- **************************************************************/
+ -------------------------------------------------------------*/
 package jam.util;
 
 import injection.GuiceInjector;
@@ -172,12 +172,6 @@ public final class CheckEventFiles {
         }
     }
 
-    /**
-     * @param SCALER_HEADER
-     * @param csvStream
-     * @param fromStream
-     * @throws IOException
-     */
     private void processAllScalerBlocks(final FileWriter csvStream,
             final DataInputStream fromStream) throws IOException {
         final int SCALER_HEADER = 0x01cccccc;
@@ -199,15 +193,6 @@ public final class CheckEventFiles {
         }
     }
 
-    /**
-     * @param csvStream
-     * @param fromStream
-     * @param blockNum
-     * @param lastVal
-     * @param val
-     * @param numScalers
-     * @throws IOException
-     */
     private void processScalerBlock(final FileWriter csvStream,
             final DataInputStream fromStream, final int blockNum,
             final List<Integer> lastVal, final List<Integer> val,
@@ -227,11 +212,6 @@ public final class CheckEventFiles {
         }
     }
 
-    /**
-     * @param lastVal
-     * @param val
-     * @param numScalers
-     */
     private void initializeLists(final List<Integer> lastVal,
             final List<Integer> val, final int numScalers) {
         val.clear();

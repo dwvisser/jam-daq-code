@@ -42,19 +42,12 @@ public final class ImpExpASCIITest {// NOPMD
 
     private transient File temp1, temp2;
 
-    /**
-     * @param writer
-     * @throws IOException
-     */
     private void appendDataAndClose(final FileWriter writer)
             throws IOException {
         writer.write(DATA);
         writer.close();
     }
 
-    /**
-     * @param hist
-     */
     private void assertCorrectHistogramProperties(final AbstractHistogram hist) {
         assertNotNull("Expected to read a histogram.", hist);
         assertEquals("Expecting a certain number of channels.", HIST_SIZE,

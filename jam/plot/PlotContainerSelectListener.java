@@ -9,7 +9,7 @@ package jam.plot;
 public interface PlotContainerSelectListener {
 
 	/**
-	 * @see PlotSelectListener#plotSelected(Object)
+	 * @see PlotSelectListener#plotSelected(PlotContainer)
 	 */
 	void plotSelected();
 

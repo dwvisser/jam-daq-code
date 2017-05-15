@@ -186,10 +186,6 @@ public class Combine extends AbstractManipulation implements Observer {
 		pack();
 	}
 
-	/**
-	 * @param pradio
-	 * @param cbg
-	 */
 	private void addNormCheckbox(final JPanel pradio, final ButtonGroup cbg) {
 		cnorm = new JCheckBox("Renormalize", true);
 		cnorm.addItemListener(event -> enableInputWith(false));
@@ -251,12 +247,6 @@ public class Combine extends AbstractManipulation implements Observer {
 		}
 	}
 
-	/**
-	 * @param in1
-	 * @param in2
-	 * @param out
-	 * @return
-	 */
 	private int getNumChannels(final double[] in1, final double[] in2,
 			final double[] out) {
 		// Minimum size of both out an in1
@@ -268,9 +258,6 @@ public class Combine extends AbstractManipulation implements Observer {
 		return numChannels;
 	}
 
-	/**
-	 * @param hfrom1
-	 */
 	private void assignDestinationHistogram(final AbstractHist1D hfrom1) {
 		// read in information for to histogram
 		final String name = (String) cto.getSelectedItem();
@@ -286,16 +273,6 @@ public class Combine extends AbstractManipulation implements Observer {
 		}
 	}
 
-	/**
-	 * @param in1
-	 * @param err1
-	 * @param in2
-	 * @param err2
-	 * @param out
-	 * @param errOut
-	 * @param numChannels
-	 * @return
-	 */
 	private String divide(final double[] in1, final double[] err1,
 			final double[] in2, final double[] err2, final double[] out,
 			final double[] errOut, final int numChannels) {
@@ -311,16 +288,6 @@ public class Combine extends AbstractManipulation implements Observer {
 		return operation;
 	}
 
-	/**
-	 * @param in1
-	 * @param err1
-	 * @param in2
-	 * @param err2
-	 * @param out
-	 * @param errOut
-	 * @param numChannels
-	 * @return
-	 */
 	private String multiply(final double[] in1, final double[] err1,
 			final double[] in2, final double[] err2, final double[] out,
 			final double[] errOut, final int numChannels) {
@@ -334,16 +301,6 @@ public class Combine extends AbstractManipulation implements Observer {
 		return operation;
 	}
 
-	/**
-	 * @param in1
-	 * @param err1
-	 * @param in2
-	 * @param err2
-	 * @param out
-	 * @param errOut
-	 * @param numChannels
-	 * @return
-	 */
 	private String subtract(final double[] in1, final double[] err1,
 			final double[] in2, final double[] err2, final double[] out,
 			final double[] errOut, final int numChannels) {
@@ -357,16 +314,6 @@ public class Combine extends AbstractManipulation implements Observer {
 		return operation;
 	}
 
-	/**
-	 * @param in1
-	 * @param err1
-	 * @param in2
-	 * @param err2
-	 * @param out
-	 * @param errOut
-	 * @param numChannels
-	 * @return
-	 */
 	private String add(final double[] in1, final double[] err1,
 			final double[] in2, final double[] err2, final double[] out,
 			final double[] errOut, final int numChannels) {
@@ -380,14 +327,6 @@ public class Combine extends AbstractManipulation implements Observer {
 		return operation;
 	}
 
-	/**
-	 * @param in1
-	 * @param err1
-	 * @param out
-	 * @param errOut
-	 * @param numChannels
-	 * @return
-	 */
 	private String normalize(final double[] in1, final double[] err1,
 			final double[] out, final double[] errOut, final int numChannels) {
 		String operation;
@@ -476,7 +415,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		}
 	}
 
-	protected boolean validateFactors() throws DataException {
+	private void validateFactors() throws DataException {
 		try {// read information for first histogram
 			fac1 = Double.parseDouble(ttimes1.getText().trim());
 		} catch (NumberFormatException nfe) {
@@ -487,7 +426,6 @@ public class Combine extends AbstractManipulation implements Observer {
 		} catch (NumberFormatException nfe) {
 			throw new DataException("Second factor is not a valid number.", nfe);
 		}
-		return true;
 	}
 
 }

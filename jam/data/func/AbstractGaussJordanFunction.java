@@ -153,12 +153,6 @@ public abstract class AbstractGaussJordanFunction extends
 		pivot(alpha, columnIndices, rowIndices);
 	}
 
-	/**
-	 * @param alpha
-	 * @param alphaLength
-	 * @param columnIndices
-	 * @param rowIndices
-	 */
 	private void pivot(double[][] alpha, final int[] columnIndices,
 			final int[] rowIndices) {
 		final int alphaLength = alpha.length;
@@ -173,12 +167,6 @@ public abstract class AbstractGaussJordanFunction extends
 		}
 	}
 
-	/**
-	 * @param alpha
-	 * @param beta
-	 * @param alphaLength
-	 * @param column
-	 */
 	private void normalizeToPivotAndSubtract(double[][] alpha,
 			final double[][] beta, final int column) {
 		final double pivinv = 1.0 / alpha[column][column];

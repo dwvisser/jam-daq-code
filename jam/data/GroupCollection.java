@@ -20,7 +20,7 @@ final class GroupCollection implements NameValueCollection<Group>,
 	/**
 	 * Clear a group, removes it
 	 * 
-	 * @param group
+	 * @param group to remove
 	 */
 	public void remove(final Group group) {
 		this.map.remove(group.getName());

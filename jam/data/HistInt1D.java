@@ -20,12 +20,7 @@ public final class HistInt1D extends AbstractHist1D {
 	/**
 	 * Create a new 1-d <code>Histogram</code> with the counts known and with
 	 * axes labeled.
-	 * 
-	 * @param name
-	 *            unique name of histogram, should be limited to
-	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
-	 *            .hdf files as the unique identifier for reloading the
-	 *            histogram
+	 *
 	 * @param title
 	 *            lengthier title of histogram, displayed on plot
 	 * @param axisLabelX
@@ -34,8 +29,6 @@ public final class HistInt1D extends AbstractHist1D {
 	 *            label displayed for y-axis on plot
 	 * @param countsIn
 	 *            array of counts to initialize with
-	 * @param group
-	 *            that this histogram belongs to
 	 */
 	HistInt1D(final String title, final String axisLabelX,
 			final String axisLabelY, final int[] countsIn) {

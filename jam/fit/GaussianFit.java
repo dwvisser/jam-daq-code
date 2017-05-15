@@ -65,29 +65,25 @@ public final class GaussianFit extends AbstractNonLinearFit {
 		area = new Parameter<>(AREA, Parameter.DOUBLE, Parameter.FIX,
 				Parameter.ESTIMATE);
 		area.setEstimate(true);
-		/**
-		 * function <code>Parameter</code> --centroid of peak
-		 */
+
+		/* function <code>Parameter</code> --centroid of peak */
 		centroid = new Parameter<>(CENTROID, Parameter.DOUBLE,
 				Parameter.FIX, Parameter.MOUSE);
 		width = new Parameter<>(WIDTH, Parameter.DOUBLE, Parameter.FIX,
 				Parameter.ESTIMATE);
 		width.setEstimate(true);
-		/**
-		 * function <code>Parameter</code> --constant background term
-		 */
+
+		/* function <code>Parameter</code> --constant background term */
 		paramA = new Parameter<>("A", Parameter.DOUBLE, Parameter.FIX,
 				Parameter.ESTIMATE);
 		paramA.setEstimate(true);
-		/**
-		 * function <code>Parameter</code> --linear background term
-		 */
+
+		/* function <code>Parameter</code> --linear background term */
 		final Parameter<Double> paramB = new Parameter<>("B",
 				Parameter.FIX);
 		paramB.setFixed(true);
-		/**
-		 * function <code>Parameter</code> --quadratic background term
-		 */
+
+		/* function <code>Parameter</code> --quadratic background term */
 		final Parameter<Double> paramC = new Parameter<>("C",
 				Parameter.FIX);
 		paramC.setFixed(true);
@@ -207,8 +203,8 @@ public final class GaussianFit extends AbstractNonLinearFit {
 	 * @param parName
 	 *            the name of the parameter to differentiate with respect to
 	 * @param val
-	 *            value to evalueate at
-	 * @return df( <code>x</code> )/d( <code>parameterName</code>) at x
+	 *            value to evaluate at
+	 * @return df(x)/d(parameterName) at x
 	 */
 	@Override
 	public double derivative(final double val, final String parName) {

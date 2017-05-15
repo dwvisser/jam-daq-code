@@ -322,7 +322,7 @@ public final class Session implements Observer {
      * <code>writeEvent()</code>
      * @param eventsOut
      *            where to write "pre-sort" events
-     * @see jam.sort.AbstractSortRoutine#writeEvent(int [])
+     * @see jam.sort.AbstractSortRoutine#writeEvent(int[])
      * @throws IllegalStateException
      *             if <code>setupOffline()</code> hasn't been called yet
      */
@@ -376,8 +376,6 @@ public final class Session implements Observer {
      * <code>AbstractSortRoutine</code> to use for sorting, and references to
      * the <code>EventInputStream</code> and <code>EventOutputStream</code> to
      * use.
-     * @param classPath
-     *            the path that sort routines get loaded from
      * @param sortName
      *            fully qualified with all package names in the standard java
      *            "dot" notation, e.g., <code>"sort.Calorimeter"</code> for the
@@ -486,8 +484,6 @@ public final class Session implements Observer {
 
         /**
          * Stop online acquisition.
-         * @param script
-         *            TODO
          */
         public void stop() {
             Session.this.runControl.stopAcq();

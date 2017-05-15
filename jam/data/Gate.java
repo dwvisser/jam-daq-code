@@ -93,7 +93,7 @@ public final class Gate implements DataElement {
 
     /**
      * Gate is a valid gate
-     * @param gate
+     * @param gate gate of interest
      * @return <code>true</code> if this gate remains in the name mapping
      */
     public static boolean isValid(final Gate gate) {

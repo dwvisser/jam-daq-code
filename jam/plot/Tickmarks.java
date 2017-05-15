@@ -37,8 +37,8 @@ final class Tickmarks {
 	 * an lower limit, upper limit, and scale (Log or Linear) and histogram type
 	 * either one or 2 d
 	 */
-	protected int[] getTicks(final int lowerLimit, final int upperLimit,
-			final Scale scale, final Type type) {
+	int[] getTicks(final int lowerLimit, final int upperLimit,
+				   final Scale scale, final Type type) {
 		int[] ticks = new int[0];
 		if (scale == Scale.LINEAR) {
 			// for now major and minor are the same
@@ -211,9 +211,6 @@ final class Tickmarks {
 		return result;
 	}
 
-	/**
-	 * @param decadeMin
-	 */
 	private void getCountInDecadeMin(final int decadeMin) {
 		countInDecadeMin = 1;
 		for (int i = 0; i < decadeMin; i++) {

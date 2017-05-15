@@ -414,8 +414,8 @@ public abstract class AbstractData {
     }
 
     /**
-     * Set the reference which is 2 bytes
-     * @param newref
+     * Set the reference.
+     * @param newref 2 bytes
      */
     protected final void setRef(final short newref) {
         // Remove object with old ref

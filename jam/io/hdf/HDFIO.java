@@ -240,12 +240,6 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
-	/**
-	 * @param infile
-	 * @param mode
-	 * @param existingGrps
-	 * @param message
-	 */
 	private void createOutputMessage(final File infile,
 			final FileOpenMode mode, final List<Group> existingGrps,
 			final StringBuilder message) {
@@ -271,9 +265,6 @@ public final class HDFIO implements DataIO {
 		appendDataCounts(message);
 	}
 
-	/**
-	 * @param message
-	 */
 	private void appendDataCounts(final StringBuilder message) {
 		message.append(" (");
 		message.append(groupCount).append(" groups");
@@ -350,15 +341,7 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
-	/**
-	 * Convert a the HDF DataObjects to Jam objects
-	 * 
-	 * @param mode
-	 * @param existingGroupList
-	 * @param histAttributeList
-	 * @param fileName
-	 * @throws HDFException
-	 */
+	/* Convert the HDF DataObjects to Jam objects */
 	private void convertHDFToJam(final FileOpenMode mode,
 			final String fileName, final List<Group> existingGroupList,
 			final List<HistogramAttributes> histAttributeList)
@@ -402,13 +385,6 @@ public final class HDFIO implements DataIO {
 		} // Loop group end
 	}
 
-	/**
-	 * @param mode
-	 * @param histAttributeList
-	 * @param currentGroup
-	 * @param histVGroup
-	 * @throws HDFException
-	 */
 	private void loadHistogram(final FileOpenMode mode,
 			final List<HistogramAttributes> histAttributeList,
 			final Group currentGroup, final VirtualGroup histVGroup)
@@ -424,12 +400,6 @@ public final class HDFIO implements DataIO {
 		} // End Load gates and calibration
 	}
 
-	/**
-	 * @param mode
-	 * @param histVGroup
-	 * @param hist
-	 * @throws HDFException
-	 */
 	private void loadGatesAndCalibration(final FileOpenMode mode,
 			final VirtualGroup histVGroup, final AbstractHistogram hist)
 			throws HDFException {
@@ -445,12 +415,6 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
-	/**
-	 * @param mode
-	 * @param hist
-	 * @param gateList
-	 * @throws HDFException
-	 */
 	private void countGates(final FileOpenMode mode,
 			final AbstractHistogram hist, final List<VirtualGroup> gateList)
 			throws HDFException {
@@ -462,14 +426,6 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
-	/**
-	 * @param mode
-	 * @param fileName
-	 * @param existingGroupList
-	 * @param histAttributeList
-	 * @param currentVGroup
-	 * @return
-	 */
 	private Group getCurrentGroup(final FileOpenMode mode,
 			final String fileName, final List<Group> existingGroupList,
 			final List<HistogramAttributes> histAttributeList,
@@ -508,7 +464,7 @@ public final class HDFIO implements DataIO {
 	 *            list of histogram attributes?
 	 * @param fileName
 	 *            ???
-	 * @throws HDFException
+	 * @throws HDFException if a problem occurs
 	 */
 	private void convertHDFToJamOriginal(final FileOpenMode mode,
 			final String fileName, final List<Group> groups,
@@ -550,9 +506,6 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
-	/**
-	 * @param currentGroup
-	 */
 	private void setFirstLoadedGroupIfNull(final Group currentGroup) {
 		/* Keep track of first loaded group */
 		if (firstLoadedGroup == null) {
@@ -560,15 +513,7 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
-	/**
-	 * Convert Jam objects to HDF DataObjects
-	 * 
-	 * @param groups
-	 * @param histList
-	 * @param writeData
-	 * @param wrtSettings
-	 * @param suppressEmpty
-	 */
+	/* Convert Jam objects to HDF DataObjects */
 	private void convertJamToHDF(final List<Group> groups,
 			final List<AbstractHistogram> histList, final boolean writeData,
 			final boolean wrtSettings, final boolean suppressEmpty) {
@@ -626,12 +571,6 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
-	/**
-	 * @param globalScaler
-	 * @param group
-	 * @param vgGroup
-	 * @param scalerList
-	 */
 	private void addScalers(final VirtualGroup globalScaler, final Group group,
 			final VirtualGroup vgGroup, final List<Scaler> scalerList) {
 		if (!scalerList.isEmpty()) {
@@ -644,11 +583,6 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
-	/**
-	 * @param globalScaler
-	 * @param group
-	 * @param vddScalers
-	 */
 	private void addScalers(final VirtualGroup globalScaler, final Group group,
 			final VDataDescription vddScalers) {
 		if (group == SORT_GROUP_GETTER.getSortGroup()) {
@@ -657,12 +591,6 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
-	/**
-	 * @param wrtSettings
-	 * @param globalGates
-	 * @param hist
-	 * @param histVGroup
-	 */
 	private void addGates(final boolean wrtSettings,
 			final VirtualGroup globalGates, final AbstractHistogram hist,
 			final VirtualGroup histVGroup) {
@@ -672,12 +600,6 @@ public final class HDFIO implements DataIO {
 		} // end loop gates
 	}
 
-	/**
-	 * @param writeData
-	 * @param wrtSettings
-	 * @param hist
-	 * @param histVGroup
-	 */
 	private void addCalibration(final boolean writeData,
 			final boolean wrtSettings, final AbstractHistogram hist,
 			final VirtualGroup histVGroup) {
@@ -688,12 +610,6 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
-	/**
-	 * @param wrtSettings
-	 * @param globalGates
-	 * @param histVGroup
-	 * @param gate
-	 */
 	private void addGates(final boolean wrtSettings,
 			final VirtualGroup globalGates, final VirtualGroup histVGroup,
 			final Gate gate) {
@@ -706,10 +622,6 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
-	/**
-	 * @param histVGroup
-	 * @param calFunc
-	 */
 	private void addCalibration(final VirtualGroup histVGroup,
 			final AbstractCalibrationFunction calFunc) {
 		if (!(calFunc instanceof NoFunction)) {
@@ -719,12 +631,6 @@ public final class HDFIO implements DataIO {
 		}
 	}
 
-	/**
-	 * @param writeData
-	 * @param hist
-	 * @param histVGroup
-	 * @param histDefined
-	 */
 	private void convertHistogram(final boolean writeData,
 			final AbstractHistogram hist, final VirtualGroup histVGroup,
 			final boolean histDefined) {

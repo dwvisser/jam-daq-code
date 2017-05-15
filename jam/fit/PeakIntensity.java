@@ -129,15 +129,6 @@ public class PeakIntensity extends AbstractFit {
 		return "Done.";
 	}
 
-	/**
-	 * @param sum
-	 * @param sumX
-	 * @param sumY
-	 * @param chLow
-	 * @param chHigh
-	 * @param peakLow
-	 * @param peakHigh
-	 */
 	private void fitSlopedBackground(final int chLow, final int chHigh,
 			final int peakLow, final int peakHigh) {
 		double var;
@@ -174,14 +165,6 @@ public class PeakIntensity extends AbstractFit {
 		paramB.setValue(bkgdSlope, bkgdSlopeError);
 	}
 
-	/**
-	 * @param sumY
-	 * @param sumYY
-	 * @param chLow
-	 * @param chHigh
-	 * @param peakLow
-	 * @param peakHigh
-	 */
 	private void fitFlatBackground(final int chLow, final int chHigh,
 			final int peakLow, final int peakHigh) {
 		double sumY = 0.0;

@@ -87,7 +87,7 @@ final class SortChooser extends JComboBox<Class<? extends AbstractSortRoutine>> 
 	/**
 	 * Sets whether to use the default classpath or a user-specified one.
 	 * 
-	 * @param isDefault
+	 * @param isDefaultPath
 	 *            <code>true</code> to use the default classpath
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -116,7 +116,7 @@ final class SortChooser extends JComboBox<Class<? extends AbstractSortRoutine>> 
 	/**
 	 * Sets the class path for loading sort routines.
 	 * 
-	 * @param file
+	 * @param inPath
 	 *            path to classes
 	 */
 	protected void loadChooserClassPath(final File inPath) {

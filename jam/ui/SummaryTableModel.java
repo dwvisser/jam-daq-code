@@ -96,7 +96,7 @@ final class SummaryTableModel implements TableModel {
 	/**
 	 * Create the list of data elements needed given a group
 	 * 
-	 * @param group
+	 * @param group group to inspect
 	 */
 	private void createGroupDataList(final Group group) {
 		if (group != null) {
@@ -122,7 +122,7 @@ final class SummaryTableModel implements TableModel {
 	/**
 	 * Fire table event to listeners
 	 * 
-	 * @param tableModelEvent
+	 * @param tableModelEvent to fire
 	 */
 	private void fireTableEvent(final TableModelEvent tableModelEvent) {
 		for (TableModelListener tml : listeners) {
@@ -248,9 +248,9 @@ final class SummaryTableModel implements TableModel {
 	/**
 	 * Set options of which data elements to show
 	 * 
-	 * @param showScalers
-	 * @param showHistograms
-	 * @param showGates
+	 * @param showScalers whether to show scalers
+	 * @param showHistograms whether to show histograms
+	 * @param showGates whether to show gates
 	 */
 	public void setOptions(final boolean showScalers,
 			final boolean showHistograms, final boolean showGates) {

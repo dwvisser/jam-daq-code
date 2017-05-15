@@ -54,8 +54,6 @@ public final class SimpleRingBuffer implements RingBuffer {
 	 * 
 	 * @param inBuffer
 	 *            incoming data
-	 * @exception RingFullException
-	 *                thrown when the ring is too full to be written to
 	 */
 	public boolean tryPutBuffer(final byte[] inBuffer) {
 		boolean success = false;

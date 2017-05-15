@@ -1,6 +1,3 @@
-/**
- * 
- */
 package jam.plot;
 
 import jam.data.AbstractHistogram;

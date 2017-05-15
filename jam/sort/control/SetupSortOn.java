@@ -398,12 +398,6 @@ public final class SetupSortOn extends AbstractSetup {
                 .broadcast(jam.global.BroadcastEvent.Command.HISTOGRAM_NEW);
     }
 
-    /**
-     * @param dispose
-     * @throws JamException
-     * @throws IOException
-     * @throws SortException
-     */
     private void setup(final boolean dispose) throws CommunicationsException,
             JamException, IOException, SortException {
         final String exptName = textExpName.getText().trim();

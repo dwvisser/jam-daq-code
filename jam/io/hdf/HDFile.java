@@ -37,7 +37,7 @@ public final class HDFile extends RandomAccessFile {
 	/**
 	 * Check if a file is an HDF file
 	 * 
-	 * @param file
+	 * @param file file of interest
 	 * @return true if file is an hdf file
 	 */
 	protected static boolean isHDFFile(final File file) {
@@ -287,14 +287,6 @@ public final class HDFile extends RandomAccessFile {
 		}
 	}
 
-	/**
-	 * @param tag
-	 * @param ref
-	 * @param offset
-	 * @param length
-	 * @throws HDFException
-	 * @throws IOException
-	 */
 	private void loadDataObject(final short tag, final short ref,
 			final int offset, final int length) throws HDFException,
 			IOException {
@@ -308,10 +300,6 @@ public final class HDFile extends RandomAccessFile {
 		}
 	}
 
-	/**
-	 * @return
-	 * @throws IOException
-	 */
 	private int getNumberOfSteps() throws IOException {
 		int numObjSteps;
 		if (lazyLoadData) {

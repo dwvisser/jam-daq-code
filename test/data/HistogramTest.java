@@ -1,14 +1,6 @@
 package test.data;
 
-import jam.data.AbstractHistogram;
-import jam.data.DataBase;
-import jam.data.Factory;
-import jam.data.Gate;
-import jam.data.Group;
-import jam.data.HistDouble1D;
-import jam.data.HistDouble2D;
-import jam.data.HistInt1D;
-import jam.data.HistInt2D;
+import jam.data.*;
 import jam.data.func.LinearFunction;
 import junit.framework.Assert;
 
@@ -105,10 +97,6 @@ public final class HistogramTest {// NOPMD
         Assert.assertTrue("Expected calibration.", hist1.isCalibrated());
     }
 
-    /**
-     * @param area1before
-     * @param should
-     */
     private void assertAreaDoubled(final AbstractHistogram histogram,
             final double area1before) {
         final String should = "should be double before.";
@@ -118,7 +106,8 @@ public final class HistogramTest {// NOPMD
 
     /**
      * Test for <code>getGates</code>.
-     * @see AbstractHistogram#getGates
+     * @see AbstractHistogram#getGateCollection
+     * @see GateCollection#getGates()
      */
     @Test
     public void testGetGates() {
@@ -147,7 +136,8 @@ public final class HistogramTest {// NOPMD
 
     /**
      * Test for <code>hasGate(Gate)</code>.
-     * @see AbstractHistogram#hasGate(Gate)
+     * @see AbstractHistogram#getGateCollection()
+     * @see jam.data.GateCollection#hasGate(DataElement)
      */
     @Test
     public void testHasGate() {

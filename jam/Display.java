@@ -33,8 +33,6 @@ public class Display extends JPanel implements Observer {
 	 *            plot panel
 	 * @param summaryTable
 	 *            summary panel
-	 * @param broadcaster
-	 *            broadcasts state changes we listen for
 	 */
 	@Inject
 	public Display(final PlotDisplay plotDisplay,

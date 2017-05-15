@@ -13,10 +13,6 @@ public abstract class AbstractHist2D extends AbstractHistogram {
 	/**
 	 * Called by implementing subclasses.
 	 * 
-	 * @param group
-	 *            that this histogram will belong to
-	 * @param name
-	 *            unique
 	 * @param type
 	 *            of counts
 	 * @param sizeX

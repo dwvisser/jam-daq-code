@@ -95,7 +95,7 @@ final class Painter {
 	/**
 	 * Set the layout type
 	 * 
-	 * @param type
+	 * @param type type of graphics layout
 	 */
 	protected void setLayout(final GraphicsLayout.Type type) {
 		graphLayout = GraphicsLayout.getLayout(type);
@@ -169,9 +169,6 @@ final class Painter {
 	 *            the viewable size of the canvas in pixels
 	 * @param limits
 	 *            the limits of the plot
-	 * @param f
-	 *            the font for labels
-	 * 
 	 * @since Version 0.5
 	 */
 	protected void update(final Graphics graph, final Dimension newViewSize,
@@ -180,7 +177,7 @@ final class Painter {
 		synchronized (limitsLock) {
 			plotLimits = limits;
 			if (plotLimits != null) {
-				/* retrieve imformation from plotLimits object */
+				/* retrieve information from plotLimits object */
 				final int minX = plotLimits.getMinimumX();
 				final int maxX = plotLimits.getMaximumX();
 				final int minY = getMinimumY();
@@ -318,9 +315,9 @@ final class Painter {
 	}
 
 	/**
-	 * Draws the tickmarks on for a plot
+	 * Draws the tick marks on for a plot
 	 * 
-	 * @param side
+	 * @param side which side of plot
 	 * @since Version 0.5
 	 */
 	protected void drawTicks(final int side) {
@@ -340,11 +337,10 @@ final class Painter {
 	}
 
 	/**
-	 * Draws the tickmarks on the bottom side, X
+	 * Draws the tick marks on the bottom side, X
 	 * 
-	 * @param lowerLimit
-	 * @param upperLimit
-	 * @param scale
+	 * @param lowerLimit lower limit
+	 * @param upperLimit upper limit
 	 * @since Version 0.5
 	 */
 	private void ticksBottom(final int lowerLimit, final int upperLimit) {
@@ -374,11 +370,11 @@ final class Painter {
 	}
 
 	/**
-	 * Draws the tickmarks on for the left side, Y
+	 * Draws the tick marks on for the left side, Y
 	 * 
-	 * @param lowerLimit
-	 * @param upperLimit
-	 * @param scale
+	 * @param lowerLimit lower limit
+	 * @param upperLimit upper limit
+	 * @param scale linear or log
 	 * @since Version 0.5
 	 */
 	private void ticksLeft(final int lowerLimit, final int upperLimit,
@@ -421,7 +417,7 @@ final class Painter {
 	/**
 	 * Draws the tick mark Labels on for a plot
 	 * 
-	 * @param side
+	 * @param side which side of plot
 	 * @since Version 0.5
 	 */
 	protected void drawLabels(final int side) {
@@ -663,30 +659,34 @@ final class Painter {
 	/**
 	 * Plot a line graph. plot is lines segments
 	 * 
-	 * @param channel
-	 * @param counts
+	 * @param channel channel numbers
+	 * @param counts counts for channels
 	 * @since Version 0.5
 	 */
 	private void drawLineLinear(final double[] channel, final double[] counts) {
-		int lowerX = 0;
-		int upperX = 0;
+		int lowerX, upperX;
 		synchronized (limitsLock) {
 			lowerX = Math.max(plotLimits.getMinimumX(), (int) channel[0] + 1);
 			upperX = Math.min(plotLimits.getMaximumX(),
 					(int) channel[channel.length - 1]);
 		}
 		int xValue1 = toViewHorzLin(channel[0]);
-		/* check dont go beyond border */
+
+		/* check don't go beyond border */
 		int yValue1 = Math.max(toViewVertLin(counts[0]), border.top);
+
 		/* for each point draw from last line to next line */
 		for (int i = 1; i < channel.length; i++) {
 			final int xValue2 = toViewHorzLin(channel[i]);
+
 			/* could go 1 pixel too far for last i */
 			final int yValue2 = Math.max(toViewVertLin(counts[i]), border.top);
+
 			/* check we don't go beyond border */
 			if ((channel[i] >= lowerX) && (channel[i] <= upperX)) {
 				graphics2d.drawLine(xValue1, yValue1, xValue2, yValue2);
 			}
+
 			/* save start for next line segment */
 			xValue1 = xValue2;
 			yValue1 = yValue2;
@@ -770,12 +770,6 @@ final class Painter {
 		}
 	}
 
-	/**
-	 * @param minCount
-	 * @param colorThresholds
-	 * @param numberColors
-	 * @param textHeight
-	 */
 	private void drawScaleKey(final int minCount, final int[] colorThresholds,
 			final int numberColors, final int textHeight) {
 		String label = Integer.toString(minCount);

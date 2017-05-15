@@ -34,18 +34,6 @@ public class MessageSender {
      * Creates a new message sender.
      * @param console
      *            for outputting messages to the screen
-     * @param port
-     *            that we send on
-     * @param addr
-     *            that we send from
-     * @param jamport
-     *            that we send to
-     * @param jamaddr
-     *            that we send to
-     * @throws SocketException
-     *             if we can't bind to the socket
-     * @throws UnknownHostException
-     *             if an address is invalid
      */
     MessageSender(final Counter events, final Counter buffers,
             final Console console, final DatagramSocket localSocket,

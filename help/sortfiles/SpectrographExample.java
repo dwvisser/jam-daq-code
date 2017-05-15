@@ -14,8 +14,7 @@ import jam.sort.AbstractSortRoutine;
  * the January 2001 test run. Changed 10 Aug 2001 to calculate the scintillator
  * event the right way; also added gate to cathAnde
  * 
- * @author Dale Visser
- * @created March 24, 2004
+ * @author Dale Visser March 24, 2004
  * @since 26 July 2001
  */
 public final class SpectrographExample extends AbstractSortRoutine {

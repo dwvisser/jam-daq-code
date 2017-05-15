@@ -149,10 +149,6 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 		}
 	}
 
-	/**
-	 * @param input
-	 * @throws IOException
-	 */
 	private void readTypeFiveParams(int[] input) throws IOException {
 		final short size = eventsze.get(4);
 		for (int parameter = 0; parameter < size; parameter++) {
@@ -161,9 +157,6 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 		}
 	}
 
-	/**
-	 * @throws EventException
-	 */
 	private void readAndCheckBlockHeader() throws EventException {
 		if (!readBlockHeader()) {
 			eventInputStatus = EventInputStatus.END_FILE;

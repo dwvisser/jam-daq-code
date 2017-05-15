@@ -57,7 +57,8 @@ public class CI extends AbstractSortRoutine {
 	public CI(){
 		super();
 		final String NAI="NaI";
-		/** * HISTOGRAM SECTION ** */
+
+		/* HISTOGRAM SECTION */
 		hGe = createHist1D(ADC_CHANNELS,"Ge", "Germanium");
 		hNaI = createHist1D(ADC_CHANNELS, NAI);
 		hTAC = createHist1D(ADC_CHANNELS, "TAC");
@@ -69,7 +70,8 @@ public class CI extends AbstractSortRoutine {
 				"TAC--gated on NaI vs Ge");
 		hGeNaI = createHist2D(TWO_D_CHANS, "GeNaI",
 				"NaI vs. Germanium", "Germanium", NAI);
-		/** * GATE SECTION ** */
+
+		/* GATE SECTION */
 		gTAC = new Gate("TAC", hTAC);
 		/*
 		 * Monitor associated with Gate, window will show rate of new counts in
@@ -77,22 +79,23 @@ public class CI extends AbstractSortRoutine {
 		 */
 		new Monitor("TAC window", gTAC);
 		gGeNaI = new Gate("GeNaI", hGeNaI);
-		/** * SCALER SECTION ** */
+
+		/* SCALER SECTION */
 		final Scaler sClock = createScaler("Clock", 0);// (name, position in scaler unit)
 		final Scaler sBeam = createScaler("Beam", 1);
 		sGe = createScaler("Ge", 2); //Ge provides trigger
 		sAccept = createScaler("Ge Accept", 3);
 		sNaI = createScaler(NAI, 4);
-		/** * MONITOR SECTION ** */
-		/*
+
+		/* MONITOR SECTION
 		 * Monitors associated with scalers, window will return scaler rate in
-		 * Hz
-		 */
+		 * Hz */
 		new Monitor(sClock.getName(), sClock);
 		new Monitor(sBeam.getName(), sBeam);
 		new Monitor(sGe.getName(), sGe);
 		new Monitor(sAccept.getName(), sAccept);
 		new Monitor(sNaI.getName(), sNaI);
+
 		//User-defined monitor which is calculated in this sort routine
 		new Monitor(DEAD_TIME, this);
 	}
@@ -105,11 +108,10 @@ public class CI extends AbstractSortRoutine {
 		 * insert scaler block in event data every 3 seconds
 		 */
 		vmeMap.setScalerInterval(3);
-		/** * ADC CHANNELS SECTION ** */
-		/*
+
+		/* ADC CHANNELS SECTION
 		 * eventParameters, args = (slot, base address, channel, threshold
-		 * channel)
-		 */
+		 * channel) */
 		idGe = vmeMap.eventParameter(2, ADC_BASE, 0, THRESHOLDS);
 		idNaI = vmeMap.eventParameter(2, ADC_BASE, 1, THRESHOLDS);
 		idTAC = vmeMap.eventParameter(2, ADC_BASE, 2, THRESHOLDS);
@@ -135,20 +137,20 @@ public class CI extends AbstractSortRoutine {
 	 * @see AbstractSortRoutine#sort(int[])
 	 */
 	public void sort(final int[] data) {
-		/** * EXTRACT DATA FROM ARRAY ** */
+		/* EXTRACT DATA FROM ARRAY */
 		final int eGe = data[idGe];
 		final int eNaI = data[idNaI];
 		final int eTAC = data[idTAC];
 		final int ecGe = eGe >> TWO_D_FACTOR;//bit-shifts are faster than division
 		final int ecNaI = eNaI >> TWO_D_FACTOR;
 
-		/** * INCREMENT UNGATED SPECTRA ** */
+		/* INCREMENT UNGATED SPECTRA */
 		hGe.inc(eGe);
 		hNaI.inc(eNaI);
 		hTAC.inc(eTAC);
 		hGeNaI.inc(ecGe, ecNaI);// inc(x-channel, y-channel)
 
-		/** * INCREMENT GATED SPECTRA ** */
+		/* INCREMENT GATED SPECTRA */
 		if (gTAC.inGate(eTAC)){
 			hGe_TAC.inc(eGe);
 		}

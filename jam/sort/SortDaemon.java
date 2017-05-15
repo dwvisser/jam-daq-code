@@ -101,10 +101,6 @@ public class SortDaemon extends GoodThread {
         return ringBuffer.isEmpty();
     }
 
-    /**
-     * @param eventData
-     * @throws Exception
-     */
     private void checkIntervalAndSortEvent(final int[] eventData)
             throws Exception {// NOPMD
         /* Sort only the sortInterval'th events. */
@@ -253,10 +249,7 @@ public class SortDaemon extends GoodThread {
         }
     }
 
-    /**
-     * Called to check if sort was canceled.
-     * @return
-     */
+    /* Called to check if sort was canceled. */
     private boolean offlineSortingCanceled() {
         synchronized (offlineSortLock) {
             return osc;
@@ -409,8 +402,7 @@ public class SortDaemon extends GoodThread {
     /**
      * @param eventData
      *            data to sort
-     * @throws Exception
-     * @throws EventException
+     * @throws Exception if an unrecoverable error occurs
      */
     private void sortEvent(final int[] eventData) throws Exception // NOPMD
     {// NOPMD
@@ -436,11 +428,6 @@ public class SortDaemon extends GoodThread {
         }
     }
 
-    /**
-     * @param eventData
-     * @throws EventException
-     * @throws Exception
-     */
     private void sortEventsInFile(final int[] eventData)// NOPMD
             throws Exception {// NOPMD
         /* Zero the event container. */

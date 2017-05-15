@@ -133,7 +133,7 @@ abstract class AbstractManipulation extends AbstractControl {
 	/**
 	 * Get the mean character width in pixels
 	 * 
-	 * @param fontMetrics
+	 * @param fontMetrics from GUI widget of interest
 	 * @return mean width of a character in pixels
 	 */
 	protected int getMeanCharWidth(final FontMetrics fontMetrics) {

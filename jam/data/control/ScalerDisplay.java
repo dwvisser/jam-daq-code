@@ -95,9 +95,6 @@ public final class ScalerDisplay extends AbstractControl {
 		doSetup();
 	}
 
-	/**
-	 * @param cddisp
-	 */
 	private void addScalerControlPanel(final Container cddisp) {
 		final JPanel plower = new JPanel(new FlowLayout(FlowLayout.CENTER, 10,
 				10));
@@ -136,8 +133,6 @@ public final class ScalerDisplay extends AbstractControl {
 	}
 
 	/**
-	 * @param count
-	 *            index of scaler
 	 * @param currentScaler
 	 *            scaler to use value of
 	 */

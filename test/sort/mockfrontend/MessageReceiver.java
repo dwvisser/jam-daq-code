@@ -31,14 +31,8 @@ public class MessageReceiver extends GoodThread {
      * Creates a new message receiver.
      * @param frame
      *            the GUI frame of this application
-     * @param port
-     *            that we receive on
-     * @param addr
-     *            that we receive at
      * @param sender
      *            used to send messages and data
-     * @throws UnknownHostException
-     *             if the host is invalid
      */
     MessageReceiver(final Frame frame, final Console console,
             final DatagramSocket localSocket, final MessageSender sender) {

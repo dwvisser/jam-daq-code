@@ -251,21 +251,10 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 		return !endOfFile;
 	}
 
-	/**
-	 * @param scalerTitles
-	 * @param scalerId
-	 */
 	private void createScaler(final String scalerTitle, final int scalerId) {
 		Factory.createScaler(importGroup, scalerTitle, scalerId);
 	}
 
-	/**
-	 * @param buffin
-	 * @param buffer
-	 * @param endOfFile
-	 * @return
-	 * @throws IOException
-	 */
 	private boolean readBuffers(final InputStream buffin, final int[] buffer)
 			throws IOException {
 		/*

@@ -19,14 +19,7 @@ public final class HistInt2D extends AbstractHist2D {
 	/**
 	 * Create a new 2-d histogram with counts known (must be square histogram)
 	 * and with the axis label given.
-	 * 
-	 * @param group
-	 *            for this histogram to belong to
-	 * @param name
-	 *            unique name of histogram, should be limited to
-	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
-	 *            .hdf files as the unique identifier for reloading the
-	 *            histogram
+	 *
 	 * @param title
 	 *            lengthier title of histogram, displayed on plot
 	 * @param axisLabelX

@@ -620,8 +620,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
     protected void setMaximumCountsConstrained(final int maxC) {
         final int FS_MIN = 5; // Minimum that Counts can be set to
         int temp = Math.max(maxC, FS_MIN);
-        /** Maximum that counts can be set to. */
-        final int FS_MAX = 1000000;
+        final int FS_MAX = 1000000; // Maximum that counts can be set to.
         temp = Math.min(temp, FS_MAX);
         limits.setMaximumCounts(temp);
     }

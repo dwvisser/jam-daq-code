@@ -181,9 +181,6 @@ public abstract class AbstractFit implements Fit {
         return fitDialog;
     }
 
-    /**
-     * @return
-     */
     private JButton createDoFitButton(final JLabel status) {
         final JButton bGo = new JButton("Do Fit");
         bGo.addActionListener(new ActionListener() {
@@ -222,9 +219,6 @@ public abstract class AbstractFit implements Fit {
         return bGo;
     }
 
-    /**
-     * @return
-     */
     private JButton createGetMouseButton(final JLabel status) {
         final JButton bMouseGet = new JButton("Get Mouse");
         bMouseGet.addActionListener(event -> {

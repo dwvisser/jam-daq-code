@@ -26,7 +26,7 @@ public final class HistogramCollection implements
 	/**
 	 * Remove a histogram from the group
 	 * 
-	 * @param hist
+	 * @param hist to remove
 	 */
 	public void remove(final AbstractHistogram hist) {
 		this.histList.remove(hist);

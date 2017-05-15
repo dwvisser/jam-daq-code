@@ -56,7 +56,7 @@ final class ParseCommand implements CommandListener {
 	 * @param string
 	 *            string rep of the number
 	 * @return the number
-	 * @throws NumberFormatException
+	 * @throws NumberFormatException if string doesn't parse successfully
 	 */
 	private double convertNumber(final String string)
 			throws NumberFormatException {

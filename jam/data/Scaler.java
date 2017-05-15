@@ -32,7 +32,7 @@ public final class Scaler implements DataElement {
     /**
      * Clears the list of all scalers.
      */
-    public static void clearList() {
+    static void clearList() {
         TABLE.clear();
         LIST.clear();
     }
@@ -79,8 +79,6 @@ public final class Scaler implements DataElement {
 
     /**
      * Creates a new scaler with an assigned name and number.
-     * @param group
-     *            for this scaler to belong to
      * @param nameIn
      *            name of the scaler, which must be <=16 characters
      * @param idNum
