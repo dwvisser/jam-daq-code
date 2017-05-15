@@ -1,12 +1,11 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.data.control.MonitorControl;
 import jam.global.JamStatus;
 
 import java.util.Observable;
 import java.util.Observer;
-
-import com.google.inject.Inject;
 
 /**
  * Command that shows the monitor configuration dialog.

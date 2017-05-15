@@ -1,21 +1,15 @@
 package jam.ui;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.RunState;
 
-import java.awt.Color;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * Holds component which displays the current run state.

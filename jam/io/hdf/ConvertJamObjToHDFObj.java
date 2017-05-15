@@ -1,20 +1,7 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.JamFileFields.Calibration.COLUMNS_COEFF;
-import static jam.io.hdf.JamFileFields.Calibration.COLUMNS_POINTS;
-import static jam.io.hdf.JamFileFields.Calibration.TYPE_COEFF;
-import static jam.io.hdf.JamFileFields.Calibration.TYPE_POINTS;
-import jam.data.AbstractHist1D;
-import jam.data.AbstractHistogram;
-import jam.data.DataParameter;
-import jam.data.Gate;
-import jam.data.Group;
-import jam.data.HistDouble1D;
-import jam.data.HistDouble2D;
-import jam.data.HistInt1D;
-import jam.data.HistInt2D;
-import jam.data.HistogramType;
-import jam.data.Scaler;
+import com.google.inject.Inject;
+import jam.data.*;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.global.JamProperties;
 import jam.global.Nameable;
@@ -25,7 +12,7 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 
-import com.google.inject.Inject;
+import static jam.io.hdf.JamFileFields.Calibration.*;
 
 /**
  * Convert a Jam data objects to a hdf data objects

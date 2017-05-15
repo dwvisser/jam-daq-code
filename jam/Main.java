@@ -2,9 +2,7 @@ package jam;
 
 import injection.GuiceInjector;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 /**
  * Launch point for Jam.

@@ -8,40 +8,22 @@ import jam.data.AbstractHistogram;
 import jam.data.Group;
 import jam.data.Warehouse;
 import jam.data.control.AbstractControl;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.JamException;
-import jam.global.JamProperties;
-import jam.global.JamStatus;
-import jam.global.PropertyKeys;
-import jam.global.RuntimeSubclassIdentifier;
+import jam.global.*;
 import jam.sort.AbstractSortRoutine;
 import jam.sort.SortException;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 import jam.ui.SelectionTree;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
-
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 
 /**
  * Takes care of some of the details for SetupSortOn and SetupSortOff.

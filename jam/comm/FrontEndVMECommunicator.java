@@ -1,5 +1,6 @@
 package jam.comm;
 
+import com.google.inject.Inject;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
 import jam.sort.CamacCommands;
@@ -12,8 +13,6 @@ import java.util.Map;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
-
-import com.google.inject.Inject;
 
 /**
  * Communicates with VME front end.

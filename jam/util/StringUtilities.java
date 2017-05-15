@@ -1,11 +1,11 @@
 package jam.util;
 
+import com.google.inject.Singleton;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import com.google.inject.Singleton;
 
 /**
  * Contains utilities for manipulating <code>String</code> objects.

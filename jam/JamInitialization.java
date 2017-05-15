@@ -1,31 +1,19 @@
 package jam;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import jam.commands.CommandManager;
 import jam.commands.CommandNames;
 import jam.data.control.AbstractControl;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.JamProperties;
-import jam.global.JamStatus;
-import jam.global.SortMode;
+import jam.global.*;
 import jam.ui.SelectionTree;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.logging.Logger;
-
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * Launcher and main window for Jam.

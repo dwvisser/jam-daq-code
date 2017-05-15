@@ -1,8 +1,8 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.Constants.DFTAG_SDD;
-
 import java.nio.ByteBuffer;
+
+import static jam.io.hdf.Constants.DFTAG_SDD;
 
 /**
  * Class to represent an HDF <em>Scientific Data Dimension</em> data object.

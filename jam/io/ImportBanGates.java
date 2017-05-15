@@ -1,22 +1,13 @@
 package jam.io;
 
+import com.google.inject.Inject;
 import jam.data.AbstractHistogram;
 import jam.data.Gate;
 import jam.ui.ExtensionFileFilter;
 
-import java.awt.Frame;
-import java.awt.Polygon;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StreamTokenizer;
-
 import javax.swing.filechooser.FileFilter;
-
-import com.google.inject.Inject;
+import java.awt.*;
+import java.io.*;
 
 /**
  * Imports banana gate files used by the ORPHLIB software at the HRIBF at ORNL.

@@ -23,7 +23,7 @@
  **************************************************************/
 package jam.commands;
 
-import static javax.swing.SwingConstants.RIGHT;
+import com.google.inject.Inject;
 import injection.GuiceInjector;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
@@ -33,29 +33,16 @@ import jam.io.hdf.ScanForScalers;
 import jam.ui.PanelOKApplyCancelButtons;
 import jam.util.TextDisplayDialog;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.ProgressMonitor;
-import javax.swing.border.EmptyBorder;
-
-import com.google.inject.Inject;
+import static javax.swing.SwingConstants.RIGHT;
 
 /**
  * Scans HDF files for scaler values.

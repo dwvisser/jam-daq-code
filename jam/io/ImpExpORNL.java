@@ -1,39 +1,20 @@
 package jam.io;
 
+import com.google.inject.Inject;
 import injection.GuiceInjector;
-import jam.data.AbstractHistogram;
-import jam.data.Factory;
-import jam.data.HistDouble1D;
-import jam.data.HistDouble2D;
-import jam.data.HistInt1D;
-import jam.data.HistInt2D;
-import jam.data.HistogramType;
+import jam.data.*;
 import jam.ui.ExtensionFileFilter;
 import jam.util.FileUtilities;
 import jam.util.NumberUtilities;
 import jam.util.StringUtilities;
 
-import java.awt.Frame;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.io.*;
 import java.nio.ByteOrder;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
-
-import javax.swing.filechooser.FileFilter;
-
-import com.google.inject.Inject;
 
 /**
  * Imports and exports Oak Ridge (Milner) formatted files, as used by

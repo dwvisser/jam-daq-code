@@ -1,5 +1,6 @@
 package jam.plot;
-import java.awt.Point;
+
+import java.awt.*;
 
 /**
  * Interface that you must implement if you want to get

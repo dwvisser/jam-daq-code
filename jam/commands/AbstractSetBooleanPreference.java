@@ -5,9 +5,8 @@ package jam.commands;
 
 import jam.global.CommandListenerException;
 
+import javax.swing.*;
 import java.util.prefs.Preferences;
-
-import javax.swing.ImageIcon;
 
 /**
  * Abstract implementation of <code>Commandable</code> which can set/unset a

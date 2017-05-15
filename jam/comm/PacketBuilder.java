@@ -1,12 +1,11 @@
 package jam.comm;
 
+import com.google.inject.Inject;
 import jam.util.StringUtilities;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-
-import com.google.inject.Inject;
 
 /**
  * Worker class that creates standard Jam UDP packets.

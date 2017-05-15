@@ -2,11 +2,10 @@ package jam.commands;
 
 import jam.global.CommandListenerException;
 
-import java.awt.Event;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.print.PrinterJob;
-
-import javax.swing.KeyStroke;
 
 /**
  * Command for Page Setup

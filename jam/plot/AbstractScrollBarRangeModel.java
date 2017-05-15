@@ -7,7 +7,7 @@ import jam.data.AbstractHistogram;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
 
-import javax.swing.DefaultBoundedRangeModel;
+import javax.swing.*;
 
 /**
  * @author Dale Visser

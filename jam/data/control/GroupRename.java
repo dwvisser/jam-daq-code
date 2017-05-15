@@ -1,5 +1,6 @@
 package jam.data.control;
 
+import com.google.inject.Inject;
 import jam.data.DataBase;
 import jam.data.DataException;
 import jam.data.Group;
@@ -9,13 +10,9 @@ import jam.global.JamStatus;
 import jam.global.Nameable;
 import jam.ui.PanelOKApplyCancelButtons;
 
-import java.awt.BorderLayout;
-import java.awt.Frame;
+import javax.swing.*;
+import java.awt.*;
 import java.util.logging.Level;
-
-import javax.swing.JTextField;
-
-import com.google.inject.Inject;
 
 /**
  * * Class create a new group

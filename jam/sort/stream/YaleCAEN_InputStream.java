@@ -4,11 +4,7 @@ import jam.data.Scaler;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class sorts the native data format of the CAEN V7x5 ADC's and TDC's.

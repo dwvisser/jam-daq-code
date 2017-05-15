@@ -1,6 +1,6 @@
 package jam.util;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 /**
  * This is the 3rd version of SwingWorker (also known as SwingWorker 3), an

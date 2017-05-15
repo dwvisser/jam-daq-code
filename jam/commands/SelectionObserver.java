@@ -4,10 +4,9 @@ import jam.global.BroadcastEvent;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
 
+import javax.swing.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.Action;
 
 /**
  * Implementation of Observer that is common to several commands that just

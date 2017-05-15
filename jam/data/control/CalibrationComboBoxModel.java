@@ -3,13 +3,12 @@ package jam.data.control;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.CalibrationFunctionCollection;
 
+import javax.swing.*;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.swing.ComboBoxModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 
 /**
  * Used anywhere a JComboBox is used to select from the available calibration

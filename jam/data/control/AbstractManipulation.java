@@ -7,10 +7,8 @@ import jam.data.NameValueCollection;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 
-import java.awt.FontMetrics;
-import java.awt.Frame;
-
-import javax.swing.JComboBox;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Base class for histogram manipulations has methods to create combo box of

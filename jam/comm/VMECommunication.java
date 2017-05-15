@@ -1,28 +1,18 @@
 package jam.comm;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import jam.data.Scaler;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.GoodThread;
-import jam.global.JamProperties;
-import jam.global.PropertyKeys;
+import jam.global.*;
 import jam.sort.CamacCommands.CNAF;
 import jam.util.StringUtilities;
 
 import java.io.IOException;
-import java.net.BindException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * Class to communicate with VME crate using UDP packets Two UDP sockets can be

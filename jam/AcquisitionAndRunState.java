@@ -1,17 +1,11 @@
 package jam;
 
-import jam.global.AcquisitionStatus;
-import jam.global.BroadcastEvent;
-import jam.global.JamStatus;
-import jam.global.QuerySortMode;
-import jam.global.RunState;
-import jam.global.SortMode;
+import com.google.inject.Inject;
+import jam.global.*;
 
-import java.awt.Frame;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import com.google.inject.Inject;
 
 /**
  * Updates the frame when run state or acquisition status changes.

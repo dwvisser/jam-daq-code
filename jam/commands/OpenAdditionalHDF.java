@@ -1,5 +1,6 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.data.AbstractHistogram;
 import jam.data.Group;
 import jam.data.control.AbstractControl;
@@ -11,14 +12,9 @@ import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 import jam.ui.SelectionTree;
 
-import java.awt.Frame;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
-
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JFileChooser;
-
-import com.google.inject.Inject;
 
 /**
  * Open an additional hdf file

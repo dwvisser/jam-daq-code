@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.data.control.Combine;
-
 import com.google.inject.Inject;
+import jam.data.control.Combine;
 
 /**
  * Command to show project histogram dialog

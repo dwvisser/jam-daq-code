@@ -1,13 +1,7 @@
 package jam.data.func;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.swing.ImageIcon;
+import javax.swing.*;
+import java.util.*;
 
 //TODO Make this dynamically load from classpath.
 //TODO Make this load a class only when needed, i.e., make it a factory.

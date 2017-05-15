@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.io.ImpExpASCII;
-
 import com.google.inject.Inject;
+import jam.io.ImpExpASCII;
 
 /**
  * Export data to an ASCII text file.

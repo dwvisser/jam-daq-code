@@ -1,29 +1,15 @@
 package jam.io;
 
+import com.google.inject.Inject;
 import jam.data.AbstractHistogram;
 import jam.util.CollectionsUtil;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.EmptyBorder;
-
-import com.google.inject.Inject;
 
 class SelectHistogramDialog {
 

@@ -1,28 +1,21 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.JamFileFields.Calibration.TYPE_COEFF;
-import static jam.io.hdf.JamFileFields.Calibration.TYPE_POINTS;
-import jam.data.AbstractHist1D;
-import jam.data.AbstractHistogram;
-import jam.data.DataParameter;
-import jam.data.Factory;
-import jam.data.Gate;
-import jam.data.Group;
-import jam.data.HistogramType;
-import jam.data.Scaler;
+import com.google.inject.Inject;
+import jam.data.*;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.CalibrationFitException;
 import jam.data.func.CalibrationFunctionCollection;
 import jam.io.FileOpenMode;
 import jam.util.StringUtilities;
 
-import java.awt.Polygon;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import static jam.io.hdf.JamFileFields.Calibration.TYPE_COEFF;
+import static jam.io.hdf.JamFileFields.Calibration.TYPE_POINTS;
 
 /**
  * @author Ken Swartz

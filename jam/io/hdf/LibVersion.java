@@ -1,10 +1,11 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.Constants.DFTAG_VER;
 import injection.GuiceInjector;
 import jam.util.StringUtilities;
 
 import java.nio.ByteBuffer;
+
+import static jam.io.hdf.Constants.DFTAG_VER;
 
 /**
  * Class to represent a 32-bit java int HDF <em>Library Version Number</em> data

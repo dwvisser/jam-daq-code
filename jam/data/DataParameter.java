@@ -4,11 +4,7 @@ import injection.GuiceInjector;
 import jam.global.Nameable;
 import jam.util.StringUtilities;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Class for user-defined numerical parameters that can be used during sorting.

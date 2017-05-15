@@ -1,5 +1,8 @@
 package jam.global;
 
+import com.google.inject.Singleton;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -9,19 +12,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
-
-import javax.swing.JOptionPane;
-
-import com.google.inject.Singleton;
 
 /**
  * This utility class is looking for all the classes implementing or inheriting

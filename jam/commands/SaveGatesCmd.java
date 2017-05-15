@@ -1,15 +1,13 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.global.CommandListenerException;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
-import java.awt.Frame;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
-
-import javax.swing.JFileChooser;
-
-import com.google.inject.Inject;
 
 /**
  * Save gates and scalers

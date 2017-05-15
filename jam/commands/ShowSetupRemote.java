@@ -3,12 +3,11 @@
  */
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.SetupRemote;
 
 import java.util.Observable;
 import java.util.Observer;
-
-import com.google.inject.Inject;
 
 /**
  * 

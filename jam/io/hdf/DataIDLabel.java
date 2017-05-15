@@ -1,9 +1,9 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.Constants.DFTAG_DIL;
-
 import java.nio.ByteBuffer;
 import java.util.List;
+
+import static jam.io.hdf.Constants.DFTAG_DIL;
 
 /**
  * Class to represent an HDF <em>Data identifier label</em> data object. The

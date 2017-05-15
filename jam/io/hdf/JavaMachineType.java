@@ -1,8 +1,8 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.Constants.DFTAG_MT;
-
 import java.nio.ByteBuffer;
+
+import static jam.io.hdf.Constants.DFTAG_MT;
 
 /**
  * Specifies the format of numbers and chars used by Java. This should be

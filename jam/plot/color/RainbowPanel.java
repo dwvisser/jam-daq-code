@@ -7,12 +7,9 @@ package jam.plot.color;
  * @author Eric Lingerfelt
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  */
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 final class RainbowPanel extends JPanel {
 

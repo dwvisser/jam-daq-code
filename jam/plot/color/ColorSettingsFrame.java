@@ -1,31 +1,14 @@
 package jam.plot.color;
 
-import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 import injection.GuiceInjector;
 import jam.ui.PanelOKApplyCancelButtons;
 
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.*;
+
+import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 
 /**
  * Dialog for setting the gradient color scale parameters.

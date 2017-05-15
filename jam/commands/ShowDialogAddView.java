@@ -1,26 +1,15 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.plot.PlotDisplay;
 import jam.plot.View;
 import jam.ui.PanelOKApplyCancelButtons;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
-
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
-import com.google.inject.Inject;
+import java.awt.*;
 
 /**
  * Command to add view.

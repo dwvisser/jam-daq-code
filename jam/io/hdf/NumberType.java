@@ -1,8 +1,8 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.Constants.DFTAG_NT;
-
 import java.nio.ByteBuffer;
+
+import static jam.io.hdf.Constants.DFTAG_NT;
 
 /**
  * Class to represent a 32-bit java int HDF <em>NumberType</em> data object.

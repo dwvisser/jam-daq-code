@@ -1,15 +1,11 @@
 package jam.data.control;
 
+import com.google.inject.Inject;
 import jam.data.Gate;
 import jam.ui.Icons;
 
-import java.awt.Component;
-
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import javax.swing.UIManager;
-
-import com.google.inject.Inject;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Renders representations for a JComboBox list entry of a

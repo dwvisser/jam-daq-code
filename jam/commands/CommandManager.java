@@ -1,23 +1,19 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import injection.GuiceInjector;
 import jam.global.Broadcaster;
 import jam.global.CommandFinder;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
 
+import javax.swing.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.Action;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-
-import com.google.inject.Inject;
 
 /**
  * Class to create commands and execute them

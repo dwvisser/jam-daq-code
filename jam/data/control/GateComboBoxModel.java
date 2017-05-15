@@ -5,11 +5,10 @@ import jam.data.Gate;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.swing.DefaultComboBoxModel;
 
 /**
  * Used anywhere a JComboBox is used to select from the available gates.

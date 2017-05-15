@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.PeakFindDialog;
-
 import com.google.inject.Inject;
+import jam.PeakFindDialog;
 
 /**
  * Command to add fit

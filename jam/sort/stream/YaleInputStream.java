@@ -1,10 +1,8 @@
 package jam.sort.stream;
 
-import static jam.sort.stream.L002Parameters.EVENT_MASK;
-import static jam.sort.stream.L002Parameters.EVENT_PARAMETER;
-import static jam.sort.stream.L002Parameters.RUN_END_MARKER;
-
 import java.io.EOFException;
+
+import static jam.sort.stream.L002Parameters.*;
 
 /**
  * This class knows how to handle Oak Ridge tape format.

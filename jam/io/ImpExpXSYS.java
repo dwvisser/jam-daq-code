@@ -1,32 +1,6 @@
 package jam.io;//NOPMD
 
-import static jam.io.XsysHeader.CALIB_ENERGY;
-import static jam.io.XsysHeader.HEADER;
-import static jam.io.XsysHeader.L_AREA_CALIB_COEF;
-import static jam.io.XsysHeader.L_AREA_NAME;
-import static jam.io.XsysHeader.L_BUFFER;
-import static jam.io.XsysHeader.L_INT;
-import static jam.io.XsysHeader.L_SCALER_TITLES;
-import static jam.io.XsysHeader.L_TITLE;
-import static jam.io.XsysHeader.NUMBER_SCALERS;
-import static jam.io.XsysHeader.P_AREA_CALIB_COEF;
-import static jam.io.XsysHeader.P_AREA_CALIB_FLAG;
-import static jam.io.XsysHeader.P_AREA_DATA_TYPE;
-import static jam.io.XsysHeader.P_AREA_LEN_PAGE;
-import static jam.io.XsysHeader.P_AREA_NAME;
-import static jam.io.XsysHeader.P_AREA_NUMBER;
-import static jam.io.XsysHeader.P_AREA_SIZE_X;
-import static jam.io.XsysHeader.P_AREA_SIZE_Y;
-import static jam.io.XsysHeader.P_HEADER;
-import static jam.io.XsysHeader.P_RUN_NUMBER;
-import static jam.io.XsysHeader.P_SCALERS;
-import static jam.io.XsysHeader.P_SCALER_TITLES;
-import static jam.io.XsysHeader.P_TITLE;
-import static jam.io.XsysHeader.XSYS1DI4;
-import static jam.io.XsysHeader.XSYS1DR4;
-import static jam.io.XsysHeader.XSYS2DI4;
-import static jam.io.XsysHeader.XSYSEVAL;
-import static jam.io.XsysHeader.XSYS_BUFFER_SIZE;
+import com.google.inject.Inject;
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
 import jam.data.DataBase;
@@ -38,17 +12,12 @@ import jam.global.Broadcaster;
 import jam.ui.ExtensionFileFilter;
 import jam.util.NumberUtilities;
 
-import java.awt.Frame;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.io.*;
 import java.nio.ByteOrder;
 
-import javax.swing.filechooser.FileFilter;
-
-import com.google.inject.Inject;
+import static jam.io.XsysHeader.*;
 
 /**
  * Imports and Exports Histograms files using the XSYS format. XSYS is a data

@@ -1,5 +1,7 @@
 package jam.script;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import injection.MapListener;
 import jam.commands.CommandNames;
 import jam.data.Warehouse;
@@ -18,17 +20,13 @@ import jam.sort.control.SortControl;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.JFrame;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * Class which exposes an API for scripting offline sorting sessions. Using this

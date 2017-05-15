@@ -6,13 +6,12 @@
  */
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandListenerException;
 
-import java.awt.Frame;
-
-import com.google.inject.Inject;
+import java.awt.*;
 
 /**
  * 

@@ -1,8 +1,8 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.Constants.DFTAG_FID;
-
 import java.nio.ByteBuffer;
+
+import static jam.io.hdf.Constants.DFTAG_FID;
 
 /**
  * Class to represent an HDF <em>File Identifier</em> data object. The label is

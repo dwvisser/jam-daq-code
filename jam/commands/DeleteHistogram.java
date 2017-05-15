@@ -1,5 +1,6 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.data.AbstractHistogram;
 import jam.data.DataUtility;
 import jam.data.Group;
@@ -8,15 +9,10 @@ import jam.global.Broadcaster;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
 
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
-
-import com.google.inject.Inject;
 
 /**
  * Command for file menu new also clears.

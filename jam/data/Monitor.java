@@ -1,11 +1,7 @@
 package jam.data;
 
 import java.applet.AudioClip;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class is for monitoring the status of data acquisition. Monitors can

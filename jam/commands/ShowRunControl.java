@@ -6,19 +6,16 @@
  */
 package jam.commands;
 
+import com.google.inject.Inject;
 import injection.GuiceInjector;
 import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.sort.control.RunControl;
 
+import javax.swing.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.Action;
-import javax.swing.Icon;
-
-import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>

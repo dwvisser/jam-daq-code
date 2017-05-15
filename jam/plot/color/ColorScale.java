@@ -1,5 +1,6 @@
 package jam.plot.color;
-import java.awt.Color;
+
+import java.awt.*;
 
 /**
  * A <code>ColorScale</scale> maps 2d histogram channel counts

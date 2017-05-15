@@ -1,12 +1,10 @@
 package jam;
 
+import com.google.inject.Inject;
 import jam.commands.CommandManager;
 import jam.commands.CommandNames;
 
-import javax.swing.Action;
-import javax.swing.JButton;
-
-import com.google.inject.Inject;
+import javax.swing.*;
 
 /**
  * Main Toolbar for Jam.

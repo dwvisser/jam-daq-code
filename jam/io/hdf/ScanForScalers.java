@@ -1,11 +1,11 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.JamFileFields.SCALER_SECT;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Logger;
+
+import static jam.io.hdf.JamFileFields.SCALER_SECT;
 
 /**
  * Scans files given it for scaler values and outputs strings.

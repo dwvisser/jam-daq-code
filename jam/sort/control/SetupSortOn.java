@@ -1,53 +1,26 @@
 package jam.sort.control;
 
-import static jam.global.GoodThread.State.STOP;
-import static java.util.logging.Level.SEVERE;
-import static javax.swing.SwingConstants.RIGHT;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import injection.GuiceInjector;
 import jam.comm.CommunicationsException;
 import jam.comm.FrontEndCommunication;
 import jam.comm.ScalerCommunication;
-import jam.global.Broadcaster;
-import jam.global.JamException;
-import jam.global.JamProperties;
-import jam.global.JamStatus;
-import jam.global.PropertyKeys;
-import jam.global.QuerySortMode;
-import jam.global.SortMode;
-import jam.sort.AbstractSortRoutine;
-import jam.sort.DiskDaemon;
-import jam.sort.EventSizeMode;
-import jam.sort.NetDaemon;
-import jam.sort.RingBuffer;
-import jam.sort.RingBufferFactory;
-import jam.sort.SortDaemon;
-import jam.sort.SortException;
+import jam.global.*;
+import jam.sort.*;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 import jam.ui.ConsoleLog;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.AbstractButton;
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import static jam.global.GoodThread.State.STOP;
+import static java.util.logging.Level.SEVERE;
+import static javax.swing.SwingConstants.RIGHT;
 
 /**
  * Class to setup online sorting. Loads a sort file and creates the daemons:

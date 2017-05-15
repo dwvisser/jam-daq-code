@@ -1,23 +1,16 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 import jam.ui.ExtensionFileFilter;
 import jam.ui.SummaryTable;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.swing.*;
+import java.io.*;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
-
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-
-import com.google.inject.Inject;
 
 /**
  * Export the summary table

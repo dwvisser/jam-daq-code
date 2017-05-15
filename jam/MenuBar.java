@@ -1,5 +1,6 @@
 package jam;
 
+import com.google.inject.Inject;
 import jam.comm.CommunicationPreferences;
 import jam.commands.CommandManager;
 import jam.commands.CommandNames;
@@ -9,15 +10,9 @@ import jam.io.hdf.HDFPrefs;
 import jam.plot.PlotPreferences;
 import jam.plot.color.ColorPrefs;
 
+import javax.swing.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.Action;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-
-import com.google.inject.Inject;
 
 /**
  * Jam's menu bar. Separated from JamMain to reduce its size and separate

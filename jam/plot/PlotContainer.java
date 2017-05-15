@@ -1,22 +1,16 @@
 package jam.plot;
 
+import com.google.inject.Inject;
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
 import jam.data.Gate;
 
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Point;
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
 import java.awt.print.PageFormat;
 import java.util.Collections;
 import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.border.Border;
-
-import com.google.inject.Inject;
 
 /**
  * class for displayed plots.

@@ -1,6 +1,6 @@
 package jam.plot.color;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Color map for display.

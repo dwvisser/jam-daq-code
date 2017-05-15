@@ -2,17 +2,11 @@ package jam.data.control;
 
 import jam.global.Broadcaster;
 
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.util.ArrayList;
-import java.util.Collections;
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Logger;
-
-import javax.swing.JDialog;
-import javax.swing.JPanel;
 
 /**
  * A class to do overall control of the Jam data classes.

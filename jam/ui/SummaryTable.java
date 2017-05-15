@@ -1,22 +1,18 @@
 package jam.ui;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * Create a summary table for a group

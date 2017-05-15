@@ -7,14 +7,12 @@ import jam.global.JamException;
 import jam.global.RuntimeSubclassIdentifier;
 import jam.sort.AbstractSortRoutine;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
 
 final class SortChooser extends JComboBox<Class<? extends AbstractSortRoutine>> {
 

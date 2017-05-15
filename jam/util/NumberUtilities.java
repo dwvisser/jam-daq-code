@@ -1,9 +1,9 @@
 package jam.util;
 
+import com.google.inject.Singleton;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
-import com.google.inject.Singleton;
 
 /**
  * Utility class for turning sequences of bytes into java ints and shorts

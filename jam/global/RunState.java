@@ -1,6 +1,6 @@
 package jam.global;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * represents the possible run states of Jam.

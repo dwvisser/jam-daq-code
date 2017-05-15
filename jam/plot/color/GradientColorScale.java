@@ -1,11 +1,10 @@
 package jam.plot.color;
 
-import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 import jam.plot.common.Scale;
 
-import java.awt.Color;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
+import java.awt.*;
+
+import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 
 /**
  * Smoothly varying rainbow color scale.

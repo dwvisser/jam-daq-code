@@ -1,8 +1,8 @@
 package jam.global;
 
-import java.util.Observable;
-
 import com.google.inject.Singleton;
+
+import java.util.Observable;
 
 /**
  * Part of a client server to handle message between packages Broadcast events

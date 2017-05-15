@@ -1,8 +1,7 @@
 package jam.plot;
 
-import static jam.plot.PlotPreferences.DISPLAY_LABELS;
-import static jam.plot.PlotPreferences.ENABLE_SCROLLING;
-import static jam.plot.PlotPreferences.PREFS;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import injection.GuiceInjector;
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
@@ -16,9 +15,8 @@ import jam.global.Nameable;
 import jam.plot.PlotContainer.LayoutType;
 import jam.ui.SelectionTree;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.print.PageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +25,7 @@ import java.util.Observer;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import static jam.plot.PlotPreferences.*;
 
 /**
  * This class is a display routine for plots. It is implemented by

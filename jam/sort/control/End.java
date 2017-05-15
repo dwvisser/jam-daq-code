@@ -3,10 +3,8 @@ package jam.sort.control;
 import injection.GuiceInjector;
 import jam.ui.Icons;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 
 class End extends AbstractAction {
 

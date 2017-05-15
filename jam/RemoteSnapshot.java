@@ -1,5 +1,6 @@
 package jam;
 
+import com.google.inject.Inject;
 import jam.data.AbstractHistogram;
 import jam.data.Gate;
 import jam.data.RemoteData;
@@ -10,8 +11,6 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
-
-import com.google.inject.Inject;
 
 final class RemoteSnapshot {
 	private static final Logger LOGGER = Logger.getLogger(RemoteSnapshot.class

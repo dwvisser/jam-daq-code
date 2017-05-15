@@ -1,12 +1,11 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.Constants.HDF_HEADER;
-
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import javax.swing.filechooser.FileFilter;
+import static jam.io.hdf.Constants.HDF_HEADER;
 
 /**
  * Filters only HDF files for file dialogs.

@@ -1,8 +1,7 @@
 package jam.global;
 
+import javax.swing.*;
 import java.util.logging.Logger;
-
-import javax.swing.JOptionPane;
 
 /**
  * Extends the thread class to allow proper stopping and suspending of threads,

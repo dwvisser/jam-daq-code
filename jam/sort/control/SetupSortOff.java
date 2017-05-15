@@ -1,11 +1,8 @@
 package jam.sort.control;
 
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.GoodThread;
-import jam.global.JamException;
-import jam.global.JamStatus;
-import jam.global.SortMode;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import jam.global.*;
 import jam.sort.AbstractSortRoutine;
 import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
@@ -13,22 +10,10 @@ import jam.sort.SortException;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ItemEvent;
-import java.util.logging.Level;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import java.awt.*;
+import java.util.logging.Level;
 
 /**
  * Class to setup the offline sort process.

@@ -1,12 +1,11 @@
 package jam.comm;
 
+import com.google.inject.Inject;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 
 import java.util.Observable;
 import java.util.Observer;
-
-import com.google.inject.Inject;
 
 /**
  * Communicates about scalers with VME.

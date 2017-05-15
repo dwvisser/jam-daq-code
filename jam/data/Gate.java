@@ -4,14 +4,9 @@ import injection.GuiceInjector;
 import jam.global.Nameable;
 import jam.util.StringUtilities;
 
-import java.awt.Polygon;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * A gate, used for data sorting, belongs to a histogram which determines what

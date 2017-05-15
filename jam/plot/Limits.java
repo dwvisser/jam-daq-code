@@ -1,21 +1,13 @@
 package jam.plot;
 
-import jam.data.AbstractHist1D;
-import jam.data.AbstractHist2D;
-import jam.data.HistDouble1D;
-import jam.data.HistDouble2D;
-import jam.data.HistInt1D;
-import jam.data.HistInt2D;
-import jam.data.AbstractHistogram;
+import jam.data.*;
 import jam.plot.common.Scale;
 
+import javax.swing.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
-
-import javax.swing.BoundedRangeModel;
-import javax.swing.DefaultBoundedRangeModel;
 
 /**
  * Stores the parameters on how the histograms are to be displayed. This

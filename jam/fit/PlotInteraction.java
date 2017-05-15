@@ -6,7 +6,7 @@ package jam.fit;
 import jam.plot.Bin;
 import jam.plot.PlotDisplay;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.Iterator;
 
 final class PlotInteraction implements jam.plot.PlotMouseListener {

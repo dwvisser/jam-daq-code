@@ -1,9 +1,8 @@
 package jam.ui;
 
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
 
 /**
  * Action for a cancel button on a dialog window.

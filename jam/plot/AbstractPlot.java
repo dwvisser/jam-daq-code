@@ -1,8 +1,5 @@
 package jam.plot;
 
-import static javax.swing.SwingConstants.BOTTOM;
-import static javax.swing.SwingConstants.LEFT;
-import static javax.swing.SwingConstants.TOP;
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
 import jam.data.Dimensional;
@@ -11,12 +8,8 @@ import jam.global.RunInfo;
 import jam.plot.color.PlotColorMap;
 import jam.plot.common.Scale;
 
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Polygon;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 import java.text.DateFormat;
@@ -27,8 +20,7 @@ import java.util.TimeZone;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import static javax.swing.SwingConstants.*;
 
 /**
  * Abstract class for displayed plots.

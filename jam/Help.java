@@ -1,31 +1,16 @@
 package jam;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.util.prefs.Preferences;
+import com.google.inject.Inject;
 
 import javax.help.CSH;
 import javax.help.HelpSet;
 import javax.help.HelpSetException;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-
-import com.google.inject.Inject;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.prefs.Preferences;
 
 /**
  * Deals with JavaHelp-based User Guide and an "About" dialog.

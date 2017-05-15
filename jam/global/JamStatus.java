@@ -1,14 +1,10 @@
 package jam.global;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import java.io.File;
+import java.util.*;
 
 /**
  * A global status class so that information is globally available.

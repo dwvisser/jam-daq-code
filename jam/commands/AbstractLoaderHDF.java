@@ -13,12 +13,10 @@ import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 import jam.ui.SelectionTree;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.List;
 import java.util.Observer;
-
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 
 /**
  * Add counts to histograms in memory from histograms in an HDF file.

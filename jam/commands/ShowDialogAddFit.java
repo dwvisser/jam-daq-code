@@ -1,9 +1,8 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.fit.LoadFit;
 import jam.global.CommandListenerException;
-
-import com.google.inject.Inject;
 
 /**
  * Command to add fit.

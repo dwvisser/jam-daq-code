@@ -1,20 +1,13 @@
 package jam;
 
+import com.google.inject.Inject;
 import jam.commands.CommandManager;
 import jam.commands.CommandNames;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.JamStatus;
-import jam.global.QuerySortMode;
-import jam.global.SortMode;
+import jam.global.*;
 
+import javax.swing.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-
-import com.google.inject.Inject;
 
 final class ImportMenu implements Observer {
 	final transient private JMenu menu;

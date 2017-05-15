@@ -1,5 +1,6 @@
 package jam.data.control;
 
+import com.google.inject.Inject;
 import jam.data.AbstractHist1D;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.CalibrationFitException;
@@ -11,30 +12,12 @@ import jam.ui.CalibrationListCellRenderer;
 import jam.ui.PanelOKApplyCancelButtons;
 import jam.ui.SelectionTree;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.logging.Level;
-
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-
-import com.google.inject.Inject;
 
 /**
  * Class to control the histograms Allows one to zero the histograms and create

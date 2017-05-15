@@ -1,5 +1,6 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.data.AbstractHistogram;
 import jam.data.control.CalibrationFit;
 import jam.global.BroadcastEvent;
@@ -8,8 +9,6 @@ import jam.ui.SelectionTree;
 
 import java.util.Observable;
 import java.util.Observer;
-
-import com.google.inject.Inject;
 
 /**
  * Show histgoram Calibration fit dialog.

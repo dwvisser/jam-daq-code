@@ -6,9 +6,8 @@
  */
 package jam.commands;
 
-import jam.io.BatchExport;
-
 import com.google.inject.Inject;
+import jam.io.BatchExport;
 
 /**
  * 

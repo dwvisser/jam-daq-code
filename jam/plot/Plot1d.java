@@ -1,31 +1,17 @@
 package jam.plot;
 
-import jam.data.AbstractHist1D;
-import jam.data.AbstractHistogram;
-import jam.data.HistDouble1D;
-import jam.data.HistInt1D;
-import jam.data.HistogramType;
+import com.google.inject.Inject;
+import jam.data.*;
 import jam.plot.color.PlotColorMap;
 import jam.util.NumberUtilities;
 
-import java.awt.AlphaComposite;
-import java.awt.Composite;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.Shape;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import com.google.inject.Inject;
 
 /**
  * Plots a 1-dimensional histogram.

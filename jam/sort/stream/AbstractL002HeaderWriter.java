@@ -1,8 +1,5 @@
 package jam.sort.stream;
 
-import static jam.sort.stream.L002Parameters.HEADER_START;
-import static jam.sort.stream.L002Parameters.IMAGE_LENGTH;
-import static jam.sort.stream.L002Parameters.TITLE_MAX;
 import injection.GuiceInjector;
 import jam.global.RunInfo;
 import jam.util.StringUtilities;
@@ -11,6 +8,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import static jam.sort.stream.L002Parameters.*;
 
 /**
  * Abstract superclass of all event output streams that write ORNL L002 headers.

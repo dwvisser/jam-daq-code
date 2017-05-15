@@ -1,11 +1,11 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.Constants.DFTAG_NDG;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static jam.io.hdf.Constants.DFTAG_NDG;
 
 /**
  * Class to represent an HDF <em>Numerical Data Group</em> data object.

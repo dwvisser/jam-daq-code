@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.data.control.Projections;
-
 import com.google.inject.Inject;
+import jam.data.control.Projections;
 
 /**
  * Command to show project histgram dialog

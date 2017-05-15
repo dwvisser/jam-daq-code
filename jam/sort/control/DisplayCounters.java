@@ -1,5 +1,7 @@
 package jam.sort.control;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -7,23 +9,11 @@ import jam.sort.AbstractStorageDaemon;
 import jam.sort.NetDaemon;
 import jam.sort.SortDaemon;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * Displays buffer counters of sort threads. Gives the number of buffers and

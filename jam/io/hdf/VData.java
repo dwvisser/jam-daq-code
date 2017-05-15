@@ -1,8 +1,8 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.Constants.DFTAG_VS;
-
 import java.nio.ByteBuffer;
+
+import static jam.io.hdf.Constants.DFTAG_VS;
 
 /**
  * Class to represent an HDF <em>Vdata description</em> data object.

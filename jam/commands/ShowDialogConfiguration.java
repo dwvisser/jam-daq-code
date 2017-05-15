@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.sort.control.ConfigurationDisplay;
-
 import com.google.inject.Inject;
+import jam.sort.control.ConfigurationDisplay;
 
 /**
  * Show the dialog which displays configuration parameters.

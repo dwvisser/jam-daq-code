@@ -3,6 +3,7 @@
  */
 package jam.commands;
 
+import com.google.inject.Inject;
 import injection.GuiceInjector;
 import jam.global.JamStatus;
 import jam.global.QuerySortMode;
@@ -11,8 +12,6 @@ import jam.sort.control.SetupSortOff;
 
 import java.util.Observable;
 import java.util.Observer;
-
-import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>

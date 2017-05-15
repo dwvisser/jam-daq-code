@@ -1,9 +1,8 @@
 package jam.ui;
 
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.Locale;
-
-import javax.swing.filechooser.FileFilter;
 
 /**
  * Copied from SimpleFileFilter pages 363-364 in O'Reilly's <it>Java Swing</it>.

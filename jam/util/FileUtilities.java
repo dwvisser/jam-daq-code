@@ -1,10 +1,9 @@
 package jam.util;
 
-import java.io.File;
-
-import javax.swing.JOptionPane;
-
 import com.google.inject.Singleton;
+
+import javax.swing.*;
+import java.io.File;
 
 /**
  * Utility class for file dialogs.

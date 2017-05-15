@@ -1,13 +1,8 @@
 package jam.sort.control;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
+import java.io.File;
 
 final class PathBrowseButton extends JButton {
 

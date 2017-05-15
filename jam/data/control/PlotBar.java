@@ -4,15 +4,9 @@ package jam.data.control;
 
 import jam.data.Monitor;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.SystemColor;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
-
-import javax.swing.JPanel;
 
 /**
  * Class that is a bar graph used by monitors

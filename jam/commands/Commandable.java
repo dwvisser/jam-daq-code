@@ -3,9 +3,8 @@ package jam.commands;
 import jam.global.CommandListenerException;
 import jam.global.JamProperties;
 
-import java.awt.Event;
-
-import javax.swing.Action;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Objects to be executed by <code>CommandManager</code> must

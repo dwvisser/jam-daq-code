@@ -1,14 +1,13 @@
 package jam.sort;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import jam.Version;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * Generates RingBuffer instances appropriate to whether J2SE 6

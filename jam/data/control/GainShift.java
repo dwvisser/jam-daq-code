@@ -1,10 +1,7 @@
 package jam.data.control;
 
-import jam.data.AbstractHist1D;
-import jam.data.AbstractHistogram;
-import jam.data.DataException;
-import jam.data.DataUtility;
-import jam.data.HistogramType;
+import com.google.inject.Inject;
+import jam.data.*;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -12,14 +9,9 @@ import jam.ui.PanelOKApplyCancelButtons;
 import jam.ui.SelectionTree;
 import jam.util.NumberUtilities;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
@@ -27,17 +19,6 @@ import java.awt.event.WindowEvent;
 import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.logging.Level;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-
-import com.google.inject.Inject;
 
 /**
  * Class for adjusting the gain of 1d spectra.

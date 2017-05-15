@@ -1,9 +1,8 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.global.Broadcaster;
 import jam.io.ImpExpXSYS;
-
-import com.google.inject.Inject;
 
 /**
  * Export data to an XSYS file.

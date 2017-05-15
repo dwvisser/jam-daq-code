@@ -1,32 +1,16 @@
 package jam.sort.control;
 
+import com.google.inject.Inject;
 import jam.global.Help;
 import jam.global.JamProperties;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.help.HelpBroker;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
+import java.util.*;
 import java.util.List;
-import java.util.Properties;
-
-import javax.help.HelpBroker;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.ScrollPaneConstants;
-
-import com.google.inject.Inject;
 
 /**
  * Dialog to so the configuration

@@ -1,16 +1,14 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.global.CommandListenerException;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
 import jam.ui.ExtensionFileFilter;
 import jam.util.YaleCAENgetScalers;
 
+import javax.swing.*;
 import java.io.File;
-
-import javax.swing.JFileChooser;
-
-import com.google.inject.Inject;
 
 /**
  * Open a file with YaleCAEN scalers.

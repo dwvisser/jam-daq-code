@@ -1,24 +1,14 @@
 package jam.fit;
 
-import static javax.swing.SwingConstants.RIGHT;
 import jam.plot.Bin;
 
-import java.awt.Color;
-import java.awt.GridLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+
+import static javax.swing.SwingConstants.RIGHT;
 
 /**
  * Holds parameters for Fit.

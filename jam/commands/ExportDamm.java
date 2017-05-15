@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.io.ImpExpORNL;
-
 import com.google.inject.Inject;
+import jam.io.ImpExpORNL;
 
 /**
  * Export data to DAMM histogram file.

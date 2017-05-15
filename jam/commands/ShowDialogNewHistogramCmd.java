@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.data.control.HistogramNew;
-
 import com.google.inject.Inject;
+import jam.data.control.HistogramNew;
 
 /**
  * Show the histogram dialog

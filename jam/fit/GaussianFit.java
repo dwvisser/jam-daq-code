@@ -3,12 +3,9 @@
  */
 package jam.fit;
 
-import static jam.data.peaks.GaussianConstants.MAGIC_2AB;
-import static jam.data.peaks.GaussianConstants.MAGIC_A;
-import static jam.data.peaks.GaussianConstants.MAGIC_B;
-import static jam.data.peaks.GaussianConstants.SIG_TO_FWHM;
-
 import java.util.Arrays;
+
+import static jam.data.peaks.GaussianConstants.*;
 
 /**
  * This abstract class uses <code>NonLinearFit</code> to fit a single gaussian

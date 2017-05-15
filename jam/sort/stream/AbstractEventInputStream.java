@@ -2,13 +2,12 @@ package jam.sort.stream;
 
 import jam.global.RunInfo;
 
+import javax.swing.*;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.JOptionPane;
 
 /**
  * A general-purpose <code>InputStream</code> of experiment events that can be

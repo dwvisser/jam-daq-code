@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.Help;
-
 import com.google.inject.Inject;
+import jam.Help;
 
 /**
  * Show the license dialog.

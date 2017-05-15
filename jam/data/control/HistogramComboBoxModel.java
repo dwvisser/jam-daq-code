@@ -2,11 +2,9 @@ package jam.data.control;
 
 import jam.data.AbstractHistogram;
 
+import javax.swing.*;
 import java.util.Collection;
 import java.util.Iterator;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
 
 /**
  * This class takes care of properly displaying the histogram chooser in Jam's

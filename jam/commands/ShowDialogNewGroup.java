@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.data.control.GroupNew;
-
 import com.google.inject.Inject;
+import jam.data.control.GroupNew;
 
 /**
  * Show the dialog for new group

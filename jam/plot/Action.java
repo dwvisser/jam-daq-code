@@ -1,35 +1,25 @@
 package jam.plot;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
 import jam.data.DataUtility;
 import jam.data.peaks.GaussianConstants;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.CommandFinder;
-import jam.global.JamStatus;
-import jam.global.MessageHandler;
-import jam.global.UnNamed;
+import jam.global.*;
 import jam.plot.common.Scale;
 import jam.ui.Console;
 import jam.ui.ConsoleLog;
 import jam.ui.SelectionTree;
 
-import java.awt.Point;
+import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * Class the does the actions on plots. Receives commands from buttons and

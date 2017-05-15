@@ -1,17 +1,15 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.data.Group;
 import jam.global.CommandListenerException;
 import jam.global.JamStatus;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
-import java.awt.Frame;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
-
-import javax.swing.JFileChooser;
-
-import com.google.inject.Inject;
 
 /**
  * * Command to save a group of histograms.

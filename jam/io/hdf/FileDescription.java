@@ -1,8 +1,8 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.Constants.DFTAG_FD;
-
 import java.nio.ByteBuffer;
+
+import static jam.io.hdf.Constants.DFTAG_FD;
 
 /**
  * Class to represent an HDF <em>File Description</em> data object. The text is

@@ -1,42 +1,23 @@
 package jam.ui;
 
-import jam.data.AbstractHist1D;
-import jam.data.AbstractHistogram;
-import jam.data.DataBase;
-import jam.data.DataElement;
-import jam.data.DataUtility;
-import jam.data.Gate;
-import jam.data.Group;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.JamStatus;
-import jam.global.Nameable;
-import jam.global.QuerySortMode;
-import jam.global.SortMode;
-import jam.global.UnNamed;
-import jam.global.Validator;
+import com.google.inject.Inject;
+import jam.data.*;
+import jam.global.*;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.ToolTipManager;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-
-import com.google.inject.Inject;
+import java.awt.*;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Implements a <code>JTree</code> for selecting <code>Histogram</code>'s and

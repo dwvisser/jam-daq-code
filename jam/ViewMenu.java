@@ -1,5 +1,6 @@
 package jam;
 
+import com.google.inject.Inject;
 import jam.commands.CommandManager;
 import jam.commands.CommandNames;
 import jam.global.BroadcastEvent;
@@ -7,15 +8,9 @@ import jam.global.Broadcaster;
 import jam.plot.PlotDisplay;
 import jam.plot.View;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-
-import com.google.inject.Inject;
 
 final class ViewMenu implements Observer {
     /** Fit menu needed as members so we can add a fit. */

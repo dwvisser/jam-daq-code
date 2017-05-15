@@ -3,7 +3,7 @@ package jam.plot.color;
 import jam.plot.common.Scale;
 import jam.plot.common.ScaleCalculator;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * A color scale where ranges in counts are represented by individual, discrete

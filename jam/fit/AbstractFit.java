@@ -1,12 +1,7 @@
 package jam.fit;
 
-import static javax.swing.SwingConstants.RIGHT;
 import injection.GuiceInjector;
-import jam.data.AbstractHist1D;
-import jam.data.AbstractHistogram;
-import jam.data.HistDouble1D;
-import jam.data.HistInt1D;
-import jam.data.HistogramType;
+import jam.data.*;
 import jam.global.MessageHandler;
 import jam.plot.PlotDisplay;
 import jam.ui.Canceller;
@@ -14,21 +9,15 @@ import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
 import jam.util.NumberUtilities;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Frame;
-import java.awt.GridLayout;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.border.LineBorder;
+import static javax.swing.SwingConstants.RIGHT;
 
 /**
  * This defines the necessary methods that need to be defined in order for a fit

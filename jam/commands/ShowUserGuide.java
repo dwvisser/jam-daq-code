@@ -5,7 +5,7 @@ import jam.global.Help;
 
 import javax.help.CSH;
 import javax.help.HelpSet;
-import javax.swing.JButton;
+import javax.swing.*;
 
 /**
  * @author Ken Swartz

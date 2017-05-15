@@ -1,13 +1,11 @@
 package jam.sort.stream;
 
-import static jam.sort.stream.L002Parameters.BUFFER_END_MARKER;
-import static jam.sort.stream.L002Parameters.EVENT_END_MARKER;
-import static jam.sort.stream.L002Parameters.HEADER_START;
-import static jam.sort.stream.L002Parameters.RUN_END_MARKER;
 import injection.GuiceInjector;
 import jam.util.StringUtilities;
 
 import java.io.IOException;
+
+import static jam.sort.stream.L002Parameters.*;
 
 /**
  * This class takes care of reading standard Oak Ridge L002 header records. All

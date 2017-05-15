@@ -1,15 +1,13 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.Constants.DFTAG_NULL;
-import static jam.io.hdf.Constants.HDF_HEADER;
-import static jam.io.hdf.Constants.HEADER_BYTES;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static jam.io.hdf.Constants.*;
 
 /**
  * Class which reads and writes DataObjects to and from HDF files on disk.

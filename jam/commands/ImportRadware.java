@@ -1,9 +1,8 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.global.Broadcaster;
 import jam.io.ImpExpSPE;
-
-import com.google.inject.Inject;
 
 /**
  * Import a gf3 spectrum file.

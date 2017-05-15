@@ -1,23 +1,12 @@
 package jam.io;
 
-import jam.data.AbstractHistogram;
-import jam.data.Factory;
-import jam.data.HistDouble1D;
-import jam.data.HistInt1D;
-import jam.data.HistogramType;
+import com.google.inject.Inject;
+import jam.data.*;
 import jam.ui.ExtensionFileFilter;
 
-import java.awt.Frame;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import javax.swing.filechooser.FileFilter;
-
-import com.google.inject.Inject;
+import java.awt.*;
+import java.io.*;
 
 /**
  * Imports and Exports Spectra (Histograms) using the SPE format, this is used

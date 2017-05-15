@@ -1,11 +1,10 @@
 package jam.fit;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import jam.util.NumberUtilities;
 
 import java.text.NumberFormat;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * Utility class for formatting numeric values and their uncertainties.

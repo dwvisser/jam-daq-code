@@ -3,7 +3,7 @@ package jam.commands;
 import injection.GuiceInjector;
 import jam.AboutDialog;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 /**
  * Show the about dialog

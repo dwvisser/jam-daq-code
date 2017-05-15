@@ -1,11 +1,10 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.global.BroadcastEvent;
 import jam.global.BroadcastUtilities;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
-
-import com.google.inject.Inject;
 
 /**
  * Command for scalers

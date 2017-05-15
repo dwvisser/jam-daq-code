@@ -1,8 +1,5 @@
 package jam.plot;
 
-import static javax.swing.SwingConstants.BOTTOM;
-import static javax.swing.SwingConstants.LEFT;
-import static javax.swing.SwingConstants.TOP;
 import jam.data.Dimensional;
 import jam.plot.color.ColorScale;
 import jam.plot.color.DiscreteColorScale;
@@ -10,22 +7,13 @@ import jam.plot.color.GradientColorScale;
 import jam.plot.color.PlotColorMap;
 import jam.plot.common.Scale;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.print.PageFormat;
 
-import javax.swing.JOptionPane;
+import static javax.swing.SwingConstants.*;
 
 /**
  * Class of a library of methods to draw things for a graph. First the update

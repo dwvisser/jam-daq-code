@@ -1,6 +1,6 @@
 package jam.sort;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 /**
  * <code>SimpleRingBuffer</code> is a list of buffers which starts repeating

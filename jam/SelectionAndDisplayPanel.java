@@ -1,10 +1,9 @@
 package jam;
 
+import com.google.inject.Inject;
 import jam.ui.SelectionTree;
 
-import javax.swing.JSplitPane;
-
-import com.google.inject.Inject;
+import javax.swing.*;
 
 final class SelectionAndDisplayPanel extends JSplitPane {
 	@Inject

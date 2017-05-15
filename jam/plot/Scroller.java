@@ -1,14 +1,11 @@
 package jam.plot;
 
-import java.awt.Adjustable;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 
 /**
  * Implements the scroll bars for one and two Dimensional Plots.

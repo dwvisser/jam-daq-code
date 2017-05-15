@@ -1,9 +1,8 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.global.Broadcaster;
 import jam.io.ImportBanGates;
-
-import com.google.inject.Inject;
 
 /**
  * Import a DAMM banana gate file.

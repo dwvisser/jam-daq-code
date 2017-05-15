@@ -1,9 +1,8 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.global.CommandListenerException;
 import jam.io.control.SaveSelectedHistogram;
-
-import com.google.inject.Inject;
 
 /**
  * Save selected histograms to a file

@@ -1,6 +1,6 @@
 package jam.plot;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * Represents where on a plot is selected.

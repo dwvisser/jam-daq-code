@@ -1,19 +1,12 @@
 package jam.commands;
 
-import jam.global.BroadcastEvent;
-import jam.global.CommandListenerException;
-import jam.global.JamStatus;
-import jam.global.QuerySortMode;
-import jam.global.SortMode;
+import com.google.inject.Inject;
+import jam.global.*;
 import jam.io.control.OpenMultipleFiles;
 
+import javax.swing.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.Action;
-import javax.swing.Icon;
-
-import com.google.inject.Inject;
 
 /**
  * Shows the open multiple files dialog

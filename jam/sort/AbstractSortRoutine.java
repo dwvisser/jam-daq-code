@@ -1,15 +1,6 @@
 package jam.sort;
 
-import jam.data.DataParameter;
-import jam.data.Factory;
-import jam.data.Group;
-import jam.data.HistInt1D;
-import jam.data.HistInt2D;
-import jam.data.HistogramType;
-import jam.data.Scaler;
-import jam.data.SortGroupGetter;
-import jam.data.Sorter;
-import jam.data.Warehouse;
+import jam.data.*;
 import jam.sort.stream.EventWriter;
 
 import java.io.IOException;

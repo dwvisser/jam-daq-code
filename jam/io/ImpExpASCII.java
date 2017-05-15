@@ -1,31 +1,14 @@
 package jam.io;
 
-import jam.data.AbstractHistogram;
-import jam.data.Factory;
-import jam.data.HistDouble1D;
-import jam.data.HistDouble2D;
-import jam.data.HistInt1D;
-import jam.data.HistInt2D;
-import jam.data.HistogramType;
+import com.google.inject.Inject;
+import jam.data.*;
 import jam.ui.ExtensionFileFilter;
 
-import java.awt.Frame;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringReader;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.io.*;
 import java.nio.CharBuffer;
 import java.util.Scanner;
-
-import javax.swing.filechooser.FileFilter;
-
-import com.google.inject.Inject;
 
 /**
  * Imports and exports histograms in ASCII channel-space-counts-return format.

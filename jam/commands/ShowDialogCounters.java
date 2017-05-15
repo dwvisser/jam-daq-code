@@ -1,5 +1,6 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.global.BroadcastEvent;
 import jam.global.JamStatus;
 import jam.global.QuerySortMode;
@@ -8,8 +9,6 @@ import jam.sort.control.DisplayCounters;
 
 import java.util.Observable;
 import java.util.Observer;
-
-import com.google.inject.Inject;
 
 /**
  * Show parameters dialog.

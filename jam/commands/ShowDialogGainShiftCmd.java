@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.data.control.GainShift;
-
 import com.google.inject.Inject;
+import jam.data.control.GainShift;
 
 /**
  * Show the gain shift dialog

@@ -4,14 +4,7 @@ import injection.GuiceInjector;
 import jam.global.Nameable;
 import jam.util.StringUtilities;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Class containing spectra and the routines to perform operations on them.

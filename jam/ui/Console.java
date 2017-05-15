@@ -1,28 +1,20 @@
 package jam.ui;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import injection.MapListener;
 import jam.global.CommandFinder;
 import jam.global.CommandListener;
 import jam.global.LoggerConfig;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * Class Console displays a output of commands and error messages and allows the

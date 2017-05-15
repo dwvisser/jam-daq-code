@@ -1,8 +1,7 @@
 package jam.data.control;
 
-import static javax.swing.SwingConstants.CENTER;
-import static javax.swing.SwingConstants.LEFT;
-import static javax.swing.SwingConstants.RIGHT;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import jam.data.Monitor;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -11,32 +10,14 @@ import jam.sort.ThreadPriorities;
 import jam.ui.Canceller;
 import jam.ui.WindowCancelAction;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.util.List;
 import java.util.logging.Level;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import static javax.swing.SwingConstants.*;
 
 /**
  * Reads and displays the monitors.

@@ -1,11 +1,9 @@
 package jam.io.hdf;
 
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingUtilities;
 
 /**
  * Progress bar that can be called from asyncronize (non ui) thread

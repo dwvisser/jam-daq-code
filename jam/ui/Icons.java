@@ -3,12 +3,10 @@
  */
 package jam.ui;
 
-import java.net.URL;
-
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-
 import com.google.inject.Singleton;
+
+import javax.swing.*;
+import java.net.URL;
 
 /**
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>

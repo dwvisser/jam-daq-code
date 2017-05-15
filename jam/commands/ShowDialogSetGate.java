@@ -1,16 +1,13 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.data.AbstractHistogram;
 import jam.data.control.GateSet;
 import jam.global.Nameable;
 
+import javax.swing.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.Action;
-import javax.swing.Icon;
-
-import com.google.inject.Inject;
 
 /**
  * Show the scalers dialog box.

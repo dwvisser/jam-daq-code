@@ -1,9 +1,9 @@
 package jam.global;
 
-import java.util.logging.Logger;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import java.util.logging.Logger;
 
 /**
  * Global utility methods for broadcasting messages.

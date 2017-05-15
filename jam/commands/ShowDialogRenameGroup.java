@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.data.control.GroupRename;
-
 import com.google.inject.Inject;
+import jam.data.control.GroupRename;
 
 /**
  * Show the dialog for new group

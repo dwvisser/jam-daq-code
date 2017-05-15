@@ -3,14 +3,7 @@
  */
 package jam.sort;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
+import java.io.*;
 import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;

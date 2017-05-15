@@ -5,11 +5,7 @@ import jam.data.AbstractHistogram;
 import jam.global.Nameable;
 import jam.util.StringUtilities;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Represents the number and arrangements of plots to show within the

@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.data.control.GateAdd;
-
 import com.google.inject.Inject;
+import jam.data.control.GateAdd;
 
 /**
  * Show the gate add dialog box.

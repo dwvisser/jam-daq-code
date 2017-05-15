@@ -1,17 +1,11 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.data.DataBase;
 import jam.data.Group;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.CommandListenerException;
-import jam.global.JamStatus;
-import jam.global.Nameable;
+import jam.global.*;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
-import com.google.inject.Inject;
+import javax.swing.*;
 
 /**
  * Delete a group

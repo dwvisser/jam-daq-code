@@ -1,10 +1,7 @@
 package jam.util;
 
+import javax.swing.*;
 import java.util.logging.Logger;
-
-import javax.swing.JComponent;
-import javax.swing.RepaintManager;
-import javax.swing.SwingUtilities;
 
 /**
  * Set repaint manager to this to check whether Swing and event threads are

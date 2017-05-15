@@ -1,11 +1,9 @@
 package jam.data.func;
 
+import javax.swing.*;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Arrays;
-
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
 /**
  * A function that can be use to calibrate a histogram. Most often used to

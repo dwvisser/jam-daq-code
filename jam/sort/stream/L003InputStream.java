@@ -1,12 +1,9 @@
 package jam.sort.stream;
 
-import static jam.sort.stream.L003Parameters.EVENT_MASK;
-import static jam.sort.stream.L003Parameters.HEADER_START;
-import static jam.sort.stream.L003Parameters.SCALER_BUFF_SIZE;
-import static jam.sort.stream.L003Parameters.SCALER_REC_SIZE;
-
 import java.io.EOFException;
 import java.io.IOException;
+
+import static jam.sort.stream.L003Parameters.*;
 
 /**
  * This class knows how to handle Oak Ridge tape format (with special headers as

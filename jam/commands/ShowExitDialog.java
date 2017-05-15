@@ -2,11 +2,8 @@ package jam.commands;
 
 import injection.GuiceInjector;
 
+import javax.swing.*;
 import java.awt.event.KeyEvent;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
 
 /**
  * Show the exit dialog.

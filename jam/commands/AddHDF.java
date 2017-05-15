@@ -1,5 +1,6 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -10,8 +11,6 @@ import jam.io.hdf.HDFIO;
 
 import java.io.File;
 import java.util.Observable;
-
-import com.google.inject.Inject;
 
 /**
  * Add counts to histograms in memory from histograms in an HDF file.

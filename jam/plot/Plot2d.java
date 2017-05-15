@@ -1,30 +1,19 @@
 package jam.plot;
 
-import static jam.plot.color.ColorPrefs.COLOR_PREFS;
-import jam.data.AbstractHist1D;
-import jam.data.AbstractHistogram;
-import jam.data.HistDouble2D;
-import jam.data.HistInt2D;
-import jam.data.HistogramType;
+import com.google.inject.Inject;
+import jam.data.*;
 import jam.plot.color.ColorPrefs;
 import jam.plot.color.DiscreteColorScale;
 import jam.plot.color.PlotColorMap;
 import jam.plot.common.Scale;
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.Shape;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 
-import javax.swing.SwingUtilities;
-
-import com.google.inject.Inject;
+import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 
 /**
  * Class to plot a 2-dimensional histogram.

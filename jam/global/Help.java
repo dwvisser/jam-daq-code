@@ -1,12 +1,11 @@
 package jam.global;
 
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
 import javax.help.HelpSetException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Utility class for JavaHelp usage.

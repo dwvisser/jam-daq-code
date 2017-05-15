@@ -2,7 +2,7 @@ package jam.commands;
 
 import jam.global.CommandListenerException;
 
-import javax.swing.JDialog;
+import javax.swing.*;
 
 /**
  * Commands that are for showing <code>JDialog</code>'s. Dialogs simply extend

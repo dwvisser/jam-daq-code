@@ -2,12 +2,7 @@
  */
 package jam;
 
-import jam.data.DataElement;
-import jam.data.Gate;
-import jam.data.AbstractHistogram;
-import jam.data.Monitor;
-import jam.data.RemoteData;
-import jam.data.Scaler;
+import jam.data.*;
 import jam.global.Nameable;
 import jam.global.RunInfo;
 

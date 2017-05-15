@@ -23,19 +23,13 @@
  **************************************************************/
 package jam.util;
 
-import java.awt.Frame;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import com.google.inject.Inject;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
-
-import javax.swing.ProgressMonitor;
-
-import com.google.inject.Inject;
 
 /**
  * Scans YaleCAEN event files for scaler blocks.

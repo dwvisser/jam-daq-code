@@ -1,26 +1,20 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Group;
 import jam.data.SortGroupGetter;
 import jam.data.Warehouse;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.JamStatus;
-import jam.global.QuerySortMode;
-import jam.global.SortMode;
+import jam.global.*;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 import jam.ui.SelectionTree;
 
-import java.awt.Event;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Observable;
-
-import javax.swing.KeyStroke;
-
-import com.google.inject.Inject;
 
 /**
  * Reload data from a hdf file

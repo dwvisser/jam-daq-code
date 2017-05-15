@@ -1,12 +1,11 @@
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.data.Scaler;
 import jam.data.control.ScalerDisplay;
 
 import java.util.Observable;
 import java.util.Observer;
-
-import com.google.inject.Inject;
 
 /**
  * Show the scalers dialog box

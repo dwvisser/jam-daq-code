@@ -1,7 +1,7 @@
 package jam.io;
 
-import jam.data.Group;
 import jam.data.AbstractHistogram;
+import jam.data.Group;
 
 import java.io.File;
 import java.util.List;

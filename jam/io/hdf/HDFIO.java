@@ -1,17 +1,7 @@
 package jam.io.hdf;
 
-import jam.data.AbstractHist1D;
-import jam.data.AbstractHistogram;
-import jam.data.DataElement;
-import jam.data.DataParameter;
-import jam.data.DataUtility;
-import jam.data.Factory;
-import jam.data.Gate;
-import jam.data.Group;
-import jam.data.NameValueCollection;
-import jam.data.Scaler;
-import jam.data.SortGroupGetter;
-import jam.data.Warehouse;
+import com.google.inject.Inject;
+import jam.data.*;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.NoFunction;
 import jam.global.JamStatus;
@@ -20,7 +10,8 @@ import jam.io.FileOpenMode;
 import jam.util.AbstractSwingWorker;
 import jam.util.FileUtilities;
 
-import java.awt.Frame;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -30,10 +21,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-
-import javax.swing.SwingUtilities;
-
-import com.google.inject.Inject;
 
 /**
  * Reads and writes HDF files containing spectra, scalers, gates, and additional

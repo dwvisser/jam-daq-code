@@ -3,13 +3,12 @@
  */
 package jam.commands;
 
+import com.google.inject.Inject;
 import jam.data.Monitor;
 import jam.data.control.MonitorDisplay;
 
 import java.util.Observable;
 import java.util.Observer;
-
-import com.google.inject.Inject;
 
 /**
  * 

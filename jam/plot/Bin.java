@@ -1,6 +1,6 @@
 package jam.plot;
 
-import java.awt.Point;
+import java.awt.*;
 
 /**
  * Abstraction of a histogram channel on the display.

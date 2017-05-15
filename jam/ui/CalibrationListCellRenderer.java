@@ -2,12 +2,8 @@ package jam.ui;
 
 import jam.data.func.CalibrationFunctionCollection;
 
-import java.awt.Component;
-
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
-import javax.swing.JList;
-import javax.swing.UIManager;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Renders representations for a JComboBox list entry of a
