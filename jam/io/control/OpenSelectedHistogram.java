@@ -178,13 +178,9 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 			LOGGER.severe("No histograms selected");
 		} else {
 			/* Put selected histograms into a list */
-			final List<String> selectNames = new ArrayList<>();
 			for (String histFullName : selected) {
-				final HistogramAttributes histAttrib = HistogramAttributes
-						.getHistogramAttribute(histFullName);
-				histAttrList.add(histAttrib);
-				final String histName = histAttrib.getName();
-				selectNames.add(histName);
+				histAttrList.add(HistogramAttributes
+						.getHistogramAttribute(histFullName));
 			}
 			/* Read in histograms */
 			hdfio.setListener(this);

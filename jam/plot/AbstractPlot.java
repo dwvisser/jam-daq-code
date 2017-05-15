@@ -346,7 +346,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
         setLastMovePoint(bin.getPoint());
     }
 
-    private final void initPrefs() {
+    private void initPrefs() {
         options.setIgnoreChFull(PlotPreferences.PREFS.getBoolean(
                 PlotPreferences.AUTO_IGNORE_FULL, true));
         options.setIgnoreChZero(PlotPreferences.PREFS.getBoolean(
@@ -488,7 +488,7 @@ abstract class AbstractPlot implements PreferenceChangeListener, Dimensional,
      */
     abstract protected void paintSettingGate(Graphics graphics);
 
-    private final boolean plotDataExists() {
+    private boolean plotDataExists() {
         synchronized (this) {
             final AbstractHistogram plotHist = getHistogram();
             return plotHist != null && !plotHist.isClear();

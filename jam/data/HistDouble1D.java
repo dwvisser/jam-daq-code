@@ -135,8 +135,8 @@ public final class HistDouble1D extends AbstractHist1D {
 			throw new IllegalArgumentException("Expected array for type "
 					+ getType());
 		}
-		final int inLength = ((double[]) countsIn).length;
-		System.arraycopy(countsIn, 0, countsDouble, 0, Math.min(inLength,
+        double[] doubles = (double[]) countsIn;
+        System.arraycopy(doubles, 0, countsDouble, 0, Math.min(doubles.length,
 				getSizeX()));
 	}
 

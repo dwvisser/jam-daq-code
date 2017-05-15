@@ -38,9 +38,8 @@ public final class JamPropertiesTest {// NOPMD
 		System.setProperty("jam.home", tmpDir);
 		final Properties properties = new Properties();
 		properties.put(TESTPROPERTY, TESTVALUE);
-		FileOutputStream output = null;
 		try {
-			output = new FileOutputStream(out);
+			FileOutputStream output = new FileOutputStream(out);
 			try {
 				properties.store(output, "JamProperties Test");
 			} finally {

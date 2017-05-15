@@ -93,11 +93,10 @@ public final class NetDaemon extends GoodThread {
         } catch (SocketException se) {
             LOGGER.info("Communication with acquisition halted, because the socket was closed.");
         } catch (Exception e) {
-            final StringBuilder message = new StringBuilder(200);
-            message.append("Communication with acquisition halted, because of ");
-            message.append(e.getClass().getName()).append(':')
-                    .append(e.getMessage());
-            LOGGER.warning(message.toString());
+            String message = "Communication with acquisition halted, because of " +
+                    e.getClass().getName() + ':' +
+                    e.getMessage();
+            LOGGER.warning(message);
         }
     }
 

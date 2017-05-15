@@ -232,11 +232,10 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 					LOGGER.info("  Run number: " + runNumber + " Title: "
 							+ runTitle.trim() + " ");
 				}
-				final int[] scalers = new int[NUMBER_SCALERS];
+
 				/* read in scalers values */
 				for (int i = 0; i < NUMBER_SCALERS; i++) {
-					scalers[i] = bufferToBigEndian(buffer, P_SCALERS + L_INT
-							* i);
+					bufferToBigEndian(buffer, P_SCALERS + L_INT * i);
 				}
 				/* read in scaler titles */
 				final String[] scalerTitles = new String[NUMBER_SCALERS];
@@ -302,30 +301,24 @@ public class ImpExpXSYS extends AbstractImpExp {// NOPMD
 	private int[][] unPackData2d(final DataInputStream buffin,
 			final int lengthX, final int lengthY, final int pages)
 			throws IOException {
-		int numberLongWords;
-		int channelX = 0;
-		int channelY = 0;
-		int areaSize;
-		int[][] rval;
-		byte tempBuff[];
-
-		numberLongWords = pages * XSYS_BUFFER_SIZE;
-		areaSize = Math.max(lengthX, lengthY); // maximum of 2 values
-		rval = new int[areaSize][areaSize];
+		int numberLongWords = pages * XSYS_BUFFER_SIZE;
+		int areaSize = Math.max(lengthX, lengthY); // maximum of 2 values
+		int[][] result = new int[areaSize][areaSize];
 		final int bytesToRead = numberLongWords * L_INT;
-		tempBuff = new byte[bytesToRead];
-		// read in data to a tempory buffer
+		byte[] tempBuff = new byte[bytesToRead];
+
+		// read in data to a temporary buffer
 		buffin.readFully(tempBuff, 0, bytesToRead);
 		int index = 0;
-		for (channelX = 0; channelX < lengthX; channelX++) {
-			for (channelY = 0; channelY < lengthY; channelY++) {
+		for (int channelX = 0; channelX < lengthX; channelX++) {
+			for (int channelY = 0; channelY < lengthY; channelY++) {
 				// little endian read from buffer
-				rval[channelX][channelY] = this.numberUtilities.bytesToInt(
+				result[channelX][channelY] = this.numberUtilities.bytesToInt(
 						tempBuff, index * L_INT, ByteOrder.LITTLE_ENDIAN);
 				index++;
 			}
 		}
-		return rval;
+		return result;
 	}
 
 	/*

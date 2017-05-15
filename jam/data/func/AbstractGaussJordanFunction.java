@@ -38,17 +38,6 @@ public abstract class AbstractGaussJordanFunction extends
 			throw new IllegalArgumentException(
 					"Need same number of x and y points for polynomial fit");
 		}
-		// Find mean x to shift fit around mean
-		double sum = 0.0;
-		for (double aXVal : xVal) {
-			sum += aXVal;
-		}
-		final double xMean = sum / xVal.length;
-		// Shift x data around mean
-		double[] xNorm = new double[xVal.length];
-		for (int k = 0; k < xVal.length; k++) {
-			xNorm[k] = xVal[k] - xMean;
-		}
 		final double[][] matrixA = new double[numTerms][numTerms];
 		final double[] vectorB = new double[numTerms];
 		buildPolyMatrix(xVal, yVal, numTerms, matrixA, vectorB);

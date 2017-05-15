@@ -145,14 +145,13 @@ public final class Peak implements Comparable<Peak>, Cloneable {
 
 	@Override
 	public String toString() {
-		final StringBuilder rval = new StringBuilder(58);
-		rval.append(PEAK_POSITION);
-		rval.append(position).append(PLUSMINUS);
-		rval.append(perr);
-		rval.append(AREA).append(area).append(PLUSMINUS).append(aerr);
-		rval.append(FWHM).append(width).append(PLUSMINUS).append(werr);
-		rval.append('\n');
-		return rval.toString();
+        String rval = PEAK_POSITION +
+                position + PLUSMINUS +
+                perr +
+                AREA + area + PLUSMINUS + aerr +
+                FWHM + width + PLUSMINUS + werr +
+                '\n';
+        return rval;
 	}
 
 }

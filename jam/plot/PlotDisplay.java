@@ -361,7 +361,7 @@ public final class PlotDisplay extends JPanel implements
         updateLayout();
         /* Set properties for each plot */
         gridPanel.removeAll();
-        PlotContainer plotContainer = null;
+        PlotContainer plotContainer;
         /* Set initial states for all plots */
         for (int i = 0; i < numberPlots; i++) {
             plotContainer = plotContainers.get(i);

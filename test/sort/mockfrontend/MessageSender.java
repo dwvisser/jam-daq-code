@@ -108,7 +108,7 @@ public class MessageSender {
         public void run() {
             final DatagramPacket packetMessage = constructPacket(
                     this.jamDataSocketAddress, buffer);
-            boolean keepRunning = packetMessage != null;
+            boolean keepRunning = true;
             while (keepRunning) {
                 fillBuffer(); // change contents of packetMessage's buffer
                 try {// create and send packet

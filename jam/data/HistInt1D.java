@@ -215,9 +215,9 @@ public final class HistInt1D extends AbstractHist1D {
 			throw new IllegalArgumentException("Expected array for type "
 					+ getType());
 		}
-		final int inLength = ((int[]) countsIn).length;
+		int[] ints = (int[]) countsIn;
 		synchronized (this) {
-			System.arraycopy(countsIn, 0, counts, 0, Math.min(inLength,
+			System.arraycopy(ints, 0, counts, 0, Math.min(ints.length,
 					getSizeX()));
 		}
 	}

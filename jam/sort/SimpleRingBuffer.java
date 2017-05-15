@@ -65,6 +65,7 @@ public final class SimpleRingBuffer implements RingBuffer {
 				message.append(Thread.currentThread().getName());
 				message
 						.append("\" when putBuffer() called while already full.");
+				System.err.println(message.toString());
 			} else {
 				System.arraycopy(inBuffer, 0, buffer[posPut & MASK], 0,
 						inBuffer.length);

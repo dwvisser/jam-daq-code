@@ -242,10 +242,9 @@ final class Painter {
 	 * @since Version 0.5
 	 */
 	protected void drawTitle(final String title, final int side) {
-		int offset = 1;
 		int xPos;
 		int yPos;
-		offset = metrics.stringWidth(title);
+		int offset = metrics.stringWidth(title);
 		if (graphLayout == GraphicsLayout.LABELS) {
 			xPos = viewMiddle().x - offset / 2;
 		} else {
@@ -537,7 +536,7 @@ final class Painter {
 	 * @since Version 0.5
 	 */
 	protected void drawHist(final double[] counts, final double binWidth) {
-		Scale scale = null;
+		Scale scale;
 		synchronized (limitsLock) {
 			scale = plotLimits.getScale();
 		}
@@ -582,11 +581,8 @@ final class Painter {
 					"drawHistLinear() called with null array.", getClass()
 							.getName(), JOptionPane.WARNING_MESSAGE);
 		} else {
-			int minX = 0;
-			int maxX = 0;
-			double binChLo = 0.0;
-			int firstBin = 0;
-			int lastBin = 0;
+			int minX, maxX, firstBin, lastBin;
+			double binChLo;
 			synchronized (limitsLock) {
 				maxX = plotLimits.getMaximumX();
 				final int upperX = (int) Math.min(maxX + 1, lastBinAllLo);
@@ -701,8 +697,7 @@ final class Painter {
 	 * @since Version 0.5
 	 */
 	private void drawLineLog(final double[] channel, final double[] counts) {
-		int lowerX = 0;
-		int upperX = 0;
+		int lowerX, upperX;
 		synchronized (limitsLock) {
 			lowerX = Math.max(plotLimits.getMinimumX(), (int) channel[0] + 1);
 			upperX = Math.min(plotLimits.getMaximumX(),
@@ -789,7 +784,7 @@ final class Painter {
 	}
 
 	protected void drawScale2d() {
-		Scale scale = null;
+		Scale scale;
 		synchronized (limitsLock) {
 			scale = plotLimits.getScale();
 		}
@@ -872,7 +867,7 @@ final class Painter {
 	 */
 	protected void drawHist2d(final double[][] counts, final int minChanX,
 			final int minChanY, final int maxChanX, final int maxChanY) {
-		ColorScale colors = null;
+		ColorScale colors;
 		synchronized (limitsLock) {
 			colors = GradientColorScale.getScale(plotLimits.getScale());
 		}
@@ -927,8 +922,7 @@ final class Painter {
 	 */
 	protected void drawGate2d(final boolean[][] gate) {
 		if (gate != null) {
-			int minX = 0;
-			int maxX = 0;
+			int minX, maxX;
 			synchronized (limitsLock) {
 				minX = plotLimits.getMinimumX();
 				maxX = plotLimits.getMaximumX();
@@ -1214,9 +1208,8 @@ final class Painter {
 	 */
 	protected void markArea1d(final int lowChan, final int highChan,
 			final double[] counts) {
-		int minChan = 0;
-		int maxChan = 0;
-		boolean log = false;
+		int minChan, maxChan;
+		boolean log;
 		final Polygon fill = new Polygon();
 		synchronized (limitsLock) {
 			minChan = Math.max(plotLimits.getMinimumX(), lowChan);

@@ -203,33 +203,9 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
         /* Histogram info in Drr file */
         dim = new int[totalHist]; // Histogram dimensionality
         chSize = new int[totalHist]; // half words per channel
-        final int[] param1 = new int[totalHist]; // Histogram parameter
-        final int[] param2 = new int[totalHist];
-        final int[] param3 = new int[totalHist];
-        final int[] param4 = new int[totalHist];
-        final int[] lenParRaw1 = new int[totalHist]; // Length raw parameters
-        final int[] lenParRaw2 = new int[totalHist];
-        final int[] lenParRaw3 = new int[totalHist];
-        final int[] lenParRaw4 = new int[totalHist];
         lenParScal1 = new int[totalHist]; // Length scaled parameters
         lenParScal2 = new int[totalHist];
-        final int[] lenParScal3 = new int[totalHist];
-        final int[] lenParScal4 = new int[totalHist];
-        final int[] minCh1 = new int[totalHist]; // Min channels
-        final int[] minCh2 = new int[totalHist];
-        final int[] minCh3 = new int[totalHist];
-        final int[] minCh4 = new int[totalHist];
-        final int[] maxCh1 = new int[totalHist]; // Max channels
-        final int[] maxCh2 = new int[totalHist];
-        final int[] maxCh3 = new int[totalHist];
-        final int[] maxCh4 = new int[totalHist];
         offSet = new int[totalHist];
-        final String[] parLabelX = new String[totalHist];
-        final String[] parLabelY = new String[totalHist];
-        final float[] cal1 = new float[totalHist]; // Calibration constants
-        final float[] cal2 = new float[totalHist];
-        final float[] cal3 = new float[totalHist];
-        final float[] cal4 = new float[totalHist];
         titleDrr = new String[totalHist]; // title 40 bytes
         /* ID list */
         iDnumber = new int[totalHist];
@@ -237,44 +213,42 @@ public class ImpExpORNL extends AbstractImpExp {// NOPMD
         for (int i = 0; i < totalHist; i++) {
             dim[i] = readShort(disDrr); // Histogram dimensionality
             chSize[i] = readShort(disDrr); // half-words per channel
-            param1[i] = readShort(disDrr); // dummy param #
-            param2[i] = readShort(disDrr); // dummy param #
-            param3[i] = readShort(disDrr); // dummy param #
-            param4[i] = readShort(disDrr); // dummy param #
-            lenParRaw1[i] = readShort(disDrr); // length Raw parameter
-            lenParRaw2[i] = readShort(disDrr); // length Raw parameter
-            lenParRaw3[i] = readShort(disDrr); // length Raw parameter
-            lenParRaw4[i] = readShort(disDrr); // length Raw parameter
+            readShort(disDrr); // dummy param #
+            readShort(disDrr); // dummy param #
+            readShort(disDrr); // dummy param #
+            readShort(disDrr); // dummy param #
+            readShort(disDrr); // length Raw parameter
+            readShort(disDrr); // length Raw parameter
+            readShort(disDrr); // length Raw parameter
+            readShort(disDrr); // length Raw parameter
             lenParScal1[i] = readShort(disDrr);
             /* length Scaled parameters */
             lenParScal2[i] = readShort(disDrr);
-            lenParScal3[i] = readShort(disDrr);
-            lenParScal4[i] = readShort(disDrr);
-            minCh1[i] = readShort(disDrr); // min channel 1
-            minCh2[i] = readShort(disDrr); // min channel 2
-            minCh3[i] = readShort(disDrr); // min channel 3
-            minCh4[i] = readShort(disDrr); // min channel 4
-            maxCh1[i] = readShort(disDrr); // max channel 1
-            maxCh2[i] = readShort(disDrr); // max channel 2
-            maxCh3[i] = readShort(disDrr); // max channel 3
-            maxCh4[i] = readShort(disDrr); // max channle 4
+            readShort(disDrr); // lenParScal3
+            readShort(disDrr); // lenParScal4
+            readShort(disDrr); // min channel 1
+            readShort(disDrr); // min channel 2
+            readShort(disDrr); // min channel 3
+            readShort(disDrr); // min channel 4
+            readShort(disDrr); // max channel 1
+            readShort(disDrr); // max channel 2
+            readShort(disDrr); // max channel 3
+            readShort(disDrr); // max channle 4
             offSet[i] = readInt(disDrr); // offset in 16 bit words
             int numRead = disDrr.read(parLabelb); // x param label
             if (numRead < parLabelb.length) {
                 throw new IOException(
                         "Wasn't able to read expected number of bytes for parameter label.");
             }
-            parLabelX[i] = String.valueOf(parLabelb);
             numRead = disDrr.read(parLabelb); // y param label
             if (numRead < parLabelb.length) {
                 throw new IOException(
                         "Wasn't able to read expected number of bytes for parameter label.");
             }
-            parLabelY[i] = String.valueOf(parLabelb);
-            cal1[i] = disDrr.readFloat(); // calibaration const
-            cal2[i] = disDrr.readFloat(); // calibaration const
-            cal3[i] = disDrr.readFloat(); // calibaration const
-            cal4[i] = disDrr.readFloat(); // calibaration const
+            disDrr.readFloat(); // calibaration const
+            disDrr.readFloat(); // calibaration const
+            disDrr.readFloat(); // calibaration const
+            disDrr.readFloat(); // calibaration const
             numRead = disDrr.read(titleb); // sub-Title
             if (numRead < titleb.length) {
                 throw new IOException(

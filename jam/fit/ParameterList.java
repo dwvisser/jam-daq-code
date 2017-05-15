@@ -176,7 +176,7 @@ public class ParameterList implements Iterable<Parameter<?>> {
 			if (param.hasErrorBar()) {
 				param.setError(0.0);
 				this.textError.get(param).setText(param.formatError());
-				textField.setEditable(!fixed);
+				textField.setEditable(false);
 			}
 			// not a fixed value
 		} else {
@@ -184,7 +184,7 @@ public class ParameterList implements Iterable<Parameter<?>> {
 				this.cEstimate.get(param).setEnabled(true);
 			}
 			if (param.hasErrorBar()) {
-				textField.setEditable(!fixed);
+				textField.setEditable(true);
 			}
 		}
 	}

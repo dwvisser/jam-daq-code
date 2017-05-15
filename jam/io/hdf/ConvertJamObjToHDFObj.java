@@ -274,7 +274,6 @@ final class ConvertJamObjToHDFObj {
     protected VirtualGroup convertGate(final Gate gate) {
         String gateType;
         String[] columnNames;
-        int size = 1;
 
         int[] xcoord = new int[0];
         int[] ycoord = new int[0];
@@ -282,6 +281,7 @@ final class ConvertJamObjToHDFObj {
                 VDataDescription.DFNT_INT32 };
         final short[] orders = {1, 1 };
         final String gateName = gate.getName();
+        int size;
         if (gate.getDimensionality() == 1) {
             gateType = JamFileFields.GATE_1D_TYPE;
             columnNames = JamFileFields.GATE_1D;

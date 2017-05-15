@@ -95,8 +95,7 @@ public final class L003InputStream extends AbstractEventInputStream {
 		final byte[] title = new byte[80];
 		final byte[] reserved1 = new byte[8];
 		final byte[] reserved2 = new byte[92];
-		int number = 0;
-		int size = 0;
+		int number, size;
 
 		try {
 			dataInput.readFully(headerStart);

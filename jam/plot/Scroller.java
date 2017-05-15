@@ -56,7 +56,7 @@ class Scroller extends JPanel implements AdjustmentListener, Limitable {
 		initialize();
 	}
 
-	private final void initialize() {
+	private void initialize() {
 		this.setLayout(new BorderLayout());
 		// add scroll bars to plot
 		plot.addScrollBars(this);

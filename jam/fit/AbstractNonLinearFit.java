@@ -116,7 +116,7 @@ public abstract class AbstractNonLinearFit extends AbstractFit implements
 		boolean close;
 		boolean quit;
 		int smallCounter = 0;
-		String returnVal = "Note: errors not independent.";
+		String returnVal;
 		fitter = new LevenbergMarquadt(this);
 		// function.setParameters(parameters);
 		minCH = lowChannel.getValue();
@@ -128,14 +128,14 @@ public abstract class AbstractNonLinearFit extends AbstractFit implements
 		try {
 			fitter.iterate(LevenbergMarquadt.Iteration.FIRST_ITERATION);
 		} catch (Exception e) {
-			returnVal = e.toString();
+//			returnVal = e.toString();
 		}
 		chiSq = fitter.getChiSq();
 		do {
 			try {
 				fitter.iterate(LevenbergMarquadt.Iteration.NEXT_ITERATION);
 			} catch (Exception e) {
-				returnVal = e.toString();
+//				returnVal = e.toString();
 			}
 			newChiSq = fitter.getChiSq();
 			numIter++;

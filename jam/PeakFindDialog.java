@@ -80,12 +80,9 @@ public class PeakFindDialog extends JDialog {
 		final double dSense = Double.parseDouble(sensitivity.getText().trim());
 		final boolean cal = calibrate.isSelected();
 		display.setPeakFindProperties(dWidth, dSense, cal);
-		final StringBuilder msg = new StringBuilder(
-				"Peak Find Properties Set: Width=");
-		msg.append(dWidth).append(", Sensitivity=").append(dSense);
-		msg
-				.append(cal ? ", calibrated value displayed if available, centroid channel if not."
-						: ", centroid channel displayed.");
-		LOGGER.info(msg.toString());
+        String msg = "Peak Find Properties Set: Width=" + dWidth + ", Sensitivity=" + dSense +
+                (cal ? ", calibrated value displayed if available, centroid channel if not."
+                        : ", centroid channel displayed.");
+        LOGGER.info(msg);
 	}
 }

@@ -133,7 +133,7 @@ public final class GainCalibration {
 		// read in header lines, header are lines that start with a non-number
 		// token
 		final CharBuffer buffer = CharBuffer.allocate(input.available());
-		int numRead = 0;
+		int numRead;
 		do {
 			numRead = lnr.read(buffer);
 			buffer.clear();

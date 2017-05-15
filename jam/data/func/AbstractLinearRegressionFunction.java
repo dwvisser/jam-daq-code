@@ -40,7 +40,7 @@ public abstract class AbstractLinearRegressionFunction extends
 		double sumxy = 0.0;
 		double sumyy = 0.0;
 		final double weight = 1.0;
-		double delta = 0.0;
+		double delta;
 		double aEst, bEst;
 		final int numberPoints = xVal.length;
 		for (int i = 0; i < numberPoints; i++) {

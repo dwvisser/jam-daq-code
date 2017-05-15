@@ -146,7 +146,7 @@ final class Plot1d extends AbstractPlot {
 		this.fitResiduals = new double[0];
 		this.fitTotal = new double[0];
 		panel.setDisplayingFit(true);
-		int length = 0;
+		int length;
 		length = (signals == null) ? background.length : signals[0].length;
 		fitChannels = new double[length];
 		for (int i = 0; i < length; i++) {

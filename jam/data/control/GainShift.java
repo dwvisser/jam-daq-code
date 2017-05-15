@@ -536,8 +536,8 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 	}
 
 	private void setUseCoeff(final boolean state) throws DataException {
+		setUILabels(state);
 		if (state) {
-			setUILabels(state);
 			getChannels();
 			calculateCoefficients();
 			text1.setText(format(intercept1));
@@ -545,7 +545,6 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 			text3.setText(format(intercept2));
 			text4.setText(format(slope2));
 		} else {
-			setUILabels(state);
 			getCoefficients();
 			calculateChannels();
 			text1.setText(format(chan1i));

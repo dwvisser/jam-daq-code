@@ -404,8 +404,8 @@ public final class SelectionTree extends JPanel implements Observer {
 	 * non-javadoc
 	 */
 	private void selectOverlay(final TreePath[] paths) {
-		DefaultMutableTreeNode overlayNode = null;
-		Object overlayObj = null;
+		DefaultMutableTreeNode overlayNode;
+		Object overlayObj;
 		AbstractHistogram overlayHist;
 		status.clearOverlays();
 		/* Loop from 2nd element to the end. */

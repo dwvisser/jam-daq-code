@@ -235,7 +235,6 @@ final class ConvertHDFObjToJamObj {
     protected HistogramAttributes convertHistogamAttributes(
             final String groupName, final VirtualGroup histGroup,
             final FileOpenMode mode) throws HDFException {
-        NumericalDataGroup ndg = null;
         final DataIDLabel dataLabel = DataIDLabel.withTagRef(
                 VirtualGroup.class, histGroup.getRef());
         final String name = dataLabel.getLabel();
@@ -248,6 +247,7 @@ final class ConvertHDFObjToJamObj {
                 .getObjects(), NumericalDataGroup.class);
         final NumericalDataGroup[] dataGroups = tempVec
                 .toArray(new NumericalDataGroup[tempVec.size()]);
+        NumericalDataGroup ndg;
         if (dataGroups.length == 1) {
             ndg = dataGroups[0]; // only one NDG -- the data
         } else if (dataGroups.length == 2) {
@@ -430,10 +430,9 @@ final class ConvertHDFObjToJamObj {
      */
     protected int convertParameters(final VDataDescription vdd,
             final FileOpenMode mode) {
-        int numParams = 0;
         /* Get corresponding VS for this VH */
         final VData data = AbstractData.getObject(VData.class, vdd.getRef());
-        numParams = vdd.getNumRows();
+        int numParams = vdd.getNumRows();
         for (int i = 0; i < numParams; i++) {
             final String pname = data.getString(i, 0);
             /* make if OPEN, retrieve if RELOAD */
@@ -468,11 +467,9 @@ final class ConvertHDFObjToJamObj {
      */
     protected int convertScalers(final Group group,
             final VDataDescription vdd, final FileOpenMode mode) {
-        int numScalers = 0;
-
         /* get the VS corresponding to the given VH */
         final VData data = AbstractData.getObject(VData.class, vdd.getRef());
-        numScalers = vdd.getNumRows();
+        int numScalers = vdd.getNumRows();
         for (int i = 0; i < numScalers; i++) {
             final String sname = data.getString(i, 1);
             final int sNumber = data.getInteger(i, 0);

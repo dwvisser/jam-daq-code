@@ -120,18 +120,18 @@ public class Console extends JPanel {
 	}
 
 	private boolean isNumber(final String string) {
-		boolean rval;
+		boolean result;
 		try {
 			if (string.indexOf('.') >= 0) {
 				Double.parseDouble(string);
 			} else {
 				Integer.parseInt(string);
 			}
-			rval = true;
+			result = true;
 		} catch (NumberFormatException nfe) {
-			rval = false;
+			result = false;
 		}
-		return rval;
+		return result;
 	}
 
 	/**
@@ -196,7 +196,8 @@ public class Console extends JPanel {
 			}
 			/* Load parameter tokens */
 			if (parameters.length > 0) {
-				System.arraycopy(cmdTokens.toArray(), initIndex, parameters, 0,
+				System.arraycopy(cmdTokens.toArray(new String[0]), initIndex,
+						parameters, 0,
 						numWords - initIndex);
 			}
 			/* perform command */
@@ -221,9 +222,7 @@ public class Console extends JPanel {
 			if (cmdToken.charAt(0) == '\"') {
 				cmdToken = cmdToken.substring(1, cmdToken.length() - 1);
 			}
-			if (cmdToken != null) {
-				rval.add(cmdToken);
-			}
+			rval.add(cmdToken);
 		}
 		return rval;
 	}

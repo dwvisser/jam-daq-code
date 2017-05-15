@@ -55,9 +55,8 @@ public class LinearFunction extends AbstractLinearRegressionFunction {
 
 	@Override
 	public String updateFormula(final NumberFormat numFormat) {
-		final StringBuilder formula = new StringBuilder();
-		formula.append("E = ").append(numFormat.format(coeff[0])).append(" + ")
-				.append(numFormat.format(coeff[1])).append("\u2219ch");
-		return formula.toString();
+        String formula = "E = " + numFormat.format(coeff[0]) + " + " +
+                numFormat.format(coeff[1]) + "\u2219ch";
+        return formula;
 	}
 }

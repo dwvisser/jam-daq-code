@@ -115,7 +115,6 @@ public final class SaveSelectedHistogram {
 	 */
 	private void saveHistListToFile() {
 		final List<AbstractHistogram> listSelected = new ArrayList<>();
-		File file = null;
 		/* Add selected histograms to a list. */
 		final List<String> selected = listHist.getSelectedValuesList();
 		for (String name : selected) {
@@ -128,9 +127,8 @@ public final class SaveSelectedHistogram {
 		/* don't do anything if it was cancel */
 		if (option == JFileChooser.APPROVE_OPTION
 				&& chooser.getSelectedFile() != null) {
-			file = chooser.getSelectedFile();
 			/* write out histograms */
-			hdfio.writeFile(file, listSelected);
+			hdfio.writeFile(chooser.getSelectedFile(), listSelected);
 		}
 	}
 }

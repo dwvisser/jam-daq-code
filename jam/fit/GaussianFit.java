@@ -107,7 +107,6 @@ public final class GaussianFit extends AbstractNonLinearFit {
 		final int lowChan = lowChannel.getValue();
 		final int highChan = this.highChannel.getValue();
 		final double center = this.centroid.getValue();
-		double peakWidth = this.width.getValue();
 		double backLevel = this.paramA.getValue();
 		double intensity = this.area.getValue();
 		/* estimated level of background */
@@ -133,7 +132,7 @@ public final class GaussianFit extends AbstractNonLinearFit {
 				variance += (counts[i] / intensity) * (distance * distance);
 			}
 			final double sigma = Math.sqrt(variance);
-			peakWidth = SIG_TO_FWHM * sigma;
+			double peakWidth = SIG_TO_FWHM * sigma;
 			this.width.setValue(peakWidth);
 			textInfo.messageOutln("Estimated width = " + peakWidth);
 		}

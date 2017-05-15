@@ -223,16 +223,14 @@ public class Console extends JPanel implements MessageHandler {
 
 	private void promptOutln(final String _message, final AttributeSet attr) {
 		synchronized (syncLock) {
-			String message = null;
 			/*
 			 * Don't wait for lock. Output message right away.
 			 */
+			String message = this.buildConsoleMessage(_message, msgLock);
 			if (msgLock) { // if locked add extra returns
 				messageFile = END_LINE + getDate() + ">" + message + END_LINE;
-				message = this.buildConsoleMessage(_message, true);
 			} else { // normal message
 				messageFile = getDate() + ">" + message + END_LINE;
-				message = this.buildConsoleMessage(_message, false);
 			}
 			try {
 				doc.insertString(doc.getLength(), message, attr);

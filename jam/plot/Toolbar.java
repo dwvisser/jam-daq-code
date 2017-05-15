@@ -264,8 +264,8 @@ final class Toolbar extends JToolBar implements ActionListener {
 	}
 
 	private String getHTML(final String body) {
-		return new StringBuilder("<html><body>").append(body)
-				.append("</html></body>").toString();
+		return "<html><body>" + body +
+                "</html></body>";
 	}
 
 	/*

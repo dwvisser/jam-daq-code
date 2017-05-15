@@ -95,9 +95,8 @@ final class PlotFit {
 		final int xmin = Math.min(xpos1, xpos2);
 		final int xmax = Math.max(xpos1, xpos2);
 		int area = 0;
-		double distance;
+		double distance, sigma;
 		double centroid = 0;
-		double sigma = 0;
 		double variance = 0;
 		double fwhm = 0.0;// default
 		/* sum up counts */

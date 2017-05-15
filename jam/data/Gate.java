@@ -490,7 +490,7 @@ public final class Gate implements DataElement {
      * @return number of points to define gate
      */
     public int size() {
-        int temp = 0;
+        int temp;
         if (isSet) {
             if (dimensions == 1) {
                 temp = 2;

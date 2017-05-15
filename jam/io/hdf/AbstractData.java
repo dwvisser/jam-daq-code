@@ -123,8 +123,7 @@ public abstract class AbstractData {
     protected static final <T extends AbstractData> T create(
             final byte[] bytes, final Class<T> tag, final short ref)
             throws HDFException {
-        T dataObject = null;
-        dataObject = createDataObject(tag);
+        T dataObject = createDataObject(tag);
         if (dataObject != null) {// Only create necessary objects
             dataObject.init(bytes, ref);
         }
@@ -134,8 +133,7 @@ public abstract class AbstractData {
     protected static <T extends AbstractData> T create(final Class<T> tag,
             final short ref, final int offset, final int length)
             throws HDFException {
-        T dataObject = null;
-        dataObject = createDataObject(tag);
+        T dataObject = createDataObject(tag);
         if (dataObject != null) { // Only create necessary objects
             dataObject.init(offset, length, ref);
         }
@@ -439,7 +437,7 @@ public abstract class AbstractData {
         }
     }
 
-    private final void setTag(final short newTag) {
+    private void setTag(final short newTag) {
         tag = newTag;
     }
 

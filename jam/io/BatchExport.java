@@ -278,7 +278,6 @@ public final class BatchExport extends JDialog implements Observer {
 			}
 			already |= exportFiles[i].exists();
 		}
-		status = true;
 		// Root directory
 		status = createExportDir(exportDir);
 		status = checkFileOverwrite(status, already);

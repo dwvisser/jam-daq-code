@@ -63,10 +63,9 @@ final class Print extends AbstractPrintingCommand implements Observer,
                 LOGGER.info("Page sent.");
                 display.setRenderForPrinting(false, null);
             } catch (PrinterException e) {
-                final StringBuilder mess = new StringBuilder(getClass()
-                        .getName());
-                mess.append(": ").append(e.getMessage());
-                LOGGER.log(Level.SEVERE, mess.toString(), e);
+                String mess = getClass()
+                        .getName() + ": " + e.getMessage();
+                LOGGER.log(Level.SEVERE, mess, e);
             }
         }
     }

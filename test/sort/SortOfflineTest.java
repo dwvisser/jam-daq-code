@@ -136,8 +136,7 @@ public class SortOfflineTest {
 	 */
 	@Test
 	public void testEventInPathBeingUsed() throws IOException {
-		final String eventInpath = File.createTempFile("jam", null).getParent()
-				.toString();
+		final String eventInpath = File.createTempFile("jam", null).getParent();
 		JamProperties.setProperty(EVENT_INPATH, eventInpath);
 		final File expectedPath = (new File(
 				JamProperties.getPropString(EVENT_INPATH))).getCanonicalFile();

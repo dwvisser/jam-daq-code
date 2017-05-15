@@ -416,9 +416,7 @@ final class LevenbergMarquadt {
 
         temp = new Matrix(nPar, nPar, 0.0);
         for (int i = 0; i < nVar; i++) {
-            for (int j = 0; j < nVar; j++) {
-                temp.element[i][j] = covar.element[i][j];
-            }
+            System.arraycopy(covar.element[i], 0, temp.element[i], 0, nVar);
         }
         for (int i = nVar; i < nPar; i++) {
             for (int j = 0; j <= i; j++) {

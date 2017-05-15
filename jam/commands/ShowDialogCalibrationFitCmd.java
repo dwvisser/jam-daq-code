@@ -26,12 +26,10 @@ final class ShowDialogCalibrationFitCmd extends AbstractShowDialog implements
 	}
 
 	private void enable() {
-		boolean enable = false;
 		final Nameable named = SelectionTree.getCurrentHistogram();
-		enable = named instanceof AbstractHistogram;
+		boolean enable = named instanceof AbstractHistogram;
 		if (enable) {
-			final AbstractHistogram histogram = (AbstractHistogram) named;
-			enable = (histogram != null && histogram.getDimensionality() == 1);
+			enable = ((AbstractHistogram) named).getDimensionality() == 1;
 		}
 		setEnabled(enable);
 	}

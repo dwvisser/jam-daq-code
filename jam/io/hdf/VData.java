@@ -150,7 +150,7 @@ public final class VData extends AbstractData {
 	 * better actually be a float there!
 	 */
 	protected Double getDouble(final int row, final int col) {
-		Double out = null;
+		Double out;
 		if (types[col] == VDataDescription.DFNT_DBL64) {
 			final int location = row * ivsize + offsets[col];
 			out = bytes.getDouble(location);
@@ -167,7 +167,7 @@ public final class VData extends AbstractData {
 	 * better actually be a float there!
 	 */
 	protected Float getFloat(final int row, final int col) {
-		Float out = null;
+		Float out;
 		if (types[col] == VDataDescription.DFNT_FLT32) {
 			final int location = row * ivsize + offsets[col];
 			out = bytes.getFloat(location);
@@ -192,29 +192,29 @@ public final class VData extends AbstractData {
 	 *             if cell doesn't contain an <code>Integer</code>
 	 */
 	public int getInteger(final int row, final int col) {
-		int rval = 0;
+		int result;
 		if (types[col] == VDataDescription.DFNT_INT32) {
 			final int location = row * ivsize + offsets[col];
-			rval = bytes.getInt(location);
+			result = bytes.getInt(location);
 		} else {
 			throw new IllegalStateException(VS_STRING + getTag() + "/"
 					+ getRef() + ".getInt(" + row + "," + col
 					+ "): cell not integer!");
 		}
-		return rval;
+		return result;
 	}
 
 	private Short getShort(final int row, final int col) {
-		Short rval = null;
+		Short result;
 		if (types[col] == VDataDescription.DFNT_INT32) {
 			final int location = row * ivsize + offsets[col];
-			rval = bytes.getShort(location);
+			result = bytes.getShort(location);
 		} else {
 			throw new IllegalStateException(VS_STRING + getTag() + "/"
 					+ getRef() + ".getShort(" + row + "," + col
 					+ "): cell not short!");
 		}
-		return rval;
+		return result;
 	}
 
 	/**
@@ -230,7 +230,7 @@ public final class VData extends AbstractData {
 	 *             if cell doesn't contain an <code>String</code>
 	 */
 	public String getString(final int row, final int col) {
-		String out = null;
+		String out;
 		if (types[col] == VDataDescription.DFNT_CHAR8) {
 			final int location = row * ivsize + offsets[col];
 			bytes.position(location);

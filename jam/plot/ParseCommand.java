@@ -127,7 +127,7 @@ final class ParseCommand implements CommandListener {
 	 */
 	public boolean performParseCommand(final String _command,
 			final String[] cmdParams) {
-		boolean accept = false; // is the command accepted
+		boolean accept; // is the command accepted
 		final String command = _command.toLowerCase(Locale.US);
 		/*
 		 * int is a special case meaning no command and just parameters

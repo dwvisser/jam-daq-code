@@ -55,7 +55,7 @@ public class SqrtEnergyFunction extends AbstractLinearRegressionFunction {
 
 	@Override
 	protected String updateFormula(final NumberFormat numFormat) {
-		return new StringBuilder().append("\u221aE = ").append(numFormat.format(coeff[0])).append(
-				" + ").append(numFormat.format(coeff[1])).append("\u2219ch").toString();
+		return "\u221aE = " + numFormat.format(coeff[0]) +
+                " + " + numFormat.format(coeff[1]) + "\u2219ch";
 	}
 }

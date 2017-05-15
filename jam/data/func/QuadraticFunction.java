@@ -46,10 +46,9 @@ public class QuadraticFunction extends AbstractGaussJordanFunction {
 
 	@Override
 	public String updateFormula(final NumberFormat numFormat) {
-		final StringBuilder formula = new StringBuilder(32);
-		formula.append("E = ").append(numFormat.format(coeff[0])).append(" + ")
-				.append(numFormat.format(coeff[1])).append("\u2219ch + ")
-				.append(numFormat.format(coeff[2])).append("\u2219ch^2");
-		return formula.toString();
+        String formula = "E = " + numFormat.format(coeff[0]) + " + " +
+                numFormat.format(coeff[1]) + "\u2219ch + " +
+                numFormat.format(coeff[2]) + "\u2219ch^2";
+        return formula;
 	}
 }

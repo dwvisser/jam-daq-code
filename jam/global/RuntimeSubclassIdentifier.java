@@ -58,11 +58,10 @@ public final class RuntimeSubclassIdentifier {
      */
     private static String filenameToClassname(final String fileName,
             final String pckg) {
-        final StringBuilder rval = new StringBuilder(pckg);
-        rval.append('.');
-        rval.append(fileName.substring(0,
-                fileName.length() - CLASS_EXT.length()));
-        return rval.toString();
+        String rval = pckg + '.' +
+                fileName.substring(0,
+                        fileName.length() - CLASS_EXT.length());
+        return rval;
     }
 
     /**
@@ -293,24 +292,22 @@ public final class RuntimeSubclassIdentifier {
     }
 
     private Set<String> findClassNamesFromJarURL(final URL url,
-            final Class<?> tosubclass, final String starts) {
-        JarURLConnection conn = null;
-        JarFile jfile = null;
-        final SortedSet<String> rval = new TreeSet<>();
+            final Class<?> toSubclass, final String starts) {
+        final SortedSet<String> result = new TreeSet<>();
         try {
             /*
              * It does not work with the filesystem: we must be in the case of a
              * package contained in a jar file.
              */
-            conn = (JarURLConnection) url.openConnection();
-            jfile = conn.getJarFile();
-            rval.addAll(findClassNamesFromJarConnection(jfile.entries(),
-                    tosubclass, starts));
-        } catch (IOException ioex) {
-            JOptionPane.showMessageDialog(null, ioex.getMessage(), rtsiName,
+            JarURLConnection conn = (JarURLConnection) url.openConnection();
+            JarFile jarFile = conn.getJarFile();
+            result.addAll(findClassNamesFromJarConnection(jarFile.entries(),
+                    toSubclass, starts));
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), rtsiName,
                     JOptionPane.ERROR_MESSAGE);
         }
-        return rval;
+        return result;
     }
 
     /**

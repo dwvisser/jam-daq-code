@@ -97,12 +97,12 @@ public final class Bin implements Cloneable {
 
 	@Override
 	public boolean equals(final Object object) {
-		boolean rval = object instanceof Bin;
-		if (rval) {
+		boolean result = object instanceof Bin;
+		if (result) {
 			final Bin that = (Bin) object;
-			rval &= channel.equals(that.channel);
+			result = channel.equals(that.channel);
 		}
-		return rval;
+		return result;
 	}
 
 	@Override

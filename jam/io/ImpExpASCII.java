@@ -247,7 +247,6 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 	}
 
 	private String getHistTitle() throws IOException {
-		String rval = null;
 		final InputStreamReader isr = new InputStreamReader(
 				new FileInputStream(getLastFile()));
 		/* Make a tokenizer for input stream. */
@@ -256,6 +255,7 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 		 * Read in header lines, header are lines that start with a non-number
 		 * token.
 		 */
+		String rval;
 		line1isTitle = scanner.hasNext("[a-zA-Z]\\w*");
 		if (line1isTitle) {
 			rval = scanner.next();
@@ -268,7 +268,7 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 	}
 
 	private int getNumberOfRows() throws IOException {
-		int rval = 0;
+		int rval;
 		LineNumberReader lnr = null;
 		try {
 			lnr = new LineNumberReader(new FileReader(getLastFile()));
@@ -282,7 +282,7 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 				lnr.setLineNumber(1);
 			}
 			final CharBuffer buffer = CharBuffer.allocate(8 * 1024);
-			int numRead = 0;
+			int numRead;
 			do {
 				numRead = lnr.read(buffer);
 				buffer.clear();
@@ -297,9 +297,9 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 	}
 
 	private int getNumberOfColumns() throws IOException {
-		int rval = 0;
+		int result = 0;
 		LineNumberReader lnr = null;
-		String line = null;
+		String line;
 		try {
 			lnr = new LineNumberReader(new FileReader(getLastFile()));
 			/*
@@ -319,10 +319,10 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 			final Scanner scanner = new Scanner(new StringReader(line));
 			while (scanner.hasNextDouble()) {
 				scanner.nextDouble();
-				rval++;
+				result++;
 			}
 		}
-		return rval;
+		return result;
 	}
 
 	/**

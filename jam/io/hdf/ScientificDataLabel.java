@@ -36,10 +36,9 @@ final class ScientificDataLabel extends AbstractData {
 				lenCounter = 0;
 			}
 		}
-		final String[] labels = new String[numLabels];
 		bytes.rewind();
 		for (int i = 0; i < numLabels; i++) {
-			labels[i] = getString(lengths[i]);
+			getString(lengths[i]); // i'th label
 			bytes.get(); // skip null character
 		}
 	}

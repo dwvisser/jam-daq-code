@@ -477,14 +477,13 @@ final class Limits {
 	 */
 	@Override
 	public String toString() {
-		final StringBuilder temp = new StringBuilder("Limits of \"");
-		temp.append(histName);
-		temp.append("\": ");
-		temp.append("MinX: ");
-		temp.append(getMinimumX());
-		temp.append(", MaxX: ");
-		temp.append(getMaximumX());
-		return temp.toString();
+        String temp = "Limits of \"" + histName +
+                "\": " +
+                "MinX: " +
+                getMinimumX() +
+                ", MaxX: " +
+                getMaximumX();
+        return temp;
 	}
 
 }

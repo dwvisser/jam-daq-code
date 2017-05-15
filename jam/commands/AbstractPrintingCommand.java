@@ -36,12 +36,12 @@ abstract class AbstractPrintingCommand extends AbstractCommand {// NOPMD
 				- inchesToPica(MARGIN_RIGHT);
 		final double width = right - left;
 		final Paper paper = mPageFormat.getPaper();
-		paper.setImageableArea(top, left, width, height);
+		paper.setImageableArea(left, top, width, height);
 		mPageFormat.setPaper(paper);
 		mPageFormat.setOrientation(PageFormat.LANDSCAPE);
 	}
 
-	private static final double inchesToPica(final double inches) {
+	private static double inchesToPica(final double inches) {
 		return inches * 72.0;
 	}
 

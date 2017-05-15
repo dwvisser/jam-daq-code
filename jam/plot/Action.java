@@ -104,8 +104,6 @@ public final class Action {
     /** Is there a command present */
     private transient boolean commandPresent;
 
-    private transient int countHigh; // NOPMD
-
     private transient int countLow; // NOPMD
 
     /** current command being processed */
@@ -513,12 +511,11 @@ public final class Action {
             double[] centroidErr, final double grossArea,
             final int numChannels, final double[] counts) {
         double netBkgd = 0;
-        double[] channel = new double[numChannels];
         double countsHigh = 0;
         double countsLow = 0;
         double area = 0;
         double variance = 0;
-        double distance = 0;
+        double distance;
         final int[] bgdX1 = {clicks.get(0).getX(), clicks.get(1).getX(),
                 clicks.get(2).getX(), clicks.get(3).getX() };
         Arrays.sort(bgdX1);
@@ -545,7 +542,6 @@ public final class Action {
         /* sum counts between region - background at each channel */
         for (int p = rx1; p <= rx2; p++) {
             area += counts[p];
-            channel[p] = p + 0.5;
             channelBkgd[p] = gradient * p + intercept;
             netArea[0] += counts[p] - channelBkgd[p];
             netBkgd += channelBkgd[p];
@@ -594,13 +590,13 @@ public final class Action {
             init();
             if (currentPlot.getDimensionality() == 1
                     && existsAndIsCalibrated(hist)) {
-                final String mess = new StringBuffer(intro).append(cal)
-                        .append(space).append(ENERGY).append(leftParen)
-                        .append(space).toString();
+                final String mess = intro + cal +
+                        space + ENERGY + leftParen +
+                        space;
                 textOut.messageOut(mess, MessageHandler.NEW);
             } else {
-                final String mess = new StringBuffer(intro).append(CHANNEL)
-                        .append(leftParen).append(space).toString();
+                final String mess = intro + CHANNEL +
+                        leftParen + space;
                 textOut.messageOut(mess, MessageHandler.NEW);
             }
         }
@@ -968,7 +964,7 @@ public final class Action {
                 clicks.add(cursorBin);
                 textOut.messageOut(Integer.toString(countLow) + S_TO);
             } else {
-                countHigh = (int) cts;
+                int countHigh = (int) cts;
                 clicks.add(cursorBin);
                 plot.setRange(countLow, countHigh);
                 textOut.messageOut(String.valueOf(countHigh),

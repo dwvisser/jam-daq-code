@@ -31,20 +31,20 @@ public class HDFileFilter extends FileFilter implements java.io.FileFilter {
 
 	@Override
 	public boolean accept(final File file) {
-		boolean rval = false;// default return value
+		boolean result;// default return value
 		if (file.isDirectory()) {
-			rval = option;
+			result = option;
 		} else {
 			try {
 				final RandomAccessFile raf = new RandomAccessFile(file, "r");
 				final int temp = raf.readInt();
 				raf.close();
-				rval = (temp == HDF_HEADER);
+				result = (temp == HDF_HEADER);
 			} catch (IOException e) {
-				rval = false;
+				result = false;
 			}
 		}
-		return rval;
+		return result;
 	}
 
 	@Override

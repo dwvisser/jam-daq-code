@@ -335,7 +335,6 @@ public final class HDFIO implements DataIO {
 			}
 
 			AbstractData.clearAll();
-			out = null; // NOPMD
 			setLastValidFile(file);
 			uiMessage = message.toString();
 		}

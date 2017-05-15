@@ -91,9 +91,11 @@ public final class PlotBar extends JPanel {
 			final double threshold = monitor.getThreshold();
 			final double maximum = monitor.getMaximum();
 			final Dimension dim = getSize();
+
 			/* orientation of plot and size */
 			final int length = dim.width - 2 * BORDER_END;
 			final int height = dim.height - 2 * BORDER_SIDE;
+			
 			/* make sure input is OK */
 			if (maximum > 0) {
 				plotLength = (int) (length * value / maximum);

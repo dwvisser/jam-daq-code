@@ -111,16 +111,14 @@ public class YaleCAENgetScalers {
             }
             // End of file reached
         } catch (EOFException eofe) {
-            if (dis != null) {
-                // Bury close exception
-                try {
-                    dis.close();
-                    updateProgressBar("Done.", lengthMB);
-                    rtnState = true;
-                } catch (Exception e) {
-                    strError.append(e.getMessage());
-                    rtnState = false;
-                }
+            // Bury close exception
+            try {
+                dis.close();
+                updateProgressBar("Done.", lengthMB);
+                rtnState = true;
+            } catch (Exception e) {
+                strError.append(e.getMessage());
+                rtnState = false;
             }
         } catch (IOException ioe) {
             strError.append("Reading file: ").append(ioe.getMessage());

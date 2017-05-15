@@ -84,11 +84,10 @@ final class DataIDLabel extends AbstractData {
 
 	@Override
 	public String toString() {
-		final StringBuilder rval = new StringBuilder("(Label \"");
-		rval.append(label).append("\": ");
-		rval.append((object == null) ? "null" : object.toString());
-		rval.append(')');
-		return rval.toString();
+        String rval = "(Label \"" + label + "\": " +
+                ((object == null) ? "null" : object.toString()) +
+                ')';
+        return rval;
 	}
 
 	/**

@@ -40,7 +40,7 @@ public final class Projections extends AbstractManipulation implements
 
 	private transient final JTextField tlim1, tlim2, ttextto;
 
-	private transient final JLabel lname, lChannels, lAnd;
+	private transient final JLabel lname;
 
 	private transient String hfromname;
 
@@ -120,10 +120,10 @@ public final class Projections extends AbstractManipulation implements
 		cchan.addItemListener(new ChannelListener());
 		pchannel.add(cchan);
 		setUseLimits(false);
-		lChannels = new JLabel("Channels");
+		JLabel lChannels = new JLabel("Channels");
 		pchannel.add(lChannels);
 		pchannel.add(tlim1);
-		lAnd = new JLabel("and");
+		JLabel lAnd = new JLabel("and");
 		pchannel.add(lAnd);
 		pchannel.add(tlim2);
 		pEntries.add(pchannel);

@@ -233,7 +233,6 @@ public final class JamProperties {
 					PROPERTIES.load(fis);
 					configLoadMessage = "Read configuration properties from file: "
 							+ configFile.getPath();
-					fileRead = true;
 				} else {
 					configLoadWarning = "Cannot find machine configuration file "
 							+ FILE_CONFIG

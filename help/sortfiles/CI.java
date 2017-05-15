@@ -50,7 +50,8 @@ public class CI extends AbstractSortRoutine {
 	/* for calculating dead time */
 	private transient int lastGe, lastAccept;//NOPMD
 
-	private transient final Scaler sGe, sAccept, sNaI;//  scalers
+	private transient final Scaler sGe;
+	private transient final Scaler sAccept;
 
 	/** * END OF GLOBAL DECLARATIONS ** */
 	
@@ -85,7 +86,7 @@ public class CI extends AbstractSortRoutine {
 		final Scaler sBeam = createScaler("Beam", 1);
 		sGe = createScaler("Ge", 2); //Ge provides trigger
 		sAccept = createScaler("Ge Accept", 3);
-		sNaI = createScaler(NAI, 4);
+		Scaler sNaI = createScaler(NAI, 4);
 
 		/* MONITOR SECTION
 		 * Monitors associated with scalers, window will return scaler rate in

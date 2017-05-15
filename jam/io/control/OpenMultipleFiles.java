@@ -182,13 +182,12 @@ public final class OpenMultipleFiles implements HDFIO.AsyncListener {
 	private void checkSelectionIsNone() {
 		final ListModel<String> listModel = histList.getModel();
 		int[] selected = histList.getSelectedIndices();
-		selected = histList.getSelectedIndices();
 		if (selected.length == 0) {
-			int[] indexs = new int[listModel.getSize()];
+			int[] indexes = new int[listModel.getSize()];
 			for (int i = 0; i < listModel.getSize(); i++) {
-				indexs[i] = i;
+				indexes[i] = i;
 			}
-			histList.setSelectedIndices(indexs);
+			histList.setSelectedIndices(indexes);
 		}
 	}
 

@@ -255,7 +255,7 @@ public class CalibrationFit extends AbstractControl {
 	}
 
 	private void updateSelection() {
-		boolean isCalPts = true;
+		boolean isCalPts;
 		calibFunc = getCurrentCalibrationFunction();
 		/* Select name. */
 		String name = calibFunc.getName();

@@ -29,7 +29,7 @@ public final class ParameterControl extends AbstractControl {
 
 	private static final String FILE_EXTENSION = "par";
 
-	private transient String invalidNames;
+	private transient StringBuilder invalidNames;
 
 	private transient JLabel[] labelParam;
 
@@ -124,8 +124,7 @@ public final class ParameterControl extends AbstractControl {
 	private boolean checkTextAreNumbers() {
 		String textValue;
 		boolean allValid = true;
-		// Check all fields are numbers
-		invalidNames = "";
+		invalidNames = new StringBuilder();
 		for (int i = 0; i < textParam.length; i++) {
 			try {
 				textValue = textParam[i].getText().trim();
@@ -136,10 +135,10 @@ public final class ParameterControl extends AbstractControl {
 			} catch (NumberFormatException nfe) {
 				allValid = false;
 				if (invalidNames.length() == 0) {
-					invalidNames = labelParam[i].getText();
+					invalidNames.append(labelParam[i].getText());
 				} else {
-					invalidNames = invalidNames + ", "
-							+ labelParam[i].getText();
+					invalidNames.append(invalidNames).append(", ").append(
+							labelParam[i].getText());
 				}
 			}
 		}
@@ -360,7 +359,7 @@ public final class ParameterControl extends AbstractControl {
 			if (invalidNames.length() > 0) {
 				LOGGER
 						.severe("Parameters not set, not a number for parameter(s) "
-								+ invalidNames + ".");
+								+ invalidNames.toString() + ".");
 			}
 		}
 	}

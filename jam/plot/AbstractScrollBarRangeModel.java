@@ -27,7 +27,7 @@ abstract class AbstractScrollBarRangeModel extends DefaultBoundedRangeModel {
 		setFields(container);
 	}
 
-	private final void setFields(final PlotContainer container) {
+	private void setFields(final PlotContainer container) {
 		plot = container;
 		final Nameable hist = SelectionTree.getCurrentHistogram();
 		if (hist instanceof AbstractHistogram) {

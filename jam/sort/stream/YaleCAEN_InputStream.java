@@ -17,6 +17,8 @@ import java.util.*;
  */
 public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 
+    public static final int[] ZEROS = new int[CAEN_StreamFields.NUM_CHANNELS];
+
     private enum BufferStatus {
         /**
          * Indicates the state where flushing of the remaining contents of the
@@ -145,8 +147,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
     private void addEventIndex(final int eventNumber) {
         eventNumbers[posPut] = eventNumber;
         // automatically initialized to all zeros
-        final int[] zeros = new int[CAEN_StreamFields.NUM_CHANNELS];
-        System.arraycopy(zeros, 0, fifo[posPut], 0, zeros.length);
+        Arrays.fill(fifo[posPut], 0, CAEN_StreamFields.NUM_CHANNELS, 0);
         eventNumMap.put(eventNumber, posPut);
         incrementPut();
         if (fifoFull()) {
@@ -338,7 +339,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
                 LOGGER.warning(getClass().getName()
                         + ".readEvent(): Problem reading integer from stream.");
             } catch (EventException e) {
-                rval = EventInputStatus.UNKNOWN_WORD;
+//                rval = EventInputStatus.UNKNOWN_WORD;
                 throw new EventException(getClass().getName()
                         + ".readEvent() parameter = " + lastParameterRead, e);
             }

@@ -170,7 +170,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
      */
     @Override
     public boolean openEventInputListFile() {
-        boolean rval = false;
+        boolean rval;
         final File file = sortFiles.next();
         try {
             openEventInputFile(file);// local open file method
