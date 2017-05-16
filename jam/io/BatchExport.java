@@ -111,8 +111,9 @@ public final class BatchExport extends JDialog implements Observer {
 	 * Add a selected histogram
 	 */
 	private void addSelectedHist() {
-		final String name = cbHist.getSelectedItem().toString();
+		final String name = cbHist.getItemAt(cbHist.getSelectedIndex());
 		final HashSet<Object> histSet = new HashSet<>();
+
 		/* now combine this with stuff already in list. */
 		final ListModel<AbstractHistogram> model = lstHists.getModel();
 		for (int i = 0; i < model.getSize(); i++) {

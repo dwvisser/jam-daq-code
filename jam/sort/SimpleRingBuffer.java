@@ -60,12 +60,10 @@ public final class SimpleRingBuffer implements RingBuffer {
 		synchronized (this) {
 			assert !isNull() : "Attempted putBuffer() on 'null' ring buffer.";
 			if (isFull()) {
-				final StringBuilder message = new StringBuilder(50);
-				message.append("Lost a buffer in thread \"");
-				message.append(Thread.currentThread().getName());
-				message
-						.append("\" when putBuffer() called while already full.");
-				System.err.println(message.toString());
+                String message = "Lost a buffer in thread \"" +
+                        Thread.currentThread().getName() +
+                        "\" when putBuffer() called while already full.";
+                System.err.println(message);
 			} else {
 				System.arraycopy(inBuffer, 0, buffer[posPut & MASK], 0,
 						inBuffer.length);

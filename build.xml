@@ -7,16 +7,16 @@
     <property name="release.dir" value="${build.dir}/release" />
 	<property name="reports.dir" value="${build.dir}/reports" />
 	<property name="ndoc.dir" value="${build.dir}/ndoclet" />
-    <property name="APIbase.dir" value="${build.dir}/APItemp" />
-    <property name="API.dir" value="${APIbase.dir}/help/API" />
+    <property name="APIbase.dir" value="${build.dir}/javadocs" />
+    <property name="API.dir" value="${APIbase.dir}/API" />
 	<property name="Webstart.dir" value="${build.dir}/webstart" />
 	<property name = "windows" value = "${build.dir}/windows/jam-daq" />
 	<property name = "winbin" value="${windows}/bin" />
 	<property name = "winlib" value="${windows}/lib" />
-	<property name = "MAJOR" value="2" />
-	<property name = "MINOR" value="5" />
+	<property name = "MAJOR" value="3" />
+	<property name = "MINOR" value="0" />
 	<property name = "RELEASE" value="0" />
-	<property name = "java.latest" value = "1.6.0_07" />
+	<property name = "java.latest" value = "1.8.0_131" />
 	<property name = "jam.version" value = "${MAJOR}.${MINOR}.${RELEASE}" />
 	<property name="jam.jar" value="jam-${jam.version}.jar" />
 	<property name="fulljam.jar" value="${build.dir}/${jam.jar}" />
@@ -61,9 +61,14 @@
         <mkdir dir="${API.dir}" />
         <mkdir dir="${winbin}" />
         <mkdir dir="${winlib}" />
-        <mkdir dir="${copy.dir}" />
+        <!--<mkdir dir="${copy.dir}" />-->
     </target>
-    
+
+	<target name="javadoc">
+        <javadoc sourcepath="${copy.dir}" destdir="${API.dir}">
+        </javadoc>
+    </target>
+
 	<target name="buildonlyglobal" depends="prepare">
 		<copy todir="${copy.dir}">
 			<fileset dir="${base.dir}"
@@ -140,16 +145,16 @@
     	</javac>
     </target> 	
 
-    <target name="jar" depends="compile">
+    <target name="jar" depends="compile,javadoc">
     	<copy todir="${APIbase.dir}">
     		<fileset dir = "${copy.dir}" includes = "help/**/*" />
     	</copy>
         <jar destfile="${fulljam.jar}">
         	<fileset dir="${copy.dir}"
-                     excludes="*.html,**/*/*.db,*.jnlp,*.xml,*.jardesc,*.jar,help,help/**/*,test,test/**/*,WINpackage,WINpackage/*,jam\**\*.java,jam\**\*.chk,jam\**\*.bak,.classpath,.project,classes/**/*,sampledata/*"
+                     excludes="*.html,**/*/*.db,*.jnlp,*.xml,*.jardesc,*.jar,help,help/**/*,test,test/**/*,WINpackage,WINpackage/*,jam\**\*.java,jam\**\*.chk,jam\**\*.bak,.classpath,.project,classes/**/*,sampledata/*,.idea/"
         	/>
             <fileset dir="${APIbase.dir}"
-                     includes="help/**/*"
+                     includes="help/**/*,API/**/*"
             />    
         </jar>  
     	<jar destfile="${fulltestjam.jar}">

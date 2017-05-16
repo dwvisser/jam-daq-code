@@ -33,4 +33,6 @@
    <mapID target="compiling" url="usingjam/compiling.html" />
    <mapID target="console" url="usingjam/console.html"/>
    <mapID target="logfiles" url = "logfiles.html"/>
+   <mapID target="jampackages" url="JamPackages.html" />
+    <mapID target="release" url="releaseNotes.html" />
 </map>

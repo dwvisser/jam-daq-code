@@ -8,6 +8,7 @@
    <tocitem text="Notice" target="notice" />
    <tocitem text="Acknowledgements" target="ack" />
    <tocitem text="Join the Team" target="contrib" />
+    <tocitem text="Release Notes" target="release" />
    <tocitem text="Configuration Files" target="configure" > 
        <tocitem text="System Configuration" target="jamconfig" />
        <tocitem text="Session Configuration" target="jamuser" />
@@ -34,9 +35,11 @@
    	  <tocitem text="Help" target="help" />
    </tocitem>
    <tocitem text="Technical Reference" >
-   	<tocitem text="L002 Event Format" target="l002" />
-   	<tocitem text="Yale-CAEN Event Format" target="caen" />
-   	<tocitem text="Front End Communication" target="protocol" />
-   	<tocitem text="Log Files" target="logfiles"></tocitem></tocitem>
+       <tocitem text="Javadoc" target="jampackages"></tocitem>
+       <tocitem text="L002 Event Format" target="l002" />
+   	   <tocitem text="Yale-CAEN Event Format" target="caen" />
+   	   <tocitem text="Front End Communication" target="protocol" />
+   	   <tocitem text="Log Files" target="logfiles"></tocitem>
+   </tocitem>
 </tocitem>
 </toc>
