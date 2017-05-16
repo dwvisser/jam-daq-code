@@ -25,6 +25,7 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 
 	/**
 	 * @see AbstractEventOutputStream#AbstractEventOutputStream(int)
+	 * @param eventSize the number of signals per event
 	 */
 	public YaleOutputStream(final int eventSize) {
 		super(eventSize);

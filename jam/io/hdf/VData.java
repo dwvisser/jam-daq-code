@@ -295,7 +295,7 @@ public final class VData extends AbstractData {
 	/**
 	 * Once all the cells have been filled with objects, this should be called
 	 * to set the byte representation. The workhorse of this method is calls
-	 * made to the <it>protected </it> method <code>getBytes(row,col)</code>.
+	 * made to the <em>protected</em> method <code>getBytes(row,col)</code>.
 	 */
 	@Override
 	protected void refreshBytes() {

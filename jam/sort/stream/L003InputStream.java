@@ -35,6 +35,7 @@ public final class L003InputStream extends AbstractEventInputStream {
 
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
+	 * @param console whether console exists
 	 */
 	public L003InputStream(final boolean console) {
 		super(console);
@@ -42,6 +43,8 @@ public final class L003InputStream extends AbstractEventInputStream {
 
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
+	 * @param console whether console exists
+	 * @param eventSize the number of signals per event
 	 */
 	public L003InputStream(final boolean console, final int eventSize) {
 		super(console, eventSize);

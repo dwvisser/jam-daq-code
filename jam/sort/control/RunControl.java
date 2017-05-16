@@ -107,6 +107,10 @@ public final class RunControl extends JDialog implements Controller,
 	 * 
 	 * @param frame
 	 *            parent frame
+	 * @param status displays status information
+     * @param hdfio can load and save HDF files
+     * @param frontEnd communicates with front end electronics controller
+     * @param scaler communicates scaler information
 	 */
 	@Inject
 	protected RunControl(final Frame frame, final JamStatus status,

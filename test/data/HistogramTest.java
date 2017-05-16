@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * JUnit tests for <code>jam.data.Histogram</data>.
+ * JUnit tests for <code>jam.data.Histogram</code>.
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @see AbstractHistogram
  */

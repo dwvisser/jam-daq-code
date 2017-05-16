@@ -56,7 +56,7 @@ The first 8-kByte buffer of an event file begins with a 256-byte header record. 
     <dd>Used to pad out the last buffer sent after the experimenter has requested that the <em>run be ended</em>. The presence of these padding characters is a signal to the sorting process that it has received the last buffer <em>in the run</em>, and should close the event file.</dd>
 </dl>
 
-    <h3><a name="endbuffdef"><h3>END-OF-BUFFER word (0x01bbbbbb)</a></h3>
+    <h3><a name="endbuffdef">END-OF-BUFFER word (0x01bbbbbb)</a></h3>
     <p>This is <em>always</em> the last word in the 8-kilobyte buffer.</p>
 </body>
 </html>  

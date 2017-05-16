@@ -127,6 +127,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 
     /**
      * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
+     * @param console whether console exists
      */
     public YaleCAEN_InputStream(final boolean console) {
         super(console);
@@ -134,6 +135,8 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader {
 
     /**
      * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
+     * @param console whether console exists
+     * @param eventSize the number of signals per event
      */
     public YaleCAEN_InputStream(final boolean console, final int eventSize) {
         super(console, eventSize);

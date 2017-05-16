@@ -7,7 +7,7 @@ package jam.fit;
  * This abstract class uses LevenbergMarquadt to do non-linear parametric
  * function fitting. An actual class should define additional parameters and add
  * them to <code>parameters</code>, It should implement <code>estimate()</code>,
- * <code>valueAt()</code>, and <code>derivative()<code>.
+ * <code>valueAt()</code>, and <code>derivative()</code>.
  * 
  * @author Dale Visser
  * @version 0.5, 8/28/98

@@ -29,6 +29,7 @@ public abstract class AbstractLinearRegressionFunction extends
 	 * @param yVal
 	 *            array of y values
 	 * @return array where first element is constant, second is slope
+	 * @throws CalibrationFitException if regression fails
 	 */
 	protected double[] linearRegression(final double[] xVal, final double[] yVal)
 			throws CalibrationFitException {

@@ -5,7 +5,7 @@ import java.io.File;
 import java.util.Locale;
 
 /**
- * Copied from SimpleFileFilter pages 363-364 in O'Reilly's <it>Java Swing</it>.
+ * Copied from SimpleFileFilter pages 363-364 in O'Reilly's <cite>Java Swing</cite>.
  */
 public class ExtensionFileFilter extends FileFilter {
 

@@ -25,6 +25,8 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 
     /**
      * @see AbstractStorageDaemon#AbstractStorageDaemon(Controller)
+     * @param controller
+     *            the object controlling the sort process
      */
     public DiskDaemon(final Controller controller) {
         super(controller);

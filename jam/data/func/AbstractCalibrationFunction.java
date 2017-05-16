@@ -190,7 +190,8 @@ public abstract class AbstractCalibrationFunction implements Function {
 
 	/**
 	 * Called by setCoeff() to update the formula.
-	 * 
+	 * @param numFormat used for formatting numbers
+	 * @return a string representation of the best-fit formula
 	 */
 	protected abstract String updateFormula(NumberFormat numFormat);
 

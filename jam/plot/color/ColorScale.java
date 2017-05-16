@@ -3,7 +3,7 @@ package jam.plot.color;
 import java.awt.*;
 
 /**
- * A <code>ColorScale</scale> maps 2d histogram channel counts
+ * A <code>ColorScale</code> maps 2d histogram channel counts
  * to colors.
  * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>

@@ -44,11 +44,13 @@ public abstract class AbstractControl extends JDialog implements Observer {
 
 	/**
 	 * Default constructor for implementation classes.
-	 * 
+	 *
+	 * @param frame parent frame
 	 * @param title
 	 *            title of dialog
 	 * @param modal
 	 *            whether dialog is modal
+     * @param broadcaster broadcasts events to registered listeners
 	 */
 	protected AbstractControl(final Frame frame, final String title,
 			final boolean modal, final Broadcaster broadcaster) {

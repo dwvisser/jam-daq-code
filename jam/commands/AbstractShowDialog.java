@@ -7,7 +7,7 @@ import javax.swing.*;
 /**
  * Commands that are for showing <code>JDialog</code>'s. Dialogs simply extend
  * this and assign a reference to
- * <code>dialog</control> in <code>initCommand()</code>.
+ * <code>dialog</code> in <code>initCommand()</code>.
  * 
  * @author Ken Swartz
  */
@@ -19,6 +19,7 @@ public class AbstractShowDialog extends AbstractCommand {
 
 	/**
 	 * @see AbstractCommand#AbstractCommand(String)
+	 * @param name of command
 	 */
 	protected AbstractShowDialog(final String name) {
 		super(name);

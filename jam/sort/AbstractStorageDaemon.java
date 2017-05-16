@@ -136,7 +136,7 @@ public abstract class AbstractStorageDaemon extends GoodThread {
 	 * be easily put in loop. Reports error itself if it could not close the
 	 * file.
 	 * 
-	 * @return <code>true<code> if successful, <code>false</code> if not
+	 * @return <code>true</code> if successful, <code>false</code> if not
 	 */
 	public abstract boolean closeEventInputListFile();
 
@@ -245,7 +245,7 @@ public abstract class AbstractStorageDaemon extends GoodThread {
 	 * Open the next file in the list, does not throw exception so it can be
 	 * easily put in loop. Reports error itself if it could not open file.
 	 * 
-	 * @return <code>true<code> if successful, <code>false</code> if not
+	 * @return <code>true</code> if successful, <code>false</code> if not
 	 */
 	public abstract boolean openEventInputListFile();
 

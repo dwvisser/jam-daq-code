@@ -37,7 +37,7 @@ public class DataParameter implements Nameable {
      * @param name
      *            the name for the new parameter used in the dialog box
      * @throws IllegalArgumentException
-     *             if name >NAME_LENGTH characters
+     *             if name &gt; NAME_LENGTH characters
      */
     public DataParameter(final String name) {
         super();

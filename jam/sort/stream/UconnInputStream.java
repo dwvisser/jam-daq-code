@@ -38,6 +38,7 @@ public final class UconnInputStream extends AbstractEventInputStream {
 
     /**
      * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
+     * @param console whether console exists
      */
     public UconnInputStream(final boolean console) {
         super(console);
@@ -45,6 +46,8 @@ public final class UconnInputStream extends AbstractEventInputStream {
 
     /**
      * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
+     * @param console whether console exists
+     * @param eventSize the number of signals per event
      */
     public UconnInputStream(final boolean console, final int eventSize) {
         super(console, eventSize);

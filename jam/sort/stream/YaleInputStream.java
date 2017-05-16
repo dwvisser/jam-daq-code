@@ -25,6 +25,7 @@ public class YaleInputStream extends AbstractL002HeaderReader {
 
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
+	 * @param console whether console exists
 	 */
 	public YaleInputStream(final boolean console) {
 		super(console);
@@ -32,6 +33,8 @@ public class YaleInputStream extends AbstractL002HeaderReader {
 
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
+	 * @param console whether console exists
+	 * @param eventSize the number of signals per event
 	 */
 	public YaleInputStream(final boolean console, final int eventSize) {
 		super(console, eventSize);

@@ -9,13 +9,14 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * Tests reading HDF files.
  * @author Dale Visser
  */
-public class HDFIOTest extends TestCase {
+public class HDFIOTest {
 
     private static final String SAMPLE_HDF = "sampledata/exampleGates1.hdf";
 
@@ -28,10 +29,10 @@ public class HDFIOTest extends TestCase {
         try {
             final File file = session.defineFile(SAMPLE_HDF);
             final HDFIO hdfio = GuiceInjector.getObjectInstance(HDFIO.class);
-            assertTrue("Expected readFile success = true.",
+            Assert.assertTrue("Expected readFile success = true.",
                     hdfio.readFile(FileOpenMode.OPEN, file));
         } catch (RuntimeException e) {
-            fail(e.getMessage());
+            Assert.fail(e.getMessage());
         }
     }
 

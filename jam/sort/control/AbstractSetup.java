@@ -341,6 +341,7 @@ abstract class AbstractSetup {
 	 *            of <code>Class</code> objects
 	 * @param defInStream
 	 *            name of class to try to select
+	 * @param <T> type of items in chooser
 	 */
 	protected final <T> void selectName(
 			final JComboBox<Class<? extends T>> jcb,

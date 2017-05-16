@@ -44,7 +44,7 @@ public final class PreSort {
      * Launch to do a pre-sort.
      * </p>
      * <p>
-     * Usage: <code>command <i>target angleDeg</i>
+     * Usage: <code>command <em>target angleDeg</em></code>
      * </p>
      * <p>
      * <i>target</i> is one of Mg, Si, C12, or C13, and <i>angleDeg</i> is one

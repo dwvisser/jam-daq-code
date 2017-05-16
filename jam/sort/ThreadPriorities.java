@@ -1,12 +1,13 @@
 package jam.sort;
 
 /**
- * Constants affecting thread priorities. A guide, taken from 
- * "Concurrent Programming in Java, 2nd Ed.", lists conventional
- * priorities as in the table below. It also notes, however that
- * particular JVM's may use the priorities differently, and may
- * choose to ignore <code>Thread.setPriority()</code> altogether.<p>
+ * <p>Constants affecting thread priorities. Conventional
+ * priorities are listed in the table below. The table source notes, however, that
+ * particular JVMs may use the priorities differently, and may
+ * choose to ignore <code>Thread.setPriority()</code> altogether.</p>
  * <table>
+ * <caption>Thread priorities taken from
+ * <cite>Concurrent Programming in Java, 2nd Ed.</cite>.</caption>
  * <tr><td>Range</td><td>Use</td></tr>
  * <tr><td>10</td><td>Crisis management</td></tr>
  * <tr><td>7-9</td><td>Interactive, event-driven</td></tr>

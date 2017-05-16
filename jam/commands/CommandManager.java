@@ -34,7 +34,8 @@ public final class CommandManager implements CommandListener, ActionCreator {
     private transient final Broadcaster broadcaster;
 
     /**
-     * Constructor private as singleton
+     * Constructor private as singleton.
+     * @param broadcaster broadcasts events to registered listeners
      */
     @Inject
     protected CommandManager(final Broadcaster broadcaster) {

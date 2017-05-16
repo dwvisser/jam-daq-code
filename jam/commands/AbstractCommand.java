@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 /**
  * Implementation of <code>Commandable</code> interface in which
  * <code>actionPerformed()</code> executes <code>performCommand(null)</code>,
- * which in turn executes the abstract method, <code>execute(null)</code.
+ * which in turn executes the abstract method, <code>execute(null)</code>.
  * 
  * @author Ken Swartz
  */

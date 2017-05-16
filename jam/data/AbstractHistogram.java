@@ -452,8 +452,10 @@ public abstract class AbstractHistogram implements DataElement {
     /**
      * Returns the type of this histogram type. This can be:
      * <ul>
-     * <code><li>ONE_DIM_INT</li><li>TWO_DIM_INT</li><li>ONE_DIM_DOUBLE</li>
-     *  <li>TWO_DIM_DOUBLE</li></code>
+     * <li><code>ONE_DIM_INT</code></li>
+     * <li><code>TWO_DIM_INT</code></li>
+     * <li><code>ONE_DIM_DOUBLE</code></li>
+     *  <li><code>TWO_DIM_DOUBLE</code></li>
      * </ul>
      * @return the type
      * @see Type

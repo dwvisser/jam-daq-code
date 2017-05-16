@@ -24,7 +24,9 @@ public abstract class AbstractGaussJordanFunction extends
 	 *            array of x values
 	 * @param yVal
 	 *            array of y values
+	 * @param order order of polynomial to fit
 	 * @return with polynomial coefficients
+     * @throws CalibrationFitException if the fit fails due to singular matrix
 	 */
 	protected double[] polynomialFit(final double[] xVal, final double[] yVal,
 			final int order) throws CalibrationFitException {
@@ -41,13 +43,16 @@ public abstract class AbstractGaussJordanFunction extends
 		final double[][] matrixA = new double[numTerms][numTerms];
 		final double[] vectorB = new double[numTerms];
 		buildPolyMatrix(xVal, yVal, numTerms, matrixA, vectorB);
+
 		// Copy vector b into a column matrix
 		double[][] gaussMatrixB = new double[vectorB.length][1];
 		for (int i = 0; i < vectorB.length; i++) {// NOPMD
 			gaussMatrixB[i][0] = vectorB[i];
 		}
+
 		// Do gaussian elimination
 		gaussj(matrixA, gaussMatrixB);
+
 		// Copy vector b into a column matrix
 		double[] polyCoeffs = new double[vectorB.length];
 		for (int i = 0; i < polyCoeffs.length; i++) {

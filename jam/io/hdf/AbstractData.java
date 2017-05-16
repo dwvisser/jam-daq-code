@@ -234,6 +234,7 @@ public abstract class AbstractData {
      *            the list to search
      * @param type
      *            the type to return
+     * @param <T> the type to return
      */
     protected static <T extends AbstractData> List<T> ofType(
             final Collection<AbstractData> collection, final Class<T> type) {

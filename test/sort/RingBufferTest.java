@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.junit.internal.ArrayComparisonFailure;
 
 /**
- * JUnit tests for <code>jam.sort.IRingBuffer</data>.
+ * JUnit tests for <code>jam.sort.IRingBuffer</code>.
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @see RingBuffer
  */

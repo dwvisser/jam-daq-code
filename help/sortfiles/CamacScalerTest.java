@@ -15,7 +15,7 @@ import jam.sort.SortException;
  * all 2 histograms. We do not do zero suppression so will would be a lot of
  * zeros in the histograms convention for 2 d Histograms x first then y (x vs y)
  * 
- * @author Ken Swartz , Erik Swanson & Cristina Bordeanu October 2004
+ * @author Ken Swartz , Erik Swanson &amp; Cristina Bordeanu October 2004
  * @author Edited by Tom Brown March 2006
  * @version Jam version 0.5 November 98
  */

@@ -8,7 +8,6 @@ import jam.global.GoodThread;
 import jam.global.JamStatus;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventInputStream.EventInputStatus;
-import jam.sort.stream.EventException;
 
 import java.util.Arrays;
 import java.util.logging.Level;

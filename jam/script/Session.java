@@ -29,9 +29,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Class which exposes an API for scripting offline sorting sessions. Using this
- * class, you can write and compile a .java file which, when executed, will
- * <p>
+ * <p>Class which exposes an API for scripting offline sorting sessions. Using this
+ * class, you can write and compile a .java file which, when executed, will</p>
  * <ol>
  * <li>Launch Jam in the background.</li>
  * <li>Setup offline sorting.</li>
@@ -45,9 +44,9 @@ import java.util.logging.Logger;
  * <li>Save the results in an HDF file.</li>
  * <li>(Optional) Add histograms in stored HDF files together.
  * </ol>
- * The last step may be desirable in the case where you would like to execute
+ * <p>The last step may be desirable in the case where you would like to execute
  * portions of the sorting task on different machines at the same time, and
- * combine their results in a "merge script".
+ * combine their results in a "merge script".</p>
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version April 5, 2004
  */
@@ -91,6 +90,7 @@ public final class Session implements Observer {
      * Creates an instance, of which the user then invokes the methods to script
      * an offline sorting session. A non-trivial side-effect of invoking this
      * constructor is that an instance of Jam is started up in the background.
+     * @param frame parent frame
      * @param sortOffline
      *            sort offline setup dialog
      * @param sortOnline
@@ -101,6 +101,9 @@ public final class Session implements Observer {
      *            online run control
      * @param hdfio
      *            HDF I/O
+     * @param histogramZero zeroes histograms
+     * @param broadcaster broadcasts events to registered listeners
+     * @param listener listens for commands
      */
     @Inject
     protected Session(final JFrame frame, final SetupSortOff sortOffline,

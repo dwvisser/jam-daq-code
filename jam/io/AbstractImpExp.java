@@ -125,7 +125,7 @@ public abstract class AbstractImpExp {
 
     /**
      * Reads data from the passed <code>InputStream</code>. The specific
-     * implementations <bold>may</bold> use this to read specific formats.
+     * implementations <strong>may</strong> use this to read specific formats.
      * @param inStream
      *            the stream to read the histogram from
      * @exception ImpExpException
@@ -137,7 +137,7 @@ public abstract class AbstractImpExp {
 
     /**
      * Writes the passed <code>Histogram</code> to the passed
-     * <code>OutputStream</code>. The specific implementations <bold>may</bold>
+     * <code>OutputStream</code>. The specific implementations <strong>may</strong>
      * use this to write specific formats.
      * @param outStream
      *            the stream to write the histogram to

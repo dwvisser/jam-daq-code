@@ -113,7 +113,7 @@ public final class HistogramType {
 
 	/**
 	 * 
-	 * @return <code>true</true> if counts are integer, not floating point
+	 * @return <code>true</code> if counts are integer, not floating point
 	 */
 	public boolean isInteger() {
 		return INT[typeNum];

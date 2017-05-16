@@ -26,6 +26,7 @@ public class L002InputStream extends AbstractL002HeaderReader {
 
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
+	 * @param console whether console exists
 	 */
 	public L002InputStream(final boolean console) {
 		super(console);
@@ -33,11 +34,9 @@ public class L002InputStream extends AbstractL002HeaderReader {
 
 	/**
 	 * Creates the input stream given an event size.
-	 * 
-	 * @param eventSize
-	 *            number of parameters per event
-	 * @param console
-	 *            the place to write messages
+	 *
+	 * @param console whether console exists
+	 * @param eventSize the number of signals per event
 	 */
 	public L002InputStream(final boolean console, final int eventSize) {
 		super(console, eventSize);
