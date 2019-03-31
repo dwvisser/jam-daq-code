@@ -111,8 +111,6 @@ public final class VME_Channel {
 	 * Returns the type of parameter this is.
 	 * 
 	 * @return event or scaler
-	 * @see Type#EVENT
-	 * @see Type#SCALER
 	 */
 	public Type getType() {
 		return type;

@@ -231,7 +231,7 @@ public abstract class AbstractHistogram implements DataElement {
      * @param title
      *            lengthier title of histogram, displayed on plot
      * @see #NAME_LENGTH
-     * @see Type
+     * @see jam.data.HistogramType
      * @throws IllegalArgumentException
      *             if an unknown histogram type is given
      */
@@ -458,7 +458,7 @@ public abstract class AbstractHistogram implements DataElement {
      *  <li><code>TWO_DIM_DOUBLE</code></li>
      * </ul>
      * @return the type
-     * @see Type
+     * @see jam.data.HistogramType
      */
     public jam.data.HistogramType getType() {
         return type;
