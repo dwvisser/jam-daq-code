@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>org.jam-daq</groupId>
+  <artifactId>Jam</artifactId>
+  <version>3.0.0</version>
+  
+  <properties>
+      <maven.compiler.release>11</maven.compiler.release>
+  </properties>
+
+  <build>
+      <pluginManagement>
+          <plugins>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-compiler-plugin</artifactId>
+                  <version>3.8.1</version>
+              </plugin>
+          </plugins>
+      </pluginManagement>
+  </build>
+  
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.3.1</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.google.inject/guice -->
+    <dependency>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>3.0</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/javax.help/javahelp -->
+    <dependency>
+        <groupId>javax.help</groupId>
+        <artifactId>javahelp</artifactId>
+        <version>2.0.05</version>
+    </dependency>
+  </dependencies>
+</project>
