@@ -1,11 +1,13 @@
 package jam.global;
 
+import java.beans.PropertyChangeEvent;
+
 /**
  * A event that is broadcast.
  * 
  * @author Ken Swartz
  */
-public final class BroadcastEvent {
+public final class BroadcastEvent extends PropertyChangeEvent {
 
 	/**
 	 * The possible commands for <code>BroadcastEvent</code>'s.
@@ -162,7 +164,7 @@ public final class BroadcastEvent {
 	 *            additional object along for the ride
 	 */
 	public BroadcastEvent(final Command command, final Object content) {
-		super();
+		super(command, "", null, content);
 		this.command = command;
 		this.content = content;
 	}

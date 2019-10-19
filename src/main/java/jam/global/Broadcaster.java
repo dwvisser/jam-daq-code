@@ -2,7 +2,7 @@ package jam.global;
 
 import com.google.inject.Singleton;
 
-import java.util.Observable;
+import java.beans.PropertyChangeSupport;
 
 /**
  * Part of a client server to handle message between packages Broadcast events
@@ -12,10 +12,10 @@ import java.util.Observable;
  * @author Ken Swartz
  */
 @Singleton
-public final class Broadcaster extends Observable {
+public final class Broadcaster extends PropertyChangeSupport {
 
 	protected Broadcaster() {
-		super();
+		super(new Object());
 	}
 
 	/**
@@ -31,9 +31,8 @@ public final class Broadcaster extends Observable {
 	 */
 	public void broadcast(final BroadcastEvent.Command command,
 			final Object param) {
-		final Object bEvent = new BroadcastEvent(command, param);
-		setChanged();// necessary for next line to work
-		notifyObservers(bEvent);// automatically calls clearChanged()
+		final BroadcastEvent bEvent = new BroadcastEvent(command, param);
+		this.firePropertyChange(bEvent);
 	}
 
 	/**

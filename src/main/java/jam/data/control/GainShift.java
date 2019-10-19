@@ -16,8 +16,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
 import java.text.NumberFormat;
-import java.util.Observable;
 import java.util.logging.Level;
 
 /**
@@ -571,13 +571,12 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 	}
 
 	/**
-	 * Implementation of Observable interface to receive broad cast events.
+	 * Implementation of PropertyChangeListener interface to receive broadcast events.
 	 * Listen for histograms new, histogram added
 	 */
 	@Override
-	public void update(final Observable observable, final Object event) {
-		final BroadcastEvent jamEvent = (BroadcastEvent) event;
-		final BroadcastEvent.Command com = jamEvent.getCommand();
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent.Command com = ((BroadcastEvent) evt).getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_NEW
 				|| com == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			doSetup();

@@ -9,6 +9,8 @@ import jam.global.RuntimeSubclassIdentifier;
 import jam.ui.ExtensionFileFilter;
 import jam.util.CollectionsUtil;
 import jam.util.FileUtilities;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -27,7 +29,7 @@ import java.util.logging.Logger;
  * 
  * @author <a href=mailto:dwvisser@users.sourceforge.net>Dale Visser </a>
  */
-public final class BatchExport extends JDialog implements Observer {
+public final class BatchExport extends JDialog implements PropertyChangeListener {
 
 	private static final Logger LOGGER = Logger.getLogger(BatchExport.class
 			.getPackage().getName());
@@ -90,7 +92,7 @@ public final class BatchExport extends JDialog implements Observer {
 		this.frame = frame;
 		this.rtsi = rtsi;
 		this.fileUtilities = fileUtilities;
-		broadcaster.addObserver(this);
+		broadcaster.addPropertyChangeListener(this);
 		buildGUI();
 		setupHistChooser();
 		this.selectHistDlg = selectHistogram;
@@ -494,8 +496,8 @@ public final class BatchExport extends JDialog implements Observer {
 	 * Implementation of Observable interface listeners for broadcast events.
 	 * broadcast events where there are new histograms or histograms added.
 	 */
-	public void update(final Observable observable, final Object object) {
-		final BroadcastEvent event = (BroadcastEvent) object;
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent event = (BroadcastEvent) evt;
 		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.HISTOGRAM_NEW
 				|| command == BroadcastEvent.Command.HISTOGRAM_ADD) {

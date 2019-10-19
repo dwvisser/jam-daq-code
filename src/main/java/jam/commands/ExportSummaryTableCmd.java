@@ -7,9 +7,10 @@ import jam.ui.ExtensionFileFilter;
 import jam.ui.SummaryTable;
 
 import javax.swing.*;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Level;
 
 /**
@@ -18,7 +19,7 @@ import java.util.logging.Level;
  * @author Kennneth Swartz
  * 
  */
-public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
+public class ExportSummaryTableCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private final static int BUFFER_SIZE = 256 * 2;
 
@@ -90,9 +91,9 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 
 	}
 
-	public void update(final Observable observe, final Object obj) {
-		final BroadcastEvent event = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = event.getCommand();
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent.Command command = ((BroadcastEvent) evt).getCommand();
 		if ((command == BroadcastEvent.Command.GROUP_SELECT)
 				|| (command == BroadcastEvent.Command.ROOT_SELECT)) {
 			setEnabled(true);

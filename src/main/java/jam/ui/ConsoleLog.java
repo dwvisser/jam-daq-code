@@ -111,7 +111,6 @@ public final class ConsoleLog implements MessageHandler {
 		if (logFileOn) {
 			closeLogFile();
 		}
-		super.finalize();// NOPMD
 	}
 
 	protected Component getComponent() {

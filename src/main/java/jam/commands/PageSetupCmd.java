@@ -3,8 +3,7 @@ package jam.commands;
 import jam.global.CommandListenerException;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.awt.print.PrinterJob;
 
 /**
@@ -18,7 +17,7 @@ final class PageSetupCmd extends AbstractPrintingCommand {
 	PageSetupCmd() {
 		super("Page Setup\u2026");
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P,
-				CTRL_MASK | Event.SHIFT_MASK));
+				CTRL_MASK | InputEvent.SHIFT_DOWN_MASK));
 	}
 
 	/*

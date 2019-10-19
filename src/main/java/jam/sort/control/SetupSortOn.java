@@ -17,6 +17,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import static jam.global.GoodThread.State.STOP;
 import static java.util.logging.Level.SEVERE;
@@ -452,9 +453,9 @@ public final class SetupSortOn extends AbstractSetup {
         /* typical setup of event streams */
         try { // create new event input stream class
             inStream = ((Class<? extends AbstractEventInputStream>) inChooser
-                    .getSelectedItem()).newInstance();
+                    .getSelectedItem()).getDeclaredConstructor().newInstance();
             inStream.setConsoleExists(true);
-        } catch (InstantiationException ie) {
+        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException ie) {
             final String msg = getClass().getName()
                     + ": can't instantiate EventInputStream: "
                     + inChooser.getSelectedItem();
@@ -468,9 +469,9 @@ public final class SetupSortOn extends AbstractSetup {
         final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
         try { // create new event input stream class
             outStream = ((Class<? extends AbstractEventOutputStream>) outChooser
-                    .getSelectedItem()).newInstance();
+                    .getSelectedItem()).getDeclaredConstructor().newInstance();
             outStream.setEventSize(sortRoutine.getEventSize());
-        } catch (InstantiationException ie) {
+        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException ie) {
             final String msg = getClass().getName()
                     + ": can't instantiate EventOutputStream class: "
                     + outChooser.getSelectedItem();

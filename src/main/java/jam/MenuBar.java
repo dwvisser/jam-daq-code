@@ -11,17 +11,19 @@ import jam.plot.PlotPreferences;
 import jam.plot.color.ColorPrefs;
 
 import javax.swing.*;
-import java.util.Observable;
-import java.util.Observer;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Jam's menu bar. Separated from JamMain to reduce its size and separate
  * responsibilities.
+ * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser </a>
  * @version 1.4
  * @since 30 December 2003
  */
-final class MenuBar implements Observer {
+final class MenuBar implements PropertyChangeListener {
 
     /** Fit menu needed as members so we can add a fit */
     final transient private JMenu fitting = new JMenu("Fitting");
@@ -50,7 +52,7 @@ final class MenuBar implements Observer {
     protected MenuBar(final ViewMenu viewMenu, final ImportMenu importMenu,
             final Broadcaster broadcaster, final CommandManager commandManager) {
         super();
-        broadcaster.addObserver(this);
+        broadcaster.addPropertyChangeListener(this);
         this.commandManager = commandManager;
         menus.add(createFileMenu(importMenu));
         menus.add(this.commandManager.createMenu("Setup",
@@ -212,11 +214,9 @@ final class MenuBar implements Observer {
         return mPrefer;
     }
 
-    /**
-     * @see Observer#update(java.util.Observable, java.lang.Object)
-     */
-    public void update(final Observable observe, final Object obj) {
-        final BroadcastEvent event = (BroadcastEvent) obj;
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        final BroadcastEvent event = (BroadcastEvent) evt;
         final BroadcastEvent.Command command = event.getCommand();
         if (command == BroadcastEvent.Command.FIT_NEW) {
             final Action fitAction = (Action) (event.getContent());

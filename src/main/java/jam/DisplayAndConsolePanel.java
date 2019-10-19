@@ -12,7 +12,7 @@ final class DisplayAndConsolePanel extends JSplitPane {
 	protected DisplayAndConsolePanel(final Broadcaster broadcaster,
 			final Console console, final Display display) {
 		super(JSplitPane.VERTICAL_SPLIT, true, display, console);
-		broadcaster.addObserver(display);
+		broadcaster.addPropertyChangeListener(display);
 		this.setResizeWeight(0.9);
 	}
 }

@@ -3,6 +3,7 @@ package jam.io.hdf;
 import injection.GuiceInjector;
 import jam.util.StringUtilities;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.logging.Logger;
@@ -145,8 +146,8 @@ public abstract class AbstractData {
         T rval = null;
         if (TYPES.containsValue(tag)) {
             try {
-                rval = tag.newInstance();
-            } catch (InstantiationException | IllegalAccessException ie) {
+                rval = tag.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ie) {
                 throw new HDFException("Couldn't create " + tag.getName()
                         + " instance.", ie);
             }

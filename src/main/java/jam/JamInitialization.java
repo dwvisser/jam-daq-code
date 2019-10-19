@@ -67,7 +67,7 @@ public final class JamInitialization {
 			final AcquisitionAndRunState aars, final Version version) {
 		this.frame = frame;
 		this.properties = properties;
-		broadcaster.addObserver(aars);
+		broadcaster.addPropertyChangeListener(aars);
 		loadIcon();
 		final Container contents = this.frame.getContentPane();
 		contents.setLayout(new BorderLayout());

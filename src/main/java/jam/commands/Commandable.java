@@ -5,6 +5,7 @@ import jam.global.JamProperties;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
 
 /**
  * Objects to be executed by <code>CommandManager</code> must
@@ -40,6 +41,6 @@ public interface Commandable extends Action {
 	 * The platform-specific mask for invoking commands from the keyboard.
 	 */
 	int CTRL_MASK =
-		JamProperties.isMacOSX() ? Event.META_MASK : Event.CTRL_MASK;
+		JamProperties.isMacOSX() ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK;
 		
 }

@@ -1,32 +1,23 @@
 package jam.comm;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 
-import java.util.Observable;
-import java.util.Observer;
-
-final class CounterVMECommunicator implements Observer {
+final class CounterVMECommunicator implements PropertyChangeListener {
 
 	private transient final VmeSender vme;
 
 	CounterVMECommunicator(final VmeSender vme, final Broadcaster broadcaster) {
 		this.vme = vme;
-		broadcaster.addObserver(this);
+		broadcaster.addPropertyChangeListener(this);
 	}
 
-	/**
-	 * Receives distributed events. Can listen for broadcasted event.
-	 * Implementation of Observable interface.
-	 * 
-	 * @param observable
-	 *            object being observed
-	 * @param message
-	 *            additional parameter from <CODE>Observable</CODE> object
-	 */
-	public void update(final Observable observable, final Object message) {
-		final BroadcastEvent event = (BroadcastEvent) message;
-		final BroadcastEvent.Command command = event.getCommand();
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent.Command command = ((BroadcastEvent) evt).getCommand();
 		if (command == BroadcastEvent.Command.COUNTERS_READ) {
 			readCounters();
 		} else if (command == BroadcastEvent.Command.COUNTERS_ZERO) {

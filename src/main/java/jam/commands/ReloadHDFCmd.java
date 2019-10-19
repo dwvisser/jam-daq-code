@@ -12,9 +12,9 @@ import jam.io.hdf.HDFIO;
 import jam.ui.SelectionTree;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.Observable;
+import java.awt.event.InputEvent;
+import java.beans.PropertyChangeEvent;
 
 /**
  * Reload data from a hdf file
@@ -33,7 +33,7 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
         putValue(
                 ACCELERATOR_KEY,
                 KeyStroke.getKeyStroke(KeyEvent.VK_O, CTRL_MASK
-                        | Event.SHIFT_MASK));
+                        | InputEvent.SHIFT_DOWN_MASK));
         fileOpenMode = FileOpenMode.RELOAD;
     }
 
@@ -50,10 +50,9 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
         loadHDFFile(null, load);
     }
 
-    public void update(final Observable observe, final Object obj) {
-        final BroadcastEvent event = (BroadcastEvent) obj;
-        final BroadcastEvent.Command command = event.getCommand();
-        if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (((BroadcastEvent) evt).getCommand() == BroadcastEvent.Command.SORT_MODE_CHANGED) {
             enable();
         }
     }

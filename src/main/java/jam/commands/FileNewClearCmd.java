@@ -6,8 +6,8 @@ import jam.global.*;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Command for file menu new also clears
@@ -15,7 +15,7 @@ import java.util.Observer;
  * @author Ken Swartz
  * 
  */
-final class FileNewClearCmd extends AbstractCommand implements Observer {
+final class FileNewClearCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final JFrame frame;
 	private transient final JamStatus status;
@@ -56,10 +56,9 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 		execute(null);
 	}
 
-	public void update(final Observable observe, final Object obj) {
-		final BroadcastEvent event = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = event.getCommand();
-		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (((BroadcastEvent) evt).getCommand() == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			enable();
 		}
 	}

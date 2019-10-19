@@ -1,7 +1,22 @@
 package jam.plot;
 
+import static jam.plot.PlotPreferences.DISPLAY_LABELS;
+import static jam.plot.PlotPreferences.ENABLE_SCROLLING;
+import static jam.plot.PlotPreferences.PREFS;
+
+import java.awt.*;
+import java.awt.print.PageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+import javax.swing.*;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import injection.GuiceInjector;
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
@@ -15,18 +30,6 @@ import jam.global.Nameable;
 import jam.plot.PlotContainer.LayoutType;
 import jam.ui.SelectionTree;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.print.PageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
-
-import static jam.plot.PlotPreferences.*;
-
 /**
  * This class is a display routine for plots. It is implemented by
  * <code>Display</code>.
@@ -38,7 +41,7 @@ import static jam.plot.PlotPreferences.*;
  */
 @Singleton
 public final class PlotDisplay extends JPanel implements
-        PreferenceChangeListener, Observer, CurrentPlotAccessor,
+        PreferenceChangeListener, PropertyChangeListener, CurrentPlotAccessor,
         PlotSelectListener {
 
     private transient final Action action; // handles display events
@@ -100,7 +103,7 @@ public final class PlotDisplay extends JPanel implements
                 .equals(location)) ? SwingConstants.HORIZONTAL
                 : SwingConstants.VERTICAL;
         toolbar.setOrientation(orientation);
-        broadcaster.addObserver(this);
+        broadcaster.addPropertyChangeListener(this);
         /* display event handler */
         PREFS.addPreferenceChangeListener(this);
         createGridPanel();
@@ -396,8 +399,9 @@ public final class PlotDisplay extends JPanel implements
      * @param object
      *            the message
      */
-    public void update(final Observable observable, final Object object) {
-        final BroadcastEvent event = (BroadcastEvent) object;
+    // public void update(final Observable observable, final Object object) {
+    public void propertyChange(PropertyChangeEvent evt) {
+        final BroadcastEvent event = (BroadcastEvent) evt;
         final Command command = event.getCommand();
         if (command == Command.REFRESH) {
             update();

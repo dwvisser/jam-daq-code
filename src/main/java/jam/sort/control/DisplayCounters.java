@@ -12,8 +12,8 @@ import jam.sort.SortDaemon;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 
 /**
  * Displays buffer counters of sort threads. Gives the number of buffers and
@@ -23,7 +23,7 @@ import java.util.Observer;
  * @version 05 newest done 9-98
  */
 @Singleton
-public final class DisplayCounters extends JDialog implements Observer {// NOPMD
+public final class DisplayCounters extends JDialog implements PropertyChangeListener {// NOPMD
 
 	private transient final JamStatus status;
 
@@ -75,7 +75,7 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 		final int hgap = 5;
 		final int vgap = 10;
 		this.broadcaster = broadcaster;
-		broadcaster.addObserver(this);
+		broadcaster.addPropertyChangeListener(this);
 		setResizable(false);
 		setLocation(xpos, ypos);
 		final Container contents = getContentPane();
@@ -230,10 +230,10 @@ public final class DisplayCounters extends JDialog implements Observer {// NOPMD
 	 * @param object
 	 *            the communicated event
 	 */
-	public void update(final Observable observable, final Object object) {
+	public void propertyChange(PropertyChangeEvent evt) {
 		final int iEventCount = 1;
 		final int iBufferCt = 2;
-		final BroadcastEvent event = (BroadcastEvent) object;
+		final BroadcastEvent event = (BroadcastEvent) evt;
 		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.COUNTERS_UPDATE) {
 			if (status.getSortMode().isOnline()) {

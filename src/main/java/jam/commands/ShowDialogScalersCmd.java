@@ -1,11 +1,11 @@
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import com.google.inject.Inject;
 import jam.data.Scaler;
 import jam.data.control.ScalerDisplay;
-
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Show the scalers dialog box
@@ -13,7 +13,7 @@ import java.util.Observer;
  * @author Ken Swartz
  * 
  */
-final class ShowDialogScalersCmd extends AbstractShowDialog implements Observer {
+final class ShowDialogScalersCmd extends AbstractShowDialog implements PropertyChangeListener {
 
 	@Inject
 	ShowDialogScalersCmd(final ScalerDisplay scalerDisplay) {
@@ -21,7 +21,8 @@ final class ShowDialogScalersCmd extends AbstractShowDialog implements Observer 
 		dialog = scalerDisplay;
 	}
 
-	public void update(final Observable observe, final Object obj) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
 		setEnabled(!Scaler.getScalerList().isEmpty());
 	}
 }

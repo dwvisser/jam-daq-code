@@ -11,19 +11,20 @@ import jam.ui.SelectionTree;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 /**
  * Command for file menu new also clears.
  * @author Ken Swartz
  */
-final class DeleteHistogram extends AbstractCommand implements Observer,
+final class DeleteHistogram extends AbstractCommand implements PropertyChangeListener,
         Predicate<Nameable> {
 
     private final transient JFrame frame;
     private final transient Broadcaster broadcaster;
-    private final transient Observer selectionObserver = new SelectionObserver(
+    private final transient PropertyChangeListener selectionObserver = new SelectionObserver(
             this, this);
 
     @Inject
@@ -65,8 +66,10 @@ final class DeleteHistogram extends AbstractCommand implements Observer,
         execute(null);
     }
 
-    public void update(final Observable observe, final Object obj) {
-        this.selectionObserver.update(observe, obj);
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        // this.selectionObserver.update(observe, obj);
+        this.selectionObserver.propertyChange(evt);
     }
 
     public boolean evaluate(final Nameable selected) {

@@ -10,9 +10,9 @@ import jam.io.hdf.HDFIO;
 import javax.swing.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Save to a hdf file
@@ -20,7 +20,7 @@ import java.util.Observer;
  * @author Ken Swartz
  * 
  */
-final class SaveHDFCmd extends AbstractCommand implements Observer {
+final class SaveHDFCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final JamStatus status;
 	private transient final HDFIO hdfio;
@@ -31,7 +31,7 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 		this.status = status;
 		this.hdfio = hdfio;
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S,
-				CTRL_MASK | InputEvent.SHIFT_MASK));
+				CTRL_MASK | InputEvent.SHIFT_DOWN_MASK));
 		final Icon iSave = loadToolbarIcon("jam/ui/SaveHDF.png");
 		putValue(Action.SMALL_ICON, iSave);
 		putValue(Action.SHORT_DESCRIPTION,
@@ -70,15 +70,9 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 		execute(null);
 	}
 
-	/**
-	 * Listens to messages to enable/disable this action.
-	 * 
-	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
-	 */
-	public void update(final Observable observe, final Object obj) {
-		final BroadcastEvent event = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = event.getCommand();
-		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (((BroadcastEvent) evt).getCommand() == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			enable();
 		}
 	}

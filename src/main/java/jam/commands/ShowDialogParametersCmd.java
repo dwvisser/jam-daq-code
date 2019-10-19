@@ -1,11 +1,11 @@
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import com.google.inject.Inject;
 import jam.data.DataParameter;
 import jam.data.control.ParameterControl;
-
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Show parameters dialog.
@@ -13,8 +13,7 @@ import java.util.Observer;
  * @author Ken Swartz
  * 
  */
-final class ShowDialogParametersCmd extends AbstractShowDialog implements
-		Observer {
+final class ShowDialogParametersCmd extends AbstractShowDialog implements PropertyChangeListener {
 
 	/**
 	 * Initialize command
@@ -25,7 +24,8 @@ final class ShowDialogParametersCmd extends AbstractShowDialog implements
 		dialog = parameterControl;
 	}
 
-	public void update(final Observable observe, final Object obj) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
 		setEnabled(!DataParameter.getParameterList().isEmpty());
 	}
 }

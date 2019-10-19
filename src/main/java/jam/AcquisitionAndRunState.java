@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import jam.global.*;
 
 import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Updates the frame when run state or acquisition status changes.
@@ -13,7 +13,7 @@ import java.util.Observer;
  * @author Dale Visser
  * 
  */
-final class AcquisitionAndRunState implements Observer {
+final class AcquisitionAndRunState implements PropertyChangeListener {
 	private transient final Frame frame;
 	private RunState runState = RunState.NO_ACQ;
 	private transient final JamStatus status;
@@ -60,11 +60,9 @@ final class AcquisitionAndRunState implements Observer {
 		}
 	}
 
-	/**
-	 * @see Observer#update(java.util.Observable, java.lang.Object)
-	 */
-	public void update(final Observable event, final Object param) {
-		final BroadcastEvent beParam = (BroadcastEvent) param;
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent beParam = (BroadcastEvent) evt;
 		final BroadcastEvent.Command command = beParam.getCommand();
 		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			this.sortModeChanged();

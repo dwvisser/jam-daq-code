@@ -3,6 +3,9 @@
  */
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import com.google.inject.Inject;
 import injection.GuiceInjector;
 import jam.global.JamStatus;
@@ -10,14 +13,11 @@ import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.sort.control.SetupSortOff;
 
-import java.util.Observable;
-import java.util.Observer;
-
 /**
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 4, 2004
  */
-final class ShowSetupOffline extends AbstractShowDialog implements Observer {
+final class ShowSetupOffline extends AbstractShowDialog implements PropertyChangeListener {
 
     @Inject
     ShowSetupOffline(final SetupSortOff setupSortOff) {
@@ -33,7 +33,8 @@ final class ShowSetupOffline extends AbstractShowDialog implements Observer {
                 || mode == SortMode.ON_NO_DISK || mode == SortMode.REMOTE));
     }
 
-    public void update(final Observable observe, final Object obj) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
         enable();
     }
 

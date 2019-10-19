@@ -18,6 +18,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -415,8 +416,8 @@ public final class GateSet extends AbstractControl {
 	 *            the message
 	 */
 	@Override
-	public void update(final Observable observable, final Object object) {
-		final BroadcastEvent event = (BroadcastEvent) object;
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent event = (BroadcastEvent) evt;
 		final BroadcastEvent.Command com = event.getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_SELECT) {
 			canceller.cancel();

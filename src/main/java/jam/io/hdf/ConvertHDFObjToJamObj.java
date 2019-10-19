@@ -9,6 +9,7 @@ import jam.io.FileOpenMode;
 import jam.util.StringUtilities;
 
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -691,9 +692,9 @@ final class ConvertHDFObjToJamObj {
         AbstractCalibrationFunction calFunc = null;
         try {
             if (calMap.containsKey(funcName)) {
-                calFunc = calMap.get(funcName).newInstance();
+                calFunc = calMap.get(funcName).getDeclaredConstructor().newInstance();
             }
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new HDFException("Cannot create calibration  " + funcName, e);
         }
         return calFunc;

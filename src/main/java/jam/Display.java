@@ -9,8 +9,8 @@ import jam.ui.SummaryTable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Display to show plots or table
@@ -18,7 +18,7 @@ import java.util.Observer;
  * @author Ken Swartz
  * 
  */
-public class Display extends JPanel implements Observer {
+public class Display extends JPanel implements PropertyChangeListener {
 
 	private static final String KEY_PLOT = "plot";
 
@@ -61,9 +61,9 @@ public class Display extends JPanel implements Observer {
 		cardLayout.show(this, KEY_TABLE);
 	}
 
-	public void update(final Observable observable, final Object object) {
-		final BroadcastEvent event = (BroadcastEvent) object;
-		final Command command = event.getCommand();
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		final Command command = ((BroadcastEvent) evt).getCommand();
 		if ((command == BroadcastEvent.Command.GROUP_SELECT)
 				|| (command == BroadcastEvent.Command.ROOT_SELECT)) {
 			showTable();

@@ -7,15 +7,15 @@ import jam.global.Nameable;
 import jam.io.ImpExpSPE;
 import jam.ui.SelectionTree;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Export data to a Radware gf3 spectrum file.
  * 
  * @author Dale Visser
  */
-final class ExportRadware extends AbstractExportFile implements Observer {
+final class ExportRadware extends AbstractExportFile implements PropertyChangeListener {
 
 	@Inject
 	ExportRadware(final ImpExpSPE impExpSPE) {
@@ -23,10 +23,9 @@ final class ExportRadware extends AbstractExportFile implements Observer {
 		importExport = impExpSPE;
 	}
 
-	public void update(final Observable observe, final Object obj) {
-		final BroadcastEvent event = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = event.getCommand();
-		if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (((BroadcastEvent) evt).getCommand() == BroadcastEvent.Command.HISTOGRAM_SELECT) {
 			enable();
 		}
 	}

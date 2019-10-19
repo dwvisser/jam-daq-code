@@ -13,6 +13,7 @@ import jam.sort.stream.AbstractEventOutputStream;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
 /**
@@ -160,11 +161,11 @@ public final class SetupSortOff extends AbstractSetup {
 			synchronized (this) {
 				final Class<? extends AbstractEventInputStream> class1 = (Class<? extends AbstractEventInputStream>) inChooser
 						.getSelectedItem();
-				inStream = class1.newInstance();
+				inStream = class1.getDeclaredConstructor().newInstance();
 			}
 			inStream.setConsoleExists(true);
-		} catch (InstantiationException ie) {
-			final String msg = "Cannot instantize event input stream: "
+		} catch (InstantiationException|InvocationTargetException|NoSuchMethodException ie) {
+			final String msg = "Cannot instantiate event input stream: "
 					+ inChooser.getSelectedItem();
 			LOGGER.log(Level.SEVERE, msg, ie);
 			throw new JamException(msg, ie);
@@ -181,9 +182,9 @@ public final class SetupSortOff extends AbstractSetup {
 		try {// create new event output stream class
 			synchronized (this) {
 				outStream = ((Class<? extends AbstractEventOutputStream>) outChooser
-						.getSelectedItem()).newInstance();
+						.getSelectedItem()).getDeclaredConstructor().newInstance();
 			}
-		} catch (InstantiationException ie) {
+		} catch (InstantiationException|InvocationTargetException|NoSuchMethodException ie) {
 			throw new JamException("Cannot instantize event output stream: "
 					+ outStream.getClass().getName(), ie);
 		} catch (IllegalAccessException iae) {

@@ -1,11 +1,11 @@
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import com.google.inject.Inject;
 import jam.data.Scaler;
 import jam.data.control.ScalerZero;
-
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Show the zero scalers dialog.
@@ -14,7 +14,7 @@ import java.util.Observer;
  * 
  */
 final class ShowDialogZeroScalersCmd extends AbstractShowDialog implements
-		Observer {
+		PropertyChangeListener {
 
 	@Inject
 	ShowDialogZeroScalersCmd(final ScalerZero scalerZero) {
@@ -22,7 +22,8 @@ final class ShowDialogZeroScalersCmd extends AbstractShowDialog implements
 		dialog = scalerZero;
 	}
 
-	public void update(final Observable observe, final Object obj) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
 		setEnabled(!Scaler.getScalerList().isEmpty());
 	}
 

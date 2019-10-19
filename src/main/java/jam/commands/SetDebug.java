@@ -6,15 +6,15 @@ import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Sets/unsets debug preference.
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 2004-06-11
  */
-final class SetDebug extends AbstractSetBooleanPreference implements Observer {
+final class SetDebug extends AbstractSetBooleanPreference implements PropertyChangeListener {
 
     SetDebug() {
         super("Debug front end");
@@ -32,7 +32,8 @@ final class SetDebug extends AbstractSetBooleanPreference implements Observer {
         setEnabled(mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK);
     }
 
-    public void update(final Observable observe, final Object obj) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
         enable();
     }
 }

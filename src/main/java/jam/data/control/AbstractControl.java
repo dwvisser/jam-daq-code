@@ -4,6 +4,8 @@ import jam.global.Broadcaster;
 
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.List;
 import java.util.logging.Logger;
@@ -13,7 +15,7 @@ import java.util.logging.Logger;
  * 
  * @author Ken Swartz
  */
-public abstract class AbstractControl extends JDialog implements Observer {
+public abstract class AbstractControl extends JDialog implements PropertyChangeListener {
 
 	/**
 	 * Reference to instance of Broadcaster.
@@ -57,7 +59,7 @@ public abstract class AbstractControl extends JDialog implements Observer {
 		super(frame, title, modal);
 		controllers.add(this);
 		this.broadcaster = broadcaster;
-		broadcaster.addObserver(this);
+		broadcaster.addPropertyChangeListener(this);
 	}
 
 	/**
@@ -125,11 +127,10 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	@Override
 	protected void finalize() throws Throwable {
 		controllers.remove(this);
-		broadcaster.deleteObserver(this);
-		super.finalize();// NOPMD
+		broadcaster.removePropertyChangeListener(this);
 	}
 
-	public void update(final Observable observable, final Object object) {
+	public void propertyChange(PropertyChangeEvent evt) {
 		/*
 		 * do-nothing implementation for those subclasses that don't care
 		 */

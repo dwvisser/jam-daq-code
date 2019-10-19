@@ -4,6 +4,8 @@ import jam.data.AbstractHistogram;
 import jam.data.Gate;
 import jam.global.Nameable;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -12,9 +14,9 @@ import java.util.Observer;
  * @author Dale Visser
  */
 public abstract class AbstractShowGateDialog extends AbstractShowDialog
-        implements Observer, Predicate<Nameable> {
+        implements PropertyChangeListener, Predicate<Nameable> {
 
-    private final transient Observer selectionObserver = new SelectionObserver(
+    private final transient PropertyChangeListener selectionObserver = new SelectionObserver(
             this, this);
 
     /**
@@ -25,15 +27,10 @@ public abstract class AbstractShowGateDialog extends AbstractShowDialog
         super(string);
     }
 
-    /**
-     * Makes dialog respond to tree selection events.
-     * @param observe
-     *            unused
-     * @param obj
-     *            command object
-     */
-    public final void update(final Observable observe, final Object obj) {
-        this.selectionObserver.update(observe, obj);
+    @Override
+    public final void propertyChange(PropertyChangeEvent evt) {
+        // this.selectionObserver.update(observe, obj);
+        this.selectionObserver.propertyChange(evt);
     }
 
     /**

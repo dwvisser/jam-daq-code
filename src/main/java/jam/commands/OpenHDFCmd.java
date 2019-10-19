@@ -15,16 +15,16 @@ import jam.ui.SelectionTree;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Open a hdf file
  * @author Ken Swartz
  */
-final class OpenHDFCmd extends AbstractCommand implements Observer,
+final class OpenHDFCmd extends AbstractCommand implements PropertyChangeListener,
         HDFIO.AsyncListener {
 
     private transient File openFile = null;
@@ -137,10 +137,9 @@ final class OpenHDFCmd extends AbstractCommand implements Observer,
                 firstHist);
     }
 
-    public void update(final Observable observe, final Object obj) {
-        final BroadcastEvent event = (BroadcastEvent) obj;
-        final BroadcastEvent.Command command = event.getCommand();
-        if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (((BroadcastEvent) evt).getCommand() == BroadcastEvent.Command.SORT_MODE_CHANGED) {
             enable();
         }
     }

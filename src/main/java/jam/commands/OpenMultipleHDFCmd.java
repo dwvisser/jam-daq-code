@@ -4,9 +4,10 @@ import com.google.inject.Inject;
 import jam.global.*;
 import jam.io.control.OpenMultipleFiles;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.*;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Shows the open multiple files dialog
@@ -14,7 +15,7 @@ import java.util.Observer;
  * @author Ken Swartz
  * 
  */
-public class OpenMultipleHDFCmd extends AbstractCommand implements Observer {
+public class OpenMultipleHDFCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final OpenMultipleFiles openMultiple;
 	private transient final JamStatus status;
@@ -47,10 +48,9 @@ public class OpenMultipleHDFCmd extends AbstractCommand implements Observer {
 		// do nothing
 	}
 
-	public void update(final Observable observe, final Object obj) {
-		final BroadcastEvent event = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = event.getCommand();
-		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (((BroadcastEvent) evt).getCommand() == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			enable();
 		}
 	}

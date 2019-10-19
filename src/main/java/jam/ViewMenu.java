@@ -9,10 +9,11 @@ import jam.plot.PlotDisplay;
 import jam.plot.View;
 
 import javax.swing.*;
-import java.util.Observable;
-import java.util.Observer;
 
-final class ViewMenu implements Observer {
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+final class ViewMenu implements PropertyChangeListener {
     /** Fit menu needed as members so we can add a fit. */
     private final transient JMenu view = new JMenu("View");
 
@@ -25,7 +26,7 @@ final class ViewMenu implements Observer {
             final Broadcaster broadcaster) {
         this.display = display;
         this.commandManager = commandManager;
-        broadcaster.addObserver(this);
+        broadcaster.addPropertyChangeListener(this);
         this.updateViews();
     }
 
@@ -50,12 +51,9 @@ final class ViewMenu implements Observer {
         return rval;
     }
 
-    /**
-     * @see Observer#update(java.util.Observable, java.lang.Object)
-     */
-    public void update(final Observable observe, final Object obj) {
-        final BroadcastEvent event = (BroadcastEvent) obj;
-        final BroadcastEvent.Command command = event.getCommand();
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        final BroadcastEvent.Command command = ((BroadcastEvent) evt).getCommand();
         if (command == BroadcastEvent.Command.VIEW_NEW) {
             updateViews();
         }

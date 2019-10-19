@@ -8,10 +8,11 @@ import jam.global.CommandListener;
 import jam.global.CommandListenerException;
 
 import javax.swing.*;
+
+import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,8 +64,9 @@ public final class CommandManager implements CommandListener, ActionCreator {
             } else {
                 currentCom = GuiceInjector.getObjectInstance(cmdClass);
                 currentCom.initCommand();
-                if (currentCom instanceof Observer) {
-                    this.broadcaster.addObserver((Observer) currentCom);
+                if (currentCom instanceof PropertyChangeListener) {
+                    final PropertyChangeListener pcl = (PropertyChangeListener) currentCom;
+                    this.broadcaster.addPropertyChangeListener(pcl);
                 }
                 INSTANCES.put(strCmd, currentCom);
             }

@@ -6,9 +6,10 @@ import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.sort.control.SortControl;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.*;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Show the sort control dialog.
@@ -16,7 +17,7 @@ import java.util.Observer;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 2004-06-04
  */
-final class ShowSortControl extends AbstractShowDialog implements Observer {
+final class ShowSortControl extends AbstractShowDialog implements PropertyChangeListener {
 
 	private transient final JamStatus status;
 
@@ -36,7 +37,8 @@ final class ShowSortControl extends AbstractShowDialog implements Observer {
 		setEnabled(mode == SortMode.OFFLINE);
 	}
 
-	public void update(final Observable observe, final Object obj) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
 		enable();
 	}
 

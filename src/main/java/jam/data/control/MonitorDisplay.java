@@ -4,13 +4,14 @@ import com.google.inject.Inject;
 import jam.data.Monitor;
 import jam.global.AcquisitionStatus;
 import jam.global.BroadcastEvent;
+import jam.global.BroadcastEvent.Command;
 import jam.global.Broadcaster;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
 import java.util.List;
-import java.util.Observable;
 
 /**
  * 
@@ -132,13 +133,13 @@ public class MonitorDisplay extends AbstractControl {
 	 *            not sure
 	 */
 	@Override
-	public void update(final Observable observable, final Object object) {
-		final BroadcastEvent event = (BroadcastEvent) object;
-		if (event.getCommand() == BroadcastEvent.Command.MONITORS_UPDATE) {
+	public void propertyChange(PropertyChangeEvent evt) {
+		final Command command = ((BroadcastEvent) evt).getCommand();
+		if (command == BroadcastEvent.Command.MONITORS_UPDATE) {
 			displayMonitors();
-		} else if (event.getCommand() == BroadcastEvent.Command.MONITORS_ENABLED) {
+		} else if (command == BroadcastEvent.Command.MONITORS_ENABLED) {
 			enableMonitors();
-		} else if (event.getCommand() == BroadcastEvent.Command.MONITORS_DISABLED) {
+		} else if (command == BroadcastEvent.Command.MONITORS_DISABLED) {
 			disableMonitors();
 		}
 	}

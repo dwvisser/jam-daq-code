@@ -15,6 +15,8 @@ import jam.ui.SelectionTree;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.logging.Level;
@@ -232,11 +234,11 @@ public class CalibrationFit extends AbstractControl {
 			final boolean change = calClass.isInstance(calibFunc);
 			final AbstractHist1D currentHistogram = getCurrentHistogram();
 			if (calibFunc == null || !change) {
-				calibFunc = calClass.newInstance();
+				calibFunc = calClass.getDeclaredConstructor().newInstance();
 				calibFunc.setSizeHistogram(currentHistogram.getSizeX());
 			}
 			updateFields(calibFunc, rbFitPoints.isSelected());
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			LOGGER.log(Level.SEVERE, "Creating fit function "
 					+ getClass().getName() + " " + e.toString(), e);
 		}
@@ -530,8 +532,8 @@ public class CalibrationFit extends AbstractControl {
 	}
 
 	@Override
-	public void update(final Observable observable, final Object object) {
-		final BroadcastEvent event = (BroadcastEvent) object;
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent event = (BroadcastEvent) evt;
 		final BroadcastEvent.Command com = event.getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_SELECT
 				|| com == BroadcastEvent.Command.HISTOGRAM_ADD) {

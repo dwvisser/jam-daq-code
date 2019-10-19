@@ -11,8 +11,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 
 /**
  * Create a summary table for a group
@@ -20,7 +20,7 @@ import java.util.Observer;
  * @author Ken Swartz
  */
 @Singleton
-public class SummaryTable extends JPanel implements Observer {
+public class SummaryTable extends JPanel implements PropertyChangeListener {
 
 	/**
 	 * whether one group or all groups is selected
@@ -62,7 +62,7 @@ public class SummaryTable extends JPanel implements Observer {
 				summaryTableModel);
 		summaryTableModel.setOptions(true, true, true);
 		this.add(toolbar, BorderLayout.NORTH);
-		broadcaster.addObserver(this);
+		broadcaster.addPropertyChangeListener(this);
 	}
 
 	/**
@@ -73,8 +73,9 @@ public class SummaryTable extends JPanel implements Observer {
 	 * @param object
 	 *            not sure
 	 */
-	public void update(final Observable observable, final Object object) {
-		final BroadcastEvent event = (BroadcastEvent) object;
+	// public void update(final Observable observable, final Object object) {
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent event = (BroadcastEvent) evt;
 		if (event.getCommand() == BroadcastEvent.Command.ROOT_SELECT) {
 			summaryTableModel.setSelectionType(Selection.ALL_GROUPS);
 		} else if (event.getCommand() == BroadcastEvent.Command.GROUP_SELECT) {

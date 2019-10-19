@@ -13,15 +13,16 @@ import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.sort.control.RunControl;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.*;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jun 4, 2004
  */
-final class ShowRunControl extends AbstractShowDialog implements Observer {
+final class ShowRunControl extends AbstractShowDialog implements PropertyChangeListener {
 
     @Inject
     ShowRunControl(final RunControl runControl) {
@@ -39,7 +40,8 @@ final class ShowRunControl extends AbstractShowDialog implements Observer {
         setEnabled(mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK);
     }
 
-    public void update(final Observable observe, final Object obj) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
         enable();
     }
 

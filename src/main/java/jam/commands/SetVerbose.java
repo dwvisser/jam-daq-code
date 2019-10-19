@@ -1,13 +1,13 @@
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import injection.GuiceInjector;
 import jam.comm.CommunicationPreferences;
 import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
-
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Sets/unsets verbose preference.
@@ -15,7 +15,7 @@ import java.util.Observer;
  * @version 2004-06-11
  */
 final class SetVerbose extends AbstractSetBooleanPreference implements
-        Observer {
+        PropertyChangeListener {
 
     SetVerbose() {
         super();
@@ -34,7 +34,8 @@ final class SetVerbose extends AbstractSetBooleanPreference implements
         setEnabled(mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK);
     }
 
-    public void update(final Observable observe, final Object obj) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
         enable();
     }
 }

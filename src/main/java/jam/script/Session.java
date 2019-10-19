@@ -21,16 +21,19 @@ import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 
 import javax.swing.*;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileFilter;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * <p>Class which exposes an API for scripting offline sorting sessions. Using this
- * class, you can write and compile a .java file which, when executed, will</p>
+ * <p>
+ * Class which exposes an API for scripting offline sorting sessions. Using this
+ * class, you can write and compile a .java file which, when executed, will
+ * </p>
  * <ol>
  * <li>Launch Jam in the background.</li>
  * <li>Setup offline sorting.</li>
@@ -44,14 +47,17 @@ import java.util.logging.Logger;
  * <li>Save the results in an HDF file.</li>
  * <li>(Optional) Add histograms in stored HDF files together.
  * </ol>
- * <p>The last step may be desirable in the case where you would like to execute
+ * <p>
+ * The last step may be desirable in the case where you would like to execute
  * portions of the sorting task on different machines at the same time, and
- * combine their results in a "merge script".</p>
+ * combine their results in a "merge script".
+ * </p>
+ * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version April 5, 2004
  */
 @Singleton
-public final class Session implements Observer {
+public final class Session implements PropertyChangeListener {
 
     private static final String INSTREAM = "\tin: ";
 
@@ -112,7 +118,7 @@ public final class Session implements Observer {
             final HistogramZero histogramZero, final Broadcaster broadcaster,
             final @MapListener CommandListener listener) {
         super();
-        broadcaster.addObserver(this);
+        broadcaster.addPropertyChangeListener(this);
         this.listener = listener;
         this.frame = frame;
         this.setupSortOffline = sortOffline;
@@ -494,8 +500,9 @@ public final class Session implements Observer {
 
     }
 
-    public void update(final Observable event, final Object param) {
-        final BroadcastEvent bEvent = (BroadcastEvent) param;
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        final BroadcastEvent bEvent = (BroadcastEvent) evt;
         final BroadcastEvent.Command command = bEvent.getCommand();
         if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
             synchronized (lockObject) {

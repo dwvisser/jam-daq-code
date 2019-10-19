@@ -12,9 +12,9 @@ import jam.io.hdf.HDFileFilter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Command to save the sort group of histograms.
@@ -22,7 +22,7 @@ import java.util.Observer;
  * @author Ken Swartz
  * 
  */
-final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
+final class SaveSortGroupHDFCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final Frame frame;
 	private transient final JamStatus status;
@@ -91,10 +91,9 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 		execute(null);
 	}
 
-	public void update(final Observable observe, final Object obj) {
-		final BroadcastEvent event = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = event.getCommand();
-		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (((BroadcastEvent) evt).getCommand() == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			enable();
 		}
 	}

@@ -5,18 +5,19 @@ import jam.data.AbstractHistogram;
 import jam.data.control.GateSet;
 import jam.global.Nameable;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.*;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Show the scalers dialog box.
  * @author Ken Swartz
  */
-final class ShowDialogSetGate extends AbstractShowDialog implements Observer,
+final class ShowDialogSetGate extends AbstractShowDialog implements PropertyChangeListener,
         Predicate<Nameable> {
 
-    private final transient Observer selectionObserver = new SelectionObserver(
+    private final transient PropertyChangeListener selectionObserver = new SelectionObserver(
             this, this);
 
     @Inject
@@ -29,8 +30,10 @@ final class ShowDialogSetGate extends AbstractShowDialog implements Observer,
         putValue(Action.SHORT_DESCRIPTION, "Set Gate.");
     }
 
-    public void update(final Observable observe, final Object obj) {
-        this.selectionObserver.update(observe, obj);
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        // this.selectionObserver.update(observe, obj);
+        this.selectionObserver.propertyChange(evt);
     }
 
     public boolean evaluate(final Nameable selected) {

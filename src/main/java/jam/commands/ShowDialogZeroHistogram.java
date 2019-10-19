@@ -5,18 +5,19 @@ import jam.data.AbstractHistogram;
 import jam.data.control.HistogramZero;
 import jam.global.Nameable;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.*;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Show the zero histograms dialog.
  * @author Ken Swartz
  */
 final class ShowDialogZeroHistogram extends AbstractShowDialog implements
-        Observer, Predicate<Nameable> {
+        PropertyChangeListener, Predicate<Nameable> {
 
-    private final transient Observer selectionObserver = new SelectionObserver(
+    private final transient PropertyChangeListener selectionObserver = new SelectionObserver(
             this, this);
 
     /**
@@ -31,8 +32,10 @@ final class ShowDialogZeroHistogram extends AbstractShowDialog implements
         dialog = histogramZero;
     }
 
-    public void update(final Observable observe, final Object obj) {
-        this.selectionObserver.update(observe, obj);
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        // this.selectionObserver.update(observe, obj);
+        this.selectionObserver.propertyChange(evt);
     }
 
     public boolean evaluate(final Nameable selected) {

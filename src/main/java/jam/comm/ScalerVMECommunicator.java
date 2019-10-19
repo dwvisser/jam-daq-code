@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Communicates about scalers with VME.
@@ -13,14 +13,14 @@ import java.util.Observer;
  * @author Dale Visser
  * 
  */
-public class ScalerVMECommunicator implements ScalerCommunication, Observer {
+public class ScalerVMECommunicator implements ScalerCommunication, PropertyChangeListener {
 	private transient final VMECommunication vme;
 
 	@Inject
 	ScalerVMECommunicator(final VMECommunication vme,
 			final Broadcaster broadcaster) {
 		this.vme = vme;
-		broadcaster.addObserver(this);
+		broadcaster.addPropertyChangeListener(this);
 	}
 
 	/**
@@ -52,18 +52,9 @@ public class ScalerVMECommunicator implements ScalerCommunication, Observer {
 		this.vme.sendToVME(PacketTypes.INTERVAL, message);
 	}
 
-	/**
-	 * Receives distributed events. Can listen for broadcasted event.
-	 * Implementation of Observable interface.
-	 * 
-	 * @param observable
-	 *            object being observed
-	 * @param message
-	 *            additional parameter from <CODE>Observable</CODE> object
-	 */
-	public void update(final Observable observable, final Object message) {
-		final BroadcastEvent event = (BroadcastEvent) message;
-		final BroadcastEvent.Command command = event.getCommand();
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent.Command command = ((BroadcastEvent) evt).getCommand();
 		if (command == BroadcastEvent.Command.SCALERS_READ) {
 			this.readScalers();
 		} else if (command == BroadcastEvent.Command.SCALERS_CLEAR) {

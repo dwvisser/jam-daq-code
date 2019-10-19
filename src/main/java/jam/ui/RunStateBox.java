@@ -8,6 +8,8 @@ import jam.global.RunState;
 
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -19,7 +21,7 @@ import java.util.Observer;
  * @see jam.global.RunState
  */
 @Singleton
-final class RunStateBox implements Observer {
+final class RunStateBox implements PropertyChangeListener {
 
 	private transient final JLabel lrunState = new JLabel("   Welcome   ",
 			SwingConstants.CENTER);
@@ -29,7 +31,7 @@ final class RunStateBox implements Observer {
 	@Inject
 	protected RunStateBox(final Broadcaster broadcaster) {
 		super();
-		broadcaster.addObserver(this);
+		broadcaster.addPropertyChangeListener(this);
 		pRunState.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		pRunState.add(new JLabel(" Status: "));
 		lrunState.setOpaque(true);
@@ -50,16 +52,9 @@ final class RunStateBox implements Observer {
 		lrunState.setText(runState.getLabel());
 	}
 
-	/**
-	 * Implementation of Observable interface.
-	 * 
-	 * @param observable
-	 *            the sender
-	 * @param object
-	 *            the message
-	 */
-	public void update(final Observable observable, final Object object) {
-		final BroadcastEvent event = (BroadcastEvent) object;
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent event = (BroadcastEvent) evt;
 		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
 			setRunState((RunState) event.getContent());

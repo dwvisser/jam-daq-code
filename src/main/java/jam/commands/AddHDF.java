@@ -9,8 +9,8 @@ import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 
+import java.beans.PropertyChangeEvent;
 import java.io.File;
-import java.util.Observable;
 
 /**
  * Add counts to histograms in memory from histograms in an HDF file.
@@ -52,10 +52,9 @@ final class AddHDF extends AbstractLoaderHDF {
 		loadHDFFile(file, loadGroup);
 	}
 
-	public void update(final Observable observe, final Object obj) {
-		final BroadcastEvent event = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = event.getCommand();
-		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (((BroadcastEvent) evt).getCommand() == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			setEnabled(status.getSortMode() != SortMode.REMOTE);
 		}
 	}

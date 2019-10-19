@@ -9,6 +9,7 @@ import jam.sort.AbstractSortRoutine;
 
 import javax.swing.*;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -67,15 +68,15 @@ final class SortChooser extends JComboBox<Class<? extends AbstractSortRoutine>> 
 			if (userSpecifiedPath) {
 				synchronized (this) {
 					sortRoutine = (AbstractSortRoutine) subclassIdentifier.loadClass(
-							classPath, sortClass.getName()).newInstance();
+							classPath, sortClass.getName()).getDeclaredConstructor().newInstance();
 				}
 			} else {// use default loader
 				/* we call loadClass() in order to guarantee latest version */
 				synchronized (this) {
-					sortRoutine = sortClass.newInstance();
+					sortRoutine = sortClass.getDeclaredConstructor().newInstance();
 				}
 			}
-		} catch (InstantiationException ie) {
+		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException ie) {
 			throw new JamException("Cannot instantiate sort routine: "
 					+ sortClass.getName(), ie);
 		} catch (IllegalAccessException iae) {

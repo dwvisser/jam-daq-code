@@ -5,6 +5,7 @@ import jam.data.DataBase;
 import jam.data.DataElement;
 import jam.data.Group;
 import jam.global.*;
+import jam.global.BroadcastEvent.Command;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -13,10 +14,10 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Observable;
 
 /**
  * Reads and displays the scaler values.
@@ -66,7 +67,7 @@ public final class ScalerDisplay extends AbstractControl {
 		super(frame, "Scalers", false, broadcaster);
 		this.broadcast = broadcast;
 		this.status = status;
-		broadcaster.addObserver(this);
+		broadcaster.addPropertyChangeListener(this);
 		/* dialog box to display scalers */
 		final Container cddisp = getContentPane();
 		setLocation(20, 50);
@@ -230,23 +231,15 @@ public final class ScalerDisplay extends AbstractControl {
 		}
 	}
 
-	/**
-	 * Implementation of Observable interface.
-	 * 
-	 * @param observable
-	 *            not sure
-	 * @param event
-	 *            not sure
-	 */
 	@Override
-	public void update(final Observable observable, final Object event) {
-		final BroadcastEvent jamEvent = (BroadcastEvent) event;
-		if ((jamEvent.getCommand() == BroadcastEvent.Command.HISTOGRAM_NEW)
-				|| (jamEvent.getCommand() == BroadcastEvent.Command.HISTOGRAM_SELECT)
-				|| (jamEvent.getCommand() == BroadcastEvent.Command.GROUP_SELECT)) {
+	public void propertyChange(PropertyChangeEvent evt) {
+		final Command command = ((BroadcastEvent) evt).getCommand();
+		if ((command == BroadcastEvent.Command.HISTOGRAM_NEW)
+				|| (command == BroadcastEvent.Command.HISTOGRAM_SELECT)
+				|| (command == BroadcastEvent.Command.GROUP_SELECT)) {
 			doSetup();
 		}
-		if (jamEvent.getCommand() == BroadcastEvent.Command.SCALERS_UPDATE) {
+		if (command == BroadcastEvent.Command.SCALERS_UPDATE) {
 			displayScalers();
 		}
 	}

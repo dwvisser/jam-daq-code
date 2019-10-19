@@ -12,6 +12,8 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -20,12 +22,12 @@ import java.util.logging.Level;
  * Command for Page Setup.
  * @author Ken Swartz
  */
-final class Print extends AbstractPrintingCommand implements Observer,
+final class Print extends AbstractPrintingCommand implements PropertyChangeListener,
         Predicate<Nameable> {
 
     private transient boolean firstTime = true;
     private final transient PlotDisplay display;
-    private final transient Observer selectionObserver = new SelectionObserver(
+    private final transient PropertyChangeListener selectionObserver = new SelectionObserver(
             this, this);
 
     @Inject
@@ -76,8 +78,10 @@ final class Print extends AbstractPrintingCommand implements Observer,
         execute(null);
     }
 
-    public void update(final Observable observe, final Object obj) {
-        this.selectionObserver.update(observe, obj);
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        // this.selectionObserver.update(observe, obj);
+        this.selectionObserver.propertyChange(evt);
     }
 
     public boolean evaluate(final Nameable selected) {

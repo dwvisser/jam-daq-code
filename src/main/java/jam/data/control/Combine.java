@@ -12,8 +12,8 @@ import jam.util.NumberUtilities;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.logging.Level;
 
 /**
@@ -21,7 +21,7 @@ import java.util.logging.Level;
  * 
  * @author Dale Visser, Ken Swartz
  */
-public class Combine extends AbstractManipulation implements Observer {
+public class Combine extends AbstractManipulation implements PropertyChangeListener {
 
 	private transient final JComboBox<Object> cfrom1, cfrom2, cto;
 
@@ -401,14 +401,9 @@ public class Combine extends AbstractManipulation implements Observer {
 		}
 	}
 
-	/**
-	 * Implementation of Observable interface listeners for broadcast events.
-	 * broadcast events where there are new histograms or histograms added.
-	 */
 	@Override
-	public void update(final Observable observable, final Object object) {
-		final BroadcastEvent event = (BroadcastEvent) object;
-		final BroadcastEvent.Command command = event.getCommand();
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent.Command command = ((BroadcastEvent) evt).getCommand();
 		if (command == BroadcastEvent.Command.HISTOGRAM_NEW
 				|| command == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			doSetup();

@@ -13,6 +13,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -108,7 +109,7 @@ public class LoadFit {
 		final String fitName = fitClass.getName();
 		try {
 
-			final AbstractFit fit = fitClass.newInstance();
+			final AbstractFit fit = fitClass.getDeclaredConstructor().newInstance();
 			final int indexPeriod = fitName.lastIndexOf('.');
 			final String fitNameFront = fitName.substring(indexPeriod + 1);
 			final FitDialog dfit = fit.createDialog(jamMain, display);
@@ -119,8 +120,8 @@ public class LoadFit {
 				}
 			};
 			broadcaster.broadcast(BroadcastEvent.Command.FIT_NEW, fitAction);
-		} catch (InstantiationException ie) {
-			throw new JamException(" Fit Class cannot instantize: " + fitName,
+		} catch (NoSuchMethodException|InstantiationException|InvocationTargetException ie) {
+			throw new JamException(" Fit Class cannot instantiate: " + fitName,
 					ie);
 		} catch (IllegalAccessException iae) {
 			throw new JamException(" Fit Class cannot Access: " + fitName, iae);

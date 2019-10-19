@@ -14,15 +14,16 @@ import jam.io.hdf.HDFileFilter;
 import jam.ui.SelectionTree;
 
 import javax.swing.*;
+
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.List;
-import java.util.Observer;
 
 /**
  * Add counts to histograms in memory from histograms in an HDF file.
  * @author Ken Swartz
  */
-abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
+abstract class AbstractLoaderHDF extends AbstractCommand implements PropertyChangeListener,
         HDFIO.AsyncListener {
 
     protected final transient HDFIO hdfio;

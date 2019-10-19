@@ -3,6 +3,8 @@ package jam.data;
 import java.applet.AudioClip;
 import java.util.*;
 
+import javax.sound.sampled.Clip;
+
 /**
  * This class is for monitoring the status of data acquisition. Monitors can
  * show the status of things like event rates, beam current, rate of growth in a
@@ -87,7 +89,7 @@ public final class Monitor {
 
 	private transient boolean alarm;
 
-	private java.applet.AudioClip audioClip;
+	private Clip audioClip;
 
 	private double maximum;
 
@@ -190,7 +192,7 @@ public final class Monitor {
 	 * @return the sound clip for this monitor's alarm, <code>null</code>
 	 *         indicates that a default system beep is desired
 	 */
-	public AudioClip getAudioClip() {
+	public Clip getAudioClip() {
 		synchronized (this) {
 			return audioClip;
 		}
@@ -285,7 +287,7 @@ public final class Monitor {
 	 * @param clip
 	 *            sound to play for alarm
 	 */
-	public void setAudioClip(final AudioClip clip) {
+	public void setAudioClip(final Clip clip) {
 		synchronized (this) {
 			audioClip = clip;
 		}

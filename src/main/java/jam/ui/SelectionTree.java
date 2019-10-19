@@ -12,10 +12,10 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  * 
  * @author Ken Swartz
  */
-public final class SelectionTree extends JPanel implements Observer {
+public final class SelectionTree extends JPanel implements PropertyChangeListener {
 	private transient final Broadcaster broadcaster;
 
 	private static Nameable currentGate;
@@ -131,7 +131,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		super(new BorderLayout());
 		this.status = status;
 		this.broadcaster = broadcaster;
-		broadcaster.addObserver(this);
+		broadcaster.addPropertyChangeListener(this);
 		final Dimension dim = getMinimumSize();
 		dim.width = 160;
 		setPreferredSize(dim);
@@ -432,18 +432,10 @@ public final class SelectionTree extends JPanel implements Observer {
 		}
 	}
 
-	/**
-	 * Implementation of Observable interface.
-	 * 
-	 * @param observable
-	 *            the sender
-	 * @param object
-	 *            the message
-	 */
-	public void update(final Observable observable, final Object object) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
 		synchronized (this) {
-			final BroadcastEvent event = (BroadcastEvent) object;
-			final BroadcastEvent.Command command = event.getCommand();
+			final BroadcastEvent.Command command = ((BroadcastEvent) evt).getCommand();
 			setSyncEvent(true);
 			if (command == BroadcastEvent.Command.HISTOGRAM_SELECT
 					|| command == BroadcastEvent.Command.GATE_SELECT) {

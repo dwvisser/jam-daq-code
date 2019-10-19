@@ -16,6 +16,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.logging.Level;
 
 import static javax.swing.SwingConstants.RIGHT;
@@ -26,7 +28,7 @@ import static javax.swing.SwingConstants.RIGHT;
  * @author Dale Visser, Ken Swartz
  */
 public final class Projections extends AbstractManipulation implements
-		java.util.Observer {
+		PropertyChangeListener {
 
 	private static final int CHOOSER_SIZE = 200;
 
@@ -205,19 +207,12 @@ public final class Projections extends AbstractManipulation implements
 		});
 	}
 
-	/**
-	 * Implementation of Observable interface Listners for broadcast events.
-	 * Broadcast events: histograms new and histogram added
-	 */
 	@Override
-	public void update(final java.util.Observable observable,
-			final Object object) {
-		final BroadcastEvent event = (BroadcastEvent) object;
-		final BroadcastEvent.Command com = event.getCommand();
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent.Command com = ((BroadcastEvent) evt).getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_NEW
-				|| com == BroadcastEvent.Command.HISTOGRAM_ADD) {
-			doSetup();
-		} else if (com == BroadcastEvent.Command.GATE_ADD
+				|| com == BroadcastEvent.Command.HISTOGRAM_ADD
+				|| com == BroadcastEvent.Command.GATE_ADD
 				|| com == BroadcastEvent.Command.GATE_SET_OFF
 				|| com == BroadcastEvent.Command.GATE_SET_SAVE) {
 			doSetup();

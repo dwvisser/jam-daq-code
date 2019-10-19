@@ -3,12 +3,12 @@
  */
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import com.google.inject.Inject;
 import jam.global.*;
 import jam.sort.control.RunControl;
-
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Flush the acquisition's currently filling buffer to Jam.
@@ -16,7 +16,7 @@ import java.util.Observer;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 7, 2004
  */
-final class FlushAcquisition extends AbstractCommand implements Observer {
+final class FlushAcquisition extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final RunControl control;
 	private transient final JamStatus status;
@@ -47,16 +47,12 @@ final class FlushAcquisition extends AbstractCommand implements Observer {
 		execute(null);
 	}
 
-	/**
-	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
-	 */
-	public void update(final Observable observable, final Object arg) {
-		final BroadcastEvent event = (BroadcastEvent) arg;
-		final BroadcastEvent.Command command = event.getCommand();
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent event = (BroadcastEvent) evt;
 		boolean enable = online();
-		if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
-			final RunState state = (RunState) event.getContent();
-			enable &= state.isAcqOn();
+		if (event.getCommand() == BroadcastEvent.Command.RUN_STATE_CHANGED) {
+			enable &= ((RunState) event.getContent()).isAcqOn();
 		}
 		setEnabled(enable);
 	}

@@ -10,16 +10,17 @@ import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.sort.control.RunControl;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.*;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Start data acquisition.
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 7, 2004
  */
-final class StartAcquisition extends AbstractCommand implements Observer {
+final class StartAcquisition extends AbstractCommand implements PropertyChangeListener {
 
     private transient final RunControl runControl;
 
@@ -43,7 +44,8 @@ final class StartAcquisition extends AbstractCommand implements Observer {
         execute(null);
     }
 
-    public void update(final Observable obs, final Object arg) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
         enable();
     }
 

@@ -1,11 +1,11 @@
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import com.google.inject.Inject;
 import jam.data.control.MonitorControl;
 import jam.global.JamStatus;
-
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Command that shows the monitor configuration dialog.
@@ -13,7 +13,7 @@ import java.util.Observer;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 4, 2004
  */
-final class ShowMonitorConfig extends AbstractShowDialog implements Observer {
+final class ShowMonitorConfig extends AbstractShowDialog implements PropertyChangeListener {
 
 	private transient final JamStatus status;
 
@@ -25,7 +25,8 @@ final class ShowMonitorConfig extends AbstractShowDialog implements Observer {
 		this.status = status;
 	}
 
-	public void update(final Observable observe, final Object obj) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
 		setEnabled(this.status.isOnline());
 	}
 }

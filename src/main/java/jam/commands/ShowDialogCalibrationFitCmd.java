@@ -1,5 +1,8 @@
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import com.google.inject.Inject;
 import jam.data.AbstractHistogram;
 import jam.data.control.CalibrationFit;
@@ -7,16 +10,13 @@ import jam.global.BroadcastEvent;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
 
-import java.util.Observable;
-import java.util.Observer;
-
 /**
  * Show histgoram Calibration fit dialog.
  * 
  * @author Ken Swartz
  */
 final class ShowDialogCalibrationFitCmd extends AbstractShowDialog implements
-		Observer {
+		PropertyChangeListener {
 
 	@Inject
 	ShowDialogCalibrationFitCmd(final CalibrationFit calibrationFit) {
@@ -34,9 +34,9 @@ final class ShowDialogCalibrationFitCmd extends AbstractShowDialog implements
 		setEnabled(enable);
 	}
 
-	public void update(final Observable observe, final Object obj) {
-		final BroadcastEvent event = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = event.getCommand();
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		final BroadcastEvent.Command command = ((BroadcastEvent) evt).getCommand();
 		if ((command == BroadcastEvent.Command.GROUP_SELECT)
 				|| (command == BroadcastEvent.Command.ROOT_SELECT)) {
 			setEnabled(false);

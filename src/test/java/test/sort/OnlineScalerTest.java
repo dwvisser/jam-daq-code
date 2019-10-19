@@ -9,6 +9,8 @@ import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.script.Session;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -25,7 +27,7 @@ import test.sort.mockfrontend.MessageSender;
  * Suite of tests checking the proper behavior of the online sorting mode.
  * @author Dale Visser
  */
-public class OnlineScalerTest implements Observer {
+public class OnlineScalerTest implements PropertyChangeListener {
 
     private static Session session = OnlineTestCommon.session;
 
@@ -39,7 +41,7 @@ public class OnlineScalerTest implements Observer {
      */
     @Before
     public void setUp() {
-        this.BROADCASTER.addObserver(this);
+        this.BROADCASTER.addPropertyChangeListener(this);
     }
 
     /**
@@ -47,7 +49,7 @@ public class OnlineScalerTest implements Observer {
      */
     @After
     public void tearDown() {
-        this.BROADCASTER.deleteObserver(this);
+        this.BROADCASTER.removePropertyChangeListener(this);
         session.cancelOnline();
     }
 
@@ -81,10 +83,9 @@ public class OnlineScalerTest implements Observer {
                 value, scaler.getValue());
     }
 
-    public void update(final Observable observable, final Object message) {
-        final BroadcastEvent event = (BroadcastEvent) message;
-        final BroadcastEvent.Command command = event.getCommand();
-        if (command == BroadcastEvent.Command.SCALERS_UPDATE) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (((BroadcastEvent) evt).getCommand() == BroadcastEvent.Command.SCALERS_UPDATE) {
             latch.countDown();
         }
     }
