@@ -1,11 +1,11 @@
 package jam.util;
 
-import com.google.inject.Singleton;
-
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import com.google.inject.Singleton;
 
 /**
  * Contains utilities for manipulating <code>String</code> objects.
@@ -90,25 +90,9 @@ public final class StringUtilities {
 	 */
 	public String makeUniqueName(final String name, final Set<String> nameSet) {
 		String nameTemp = name.trim();
-		boolean isUnique = false;
-		int prime = 1;
-		boolean copyFound;
 		/* find a name that does not conflict with existing names */
-		while (!isUnique) {
-			copyFound = false;
-			for (String nameNext : nameSet) {
-				if (nameTemp.compareTo(nameNext) == 0) {
-					copyFound = true;
-					break;
-				}
-			}
-			if (copyFound) {
-				final String nameAddition = "[" + prime + "]";
-				nameTemp = name + nameAddition;
-				prime++;
-			} else {
-				isUnique = true;
-			}
+		for (int prime=1 ; nameSet.contains(nameTemp); prime++) {
+			nameTemp = name + ("[" + prime + "]");
 		}
 		return nameTemp;
 	}

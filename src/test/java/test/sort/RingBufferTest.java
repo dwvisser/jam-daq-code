@@ -1,7 +1,6 @@
 package test.sort;
 
 import injection.GuiceInjector;
-import jam.Version;
 import jam.sort.RingBuffer;
 import jam.sort.RingBufferFactory;
 
