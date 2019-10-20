@@ -109,11 +109,12 @@ public final class Icons {
 		final URL urlGateDef2D = LOADER.getResource("jam/ui/gateDefined2D.png");
 		final URL urlBegin = LOADER.getResource("jam/ui/begin.png");
 		final URL urlEnd = LOADER.getResource("jam/ui/end.png");
-		if (areAnyNull(urlStop, urlGo, urlClear, urlCaution, urlHist1D,
+		int indexOfNull = indexOfNull(urlStop, urlGo, urlClear, urlCaution, urlHist1D,
 				urlGate1D, urlHist2D, urlGate2D, urlGateDef1D, urlGateDef2D,
-				urlBegin, urlEnd)) {
+				urlBegin, urlEnd);
+		if (indexOfNull >= 0) {
 			JOptionPane.showMessageDialog(null,
-					"Can't load resource: jam/ui/*.png");
+					"Can't load resource: jam/ui/*.png #" + indexOfNull);
 			STOP = GO_GREEN = CLEAR = CAUTION = GROUP_SORT = GROUP_FILE = GROUP_TEMP = HIST1D = HIST2D = GATE1D = GATE2D = GATE_DEF1D = GATE_DEF2D = BEGIN = END = null;
 		} else {
 			STOP = new ImageIcon(urlStop);
@@ -134,11 +135,11 @@ public final class Icons {
 		}
 	}
 
-	protected boolean areAnyNull(final URL... urls) {
-		boolean rval = false;
+	protected int indexOfNull(final URL... urls) {
+		int rval = -1;
 		for (int i = urls.length - 1; i >= 0; i--) {
 			if (urls[i] == null) {
-				rval = true;
+				rval = i;
 				break;
 			}
 		}

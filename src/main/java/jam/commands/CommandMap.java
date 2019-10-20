@@ -70,9 +70,12 @@ public class CommandMap implements CommandFinder {
 
 	@SuppressWarnings("unchecked")
 	private void readXML() {
-		final ClassLoader loader = ClassLoader.getSystemClassLoader();
+		final ClassLoader loader = CommandMap.class.getClassLoader();
 		final InputStream file = loader
 				.getResourceAsStream("jam/commands/CommandMap.xml");
+		if (file == null) {
+			throw new NullPointerException("Couldn't find CommandMap.xml");
+		}
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		boolean success = false;
 		Throwable throwable = null;

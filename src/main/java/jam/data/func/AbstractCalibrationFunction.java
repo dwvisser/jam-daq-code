@@ -296,7 +296,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	public abstract void fit() throws CalibrationFitException;
 
 	protected void loadIcon(final String iconFile) {
-		final ClassLoader loader = ClassLoader.getSystemClassLoader();
+		final ClassLoader loader = AbstractCalibrationFunction.class.getClassLoader();
 
 		final URL urlIcon = loader.getResource(iconFile);
 		if (urlIcon == null) {

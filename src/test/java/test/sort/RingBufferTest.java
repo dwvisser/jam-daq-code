@@ -32,9 +32,7 @@ public final class RingBufferTest {// NOPMD
     private transient final RingBufferFactory ringFactory = GuiceInjector
             .getObjectInstance(RingBufferFactory.class);
 
-    private transient final String expectedClassName = GuiceInjector
-            .getObjectInstance(Version.class).isJ2SE6() ? "jam.sort.LinkedBlockingDequeRingBuffer"
-            : "jam.sort.SimpleRingBuffer";
+    private transient final String expectedClassName = "jam.sort.LinkedBlockingDequeRingBuffer";
 
     private final transient ExecutorService executor = GuiceInjector
             .getObjectInstance(ExecutorService.class);

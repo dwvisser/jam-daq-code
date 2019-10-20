@@ -1,13 +1,14 @@
 package jam.sort;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import jam.Version;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import jam.Version;
 
 /**
  * Generates RingBuffer instances appropriate to whether J2SE 6
@@ -20,8 +21,6 @@ public final class RingBufferFactory {
     private static final Logger LOGGER = Logger
             .getLogger(RingBufferFactory.class.getPackage().getName());
 
-    private transient final Version version;
-
     private transient final Constructor<? extends RingBuffer> ringConstructor;
 
     /**
@@ -29,9 +28,18 @@ public final class RingBufferFactory {
      *            jam version
      */
     @Inject
-    public RingBufferFactory(final Version version) {
-        this.version = version;
-        this.ringConstructor = this.getJava6ConstructorIfPossible();
+    public RingBufferFactory() {
+        Constructor<? extends RingBuffer> result = null;
+        final ClassLoader loader = RingBufferFactory.class.getClassLoader();
+        try {
+            final Class<?> clazz = loader.loadClass("jam.sort.LinkedBlockingDequeRingBuffer");
+            final Class<? extends RingBuffer> ringClass = clazz.asSubclass(RingBuffer.class);
+            result = (Constructor<? extends RingBuffer>) ringClass.getDeclaredConstructor(boolean.class);
+        } catch (ClassNotFoundException | IllegalArgumentException | NoSuchMethodException e) {
+            final String warning = "Could not load expected RingBuffer implementation. Loading an alternate implemetation instead.";
+            LOGGER.log(Level.WARNING, warning, e);
+        }
+        this.ringConstructor = result;
     }
 
     /**
@@ -41,27 +49,6 @@ public final class RingBufferFactory {
      */
     public byte[] freshBuffer() {
         return new byte[RingBuffer.BUFFER_SIZE];
-    }
-
-    @SuppressWarnings("unchecked")
-    private Constructor<? extends RingBuffer> getJava6ConstructorIfPossible() {
-        Constructor<? extends RingBuffer> result = null;
-        if (this.version.isJ2SE6()) {
-            final String warning = "Could not load expected RingBuffer implementation. Loading an alternate implemetation instead.";
-            final ClassLoader loader = ClassLoader.getSystemClassLoader();
-            try {
-                final Class<?> clazz = loader
-                        .loadClass("jam.sort.LinkedBlockingDequeRingBuffer");
-                final Class<? extends RingBuffer> ringClass = clazz
-                        .asSubclass(RingBuffer.class);
-                result = (Constructor<? extends RingBuffer>) ringClass
-                        .getDeclaredConstructors()[0];
-            } catch (ClassNotFoundException | IllegalArgumentException e) {
-                LOGGER.log(Level.WARNING, warning, e);
-            }
-        }
-
-        return result;
     }
 
     /**

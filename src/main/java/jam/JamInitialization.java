@@ -72,12 +72,6 @@ public final class JamInitialization {
 		final Container contents = this.frame.getContentPane();
 		contents.setLayout(new BorderLayout());
 		LOGGER.info("Welcome to Jam v" + version.getName());
-		if (version.isJ2SE6()) {
-			LOGGER.info("You are running on J2SE 6 or later. Good!");
-		} else {
-			LOGGER
-					.warning("You are running on J2SE 5. Consider upgrading to J2SE 6 for better multi-thread performance.");
-		}
 		contents.add(jamToolBar, BorderLayout.NORTH);
 		this.frame.setJMenuBar(menuBar.getMenuBar());
 		contents.add(sdPanel, BorderLayout.CENTER);

@@ -28,8 +28,8 @@ public final class RuntimeSubclassIdentifier {
 
     private static final String CLASS_EXT = ".class";
 
-    private static final ClassLoader DEF_LOADER = ClassLoader
-            .getSystemClassLoader();
+    private static final ClassLoader DEF_LOADER = RuntimeSubclassIdentifier.class
+            .getClassLoader();
 
     private static final String PERIOD = ".";
 

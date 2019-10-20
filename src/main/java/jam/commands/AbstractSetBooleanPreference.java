@@ -43,7 +43,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {// N
 	private final static ImageIcon CHECK_MARK, CLEAR;
 
 	static {
-		final ClassLoader loader = ClassLoader.getSystemClassLoader();
+		final ClassLoader loader = AbstractSetBooleanPreference.class.getClassLoader();
 		CHECK_MARK = new ImageIcon(loader
 				.getResource("jam/commands/checkmark.png"));
 		CLEAR = new ImageIcon(loader.getResource("jam/ui/clear.png"));
