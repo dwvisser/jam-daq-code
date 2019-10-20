@@ -93,7 +93,7 @@ public final class Icons {
 	 */
 	public Icons() {
 		super();
-		final ClassLoader LOADER = ClassLoader.getSystemClassLoader();
+		final ClassLoader LOADER = Icons.class.getClassLoader();
 		final URL urlStop = LOADER.getResource("jam/ui/stop.png");
 		final URL urlGo = LOADER.getResource("jam/ui/go.png");
 		final URL urlClear = LOADER.getResource("jam/ui/clear.png");
