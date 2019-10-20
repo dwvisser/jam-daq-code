@@ -60,6 +60,7 @@ public abstract class AbstractControl extends JDialog implements PropertyChangeL
 		controllers.add(this);
 		this.broadcaster = broadcaster;
 		broadcaster.addPropertyChangeListener(this);
+		Runtime.getRuntime().addShutdownHook(new AbstractControl.ControlCleanup(this));
 	}
 
 	/**
@@ -121,13 +122,18 @@ public abstract class AbstractControl extends JDialog implements PropertyChangeL
 	 */
 	public abstract void doSetup();
 
-	/**
-	 * Remove self from list of controllers
-	 */
-	@Override
-	protected void finalize() throws Throwable {
-		controllers.remove(this);
-		broadcaster.removePropertyChangeListener(this);
+	public class ControlCleanup extends Thread {
+
+		private AbstractControl control;
+
+		public ControlCleanup(AbstractControl control) {
+			this.control = control;
+		}
+
+		public void run() {
+			AbstractControl.controllers.remove(this.control);
+			this.control.broadcaster.removePropertyChangeListener(this.control);
+		}
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {

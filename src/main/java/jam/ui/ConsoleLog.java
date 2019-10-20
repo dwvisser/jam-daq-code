@@ -77,6 +77,7 @@ public final class ConsoleLog implements MessageHandler {
 		msgLock = false;
 		numberLines = 1;
 		logFileOn = false;
+		Runtime.getRuntime().addShutdownHook(new ConsoleLog.LogFileCloser(this));
 	}
 
 	/**
@@ -103,13 +104,22 @@ public final class ConsoleLog implements MessageHandler {
 		promptOutln("Error: " + message, ATR_ERR);
 	}
 
-	/**
-	 * @see Object#finalize()
-	 */
-	@Override
-	protected void finalize() throws Throwable {
-		if (logFileOn) {
-			closeLogFile();
+	class LogFileCloser extends Thread {
+
+		private final ConsoleLog consoleLog;
+
+		LogFileCloser(ConsoleLog consoleLog){
+			this.consoleLog = consoleLog;
+		}
+
+		public void run() {
+			if (this.consoleLog.logFileOn) {
+				try {
+					this.consoleLog.closeLogFile();
+				} catch (JamException je) {
+					je.printStackTrace();
+				}
+			}
 		}
 	}
 
