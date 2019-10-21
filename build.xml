@@ -10,9 +10,6 @@
     <property name="APIbase.dir" value="${build.dir}/javadocs" />
     <property name="API.dir" value="${APIbase.dir}/API" />
 	<property name="Webstart.dir" value="${build.dir}/webstart" />
-	<property name = "windows" value = "${build.dir}/windows/jam-daq" />
-	<property name = "winbin" value="${windows}/bin" />
-	<property name = "winlib" value="${windows}/lib" />
 	<property name = "MAJOR" value="3" />
 	<property name = "MINOR" value="0" />
 	<property name = "RELEASE" value="0" />
@@ -27,28 +24,7 @@
 	<property name="src.zip" value="jam-${jam.version}-src.zip"/>
 	<property name="fullsrc.zip" value="${build.dir}/${src.zip}"/>
 	<property name="jam.zip" value="jam-${jam.version}.zip" />
-	<!-- original property values for reference. From now on we will use a modified version
-	     of these that incorporates the Jam Version.
-	<property name = "SOURCE_GUID" value="858b9da7-5471-4c5e-bc12-15ad987aebdc" />
-	<property name = "LIB_GUID" value="e7c01541-daf8-4198-b56f-6d0cdccc7bd7" />
-	<property name = "BIN_GUID" value="f9ed19ba-bc1c-4dda-9855-7d30176f118f" />
-	-->
-	<property name = "SOURCE_GUID" value="858b9da7-5471-4c5e-bc12-15ad987a${MAJOR}${MINOR}${RELEASE}" />
-	<property name = "LIB_GUID"    value="e7c01541-daf8-4198-b56f-6d0cdccc${MAJOR}${MINOR}${RELEASE}" />
-	<property name = "BIN_GUID"    value="f9ed19ba-bc1c-4dda-9855-7d30176f${MAJOR}${MINOR}${RELEASE}" />
-	<property name = "keyPassword" value="s4b14xto" />
     
-	<!-- task definition for windows executable builder -->
-	<taskdef name="jsmoothgen"
-    	classname="net.charabia.jsmoothgen.ant.JSmoothGen"
-     	classpath="WINpackage/jsmoothgen-ant.jar"/>
-	
-	<!-- task definition for ant.net library, used to call into
-	     Wix candle and light, but has other capabilities as well -->
-	<taskdef 
-	    resource="org/apache/ant/dotnet/antlib.xml"
-	    classpath="WINpackage/ant-dotnet-1.0.jar"/>
-	
     <target name="clean">
     	<delete >
     		<fileset
@@ -242,38 +218,7 @@
         	includes="*.jar,jam.*,README.md,LICENSE"
         />    
  	</target>
-	
-    <target name="windows" depends="x-platform" description="Make Windows executables">
-    	<copy todir="${winlib}">
-    	 	<fileset dir="${build.dir}" includes="${jam.jar}" />
-    	 	<fileset dir="${copy.dir}" includes="jh.jar" />
-    	 	<fileset dir="${copy.dir}" includes="guice-3.0.jar" />
-    		<fileset dir="${copy.dir}" includes="javax.inject.jar" />
-    	 	<fileset dir="${copy.dir}" includes="aopalliance.jar" />
-    	</copy>
-    	<copy todir="${windows}" file="${fullsrc.zip}" />
-    	<!-- copy build.jsmooth using filtering to get the Jam jar file name right -->
-    	<copy todir="${windows}" flatten="true">
-    		<fileset dir="${copy.dir}/WINpackage" includes="build.jsmooth" />
-            <filterset>
-     			<filter token="MAJOR" value="${MAJOR}" />
-     			<filter token="MINOR" value="${MINOR}" />
-     			<filter token="RELEASE" value="${RELEASE}" />
-            </filterset>
-    	</copy>
-    	<!-- copy the rest besides build.jsmooth without filtering -->
-      	<copy todir="${windows}" flatten="true">
-        		<fileset dir="${copy.dir}/WINpackage" excludes="build.jsmooth" />
-        </copy>
-    	<jsmoothgen project="${windows}/build.jsmooth" 
-      		skeletonroot="C:\\Program Files (x86)\\JSmooth 0.9.9-7\\skeletons"/>
-    	<wix mode="candle" source="${windows}\installer.wxs" />
-    	<move file="./installer.wixobj" todir="${windows}" />
-    	<wix mode="light" source="${windows}/installer.wixobj" target="Jam ${MAJOR}.${MINOR}.${RELEASE}.msi" />
-    	<delete file="./installer.wixobj" />
-    	<move file="./Jam ${MAJOR}.${MINOR}.${RELEASE}.msi" todir="${windows}" />
-    </target>
-    
-    <target name="all" depends="unittest,windows" />
+ 
+    <target name="all" depends="unittest" />
         
 </project>
