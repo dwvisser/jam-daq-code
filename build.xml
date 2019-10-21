@@ -41,18 +41,6 @@
         <mkdir dir="${winlib}" />
     </target>
 
-	<target name="javadoc" depends="copy">
-        <javadoc sourcepath="${copy.dir}" destdir="${API.dir}">
-			<classpath>
-				<pathelement location="${copy.dir}" />
-				<pathelement location="${copy.dir}/jh.jar" />
-				<pathelement location="${copy.dir}/junit-4.3.1.jar" />
-				<pathelement location="${copy.dir}/guice-3.0.jar"/>
-				<pathelement location="${copy.dir}/javax.inject.jar"/>
-			</classpath>
-        </javadoc>
-    </target>
-
 	<target name="buildonlyglobal" depends="prepare,copy">
 		<copy todir="${copy.dir}">
 			<fileset dir="${base.dir}"
@@ -119,79 +107,7 @@
             basedir="${copy.dir}"
             includes="jam\**\*.java,jam\**\*.png,jam\**\*.gif,README.md,LICENSE,jam/**/*.html,help\**\*,sampledata\**\*,test\**\*,injection\**\*"
         />    
-    </target>
-       
-    <target name="compile" depends="copy">
-        <javac source="${java.source}" target="${java.target}" includeantruntime="false"
-		       srcdir="${copy.dir}" destdir="${copy.dir}">
-    		<compilerarg value="-Xlint:unchecked" />
-    		<classpath>
-    			<pathelement location="${copy.dir}" />
-    			<pathelement location="${copy.dir}/jh.jar" />
-    			<pathelement location="${copy.dir}/junit-4.3.1.jar" />
-    			<pathelement location="${copy.dir}/guice-3.0.jar"/>
-    			<pathelement location="${copy.dir}/javax.inject.jar"/>
-    		</classpath>
-    	</javac>
-    </target> 	
-
-    <target name="jar" depends="compile,javadoc">
-    	<copy todir="${APIbase.dir}">
-    		<fileset dir = "${copy.dir}" includes = "help/**/*" />
-    	</copy>
-        <jar destfile="${fulljam.jar}">
-        	<fileset dir="${copy.dir}"
-                     excludes="*.html,**/*/*.db,*.jnlp,*.xml,*.jardesc,*.jar,help,help/**/*,test,test/**/*,WINpackage,WINpackage/*,jam\**\*.java,jam\**\*.chk,jam\**\*.bak,.classpath,.project,classes/**/*,sampledata/*,.idea/"
-        	/>
-            <fileset dir="${APIbase.dir}"
-                     includes="help/**/*,API/**/*"
-            />    
-        </jar>  
-    	<jar destfile="${fulltestjam.jar}">
-    		<fileset dir="${copy.dir}" includes="test,test/**/*" />
-    	</jar>
-    	<delete dir="${APIbase.dir}" />
-    </target>
-
-	<target name="unittest" description="Execute unit tests" depends="compile">
-    	<mkdir dir="${reports.dir}" />
-		<junit printsummary="yes" haltonfailure="yes" showoutput="yes" > 
-		    <classpath> 
-    			<pathelement location="${copy.dir}/jh.jar" />
-    			<pathelement location="${copy.dir}/aopalliance.jar" />
-    			<pathelement location="${copy.dir}/guice-3.0.jar"/>
-		    	<pathelement location="${copy.dir}/junit-4.3.1.jar"/>
-    			<pathelement location="${copy.dir}/javax.inject.jar"/>
-		    	<pathelement location="${copy.dir}" />
-		    </classpath>                    
-			<batchtest fork="yes" todir="${reports.dir}"> 
-		       <formatter type="xml"/> 
-		       <fileset dir="${copy.dir}"> 
-		          <include name="**/AllTests.java"/> 
-		       </fileset> 
-		    </batchtest> 
-		</junit> 
-		<junitreport todir="${reports.dir}">
-		    <fileset dir="${reports.dir}">
-		        <include name="TEST-*.xml" />
-		    </fileset>
-		    <report todir="${reports.dir}" />
-		</junitreport>
-	  </target>
-		
-	<target name="webstart" depends="jar">
-		<copy file="${copy.dir}/classes/jam/nukeicon.png" todir="${Webstart.dir}" />
-		<copy file="${copy.dir}/jam.jnlp" todir="${Webstart.dir}" />
-		<copy file="${build.dir}/Jam.jar" todir="${Webstart.dir}" />
-		<signjar jar="${Webstart.dir}/Jam.jar" alias="dale" 
-			storepass="${keyPassword}" />
-		<copy file="${build.dir}/JamHelp.jar" todir="${Webstart.dir}" />
-		<signjar jar="${Webstart.dir}/JamHelp.jar" alias="dale" 
-			storepass="${keyPassword}" />
-		<copy todir="${Webstart.dir}" file="${copy.dir}/jh.jar"/>
-		<signjar jar="${Webstart.dir}/jh.jar" alias="dale" 
-			storepass="${keyPassword}" />
-	</target>
+    </target>	
 
    	<target name="x-platform" depends="jar,srczip" description="Create and populate x-platform release folder.">
    		<copy todir="${release.dir}">
