@@ -392,14 +392,7 @@ public final class PlotDisplay extends JPanel implements
         }
     }
 
-    /**
-     * Implementation of Observable interface to receive broadcast events.
-     * @param observable
-     *            ??
-     * @param object
-     *            the message
-     */
-    // public void update(final Observable observable, final Object object) {
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         final BroadcastEvent event = (BroadcastEvent) evt;
         final Command command = event.getCommand();

@@ -222,14 +222,7 @@ public final class DisplayCounters extends JDialog implements PropertyChangeList
 		pack();
 	}
 
-	/**
-	 * Receive a broadcast event in order to update counters.
-	 * 
-	 * @param observable
-	 *            the observed object
-	 * @param object
-	 *            the communicated event
-	 */
+	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		final int iEventCount = 1;
 		final int iBufferCt = 2;

@@ -65,15 +65,7 @@ public class SummaryTable extends JPanel implements PropertyChangeListener {
 		broadcaster.addPropertyChangeListener(this);
 	}
 
-	/**
-	 * Implementation of Observable interface.
-	 * 
-	 * @param observable
-	 *            not sure
-	 * @param object
-	 *            not sure
-	 */
-	// public void update(final Observable observable, final Object object) {
+	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		final BroadcastEvent event = (BroadcastEvent) evt;
 		if (event.getCommand() == BroadcastEvent.Command.ROOT_SELECT) {

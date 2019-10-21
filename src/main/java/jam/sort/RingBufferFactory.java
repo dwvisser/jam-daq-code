@@ -23,10 +23,6 @@ public final class RingBufferFactory {
 
     private transient final Constructor<? extends RingBuffer> ringConstructor;
 
-    /**
-     * @param version
-     *            jam version
-     */
     @Inject
     public RingBufferFactory() {
         Constructor<? extends RingBuffer> result = null;

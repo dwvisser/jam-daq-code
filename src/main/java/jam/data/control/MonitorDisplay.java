@@ -124,14 +124,6 @@ public class MonitorDisplay extends AbstractControl {
 		pBars.repaint();
 	}
 
-	/**
-	 * Implementation of Observable interface.
-	 * 
-	 * @param observable
-	 *            not sure
-	 * @param object
-	 *            not sure
-	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		final Command command = ((BroadcastEvent) evt).getCommand();

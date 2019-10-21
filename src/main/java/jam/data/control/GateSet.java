@@ -407,14 +407,6 @@ public final class GateSet extends AbstractControl {
 		broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
 	}
 
-	/**
-	 * Implementation of Observable interface To receive broadcast events.
-	 * 
-	 * @param observable
-	 *            the event sender
-	 * @param object
-	 *            the message
-	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		final BroadcastEvent event = (BroadcastEvent) evt;

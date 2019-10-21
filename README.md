@@ -23,9 +23,13 @@ To Build and Run in Maven
 
 This assumes you've pulled the Git repository or downloaded the source tarball from GitHub.
 
-    > mvn clean javadoc:javadoc package
+    > mvn package
     > mvn exec:java
 
-I am currently working towards making the `javadoc` invocation automatic
-for some appropriate Maven build phase, as well as generating an appropriate
-cross-platform build artifact that includes all needed runtime and test libraries.
+After making a code change, sometimes it can be useful to execute the clean lifecycle before
+the package phase:
+
+    > mvn clean package
+
+I am currently working towards generating an appropriate cross-platform build artifact that
+includes all needed runtime and test libraries.
