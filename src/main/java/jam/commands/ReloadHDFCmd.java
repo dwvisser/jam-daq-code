@@ -1,25 +1,32 @@
 package jam.commands;
 
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+
+import javax.swing.KeyStroke;
+
 import com.google.inject.Inject;
+
 import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Group;
 import jam.data.SortGroupGetter;
 import jam.data.Warehouse;
-import jam.global.*;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
+import jam.global.QuerySortMode;
+import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 import jam.ui.SelectionTree;
-
-import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import java.beans.PropertyChangeEvent;
 
 /**
  * Reload data from a hdf file
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class ReloadHDFCmd extends AbstractLoaderHDF {
 
     @Inject

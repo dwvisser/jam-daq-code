@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import com.google.inject.Inject;
+
 import jam.data.AbstractHistogram;
 import jam.data.control.CalibrationFit;
 import jam.global.BroadcastEvent;
@@ -15,6 +16,7 @@ import jam.ui.SelectionTree;
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class ShowDialogCalibrationFitCmd extends AbstractShowDialog implements
 		PropertyChangeListener {
 

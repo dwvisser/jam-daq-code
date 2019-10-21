@@ -1,9 +1,3 @@
-/*
- * Created on Nov 6, 2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package jam.commands;
 
 import jam.plot.PlotPreferences;
@@ -14,6 +8,7 @@ import jam.plot.PlotPreferences;
  * @author ken
  *
  */
+@SuppressWarnings("serial")
 public class SetAxisLabels extends AbstractSetBooleanPreference {
 
 	SetAxisLabels(){

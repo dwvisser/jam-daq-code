@@ -1,18 +1,22 @@
 package jam.commands;
 
-import com.google.inject.Inject;
-import jam.global.BroadcastEvent;
-import jam.global.JamStatus;
-import jam.global.QuerySortMode;
-import jam.global.SortMode;
-import jam.io.hdf.HDFIO;
-
-import javax.swing.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.KeyStroke;
+
+import com.google.inject.Inject;
+
+import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
+import jam.global.QuerySortMode;
+import jam.global.SortMode;
+import jam.io.hdf.HDFIO;
 
 /**
  * Save to a hdf file
@@ -20,6 +24,7 @@ import java.io.File;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 final class SaveHDFCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final JamStatus status;

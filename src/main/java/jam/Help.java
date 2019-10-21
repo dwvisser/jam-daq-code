@@ -1,16 +1,30 @@
 package jam;
 
-import com.google.inject.Inject;
-
-import javax.help.CSH;
-import javax.help.HelpSet;
-import javax.help.HelpSetException;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.prefs.Preferences;
+
+import javax.help.CSH;
+import javax.help.HelpSet;
+import javax.help.HelpSetException;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import com.google.inject.Inject;
 
 /**
  * Deals with JavaHelp-based User Guide and an "About" dialog.
@@ -19,6 +33,7 @@ import java.util.prefs.Preferences;
  * @author Dale Visser
  * @version version 0.5 November 98
  */
+@SuppressWarnings("serial")
 public class Help extends JDialog {
 	private final static int POS_X = 20;
 

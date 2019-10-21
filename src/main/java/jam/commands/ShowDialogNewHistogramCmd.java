@@ -1,6 +1,7 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.data.control.HistogramNew;
 
 /**
@@ -9,6 +10,7 @@ import jam.data.control.HistogramNew;
  * @author Ken
  * 
  */
+@SuppressWarnings("serial")
 final class ShowDialogNewHistogramCmd extends AbstractShowDialog {
 
 	/**

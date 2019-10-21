@@ -1,8 +1,8 @@
 package jam.global;
 
-import com.google.inject.Singleton;
-
 import java.beans.PropertyChangeSupport;
+
+import com.google.inject.Singleton;
 
 /**
  * Part of a client server to handle message between packages Broadcast events
@@ -12,6 +12,7 @@ import java.beans.PropertyChangeSupport;
  * @author Ken Swartz
  */
 @Singleton
+@SuppressWarnings("serial")
 public final class Broadcaster extends PropertyChangeSupport {
 
 	protected Broadcaster() {

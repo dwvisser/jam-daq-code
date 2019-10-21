@@ -6,6 +6,7 @@ package jam.data;
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 public class DataException extends Exception {
 
 	/**

@@ -10,6 +10,7 @@ import jam.plot.PlotPreferences;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jun 11, 2004
  */
+@SuppressWarnings("serial")
 final class SetAutoScaleOnExpand extends AbstractSetBooleanPreference {
 
 	SetAutoScaleOnExpand(){

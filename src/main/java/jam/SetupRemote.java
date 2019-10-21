@@ -2,13 +2,14 @@
  */
 package jam;
 
-import com.google.inject.Inject;
-import jam.global.JamException;
-import jam.global.JamStatus;
-import jam.global.SortMode;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Button;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.ItemSelectable;
+import java.awt.Label;
+import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -19,12 +20,27 @@ import java.rmi.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+
+import com.google.inject.Inject;
+
+import jam.global.JamException;
+import jam.global.JamStatus;
+import jam.global.SortMode;
+
 /**
  * Class to make this process into a remote server for Jam or hook up to a
  * remote online acquisition that is a server.
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 public class SetupRemote extends JDialog implements ActionListener,
 		ItemListener {
 

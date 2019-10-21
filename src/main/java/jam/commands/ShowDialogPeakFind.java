@@ -1,6 +1,7 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.PeakFindDialog;
 
 /**
@@ -9,6 +10,7 @@ import jam.PeakFindDialog;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 final class ShowDialogPeakFind extends AbstractShowDialog {
 
 	@Inject

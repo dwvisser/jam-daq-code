@@ -1,19 +1,22 @@
 package jam.commands;
 
-import com.google.inject.Inject;
-import jam.data.AbstractHistogram;
-import jam.data.control.GateSet;
-import jam.global.Nameable;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.Icon;
+
+import com.google.inject.Inject;
+
+import jam.data.AbstractHistogram;
+import jam.data.control.GateSet;
+import jam.global.Nameable;
 
 /**
  * Show the scalers dialog box.
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class ShowDialogSetGate extends AbstractShowDialog implements PropertyChangeListener,
         Predicate<Nameable> {
 

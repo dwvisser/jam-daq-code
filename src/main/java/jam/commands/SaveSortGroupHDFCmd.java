@@ -1,6 +1,14 @@
 package jam.commands;
 
+import java.awt.Frame;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+
+import javax.swing.JFileChooser;
+
 import com.google.inject.Inject;
+
 import jam.data.Group;
 import jam.data.Warehouse;
 import jam.global.BroadcastEvent;
@@ -10,18 +18,13 @@ import jam.global.SortMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
-import javax.swing.*;
-import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-
 /**
  * Command to save the sort group of histograms.
  * 
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 final class SaveSortGroupHDFCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final Frame frame;

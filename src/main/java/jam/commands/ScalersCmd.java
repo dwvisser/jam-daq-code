@@ -1,6 +1,7 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.global.BroadcastEvent;
 import jam.global.BroadcastUtilities;
 import jam.global.Broadcaster;
@@ -11,6 +12,7 @@ import jam.global.JamStatus;
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 public final class ScalersCmd extends AbstractCommand {
 
 	private static final int READ = 1;

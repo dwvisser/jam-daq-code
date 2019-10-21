@@ -1,10 +1,12 @@
 package jam.commands;
 
-import jam.global.CommandListenerException;
-
-import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.print.PrinterJob;
+
+import javax.swing.KeyStroke;
+
+import jam.global.CommandListenerException;
 
 /**
  * Command for Page Setup
@@ -12,6 +14,7 @@ import java.awt.print.PrinterJob;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 final class PageSetupCmd extends AbstractPrintingCommand {
 
 	PageSetupCmd() {

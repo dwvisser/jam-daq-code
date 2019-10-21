@@ -1,13 +1,5 @@
 package jam.sort.control;
 
-import injection.GuiceInjector;
-import jam.data.Factory;
-import jam.data.Group;
-import jam.global.JamException;
-import jam.global.RuntimeSubclassIdentifier;
-import jam.sort.AbstractSortRoutine;
-
-import javax.swing.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -15,6 +7,17 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+
+import injection.GuiceInjector;
+import jam.data.Factory;
+import jam.data.Group;
+import jam.global.JamException;
+import jam.global.RuntimeSubclassIdentifier;
+import jam.sort.AbstractSortRoutine;
+
+@SuppressWarnings("serial")
 final class SortChooser extends JComboBox<Class<? extends AbstractSortRoutine>> {
 
 	private transient File classPath;

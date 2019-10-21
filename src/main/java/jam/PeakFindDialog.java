@@ -1,19 +1,29 @@
 package jam;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.GridLayout;
+import java.util.logging.Logger;
+
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
 import com.google.inject.Inject;
+
 import jam.plot.PlotDisplay;
 import jam.ui.PanelOKApplyCancelButtons;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.util.logging.Logger;
 
 /**
  * Dialog for setting peak finding parameters.
  * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  */
+@SuppressWarnings("serial")
 public class PeakFindDialog extends JDialog {
 
 	private static final Logger LOGGER = Logger.getLogger(PeakFindDialog.class

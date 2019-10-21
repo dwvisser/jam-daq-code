@@ -2,10 +2,6 @@
  */
 package jam;
 
-import jam.data.*;
-import jam.global.Nameable;
-import jam.global.RunInfo;
-
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -15,9 +11,19 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jam.data.AbstractHistogram;
+import jam.data.DataElement;
+import jam.data.Gate;
+import jam.data.Monitor;
+import jam.data.RemoteData;
+import jam.data.Scaler;
+import jam.global.Nameable;
+import jam.global.RunInfo;
+
 /**
  * Allows remote access to histograms
  */
+@SuppressWarnings("serial")
 public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 
 	/**

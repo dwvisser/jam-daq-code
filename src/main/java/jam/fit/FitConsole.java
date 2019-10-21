@@ -1,10 +1,22 @@
 package jam.fit;
 
-import jam.global.MessageHandler;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Toolkit;
 
-import javax.swing.*;
-import javax.swing.text.*;
-import java.awt.*;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+
+import jam.global.MessageHandler;
 
 /**
  * Class Console displays a output of commands and error messages and allows the
@@ -16,6 +28,7 @@ import java.awt.*;
  * @version 0.5 last edit 11-98
  * @version 0.5 last edit 1-99
  */
+@SuppressWarnings("serial")
 public class FitConsole extends JPanel implements MessageHandler {
 
 	private static final String EMPTY = "";

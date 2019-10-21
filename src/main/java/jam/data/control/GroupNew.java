@@ -1,14 +1,17 @@
 package jam.data.control;
 
+import java.awt.BorderLayout;
+import java.awt.Frame;
+
+import javax.swing.JTextField;
+
 import com.google.inject.Inject;
+
 import jam.data.Factory;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.ui.PanelOKApplyCancelButtons;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * * Class create a new group
@@ -16,6 +19,7 @@ import java.awt.*;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 public class GroupNew extends AbstractControl {
 
 	private transient final JTextField textName;

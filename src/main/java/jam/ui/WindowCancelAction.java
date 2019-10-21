@@ -1,8 +1,9 @@
 package jam.ui;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
 
 /**
  * Action for a cancel button on a dialog window.
@@ -10,6 +11,7 @@ import java.awt.event.ActionEvent;
  * @author Dale Visser
  * 
  */
+@SuppressWarnings("serial")
 public final class WindowCancelAction extends AbstractAction {
 
 	private transient Window window;

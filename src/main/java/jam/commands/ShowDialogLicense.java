@@ -1,6 +1,7 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.Help;
 
 /**
@@ -8,6 +9,7 @@ import jam.Help;
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class ShowDialogLicense extends AbstractShowDialog {
 
 	@Inject

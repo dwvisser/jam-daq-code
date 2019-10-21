@@ -1,22 +1,29 @@
 package jam.data.control;
 
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+
 import com.google.inject.Inject;
+
 import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.ui.SelectionTree;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.List;
-
 /**
  * Zero histograms dialog
  */
+@SuppressWarnings("serial")
 public class HistogramZero extends AbstractControl {
 
 	/**

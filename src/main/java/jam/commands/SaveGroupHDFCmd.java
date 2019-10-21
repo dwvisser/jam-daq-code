@@ -1,15 +1,17 @@
 package jam.commands;
 
+import java.awt.Frame;
+import java.io.File;
+
+import javax.swing.JFileChooser;
+
 import com.google.inject.Inject;
+
 import jam.data.Group;
 import jam.global.CommandListenerException;
 import jam.global.JamStatus;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
 
 /**
  * * Command to save a group of histograms.
@@ -17,6 +19,7 @@ import java.io.File;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 public class SaveGroupHDFCmd extends AbstractCommand {
 
 	private transient final Frame frame;

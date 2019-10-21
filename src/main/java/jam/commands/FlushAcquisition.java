@@ -7,7 +7,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import com.google.inject.Inject;
-import jam.global.*;
+
+import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
+import jam.global.QuerySortMode;
+import jam.global.RunState;
+import jam.global.SortMode;
 import jam.sort.control.RunControl;
 
 /**
@@ -16,6 +21,7 @@ import jam.sort.control.RunControl;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 7, 2004
  */
+@SuppressWarnings("serial")
 final class FlushAcquisition extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final RunControl control;

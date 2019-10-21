@@ -1,6 +1,7 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.global.Broadcaster;
 import jam.io.ImportBanGates;
 
@@ -9,6 +10,7 @@ import jam.io.ImportBanGates;
  * 
  * @author Dale Visser
  */
+@SuppressWarnings("serial")
 final class ImportORNLban extends AbstractImportFile {
 
 	@Inject

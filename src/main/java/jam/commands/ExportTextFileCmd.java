@@ -1,6 +1,7 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.io.ImpExpASCII;
 
 /**
@@ -9,6 +10,7 @@ import jam.io.ImpExpASCII;
  * @author Ken Swartz
  * @author Dale Visser
  */
+@SuppressWarnings("serial")
 final class ExportTextFileCmd extends AbstractExportFile {
 
 	@Inject

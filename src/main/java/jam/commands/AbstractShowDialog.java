@@ -1,8 +1,8 @@
 package jam.commands;
 
-import jam.global.CommandListenerException;
+import javax.swing.JDialog;
 
-import javax.swing.*;
+import jam.global.CommandListenerException;
 
 /**
  * Commands that are for showing <code>JDialog</code>'s. Dialogs simply extend
@@ -11,6 +11,7 @@ import javax.swing.*;
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 public class AbstractShowDialog extends AbstractCommand {
 
 	AbstractShowDialog() {

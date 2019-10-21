@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import com.google.inject.Inject;
+
 import jam.global.BroadcastEvent;
 import jam.global.JamStatus;
 import jam.global.QuerySortMode;
@@ -16,6 +17,7 @@ import jam.sort.control.DisplayCounters;
  * @author Dale Visser
  * 
  */
+@SuppressWarnings("serial")
 final class ShowDialogCounters extends AbstractShowDialog implements PropertyChangeListener {
 
 	private transient final JamStatus status;

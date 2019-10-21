@@ -1,6 +1,7 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.data.control.Combine;
 
 /**
@@ -8,6 +9,7 @@ import jam.data.control.Combine;
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class ShowDialogHistManipulationsCmd extends AbstractShowDialog {
 
 	@Inject

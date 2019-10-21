@@ -1,20 +1,25 @@
 package jam.data.control;
 
-import jam.global.Broadcaster;
-
-import javax.swing.*;
-import java.awt.*;
-import java.beans.PropertyChangeListener;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.beans.PropertyChangeEvent;
-import java.util.*;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+
+import jam.global.Broadcaster;
 
 /**
  * A class to do overall control of the Jam data classes.
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 public abstract class AbstractControl extends JDialog implements PropertyChangeListener {
 
 	/**

@@ -1,13 +1,21 @@
 package jam.commands;
 
-import com.google.inject.Inject;
-import jam.data.DataBase;
-import jam.global.*;
-
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
+
+import com.google.inject.Inject;
+
+import jam.data.DataBase;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
+import jam.global.QuerySortMode;
+import jam.global.SortMode;
 
 /**
  * Command for file menu new also clears
@@ -15,6 +23,7 @@ import java.beans.PropertyChangeListener;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 final class FileNewClearCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final JFrame frame;

@@ -1,6 +1,7 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.fit.LoadFit;
 import jam.global.CommandListenerException;
 
@@ -9,6 +10,7 @@ import jam.global.CommandListenerException;
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class ShowDialogAddFit extends AbstractCommand {
 
 	private transient final LoadFit loadFit;

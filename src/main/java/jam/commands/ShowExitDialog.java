@@ -1,15 +1,19 @@
 package jam.commands;
 
-import injection.GuiceInjector;
-
-import javax.swing.*;
 import java.awt.event.KeyEvent;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
+
+import injection.GuiceInjector;
 
 /**
  * Show the exit dialog.
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class ShowExitDialog extends AbstractCommand {
 
 	ShowExitDialog() {

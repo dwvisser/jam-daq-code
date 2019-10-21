@@ -3,23 +3,26 @@
  */
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.Action;
+import javax.swing.Icon;
+
 import com.google.inject.Inject;
+
 import injection.GuiceInjector;
 import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.sort.control.RunControl;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import javax.swing.*;
-
 /**
  * Start data acquisition.
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 7, 2004
  */
+@SuppressWarnings("serial")
 final class StartAcquisition extends AbstractCommand implements PropertyChangeListener {
 
     private transient final RunControl runControl;

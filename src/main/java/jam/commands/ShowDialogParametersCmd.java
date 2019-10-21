@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import com.google.inject.Inject;
+
 import jam.data.DataParameter;
 import jam.data.control.ParameterControl;
 
@@ -13,6 +14,7 @@ import jam.data.control.ParameterControl;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 final class ShowDialogParametersCmd extends AbstractShowDialog implements PropertyChangeListener {
 
 	/**

@@ -1,6 +1,7 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.io.ImpExpORNL;
 
 /**
@@ -8,6 +9,7 @@ import jam.io.ImpExpORNL;
  * 
  * @author Dale Visser
  */
+@SuppressWarnings("serial")
 final class ExportDamm extends AbstractExportFile {
 
 	@Inject

@@ -1,6 +1,5 @@
 package jam.data;
 
-import java.applet.AudioClip;
 import java.util.*;
 
 import javax.sound.sampled.Clip;

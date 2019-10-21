@@ -1,13 +1,19 @@
 package jam.commands;
 
-import com.google.inject.Inject;
-import jam.global.*;
-import jam.io.control.OpenMultipleFiles;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.Icon;
+
+import com.google.inject.Inject;
+
+import jam.global.BroadcastEvent;
+import jam.global.CommandListenerException;
+import jam.global.JamStatus;
+import jam.global.QuerySortMode;
+import jam.global.SortMode;
+import jam.io.control.OpenMultipleFiles;
 
 /**
  * Shows the open multiple files dialog
@@ -15,6 +21,7 @@ import javax.swing.*;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 public class OpenMultipleHDFCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final OpenMultipleFiles openMultiple;

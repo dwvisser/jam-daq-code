@@ -11,6 +11,7 @@ package test.sort.mockfrontend;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Feb 15, 2004
  */
+@SuppressWarnings("serial")
 public class Status extends NamedTextPanel {
 	static class Value {
 

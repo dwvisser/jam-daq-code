@@ -3,10 +3,9 @@
  */
 package jam.plot;
 
-import com.google.inject.Inject;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -16,11 +15,25 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JToolBar;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
+
+import com.google.inject.Inject;
+
 /**
  * The tool bar that goes with the display.
  * 
  * @author Dale Visser
  */
+@SuppressWarnings("serial")
 final class Toolbar extends JToolBar implements ActionListener {
 
 	/**

@@ -1,25 +1,36 @@
 package jam.commands;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
 import com.google.inject.Inject;
+
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.plot.PlotDisplay;
 import jam.plot.View;
 import jam.ui.PanelOKApplyCancelButtons;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Command to delete view.
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 class ShowDialogDeleteView extends AbstractShowDialog {
 
 	private static class ViewDelete extends JDialog {

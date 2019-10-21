@@ -1,18 +1,17 @@
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import jam.data.AbstractHistogram;
 import jam.data.Gate;
 import jam.global.Nameable;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Provides Observer implementation for gate dialog subclasses.
  * @author Dale Visser
  */
+@SuppressWarnings("serial")
 public abstract class AbstractShowGateDialog extends AbstractShowDialog
         implements PropertyChangeListener, Predicate<Nameable> {
 

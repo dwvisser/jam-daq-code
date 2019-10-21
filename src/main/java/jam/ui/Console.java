@@ -1,20 +1,26 @@
 package jam.ui;
 
+import java.awt.BorderLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import injection.MapListener;
 import jam.global.CommandFinder;
 import jam.global.CommandListener;
 import jam.global.LoggerConfig;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.*;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Class Console displays a output of commands and error messages and allows the
@@ -27,6 +33,7 @@ import java.util.regex.Pattern;
  * @version 0.5 last edit 1-99
  */
 @Singleton
+@SuppressWarnings("serial")
 public class Console extends JPanel {
 
 	/**

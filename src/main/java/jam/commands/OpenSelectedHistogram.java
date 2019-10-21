@@ -6,18 +6,20 @@
  */
 package jam.commands;
 
+import java.awt.Frame;
+
 import com.google.inject.Inject;
+
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandListenerException;
-
-import java.awt.*;
 
 /**
  * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 3, 2004
  */
+@SuppressWarnings("serial")
 final class OpenSelectedHistogram extends AbstractCommand {
 
 	private transient final Frame frame;

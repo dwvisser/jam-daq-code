@@ -1,15 +1,18 @@
 package jam.plot;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.print.PageFormat;
+
+import javax.swing.JPanel;
+import javax.swing.event.MouseInputAdapter;
+
 import jam.data.AbstractHistogram;
 import jam.plot.color.Mode;
 import jam.plot.color.PlotColorMap;
 
-import javax.swing.*;
-import javax.swing.event.MouseInputAdapter;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.print.PageFormat;
-
+@SuppressWarnings("serial")
 final class PlotPanel extends JPanel implements CountsContainer {
 
 	/**

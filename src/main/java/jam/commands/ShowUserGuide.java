@@ -1,15 +1,16 @@
 package jam.commands;
 
-import jam.global.CommandListenerException;
-import jam.global.Help;
-
 import javax.help.CSH;
 import javax.help.HelpSet;
-import javax.swing.*;
+import javax.swing.JButton;
+
+import jam.global.CommandListenerException;
+import jam.global.Help;
 
 /**
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class ShowUserGuide extends AbstractCommand {
 
 	private transient final JButton proxy = new JButton();

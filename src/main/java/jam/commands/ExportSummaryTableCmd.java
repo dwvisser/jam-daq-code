@@ -1,17 +1,23 @@
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+
 import com.google.inject.Inject;
+
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 import jam.ui.ExtensionFileFilter;
 import jam.ui.SummaryTable;
-
-import javax.swing.*;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.*;
-import java.util.logging.Level;
 
 /**
  * Export the summary table
@@ -19,6 +25,7 @@ import java.util.logging.Level;
  * @author Kennneth Swartz
  * 
  */
+@SuppressWarnings("serial")
 public class ExportSummaryTableCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private final static int BUFFER_SIZE = 256 * 2;

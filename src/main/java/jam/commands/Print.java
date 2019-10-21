@@ -1,6 +1,18 @@
 package jam.commands;
 
+import java.awt.event.KeyEvent;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.logging.Level;
+
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.KeyStroke;
+
 import com.google.inject.Inject;
+
 import jam.data.AbstractHistogram;
 import jam.global.CommandListenerException;
 import jam.global.Nameable;
@@ -8,20 +20,11 @@ import jam.plot.ComponentPrintable;
 import jam.plot.PlotDisplay;
 import jam.ui.SelectionTree;
 
-import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.logging.Level;
-
 /**
  * Command for Page Setup.
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class Print extends AbstractPrintingCommand implements PropertyChangeListener,
         Predicate<Nameable> {
 

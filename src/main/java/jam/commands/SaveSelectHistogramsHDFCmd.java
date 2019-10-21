@@ -1,6 +1,7 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.global.CommandListenerException;
 import jam.io.control.SaveSelectedHistogram;
 
@@ -10,6 +11,7 @@ import jam.io.control.SaveSelectedHistogram;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 final class SaveSelectHistogramsHDFCmd extends AbstractCommand {
 
 	private transient final SaveSelectedHistogram saveDlg;

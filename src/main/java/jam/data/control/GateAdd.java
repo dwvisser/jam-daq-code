@@ -1,6 +1,20 @@
 package jam.data.control;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+
 import com.google.inject.Inject;
+
 import jam.data.AbstractHistogram;
 import jam.data.Gate;
 import jam.global.BroadcastEvent;
@@ -8,17 +22,13 @@ import jam.global.Broadcaster;
 import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
 /**
  * A dialog for adding existing gates to histograms.
  * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jun 4, 2004
  */
+@SuppressWarnings("serial")
 public final class GateAdd extends AbstractControl {
 
 	private transient final JComboBox<Object> cadd;

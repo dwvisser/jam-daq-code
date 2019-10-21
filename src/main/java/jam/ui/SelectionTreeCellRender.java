@@ -1,14 +1,17 @@
 package jam.ui;
 
+import java.awt.Color;
+import java.awt.Component;
+
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+
 import com.google.inject.Inject;
+
 import jam.data.AbstractHistogram;
 import jam.data.Gate;
 import jam.data.Group;
-
-import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import java.awt.*;
 
 /**
  * Renderer for Jam's hist/gate selection tree.
@@ -16,6 +19,7 @@ import java.awt.*;
  * @author Ken Swartz
  * @version Nov 26, 2004
  */
+@SuppressWarnings("serial")
 public final class SelectionTreeCellRender extends DefaultTreeCellRenderer {
 
 	private transient final Color defaultBackground;

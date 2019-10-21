@@ -8,8 +8,6 @@ import java.util.logging.Logger;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import jam.Version;
-
 /**
  * Generates RingBuffer instances appropriate to whether J2SE 6
  * java.util.concurrent is on the classpath or not.

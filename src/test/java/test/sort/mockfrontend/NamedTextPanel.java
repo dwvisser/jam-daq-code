@@ -13,6 +13,7 @@ import javax.swing.border.EtchedBorder;
  * @author Dale Visser
  * 
  */
+@SuppressWarnings("serial")
 public class NamedTextPanel extends JPanel {
 
 	private transient final JLabel label = new JLabel();

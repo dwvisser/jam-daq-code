@@ -1,6 +1,13 @@
 package jam.data.control;
 
+import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.util.logging.Level;
+
+import javax.swing.JTextField;
+
 import com.google.inject.Inject;
+
 import jam.data.DataBase;
 import jam.data.DataException;
 import jam.data.Group;
@@ -10,16 +17,13 @@ import jam.global.JamStatus;
 import jam.global.Nameable;
 import jam.ui.PanelOKApplyCancelButtons;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.logging.Level;
-
 /**
  * * Class create a new group
  * 
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 public class GroupRename extends AbstractControl {
 
 	private transient Group currentGroup;

@@ -1,8 +1,13 @@
 package jam.sort.control;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.FlowLayout;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+@SuppressWarnings("serial")
 final class CounterPanel extends JPanel {
 
 	private transient final JTextField textField = new JTextField();

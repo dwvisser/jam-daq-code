@@ -7,6 +7,7 @@ import jam.global.CommandListenerException;
  * @author Dale Visser
  *
  */
+@SuppressWarnings("serial")
 public final class NoCommand extends AbstractCommand {
 	
 	NoCommand(){

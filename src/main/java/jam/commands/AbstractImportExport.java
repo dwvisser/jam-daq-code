@@ -1,15 +1,16 @@
 package jam.commands;
 
+import java.io.File;
+
 import jam.global.CommandListenerException;
 import jam.io.AbstractImpExp;
-
-import java.io.File;
 
 /**
  * Export data to file.
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 abstract class AbstractImportExport extends AbstractCommand {// NOPMD
 
 	/**

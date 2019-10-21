@@ -1,20 +1,22 @@
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import com.google.inject.Inject;
+
 import jam.data.AbstractHistogram;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
 import jam.io.ImpExpSPE;
 import jam.ui.SelectionTree;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 /**
  * Export data to a Radware gf3 spectrum file.
  * 
  * @author Dale Visser
  */
+@SuppressWarnings("serial")
 final class ExportRadware extends AbstractExportFile implements PropertyChangeListener {
 
 	@Inject

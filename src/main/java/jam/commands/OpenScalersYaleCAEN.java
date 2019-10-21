@@ -1,20 +1,23 @@
 package jam.commands;
 
+import java.io.File;
+
+import javax.swing.JFileChooser;
+
 import com.google.inject.Inject;
+
 import jam.global.CommandListenerException;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
 import jam.ui.ExtensionFileFilter;
 import jam.util.YaleCAENgetScalers;
 
-import javax.swing.*;
-import java.io.File;
-
 /**
  * Open a file with YaleCAEN scalers.
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class OpenScalersYaleCAEN extends AbstractCommand {
 
 	private transient final YaleCAENgetScalers ycs;

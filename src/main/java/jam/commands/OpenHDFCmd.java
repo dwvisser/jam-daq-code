@@ -1,29 +1,39 @@
 package jam.commands;
 
-import com.google.inject.Inject;
-import injection.GuiceInjector;
-import jam.data.AbstractHistogram;
-import jam.data.DataBase;
-import jam.data.Group;
-import jam.data.control.AbstractControl;
-import jam.global.*;
-import jam.io.FileOpenMode;
-import jam.io.hdf.HDFIO;
-import jam.io.hdf.HDFileFilter;
-import jam.ui.SelectionTree;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.List;
 
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JFileChooser;
+import javax.swing.KeyStroke;
+
+import com.google.inject.Inject;
+
+import injection.GuiceInjector;
+import jam.data.AbstractHistogram;
+import jam.data.DataBase;
+import jam.data.Group;
+import jam.data.control.AbstractControl;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
+import jam.global.QuerySortMode;
+import jam.global.SortMode;
+import jam.io.FileOpenMode;
+import jam.io.hdf.HDFIO;
+import jam.io.hdf.HDFileFilter;
+import jam.ui.SelectionTree;
+
 /**
  * Open a hdf file
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class OpenHDFCmd extends AbstractCommand implements PropertyChangeListener,
         HDFIO.AsyncListener {
 

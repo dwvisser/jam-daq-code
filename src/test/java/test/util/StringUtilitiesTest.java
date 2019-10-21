@@ -5,7 +5,6 @@ package test.util;
 
 import injection.GuiceInjector;
 import jam.util.StringUtilities;
-import junit.framework.TestCase;
 
 import org.junit.Assert;
 import org.junit.Test;

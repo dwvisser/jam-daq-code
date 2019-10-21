@@ -1,19 +1,27 @@
 package jam.sort.control;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.sort.AbstractStorageDaemon;
 import jam.sort.NetDaemon;
 import jam.sort.SortDaemon;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 
 /**
  * Displays buffer counters of sort threads. Gives the number of buffers and
@@ -23,6 +31,7 @@ import java.beans.PropertyChangeEvent;
  * @version 05 newest done 9-98
  */
 @Singleton
+@SuppressWarnings("serial")
 public final class DisplayCounters extends JDialog implements PropertyChangeListener {// NOPMD
 
 	private transient final JamStatus status;

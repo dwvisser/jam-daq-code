@@ -1,11 +1,14 @@
 package jam.sort.control;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+
 import injection.GuiceInjector;
 import jam.ui.Icons;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-
+@SuppressWarnings("serial")
 class End extends AbstractAction {
 
     private transient final RunController runControl;

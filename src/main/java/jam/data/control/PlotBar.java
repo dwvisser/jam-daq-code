@@ -2,11 +2,17 @@
  */
 package jam.data.control;
 
-import jam.data.Monitor;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.SystemColor;
 import java.awt.font.FontRenderContext;
+
+import javax.swing.JPanel;
+
+import jam.data.Monitor;
 
 /**
  * Class that is a bar graph used by monitors
@@ -14,6 +20,7 @@ import java.awt.font.FontRenderContext;
  * @version 0.5
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 public final class PlotBar extends JPanel {
 	/**
 	 * border area at ends of bars

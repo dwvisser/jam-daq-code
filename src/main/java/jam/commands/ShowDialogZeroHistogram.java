@@ -1,19 +1,22 @@
 package jam.commands;
 
-import com.google.inject.Inject;
-import jam.data.AbstractHistogram;
-import jam.data.control.HistogramZero;
-import jam.global.Nameable;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.Icon;
+
+import com.google.inject.Inject;
+
+import jam.data.AbstractHistogram;
+import jam.data.control.HistogramZero;
+import jam.global.Nameable;
 
 /**
  * Show the zero histograms dialog.
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class ShowDialogZeroHistogram extends AbstractShowDialog implements
         PropertyChangeListener, Predicate<Nameable> {
 

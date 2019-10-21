@@ -1,8 +1,37 @@
 package jam.sort.control;
 
+import static jam.global.PropertyKeys.EVENT_INPATH;
+import static jam.global.PropertyKeys.EVENT_OUTFILE;
+import static jam.global.PropertyKeys.EVENT_OUTPATH;
+import static java.util.logging.Level.SEVERE;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.util.logging.Logger;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileFilter;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import jam.global.*;
+
+import jam.global.GoodThread;
+import jam.global.JamProperties;
+import jam.global.JamStatus;
+import jam.global.RunInfo;
+import jam.global.RunState;
 import jam.sort.AbstractStorageDaemon;
 import jam.sort.OfflineController;
 import jam.sort.SortDaemon;
@@ -10,18 +39,6 @@ import jam.sort.SortException;
 import jam.ui.ExtensionFileFilter;
 import jam.ui.Icons;
 import jam.ui.MultipleFileChooser;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileFilter;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.util.logging.Logger;
-
-import static jam.global.PropertyKeys.*;
-import static java.util.logging.Level.SEVERE;
 
 /**
  * Class to control the offline sort process Allows you to enter the list of
@@ -31,6 +48,7 @@ import static java.util.logging.Level.SEVERE;
  * @version 1.0
  */
 @Singleton
+@SuppressWarnings("serial")
 public final class SortControl extends javax.swing.JDialog implements
 		OfflineController {
 

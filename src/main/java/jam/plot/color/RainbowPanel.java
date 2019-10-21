@@ -3,13 +3,18 @@
  */
 package jam.plot.color;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+
+import javax.swing.JPanel;
 
 /**
  * @author Eric Lingerfelt
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
  */
+@SuppressWarnings("serial")
 final class RainbowPanel extends JPanel {
 
 	private transient double sigB = 0.30;

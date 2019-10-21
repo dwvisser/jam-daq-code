@@ -1,15 +1,16 @@
 package jam.plot;
 
+import javax.swing.DefaultBoundedRangeModel;
+
 import jam.data.AbstractHistogram;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
-
-import javax.swing.*;
 
 /**
  * @author Dale Visser
  * 
  */
+@SuppressWarnings("serial")
 abstract class AbstractScrollBarRangeModel extends DefaultBoundedRangeModel {
 
 	/**

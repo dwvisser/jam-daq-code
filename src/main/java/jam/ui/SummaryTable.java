@@ -1,18 +1,22 @@
 package jam.ui;
 
+import java.awt.BorderLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 
 /**
  * Create a summary table for a group
@@ -20,6 +24,7 @@ import java.beans.PropertyChangeEvent;
  * @author Ken Swartz
  */
 @Singleton
+@SuppressWarnings("serial")
 public class SummaryTable extends JPanel implements PropertyChangeListener {
 
 	/**

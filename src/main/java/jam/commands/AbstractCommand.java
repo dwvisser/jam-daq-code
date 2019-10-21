@@ -1,11 +1,15 @@
 package jam.commands;
 
-import jam.global.CommandListenerException;
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.logging.Logger;
+
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+
+import jam.global.CommandListenerException;
 
 /**
  * Implementation of <code>Commandable</code> interface in which
@@ -14,6 +18,7 @@ import java.util.logging.Logger;
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 public abstract class AbstractCommand extends AbstractAction implements
 		Commandable {
 

@@ -1,14 +1,31 @@
 package jam.io;
 
-import com.google.inject.Inject;
-import jam.data.*;
-import jam.ui.ExtensionFileFilter;
-
-import javax.swing.filechooser.FileFilter;
-import java.awt.*;
-import java.io.*;
+import java.awt.Frame;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringReader;
 import java.nio.CharBuffer;
 import java.util.Scanner;
+
+import javax.swing.filechooser.FileFilter;
+
+import com.google.inject.Inject;
+
+import jam.data.AbstractHistogram;
+import jam.data.Factory;
+import jam.data.HistDouble1D;
+import jam.data.HistDouble2D;
+import jam.data.HistInt1D;
+import jam.data.HistInt2D;
+import jam.data.HistogramType;
+import jam.ui.ExtensionFileFilter;
 
 /**
  * Imports and exports histograms in ASCII channel-space-counts-return format.
@@ -148,9 +165,10 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 		if (this.line1isTitle) {
 			lnr.readLine();
 		}
-		final Scanner scanner = new Scanner(lnr);
-		for (int i = 0; i < counts.length; i++) {
-			counts[i] = scanner.nextDouble();
+		try (final Scanner scanner = new Scanner(lnr)) {
+			for (int i = 0; i < counts.length; i++) {
+				counts[i] = scanner.nextDouble();
+			}
 		}
 		Factory.createHistogram(importGroup, counts, name, title);
 	}
@@ -164,13 +182,14 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 		if (this.line1isTitle) {
 			lnr.readLine();
 		}
-		final Scanner scanner = new Scanner(lnr);
-		for (int i = 0; i < rows; i++) {
-			final double nval = scanner.nextDouble();
-			if (nval > maxX) {
-				maxX = (int) nval;
+		try (final Scanner scanner = new Scanner(lnr)) {
+			for (int i = 0; i < rows; i++) {
+				final double nval = scanner.nextDouble();
+				if (nval > maxX) {
+					maxX = (int) nval;
+				}
+				scanner.nextDouble();
 			}
-			scanner.nextDouble();
 		}
 	}
 
@@ -182,17 +201,18 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 		if (this.line1isTitle) {
 			lnr.readLine();
 		}
-		final Scanner scanner = new Scanner(lnr);
-		for (int i = 0; i < rows; i++) {
-			double nval = scanner.nextDouble();
-			if (nval > maxX) {
-				maxX = (int) nval;
+		try (final Scanner scanner = new Scanner(lnr)) {
+			for (int i = 0; i < rows; i++) {
+				double nval = scanner.nextDouble();
+				if (nval > maxX) {
+					maxX = (int) nval;
+				}
+				nval = scanner.nextDouble();
+				if (nval > maxY) {
+					maxY = (int) nval;
+				}
+				scanner.nextDouble();
 			}
-			nval = scanner.nextDouble();
-			if (nval > maxY) {
-				maxY = (int) nval;
-			}
-			scanner.nextDouble();
 		}
 	}
 
@@ -204,10 +224,11 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 		if (this.line1isTitle) {
 			lnr.readLine();
 		}
-		final Scanner scanner = new Scanner(lnr);
-		for (int i = 0; i < rows; i++) {
-			final int channel = (int) scanner.nextDouble();
-			counts[channel] = scanner.nextDouble();
+		try (final Scanner scanner = new Scanner(lnr)) {
+			for (int i = 0; i < rows; i++) {
+				final int channel = (int) scanner.nextDouble();
+				counts[channel] = scanner.nextDouble();
+			}
 		}
 		Factory.createHistogram(importGroup, counts, name, title);
 	}
@@ -220,11 +241,12 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 		if (this.line1isTitle) {
 			lnr.readLine();
 		}
-		final Scanner scanner = new Scanner(lnr);
-		for (int i = 0; i < rows; i++) {
-			final int channelX = (int) scanner.nextDouble();
-			final int channelY = (int) scanner.nextDouble();
-			counts[channelX][channelY] = scanner.nextDouble();
+		try (final Scanner scanner = new Scanner(lnr)) {
+			for (int i = 0; i < rows; i++) {
+				final int channelX = (int) scanner.nextDouble();
+				final int channelY = (int) scanner.nextDouble();
+				counts[channelX][channelY] = scanner.nextDouble();
+			}
 		}
 		Factory.createHistogram(importGroup, counts, name, title);
 	}
@@ -237,33 +259,35 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 		if (this.line1isTitle) {
 			lnr.readLine();
 		}
-		final Scanner scanner = new Scanner(lnr);
-		for (int i = 0; i < counts.length; i++) {
-			for (int j = 0; j < counts[0].length; j++) {
-				counts[i][j] = scanner.nextDouble();
+		try (final Scanner scanner = new Scanner(lnr)) {
+			for (int i = 0; i < counts.length; i++) {
+				for (int j = 0; j < counts[0].length; j++) {
+					counts[i][j] = scanner.nextDouble();
+				}
 			}
 		}
 		Factory.createHistogram(importGroup, counts, name, title);
 	}
 
 	private String getHistTitle() throws IOException {
-		final InputStreamReader isr = new InputStreamReader(
-				new FileInputStream(getLastFile()));
-		/* Make a tokenizer for input stream. */
-		final Scanner scanner = new Scanner(isr);
-		/*
-		 * Read in header lines, header are lines that start with a non-number
-		 * token.
-		 */
 		String rval;
-		line1isTitle = scanner.hasNext("[a-zA-Z]\\w*");
-		if (line1isTitle) {
-			rval = scanner.next();
-		} else {
-			rval = getFileName(getLastFile());
-			rval = rval.substring(0, rval.indexOf('.'));
+		try (final InputStreamReader isr = new InputStreamReader(
+				new FileInputStream(getLastFile()));
+			 final Scanner scanner = new Scanner(isr)) {
+			/* Make a tokenizer for input stream. */
+			/*
+			* Read in header lines, header are lines that start with a non-number
+			* token.
+			*/
+
+			line1isTitle = scanner.hasNext("[a-zA-Z]\\w*");
+			if (line1isTitle) {
+				rval = scanner.next();
+			} else {
+				rval = getFileName(getLastFile());
+				rval = rval.substring(0, rval.indexOf('.'));
+			}
 		}
-		isr.close();
 		return rval;
 	}
 
@@ -316,10 +340,11 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 			}
 		}
 		if (line != null) {
-			final Scanner scanner = new Scanner(new StringReader(line));
-			while (scanner.hasNextDouble()) {
-				scanner.nextDouble();
-				result++;
+			try (final Scanner scanner = new Scanner(new StringReader(line))) {
+				while (scanner.hasNextDouble()) {
+					scanner.nextDouble();
+					result++;
+				}
 			}
 		}
 		return result;

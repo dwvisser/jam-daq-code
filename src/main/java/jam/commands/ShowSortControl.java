@@ -1,15 +1,17 @@
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.Action;
+import javax.swing.Icon;
+
 import com.google.inject.Inject;
+
 import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
 import jam.sort.control.SortControl;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import javax.swing.*;
 
 /**
  * Show the sort control dialog.
@@ -17,6 +19,7 @@ import javax.swing.*;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 2004-06-04
  */
+@SuppressWarnings("serial")
 final class ShowSortControl extends AbstractShowDialog implements PropertyChangeListener {
 
 	private transient final JamStatus status;

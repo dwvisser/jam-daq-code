@@ -3,10 +3,11 @@
  */
 package jam.commands;
 
-import jam.global.CommandListenerException;
-
-import javax.swing.*;
 import java.util.prefs.Preferences;
+
+import javax.swing.ImageIcon;
+
+import jam.global.CommandListenerException;
 
 /**
  * Abstract implementation of <code>Commandable</code> which can set/unset a
@@ -15,6 +16,7 @@ import java.util.prefs.Preferences;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jun 10, 2004
  */
+@SuppressWarnings("serial")
 public abstract class AbstractSetBooleanPreference extends AbstractCommand {// NOPMD
 
 	AbstractSetBooleanPreference() {

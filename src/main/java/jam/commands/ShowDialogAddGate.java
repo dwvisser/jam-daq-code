@@ -1,12 +1,14 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.data.control.GateAdd;
 
 /**
  * Show the gate add dialog box.
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class ShowDialogAddGate extends AbstractShowGateDialog {
 
     /**

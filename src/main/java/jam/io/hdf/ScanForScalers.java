@@ -41,9 +41,10 @@ public class ScanForScalers {
 			final int firstRun, final int index, final File infile)
 			throws IOException, HDFException {
 		updater.updateProgressBar("Processing " + infile.getName(), index);
-		final HDFile inHDF = new HDFile(infile, "r");
-		inHDF.seek(0);
-		inHDF.readFile();
+		try (final HDFile inHDF = new HDFile(infile, "r")) {
+			inHDF.seek(0);
+			inHDF.readFile();
+		}
 		if (index == firstRun) {
 			writeHeaderLine(carriage, outText);
 		}

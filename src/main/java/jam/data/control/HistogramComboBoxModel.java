@@ -1,10 +1,12 @@
 package jam.data.control;
 
-import jam.data.AbstractHistogram;
-
-import javax.swing.*;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+
+import jam.data.AbstractHistogram;
 
 /**
  * This class takes care of properly displaying the histogram chooser in Jam's
@@ -13,6 +15,7 @@ import java.util.Iterator;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 1.4.2 RC3
  */
+@SuppressWarnings("serial")
 final class HistogramComboBoxModel extends DefaultComboBoxModel<Object> {
 
 	private transient Object selection = null;

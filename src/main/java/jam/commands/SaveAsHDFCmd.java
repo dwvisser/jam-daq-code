@@ -1,19 +1,25 @@
 package jam.commands;
 
-import com.google.inject.Inject;
-import jam.io.hdf.HDFIO;
-import jam.io.hdf.HDFileFilter;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.io.File;
+
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JFileChooser;
+import javax.swing.KeyStroke;
+
+import com.google.inject.Inject;
+
+import jam.io.hdf.HDFIO;
+import jam.io.hdf.HDFileFilter;
 
 /**
  * Save data to an hdf file.
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class SaveAsHDFCmd extends AbstractCommand {
 
 	private transient final HDFIO hdfio;

@@ -11,6 +11,7 @@ package test.sort.mockfrontend;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Feb 15, 2004
  */
+@SuppressWarnings("serial")
 public final class Counter extends NamedTextPanel {
 	private transient int value = 0;
 	private transient final Object syncObject = new Object();

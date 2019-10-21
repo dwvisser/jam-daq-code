@@ -1,10 +1,12 @@
 package jam;
 
+import javax.swing.Action;
+import javax.swing.JButton;
+
 import com.google.inject.Inject;
+
 import jam.commands.CommandManager;
 import jam.commands.CommandNames;
-
-import javax.swing.*;
 
 /**
  * Main Toolbar for Jam.
@@ -12,6 +14,7 @@ import javax.swing.*;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 final class ToolBar extends javax.swing.JToolBar {
 
 	private transient final CommandManager commands;

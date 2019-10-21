@@ -1,14 +1,30 @@
 package jam.plot.color;
 
-import injection.GuiceInjector;
-import jam.ui.PanelOKApplyCancelButtons;
+import static jam.plot.color.ColorPrefs.COLOR_PREFS;
 
-import javax.swing.*;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
 
-import static jam.plot.color.ColorPrefs.COLOR_PREFS;
+import injection.GuiceInjector;
+import jam.ui.PanelOKApplyCancelButtons;
 
 /**
  * Dialog for setting the gradient color scale parameters.
@@ -17,6 +33,7 @@ import static jam.plot.color.ColorPrefs.COLOR_PREFS;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  * @version 2004-11-08
  */
+@SuppressWarnings("serial")
 public final class ColorSettingsFrame extends JDialog implements ChangeListener {
 
 	static private final ColorSettingsFrame CSF = new ColorSettingsFrame();

@@ -1,13 +1,15 @@
 package jam.commands;
 
+import java.awt.Frame;
+import java.io.File;
+
+import javax.swing.JFileChooser;
+
 import com.google.inject.Inject;
+
 import jam.global.CommandListenerException;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
 
 /**
  * Save gates and scalers
@@ -15,6 +17,7 @@ import java.io.File;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 final class SaveGatesCmd extends AbstractCommand {
 
 	private transient final Frame frame;

@@ -1,6 +1,7 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.global.Broadcaster;
 import jam.io.ImpExpORNL;
 
@@ -9,6 +10,7 @@ import jam.io.ImpExpORNL;
  * 
  * @author Dale Visser
  */
+@SuppressWarnings("serial")
 final class ImportDamm extends AbstractImportFile {
 
 	@Inject

@@ -1,7 +1,27 @@
 package jam.sort.control;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.io.File;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import jam.comm.FrontEndCommunication;
 import jam.comm.ScalerCommunication;
 import jam.data.Warehouse;
@@ -11,15 +31,11 @@ import jam.global.JamStatus;
 import jam.global.RunInfo;
 import jam.global.RunState;
 import jam.io.hdf.HDFIO;
-import jam.sort.*;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.io.File;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import jam.sort.Controller;
+import jam.sort.DiskDaemon;
+import jam.sort.NetDaemon;
+import jam.sort.SortDaemon;
+import jam.sort.SortException;
 
 /**
  * Class for data acquistion and run control. This class
@@ -47,6 +63,7 @@ import java.util.logging.Logger;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser </a>
  */
 @Singleton
+@SuppressWarnings("serial")
 public final class RunControl extends JDialog implements Controller,
 		RunController {
 

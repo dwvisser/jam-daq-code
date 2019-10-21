@@ -1,11 +1,17 @@
 package jam.commands;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import com.google.inject.Inject;
+
 import jam.data.DataBase;
 import jam.data.Group;
-import jam.global.*;
-
-import javax.swing.*;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.CommandListenerException;
+import jam.global.JamStatus;
+import jam.global.Nameable;
 
 /**
  * Delete a group
@@ -13,6 +19,7 @@ import javax.swing.*;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 public class DeleteGroup extends AbstractCommand {
 
 	private transient final JFrame frame;

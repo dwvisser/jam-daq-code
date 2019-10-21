@@ -1,17 +1,7 @@
 package jam.ui;
 
-import com.google.inject.Inject;
-import jam.data.*;
-import jam.global.*;
-
-import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
@@ -19,12 +9,42 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.ToolTipManager;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+
+import com.google.inject.Inject;
+
+import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
+import jam.data.DataBase;
+import jam.data.DataElement;
+import jam.data.DataUtility;
+import jam.data.Gate;
+import jam.data.Group;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
+import jam.global.Nameable;
+import jam.global.QuerySortMode;
+import jam.global.SortMode;
+import jam.global.UnNamed;
+import jam.global.Validator;
+
 /**
  * Implements a <code>JTree</code> for selecting <code>Histogram</code>'s and
  * <code>Gate</code>'s to display.
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 public final class SelectionTree extends JPanel implements PropertyChangeListener {
 	private transient final Broadcaster broadcaster;
 

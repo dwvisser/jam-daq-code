@@ -6,6 +6,7 @@ package jam.comm;
  * 
  * @author Dale Visser
  */
+@SuppressWarnings("serial")
 public class CommunicationsException extends Exception {
 
 	/**

@@ -1,5 +1,12 @@
 package jam.commands;
 
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+
 import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.DataBase;
@@ -13,16 +20,11 @@ import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 import jam.ui.SelectionTree;
 
-import javax.swing.*;
-
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.util.List;
-
 /**
  * Add counts to histograms in memory from histograms in an HDF file.
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 abstract class AbstractLoaderHDF extends AbstractCommand implements PropertyChangeListener,
         HDFIO.AsyncListener {
 

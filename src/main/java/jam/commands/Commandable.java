@@ -4,7 +4,6 @@ import jam.global.CommandListenerException;
 import jam.global.JamProperties;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.InputEvent;
 
 /**

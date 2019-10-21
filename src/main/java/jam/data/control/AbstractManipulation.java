@@ -1,14 +1,16 @@
 package jam.data.control;
 
+import java.awt.FontMetrics;
+import java.awt.Frame;
+
+import javax.swing.JComboBox;
+
 import jam.data.AbstractHistogram;
 import jam.data.Factory;
 import jam.data.Group;
 import jam.data.NameValueCollection;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * Base class for histogram manipulations has methods to create combo box of
@@ -17,6 +19,7 @@ import java.awt.*;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 abstract class AbstractManipulation extends AbstractControl {
 	@Override
 	public abstract void doSetup();

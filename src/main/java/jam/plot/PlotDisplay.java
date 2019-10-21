@@ -4,15 +4,19 @@ import static jam.plot.PlotPreferences.DISPLAY_LABELS;
 import static jam.plot.PlotPreferences.ENABLE_SCROLLING;
 import static jam.plot.PlotPreferences.PREFS;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.print.PageFormat;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import javax.swing.*;
+
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -40,6 +44,7 @@ import jam.ui.SelectionTree;
  * @since JDK1.1
  */
 @Singleton
+@SuppressWarnings("serial")
 public final class PlotDisplay extends JPanel implements
         PreferenceChangeListener, PropertyChangeListener, CurrentPlotAccessor,
         PlotSelectListener {

@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import com.google.inject.Inject;
+
 import jam.data.Scaler;
 import jam.data.control.ScalerDisplay;
 
@@ -13,6 +14,7 @@ import jam.data.control.ScalerDisplay;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 final class ShowDialogScalersCmd extends AbstractShowDialog implements PropertyChangeListener {
 
 	@Inject

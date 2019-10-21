@@ -1,6 +1,10 @@
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.io.File;
+
 import com.google.inject.Inject;
+
 import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -9,14 +13,12 @@ import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 
-import java.beans.PropertyChangeEvent;
-import java.io.File;
-
 /**
  * Add counts to histograms in memory from histograms in an HDF file.
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class AddHDF extends AbstractLoaderHDF {
 
 	private transient final JamStatus status;

@@ -1,7 +1,34 @@
 package jam.data.control;
 
+import static javax.swing.SwingConstants.CENTER;
+import static javax.swing.SwingConstants.LEFT;
+import static javax.swing.SwingConstants.RIGHT;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import jam.data.Monitor;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -9,15 +36,6 @@ import jam.global.GoodThread;
 import jam.sort.ThreadPriorities;
 import jam.ui.Canceller;
 import jam.ui.WindowCancelAction;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.util.List;
-import java.util.logging.Level;
-
-import static javax.swing.SwingConstants.*;
 
 /**
  * Reads and displays the monitors.
@@ -28,6 +46,7 @@ import static javax.swing.SwingConstants.*;
  * @since JDK1.1
  */
 @Singleton
+@SuppressWarnings("serial")
 public final class MonitorControl extends AbstractControl implements Runnable {
 
 	private static final int THRESHOLD_INDEX = 1;

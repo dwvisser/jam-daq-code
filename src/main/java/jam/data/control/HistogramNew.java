@@ -1,20 +1,40 @@
 package jam.data.control;
 
+import static javax.swing.SwingConstants.RIGHT;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Panel;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
 import com.google.inject.Inject;
-import jam.data.*;
+
+import jam.data.AbstractHistogram;
+import jam.data.Factory;
+import jam.data.Group;
+import jam.data.HistogramType;
+import jam.data.NameValueCollection;
+import jam.data.Warehouse;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.ui.SelectionTree;
 import jam.ui.WindowCancelAction;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import static javax.swing.SwingConstants.RIGHT;
 
 /**
  * Class to control the histograms Allows one to zero the histograms and create
@@ -23,6 +43,7 @@ import static javax.swing.SwingConstants.RIGHT;
  * @author Ken Swartz
  * @version 0.5
  */
+@SuppressWarnings("serial")
 public class HistogramNew extends AbstractControl {
 
 	private static final NameValueCollection<Group> GROUPS = Warehouse

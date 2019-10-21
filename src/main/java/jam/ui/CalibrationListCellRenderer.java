@@ -1,9 +1,13 @@
 package jam.ui;
 
-import jam.data.func.CalibrationFunctionCollection;
+import java.awt.Component;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
+import javax.swing.JList;
+import javax.swing.UIManager;
+
+import jam.data.func.CalibrationFunctionCollection;
 
 /**
  * Renders representations for a JComboBox list entry of a
@@ -12,15 +16,14 @@ import java.awt.*;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 17 Dec 2003
  */
+@SuppressWarnings("serial")
 public class CalibrationListCellRenderer extends DefaultListCellRenderer {// NOPMD
 
 	/**
 	 * Returns a <code>JLabel</code> for the gate, with name and number, and a
 	 * red or green icon indicating if the gate is set.
-	 * 
-	 * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList,
-	 *      java.lang.Object, int, boolean, boolean)
 	 */
+	@Override
 	public Component getListCellRendererComponent(final JList list,
 			final Object value, final int index, final boolean isSelected,
 			final boolean cellHasFocus) {

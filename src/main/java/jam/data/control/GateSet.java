@@ -1,6 +1,28 @@
 package jam.data.control;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Polygon;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+
 import com.google.inject.Inject;
+
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHist2D;
 import jam.data.Gate;
@@ -12,24 +34,13 @@ import jam.plot.Bin;
 import jam.ui.Canceller;
 import jam.ui.SelectionTree;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.logging.Level;
-
 /**
  * Class to set 1 D and 2 D gates.
  * 
  * @version 0.5 April 1998
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 public final class GateSet extends AbstractControl {
 
 	private transient final JButton addP, removeP, unset, save, cancel;

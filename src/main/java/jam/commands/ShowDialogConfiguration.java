@@ -1,6 +1,7 @@
 package jam.commands;
 
 import com.google.inject.Inject;
+
 import jam.sort.control.ConfigurationDisplay;
 
 /**
@@ -9,6 +10,7 @@ import jam.sort.control.ConfigurationDisplay;
  * @author Dale Visser
  * 
  */
+@SuppressWarnings("serial")
 public class ShowDialogConfiguration extends AbstractShowDialog {
 
 	@Inject

@@ -1,23 +1,41 @@
 package jam.data.control;
 
-import com.google.inject.Inject;
-import jam.data.DataBase;
-import jam.data.DataElement;
-import jam.data.Group;
-import jam.global.*;
-import jam.global.BroadcastEvent.Command;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.JTextComponent;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.JTextComponent;
+
+import com.google.inject.Inject;
+
+import jam.data.DataBase;
+import jam.data.DataElement;
+import jam.data.Group;
+import jam.global.BroadcastEvent;
+import jam.global.BroadcastEvent.Command;
+import jam.global.BroadcastUtilities;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
+import jam.global.Nameable;
 
 /**
  * Reads and displays the scaler values.
@@ -26,7 +44,7 @@ import java.util.List;
  * @author Ken Swartz
  * @since JDK1.1
  */
-
+@SuppressWarnings("serial")
 public final class ScalerDisplay extends AbstractControl {
 
 	private static final int BORDER_HEIGHT = 5;

@@ -1,9 +1,12 @@
 package jam.sort.stream;
 
+import static jam.sort.stream.L003Parameters.EVENT_MASK;
+import static jam.sort.stream.L003Parameters.HEADER_START;
+import static jam.sort.stream.L003Parameters.SCALER_BUFF_SIZE;
+import static jam.sort.stream.L003Parameters.SCALER_REC_SIZE;
+
 import java.io.EOFException;
 import java.io.IOException;
-
-import static jam.sort.stream.L003Parameters.*;
 
 /**
  * This class knows how to handle Oak Ridge tape format (with special headers as
@@ -24,7 +27,8 @@ public final class L003InputStream extends AbstractEventInputStream {
 
 	private transient EventInputStatus status;
 
-	private transient int byteCounter = 0;// NOPMD
+	@SuppressWarnings("unused")
+	private transient int byteCounter = 0;
 
 	/**
 	 * Needed to create an instance with newInstance().

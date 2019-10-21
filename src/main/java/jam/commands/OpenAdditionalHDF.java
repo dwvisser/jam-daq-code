@@ -1,6 +1,14 @@
 package jam.commands;
 
+import java.awt.Frame;
+import java.io.File;
+
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JFileChooser;
+
 import com.google.inject.Inject;
+
 import jam.data.AbstractHistogram;
 import jam.data.Group;
 import jam.data.control.AbstractControl;
@@ -12,16 +20,13 @@ import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 import jam.ui.SelectionTree;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
-
 /**
  * Open an additional hdf file
  * 
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 public class OpenAdditionalHDF extends AbstractCommand implements
 		HDFIO.AsyncListener {
 

@@ -1,5 +1,7 @@
 package jam.commands;
 
+import java.io.File;
+
 import injection.GuiceInjector;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
@@ -7,13 +9,12 @@ import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.io.ImpExpException;
 
-import java.io.File;
-
 /**
  * Export data to file. Full implementations must assign an <code>ImpExp</code>
  * object.
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 class AbstractImportFile extends AbstractImportExport {
 
     private transient final Broadcaster broadcaster;

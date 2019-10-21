@@ -1,16 +1,18 @@
 package jam;
 
+import java.awt.CardLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.JPanel;
+
 import com.google.inject.Inject;
+
 import jam.global.BroadcastEvent;
 import jam.global.BroadcastEvent.Command;
 import jam.plot.PlotDisplay;
 import jam.plot.View;
 import jam.ui.SummaryTable;
-
-import javax.swing.*;
-import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * Display to show plots or table
@@ -18,6 +20,7 @@ import java.beans.PropertyChangeListener;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 public class Display extends JPanel implements PropertyChangeListener {
 
 	private static final String KEY_PLOT = "plot";

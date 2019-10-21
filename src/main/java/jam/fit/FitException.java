@@ -7,6 +7,7 @@ package jam.fit;
  * inside fit
  * 
  */
+@SuppressWarnings("serial")
 public class FitException extends Exception {
 
 	/**

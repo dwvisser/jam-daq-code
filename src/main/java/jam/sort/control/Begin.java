@@ -1,17 +1,21 @@
 package jam.sort.control;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JOptionPane;
+import javax.swing.text.JTextComponent;
+
 import injection.GuiceInjector;
 import jam.global.JamException;
 import jam.sort.SortException;
 import jam.ui.Icons;
 
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+@SuppressWarnings("serial")
 class Begin extends AbstractAction {
 
     private static final Logger LOGGER = Logger.getLogger(Begin.class

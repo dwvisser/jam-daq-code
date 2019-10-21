@@ -1,14 +1,15 @@
 package jam.data.control;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.swing.DefaultComboBoxModel;
+
 import jam.data.AbstractHistogram;
 import jam.data.Gate;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
-
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Used anywhere a JComboBox is used to select from the available gates.
@@ -16,6 +17,7 @@ import java.util.List;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 1.4.2 RC 3
  */
+@SuppressWarnings("serial")
 final class GateComboBoxModel extends DefaultComboBoxModel<Object> {
 
 	/**

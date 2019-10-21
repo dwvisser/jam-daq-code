@@ -1,6 +1,15 @@
 package jam.commands;
 
+import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
+
 import com.google.inject.Inject;
+
 import jam.data.AbstractHistogram;
 import jam.data.DataUtility;
 import jam.data.Group;
@@ -9,16 +18,11 @@ import jam.global.Broadcaster;
 import jam.global.Nameable;
 import jam.ui.SelectionTree;
 
-import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-
 /**
  * Command for file menu new also clears.
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class DeleteHistogram extends AbstractCommand implements PropertyChangeListener,
         Predicate<Nameable> {
 

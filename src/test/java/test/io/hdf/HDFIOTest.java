@@ -7,8 +7,6 @@ import jam.script.Session;
 
 import java.io.File;
 
-import junit.framework.TestCase;
-
 import org.junit.Assert;
 import org.junit.Test;
 

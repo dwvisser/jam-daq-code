@@ -1,11 +1,13 @@
 package jam;
 
+import javax.swing.JSplitPane;
+
 import com.google.inject.Inject;
+
 import jam.global.Broadcaster;
 import jam.ui.Console;
 
-import javax.swing.*;
-
+@SuppressWarnings("serial")
 final class DisplayAndConsolePanel extends JSplitPane {
 
 	@Inject

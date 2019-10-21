@@ -6,6 +6,7 @@ package jam.data.func;
  * @author Dale Visser
  * 
  */
+@SuppressWarnings("serial")
 public class CalibrationFitException extends Exception {
 
 	/**

@@ -6,6 +6,7 @@ import com.google.inject.Inject;
  * Show the scaler scan dialog.
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class ShowDialogScalerScan extends AbstractShowDialog {
 
     @Inject

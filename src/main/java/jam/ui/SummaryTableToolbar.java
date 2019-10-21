@@ -1,7 +1,13 @@
 package jam.ui;
 
-import javax.swing.*;
 import java.net.URL;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
+import javax.swing.JToolBar;
 
 /**
  * Toolbar for summary table
@@ -9,6 +15,7 @@ import java.net.URL;
  * @author Ken Swartz
  * 
  */
+@SuppressWarnings("serial")
 class SummaryTableToolbar extends JToolBar {
 
 	private transient final JCheckBox chkShowScaler = new JCheckBox("Scalers",

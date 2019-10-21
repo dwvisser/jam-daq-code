@@ -1,14 +1,15 @@
 package jam.commands;
 
+import javax.swing.JFrame;
+
 import injection.GuiceInjector;
 import jam.AboutDialog;
-
-import javax.swing.*;
 
 /**
  * Show the about dialog
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 final class ShowDialogAbout extends AbstractShowDialog {
 
     /**

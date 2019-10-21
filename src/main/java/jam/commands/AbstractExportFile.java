@@ -1,10 +1,10 @@
 package jam.commands;
 
+import java.io.File;
+
 import jam.data.AbstractHistogram;
 import jam.io.ImpExpException;
 import jam.ui.SelectionTree;
-
-import java.io.File;
 
 /**
  * Export data to file. Full implementations must assign an <code>ImpExp</code>
@@ -12,6 +12,7 @@ import java.io.File;
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 class AbstractExportFile extends AbstractImportExport {
 
 	AbstractExportFile() {

@@ -6,6 +6,7 @@ package jam.global;
  * 
  * @author Ken Swartz
  */
+@SuppressWarnings("serial")
 public class CommandListenerException extends Exception {
 
 	/**

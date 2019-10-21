@@ -1,19 +1,20 @@
 package jam.commands;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import injection.GuiceInjector;
 import jam.comm.CommunicationPreferences;
 import jam.global.JamStatus;
 import jam.global.QuerySortMode;
 import jam.global.SortMode;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 /**
  * Sets/unsets debug preference.
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 2004-06-11
  */
+@SuppressWarnings("serial")
 final class SetDebug extends AbstractSetBooleanPreference implements PropertyChangeListener {
 
     SetDebug() {

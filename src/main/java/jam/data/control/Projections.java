@@ -1,17 +1,13 @@
 package jam.data.control;
 
-import com.google.inject.Inject;
-import jam.data.*;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.JamStatus;
-import jam.ui.PanelOKApplyCancelButtons;
-import jam.ui.SelectionTree;
-import jam.util.NumberUtilities;
+import static javax.swing.SwingConstants.RIGHT;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
@@ -20,13 +16,37 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.logging.Level;
 
-import static javax.swing.SwingConstants.RIGHT;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+import com.google.inject.Inject;
+
+import jam.data.AbstractHistogram;
+import jam.data.DataElement;
+import jam.data.DataException;
+import jam.data.DataUtility;
+import jam.data.Gate;
+import jam.data.HistDouble2D;
+import jam.data.HistInt2D;
+import jam.data.HistogramType;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
+import jam.ui.PanelOKApplyCancelButtons;
+import jam.ui.SelectionTree;
+import jam.util.NumberUtilities;
 
 /**
  * Class for projecting 2-D histograms.
  * 
  * @author Dale Visser, Ken Swartz
  */
+@SuppressWarnings("serial")
 public final class Projections extends AbstractManipulation implements
 		PropertyChangeListener {
 
