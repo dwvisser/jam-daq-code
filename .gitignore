@@ -1,6 +1,7 @@
 *.log
 *.*~
 .vscode/
+classes/
 target/
 .settings/
 .project
