@@ -1,8 +1,8 @@
 Jam - Java-based Data Acquisition for Nuclear Physics
 =====================================================
 
-Pre-Requisites
---------------
+Prerequisites
+-------------
 
 * To run: Java SE 11+ Java Runtime Environment (JRE). See
   [Oracle](https://www.oracle.com/technetwork/java/javase/overview/) or, better yet, install
