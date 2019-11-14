@@ -17,14 +17,14 @@ import jam.data.func.CalibrationFunctionCollection;
  * @version 17 Dec 2003
  */
 @SuppressWarnings("serial")
-public class CalibrationListCellRenderer extends DefaultListCellRenderer {// NOPMD
+public class CalibrationListCellRenderer extends DefaultListCellRenderer {
 
 	/**
 	 * Returns a <code>JLabel</code> for the gate, with name and number, and a
 	 * red or green icon indicating if the gate is set.
 	 */
 	@Override
-	public Component getListCellRendererComponent(final JList list,
+	public Component getListCellRendererComponent(final JList<? extends Object> list,
 			final Object value, final int index, final boolean isSelected,
 			final boolean cellHasFocus) {
 		setComponentOrientation(list.getComponentOrientation());
