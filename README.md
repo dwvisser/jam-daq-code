@@ -1,6 +1,8 @@
 Jam - Java-based Data Acquisition for Nuclear Physics
 =====================================================
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dwvisser_jam-daq-code&metric=alert_status)](https://sonarcloud.io/dashboard?id=dwvisser_jam-daq-code)
+
 Prerequisites
 -------------
 
