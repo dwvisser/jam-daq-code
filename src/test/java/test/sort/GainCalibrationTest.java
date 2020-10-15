@@ -56,10 +56,10 @@ public final class GainCalibrationTest {
 		final GainCalibration gain = new GainCalibration();
 		gain.gainFile(calibrationFile.getPath(), true);
 		assertEquals("Gain adjusted value should be 4.1", 4.1, gain
-				.adjustExact(0, 1));
+				.adjustExact(0, 1), 0.001);
 		assertEquals("Gain adjusted value should be 3.0", 3.0, gain
-				.adjustExact(1, 1));
+				.adjustExact(1, 1), 0.001);
 		assertEquals("Gain adjusted value should be 0.9", 0.9, gain
-				.adjustExact(2, 1));
+				.adjustExact(2, 1), 0.001);
 	}
 }

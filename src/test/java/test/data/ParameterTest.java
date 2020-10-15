@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import jam.data.DataBase;
 import jam.data.DataParameter;
-import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Test;
@@ -39,7 +38,7 @@ public class ParameterTest {// NOPMD
 		final String name = "param";
 		final String compare = name + "           ";
 		final DataParameter parameter1 = new DataParameter(name);
-		Assert.assertEquals("Expected unmodified name.", compare, parameter1
+		assertEquals("Expected unmodified name.", compare, parameter1
 				.getName());
 		final DataParameter parameter2 = new DataParameter(name);
 		final String compare2 = name + "        [1]";
@@ -52,12 +51,12 @@ public class ParameterTest {// NOPMD
 	@Test
 	public void testGetSetValue() {
 		final DataParameter testParameter = new DataParameter("testValue");
-		Assert.assertEquals("Expected paramter inital value to be 0.", 0.0,
-				testParameter.getValue());
+		assertEquals("Expected paramter inital value to be 0.", 0.0,
+				testParameter.getValue(), 0.001);
 		final double value = 3.141592;
 		testParameter.setValue(value);
 		assertEquals("Expected the value we set.", value, testParameter
-				.getValue());
+				.getValue(), 0.001);
 	}
 
 	/**
