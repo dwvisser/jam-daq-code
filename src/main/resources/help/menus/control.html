@@ -1,18 +1,17 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
+<!DOCTYPE html>
+<html lang=en>
 <HEAD>
-   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
-   <TITLE>Control Menu</TITLE>
+<TITLE>Control Menu</TITLE>
 </HEAD>
 <BODY>
 <h2>Control Menu</h2>
 
 <dl>
-  <dt><a name="start">start</a></dt><dd>In online mode, starts acquisition of data from the electronics.  Data is taken to the histograms in memory.  <b>Important: Use <span class=jammmenu>Run...</span> if you wish to store event data.</b>  Offline, this command starts streaming from disk or tape.</dd>
-  <dt><a name="stop">stop</a></dt><dd>Stops (pauses, really) data acquisition.  Useful if you wish to stop acquisition without ending the current run.</dd>
-  <dt><a name="flush">flush</a></dt><dd>Forces the front end to send whatever events it has in memory.</dd>
-  <dt><a name="run">Run...</a></dt><dd>Brings up the dialog box for controlling data acquisition to disk or tape.  See <a href="../usingjam/online.html">Online Sorting</a>.</dd>
-  <dt><a name="sort">Sort...</a></dt><dd>Brings up the dialog box for sorting from disk or tape.  See <a href="../usingjam/offline.html">Offline Sorting</a>.</dd>
+  <dt><a id="start">start</a></dt><dd>In online mode, starts acquisition of data from the electronics.  Data is taken to the histograms in memory.  <strong>Important: Use <span class=jammmenu>Run...</span> if you wish to store event data.</strong>  Offline, this command starts streaming from disk or tape.</dd>
+  <dt><a id="stop">stop</a></dt><dd>Stops (pauses, really) data acquisition.  Useful if you wish to stop acquisition without ending the current run.</dd>
+  <dt><a id="flush">flush</a></dt><dd>Forces the front end to send whatever events it has in memory.</dd>
+  <dt><a id="run">Run...</a></dt><dd>Brings up the dialog box for controlling data acquisition to disk or tape.  See <a href="../usingjam/online.html">Online Sorting</a>.</dd>
+  <dt><a id="sort">Sort...</a></dt><dd>Brings up the dialog box for sorting from disk or tape.  See <a href="../usingjam/offline.html">Offline Sorting</a>.</dd>
   <dt>Parameters...</dt><dd>Parameters may be set in this dialog box to affect the behavior of the currently loaded sort routine.  These parameters are defined in the sort routine itself.  See <a href="../usingjam/writesort.html">Writing Sort Routines</a> for more information.</dd>
   <dt>Buffer Counters...</dt><dd>Brings up a window displaying the progress of offline sorting.</dd>
 </dl>

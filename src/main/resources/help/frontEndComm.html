@@ -1,16 +1,23 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
+<!DOCTYPE html>
+<html lang=en>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
    <TITLE>jam Manual--Front End Protocol</TITLE>
 </HEAD>
 <BODY>
-<H2>Front End Protocol</H2>
-<p>Jam and the front end computer running the real-time acquisition of data communicate using UDP/IP packets, often referred herein as "datagrams". For simplicity here, the front end computer will be referred to as a VME controller, though it need not be in practice. At University of Washington's <a href="http://www.npl.washington.edu/">CENPA</a>, <a href="mailto:swanson@npl.washington.edu">Erik Swanson</a> has developed a PC-based program to control a CAMAC crate, and which communicates with a local Jam process through these same datagrams.</p>
+<H2 id=protocol>Front End Protocol</H2>
+<p>Jam and the front end computer running the real-time acquisition of data
+    communicate using UDP/IP packets, often referred herein as "datagrams". For
+    simplicity here, the front end computer will be referred to as a VME controller,
+    though it need not be in practice. At University of Washington's
+    <a href="http://www.npl.washington.edu/">CENPA</a>,
+    <a href="mailto:swanson@npl.washington.edu">Erik Swanson</a> has developed a
+    PC-based program to control a CAMAC crate, and which communicates with a local
+    Jam process through these same datagrams.</p>
 <h3>Form of host-to-VME Command datagrams</h3>
-<table>
+<table aria-describedby=protocol>
 <tr>
-<td>Bytes</td><td>Item</td>
+<th scope=col>Bytes</th><th scope=col>Item</th>
 </tr> 
 <tr> 
 <td>1-4</td><td>A 4-byte (big endian) signed int indicating the type of packet</td>
@@ -22,12 +29,19 @@
 
 <h4>Datagrams sent by Jam for "Setup Online"</h4>
 <h5>case 1: vmeMap used to define parameters in the sort routine</h5>
-<p>In the following table, N is the number of defined parameters, R is the number of TDC's where ranges are specified, baseAddress is the base address of each ADC or TDC given in hexadecimal and prefixed by "0x", unitChannel is the channel within the ADC or TDC to be read, and range is the number to be sent to the range register in the TDC. The quotes around the strings are not actually sent, but a null character is sent immediately after the string.</p>
+<p>In the following table, N is the number of defined parameters, R is the number of
+    TDC's where ranges are specified, baseAddress is the base address of each ADC or
+    TDC given in hexadecimal and prefixed by "0x", unitChannel is the channel within
+    the ADC or TDC to be read, and range is the number to be sent to the range
+    register in the TDC. The quotes around the strings are not actually sent, but a
+    null character is sent immediately after the string.</p>
 
-<p>It is expected that all channels in the ADC's and TDC's <em>other than those defined here</em> will be disabled.</p>
+<p>It is expected that all channels in the ADC's and TDC's <em>other than those
+    defined here</em> will be disabled.</p>
 <br>
 <table>
-    <tr><td>Packet#</td><td>integer</td><td>string</td></tr>
+    <caption>Format for VME Setup Online Datagram</caption>
+    <tr><th scope=col>Packet#</th><th scope=col>integer</th><th scope=col>string</th></tr>
     <tr><td>1</td><td>0</td><td>"debug on" or "debug off", depending on user preferences</td></tr>
     <tr><td>2</td><td>0</td><td>"verbose on" or "verbose off", depending on user preferences</td></tr>
     <tr><td>3</td><td>5</td>
@@ -43,21 +57,33 @@
     "</td></tr>
 </table>
 <h6>Expected VME response</h6>
-<table>
-<tr><td>1</td><td>The debug state in the VME code is enabled or disabled. If enabled, the code should print debugging messages to the terminal and/or send debugging messages to Jam to be printed on Jam's console.</td></tr>
-<tr><td>2</td><td>Similar to the debug state. Enabling verbosity simply asks for more status messages to be printed to the VME terminal and/or sent to Jam for printing on its console. "verbose off" implies a quiet mode where only the most important messages and also any requested messages are communicated.</td></tr>
-<tr><td>3</td><td>All channels in the ADC's and TDC's are disabled, then <em>those defined here</em> will be enabled for conversion. All TDC's with specified ranges will have the given value written to their range register.</td></tr>
-</table>
+<ol>
+<li>The debug state in the VME code is enabled or disabled. If enabled, the code
+    should print debugging messages to the terminal and/or send debugging messages
+    to Jam to be printed on Jam's console.</li>
+<li>Similar to the debug state. Enabling verbosity simply asks for more status
+    messages to be printed to the VME terminal and/or sent to Jam for printing on its
+    console. "verbose off" implies a quiet mode where only the most important
+    messages and also any requested messages are communicated.</li>
+<li>All channels in the ADC's and TDC's are disabled, then <em>those defined
+    here</em> will be enabled for conversion. All TDC's with specified ranges will
+    have the given value written to their range register.</li>
+</ol>
+
 <h5>case 2: cnafCommands used to define parameters and CAMAC commands</h5>
 <p>The first two packets are identical to the vmeMap case, i.e., they send the user preference for debug messages and verbosity. Then four CNAF list packets are sent, which have the following format:</p>
 <table>
-    <tr><td>bytes</td><td>contents</td></tr>
+    <caption>Format for CNAF Setup Online Datagram</caption>
+    <tr><th scope=col>bytes</th><th scope=col>contents</th></tr>
     <tr><td>1-4</td><td>0x00000003 (indicating the CNAF list packet type)</td>
     <tr><td>5-(5+LEN+1)</td><td>one of "cnaf init", "cnaf event", "cnaf scaler" or "cnaf clear", where LEN+1 is the length of the string plus its NUL termination</td></tr>
 </table>
-    <p>After this, the packet continues by listing the CNAF commands in the following format (where I've restarted the byte counting for simplicity's sake):</p>
+
+    <p>After this, the packet continues by listing the CNAF commands in the following
+        format (where I've restarted the byte counting for simplicity's sake):</p>
 <table>
-    <tr><td>bytes</td><td>contents</td></tr>
+    <caption>(Continued) Format for CNAF Setup Online Datagram</caption>
+    <tr><th scope=col>bytes</th><th scope=col>contents</th></tr>
     <tr><td>1-3</td><td>0x000000</td>
     <tr><td>4</td><td>L (the number of CNAF commands in the list)</td>
     <tr><td>5</td><td>1<sup>st</sup> crate id</td></tr>
@@ -78,7 +104,7 @@
 
 <p>After the four CNAF list packets have been sent, a final standard command packet is sent:</p>
 <table>
-<tr><td>integer</td><td>string</td></tr>
+<tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"list init"</td>
 </table>
 <h6>Expected VME response</h6>
@@ -87,49 +113,49 @@
 <p>Clicking start simply sends this packet. Clicking Begin will first cause Jam to open an event file, write a header to it, optionally zero the histograms and optionally send a datagram to request the scalers be zeroed, then finally send the packet shown below.</p>
 <br>
 <table>
-<tr><td>integer</td><td>string</td></tr>
+<tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"START"</td>
 </table>
 <h5>Expected VME response</h5>
 <p>All modules which have channels enabled will be set to online mode, so that they'll convert the signals at their inputs when they receive gates. Additionally, the scaler module(s) should have its (their) inhibit state removed so that they can count logic pulses. In the vmeMap case, the ADC's and TDC's typically are read out when a master ADC's buffer starts to fill up. In the cnafCommands case, every gate should cause the front end computer to be strobed so it knows to execute the "event" CNAF list to read out the events. In both cases, when the send buffers are almost full, they are padded to the full 8k, and sent to Jam.</p>
 <h4>Datagram sent by Jam to request flush of VME buffer</h4>
 <table>
-<tr><td>integer</td><td>string</td></tr>
+<tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"FLUSH"</td>
 </table>
 <h5>Expected VME response</h5>
 <p>Upon receiving this message, the VME should pad out the current send buffer and send it immediately. Of course it should do this between two event readouts, not during an event readout.</p>
 <h4>Datagram sent by Jam to request zeroing of scalers</h4>
 <table>
-<tr><td>integer</td><td>string</td></tr>
+<tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"list clear"</td>
 </table>
 <h5>Expected VME response</h5>
 <p>All channels in the scaler module(s) should be reset to zero counts. In the cnafCommands case, this includes executing the "clear" list of CNAF commands.</p>
-<h4><a name="readscalers">Datagram sent by Jam to request scaler values</a></h4>
+<h4><a id="readscalers">Datagram sent by Jam to request scaler values</a></h4>
 <table>
-<tr><td>integer</td><td>string</td></tr>
+<tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"list scaler"</td>
 </table>
 <h5>Expected VME response</h5>
 <p>A <a href="#vmetohost">VME-to-host datagram</a> with SCALER status, with the 4-byte status word (0x00000002) followed by N+1 4-byte integers. The first integer is N, the number of scaler values to follow. The first scaler value is assumed to belong to the Scaler defined first in the sort routine, the second value to the second defined Scaler, etc., regardless of the number assigned to the Scaler when it's defined. In the cnafCommands case, it is expected that the scaler readout will be accomplished by the "scale" list of CNAF commands.</p>
 <h4>Datagram sent by Jam when "stop" is clicked</h4>
 <table>
-<tr><td>integer</td><td>string</td></tr>
+<tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"STOP"</td>
 </table>
 <h5>Expected VME response</h5>
 <p>Take the ADC's and TDC's offline, and raise the inhibit state on the scaler module(s). Completely read the remaining data in the ADC and TDC buffers, sending final buffer(s) with the data. If you're using the Yale-CAEN input stream, the last buffer should be padded with <a href="CAENformat.html#padding">STOP_PAD</a>.</p>
 <h4>Datagram sent by Jam when "End" is clicked</h4>
 <table>
-<tr><td>integer</td><td>string</td></tr>
+<tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"END"</td>
 </table>
 <p>This is followed by a sending a <a href="#readscalers">request for scaler values</a>. When Jam is finished sorting the last data buffer, it closes its event file.</p>
 <h5>Expected VME response</h5>
 <p>Same as stopping, but in the case of the Yale-CAEN input stream, the last buffer should be padded with <a href="CAENformat.html#padding">END_PAD</a>. The L002InputStream and its variants (including YaleInputStream), use a <a href="L002format.html#padding">different padding scheme</a>.</p>
 
-<h3><a name="vmetohost">Form of VME-to-host reply datagrams</a></h3>
+<h3><a id="vmetohost">Form of VME-to-host reply datagrams</a></h3>
 
 <h4>packet type: byte 1-4</h4>   
 <dl>
@@ -170,7 +196,7 @@
          	
 <h2>Commands</h2>
 <p>Note: Commands and arguments <em>are</em> case-sensitive.</p>
-<p><a name="note">*</a> - indicates command not yet implemented</p>	
+<p><a id="note">*</a> - indicates command not yet implemented</p>
 
 <dl>
 <dt><code>cnaf init</code></dt>
@@ -241,4 +267,4 @@ stopping acquisition temporarily.</dd>
 sockets. There are replies to requests making it easy to verify that communication and execution is occuring. The udp packets are 1024 bytes long.</dd>
 </dl>
 </BODY>
-</HTML>
+</html>

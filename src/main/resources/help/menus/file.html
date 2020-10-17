@@ -1,10 +1,9 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
+<!DOCTYPE html>
+<html lang=en>
 <HEAD>
-   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
-   <TITLE>File Menu</TITLE>
+<TITLE>File Menu</TITLE>
 </HEAD>
-<BODY>
+<body>
 <h2>File Menu</h2>
 
 <p>Most commands in this menu access disk files.  All state in the command title what the standard extension to the filename is.</p>
@@ -28,14 +27,14 @@
   contained in the file. The histograms are opened in a new group named after the file.</dd>
   </dl>
   
-  <h3><a name="reload">Reload...</a></h3><p>Enabled only if a sort file has been loaded.  Replaces data in Histogram, Gate and Scaler objects with the data in any identically named objects in the file.</p>
+  <h3><a id="reload">Reload...</a></h3><p>Enabled only if a sort file has been loaded.  Replaces data in Histogram, Gate and Scaler objects with the data in any identically named objects in the file.</p>
   
   <h3>Add Group Counts...</h3>
   <p>Adds the counts in the specified file to the histograms in the selected group.</p>
   
-  <h3><a name="save">Save</a></h3><p>Saves all gates, scalers, and histograms in memory to the current HDF file.</p>
+  <h3><a id="save">Save</a></h3><p>Saves all gates, scalers, and histograms in memory to the current HDF file.</p>
   
-  <h3><a name="saveas">Save as...</a></h3><p>Same as save, except the user is prompted with a file dialog to name the file.</p>
+  <h3><a id="saveas">Save as...</a></h3><p>Same as save, except the user is prompted with a file dialog to name the file.</p>
   
   <h3>Save Special</h3>
   <dl>
@@ -52,7 +51,7 @@
   
   <h3>Scaler Utilities</h3>
   <dl>
-  <dt><a name="dispscal">Display scaler values from YaleCAEN event file...</a></dt>
+  <dt><a id="dispscal">Display scaler values from YaleCAEN event file...</a></dt>
   <dd>Gives you a file dialog from which to choose an event file, which <em>must</em>
   be YaleCAEN formatted for this feature to work. Once selected, the file is scanned 
   and a dialog is popped up with a tab-delimited text table of all the stored scaler
