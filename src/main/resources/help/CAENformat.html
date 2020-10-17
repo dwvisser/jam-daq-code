@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang=en>
 
 <head>
 <title>YaleCAEN_InputStream expected file stream/file format</title>
@@ -25,17 +26,17 @@ The first 8-kByte buffer of an event file begins with a 256-byte header record. 
 
 <p>Buffers must add up to <em>exactly</em> 8 kilobytes. I.e., there can be no empty space at the end of a buffer. We pad out extra space in the buffer, and finalize it with the end-of-buffer word.</p>
 
-<a name="eventblock"><h3>EVENT blocks</h3></a>
+<a id="eventblock"><h3>EVENT blocks</h3></a>
 <ol>
     <li>1 CAEN v7x5 event header word</li>
     <li>0 or more CAEN v7x5 event parameter words</li>
     <li>1 CAEN v7x5 end-of-event word</li>
 </ol>
 
-<a name="scalerblock"><h3>SCALER blocks</h3></a>
+<a id="scalerblock"><h3 id=scaler-block-title>SCALER blocks</h3></a>
 
-<table>
-    <tr><td>byte#</td><td>word#</td><td>description</td></tr>
+<table area-described-by=scaler-block-title>
+    <tr><th scope=col>byte#</th><th scope=col>word#</th><th scope=col>description</td></tr>
     <tr><td>1-4</td><td>1</td><td>0x01cccccc</td></tr>
     <tr><td>5-8</td><td>2</td><td>number of scaler values in block (N)</td></tr>
     <tr><td>9-12</td><td>3</td><td>1<sup>st</sup> scaler value</td></tr>
@@ -43,7 +44,7 @@ The first 8-kByte buffer of an event file begins with a 256-byte header record. 
     <tr><td>(5N+1)-(6N)</td><td>N+2</td><td>N<sup>th</sup> scaler value</td></tr>
 </table>
 
-<a name="padding"><h3>Padding words</h3>
+<a id="padding"><h3>Padding words</h3>
 
 <p>The reasons for the different kinds of padding characters are historical. If Jam's sorting process sees the STOP_PAD or END_PAD padding the buffer, it knows that the VME computer has completely read out the ADC's and TDC's, and may consider its event reconstruction buffer to contain only completely reconstructed events. In general, a single event may be split between two buffers, because the order of readout of the modules is not guaranteed.</p>
 
@@ -56,7 +57,7 @@ The first 8-kByte buffer of an event file begins with a 256-byte header record. 
     <dd>Used to pad out the last buffer sent after the experimenter has requested that the <em>run be ended</em>. The presence of these padding characters is a signal to the sorting process that it has received the last buffer <em>in the run</em>, and should close the event file.</dd>
 </dl>
 
-    <h3><a name="endbuffdef">END-OF-BUFFER word (0x01bbbbbb)</a></h3>
+    <h3><a id="endbuffdef">END-OF-BUFFER word (0x01bbbbbb)</a></h3>
     <p>This is <em>always</em> the last word in the 8-kilobyte buffer.</p>
 </body>
 </html>  
