@@ -115,7 +115,10 @@ final class RingInputStream extends InputStream {
 	 * @return the actual number of bytes skipped.
 	 */
 	public long skip(final long nSkip) {
-		long rval = nSkip;
+		if (nSkip > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException(nSkip + " > Integer.MAX_VALUE");
+		}
+		int rval = (int)nSkip;
 		if (pos + rval > count) {
 			rval = count - pos;
 		}

@@ -94,18 +94,17 @@ final class PlotFit {
 		final int xpos2 = bin2.getX();
 		final int xmin = Math.min(xpos1, xpos2);
 		final int xmax = Math.max(xpos1, xpos2);
-		int area = 0;
+		double darea = 0.0;
 		double distance, sigma;
 		double centroid = 0;
 		double variance = 0;
 		double fwhm = 0.0;// default
 		/* sum up counts */
 		for (int i = xmin; i <= xmax; i++) {
-			area += counts[i];
+			darea += counts[i];
 		}
-		double darea = area;
 		// calculate weights and then FWHM must have more than one counts
-		if (area > 2) {
+		if (darea > 2.0) {
 			// calculate centroid
 			for (int i = xmin; i <= xmax; i++) {
 				centroid += i * counts[i] / darea;
