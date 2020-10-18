@@ -1,30 +1,69 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <title>Compiling Sort Routines and Scripts</title>
-</head>
-<body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <title>Compiling Sort Routines and Scripts</title>
+  </head>
+  <body>
+    <h2>Compiling Sort Routines and Scripts</h2>
+    <p>
+      This example given is for Unix-based systems like Linux and MacOS X. If
+      you're using Windows, separate folders in the classpath with a semicolon
+      instead of a colon. Let's assume you have a sort routine,
+      <code>sort.MySort</code>, in the file <code>MySort.java</code>, which is
+      in the directory <code>/home/daq/user/classes/sort</code>, and your copy
+      of <code>Jam.jar</code> resides in <code><em>JAMLIB</em></code
+      >. To compile it, you issue the following commands from the shell:
+    </p>
+    <ol>
+      <li><code>cd /home/daq/user/classes/sort</code></li>
+      <li>
+        <code
+          >javac -classpath <em>JAMLIB</em>:/home/daq/user/classes
+          Mysort.java</code
+        >
+      </li>
+    </ol>
 
-<h2>Compiling Sort Routines and Scripts</h2>
-<p>This example given is for Unix-based systems like Linux and MacOS X. If you're using Windows, separate folders in the classpath with a semicolon instead of a colon. Let's assume you have a sort routine, <code>sort.MySort</code>, in the file <code>MySort.java</code>, which is in the directory <code>/home/daq/user/classes/sort</code>, and your copy of <code>Jam.jar</code> resides in <code><em>JAMLIB</em></code>.
-To compile it, you issue the following commands from the shell:
-</p>
-<ol>
-  <li><code>cd /home/daq/user/classes/sort</code></li>
-  <li><code>javac -classpath <em>JAMLIB</em>:/home/daq/user/classes Mysort.java</code></li>
-</ol>
-
-<p>This will create a file <code>MySort.class</code> in <code>/home/daq/sortfiles</code>. We have assumed the path to
-    <code>javac</code> is in your <code>PATH</code> environment variable.</p>
-<h3>Typical JAMLIB path for different Jam Distributions</h3>
-<table>
-<tr><td>Environment</td><td>Location of library</td></tr>
-<tr><td>Windows</td><td><code>"C:\\Program\ Files\\Jam\ <em>version#</em>\\lib\\Jam.jar"</code></td></tr>
-<tr><td>Linux</td><td><code><em>INSTALL_DIR</em>/jam-<em>version#</em>/Jam.jar</code></td></tr>
-<tr><td>MacOS X</td><td><code><em>INSTALL_DIR</em>/jam-<em>version#</em>/Jam.app/Contents/Resources/Java/Jam.jar</code></td></tr>
-</table>
-<p>In the Windows case, you need to enclose the path in quotation marks and preface every space and backslash you
-    normally type with a backslash.</p>
-</body>
+    <p>
+      This will create a file <code>MySort.class</code> in
+      <code>/home/daq/sortfiles</code>. We have assumed the path to
+      <code>javac</code> is in your <code>PATH</code> environment variable.
+    </p>
+    
+    <table>
+      <caption>Typical JAMLIB path for different Jam Distributions</caption>
+      <tr>
+        <th scope=col>Environment</th>
+        <th scope=col>Location of library</th>
+      </tr>
+      <tr>
+        <td>Windows</td>
+        <td>
+          <code
+            >"C:\\Program\ Files\\Jam\ <em>version#</em>\\lib\\Jam.jar"</code
+          >
+        </td>
+      </tr>
+      <tr>
+        <td>Linux</td>
+        <td>
+          <code><em>INSTALL_DIR</em>/jam-<em>version#</em>/Jam.jar</code>
+        </td>
+      </tr>
+      <tr>
+        <td>MacOS X</td>
+        <td>
+          <code
+            ><em>INSTALL_DIR</em
+            >/jam-<em>version#</em>/Jam.app/Contents/Resources/Java/Jam.jar</code
+          >
+        </td>
+      </tr>
+    </table>
+    <p>
+      In the Windows case, you need to enclose the path in quotation marks and
+      preface every space and backslash you normally type with a backslash.
+    </p>
+  </body>
 </html>

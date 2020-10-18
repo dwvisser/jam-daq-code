@@ -1,23 +1,26 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <title>Automating Data Analysis with Scripts</title>
-</head>
-<body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Automating Data Analysis with Scripts</title>
+  </head>
+  <body>
+    <h2>Automating Data Analysis with Scripts</h2>
 
-<h2>Automating Data Analysis with Scripts</h2>
+    <p>It is possible to automate the steps you take to sort data offline.</p>
 
-<p>It is possible to automate the steps you take to sort data offline.
+    <h3>Syntax</h3>
 
-<h3>Syntax</h3>
+    <p>
+      You must follow a certain format to create a script that properly executes
+      a script.
+    </p>
 
-<p>You must follow a certain format to create a script that properly executes a script.</p>
+    <p>
+      Here is an example of a script which you might write to sort the event
+      files for an experiment and save the results:
+    </p>
 
-
-<p>Here is an example of a script which you might write to sort the event files for an experiment and save the results:</p>
-
-<pre><code>
+    <pre><code>
 package scripts;
 
 import jam.Script;
@@ -43,14 +46,30 @@ class SortTask {
 }
 </code></pre>
 
-<h3>Running the script</h3>
-<p>Once <a href="compiling.html">compiled</a>, the above example would need to be run from the directory which contains the <em>user</em> folder. Let's say that that directory is <code>/home/daq</code>, and that <code>SortTask.java</code> and <code>SortTask.class</code> are in <code>/home/daq/user/classes/scripts</code>. The steps to launch the script would be as follows:</p>
+    <h3>Running the script</h3>
+    <p>
+      Once <a href="compiling.html">compiled</a>, the above example would need
+      to be run from the directory which contains the <em>user</em> folder.
+      Let's say that that directory is <code>/home/daq</code>, and that
+      <code>SortTask.java</code> and <code>SortTask.class</code> are in
+      <code>/home/daq/user/classes/scripts</code>. The steps to launch the
+      script would be as follows:
+    </p>
 
-<ol>
-  <li><code>cd /home/daq</code></li>
-  <li><code>java -classpath <em>JAMLIB</em>:/home/daq/user/classes scripts.SortTask</code></li>
-</ol>
-<p>We have assumed the path to <code>java</code> is in your <code>PATH</code> environment variable. See
-  <a href="compiling.html">Compiling</a> to figure out where <em>JAMLIB</em> is on your platform.</p>
-</body>
+    <ol>
+      <li><code>cd /home/daq</code></li>
+      <li>
+        <code
+          >java -classpath <em>JAMLIB</em>:/home/daq/user/classes
+          scripts.SortTask</code
+        >
+      </li>
+    </ol>
+    <p>
+      We have assumed the path to <code>java</code> is in your
+      <code>PATH</code> environment variable. See
+      <a href="compiling.html">Compiling</a> to figure out where
+      <em>JAMLIB</em> is on your platform.
+    </p>
+  </body>
 </html>

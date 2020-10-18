@@ -1,46 +1,105 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
-   <TITLE>Preferences Menu</TITLE>
-</HEAD>
-<BODY>
-<h2>Preferences Menu</h2>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Preferences Menu</title>
+  </head>
+  <body>
+    <h2>Preferences Menu</h2>
 
-<p>All of the 'check/uncheck' preferences save their states to disk automatically. The last-used state is automatically set the next time youu start Jam.</p>
+    <p>
+      All of the 'check/uncheck' preferences save their states to disk
+      automatically. The last-used state is automatically set the next time youu
+      start Jam.
+    </p>
 
-<dl>
-  <dt>Autoscale--Ignore Zero</dt><dd>Enabled by default. Ignore any counts in the first channel of the histogram when the user clicks <em>Auto</em>.</dd>
-  <dt>Autoscale--Ignore Last Channel</dt><dd>Enabled by default. Ignore any counts in the last channel of the histogram when the user clicks <em>Auto</em>.</dd>
-  <dt>Autoscale on Expand/Zoom</dt><dd>Enabled by default. When enabled, histogram display is auto-scaled any time the view changes.
-</dl>
-<hr>
-<dl>
-  <dt>Highlight Gate Channels</dt><dd>Enabled by default. Disabling this option directs Jam to draw just the boundary instead of filling in the gates.</dd>
-  <dt>Use gradient color scale</dt><dd>Enabled by default. Jam was originally used on systems with limited color availability. Now, thanks to <a href="mailto:elingerf@utk.edu">Eric Lingerfelt</a>, this option enables
-  a rainbow gradient for 2-dimensional histogram plots.</dd>
-  <dt>Adjust color gradient...</dt><dd>Modify the appearance of the color gradient scale</dd>
-  <dt>Plot Scrolling Tiled Plots</dt><dd>When enabled, counts scroll bars are shown on tile view.</dd>
-  <dt>Axis Labels Single Plot</dt><dd>When enabled, full axis labels are shown
-  in the default "Single" plot view.
-  <dt>Invert foreground/background</dt><dd>Disabled by default. Sets the display color scheme to white on black.</dd>
-</dl>
-<hr>
-<dl>  
-  <dt>Automatic peak find</dt><dd>Enabled by default. When enabled, peak channels from an automatically applied Gaussian filter are marked.
-  <dt>Peak Find Properties...</dt><dd>Opens a dialog for customizing how peaks are found. 'Width' is the Full Width at Half Max (FWHM) searched for. 'Sensitivity' defines how gaussian-like a found peak must be before it is marked. Higher sensitivities mean a peak must be more like a gaussian. A checkbox picks whether peaks are labeled with their channel or their calibrated energy (if available).
-</dl>
-<hr>
-<dl>
-    <dt>Suppress Saving Empty Histograms</dt>
-    <dd>When enabled, histograms with no counts aren't saved to HDF files.</dd>
-</dl>
-<hr>
-<dl>  
-  <dt>Verbose front end</dt><dd>Disabled by default. Sends a command to the front end computer turning on or off 'verbose' mode. In verbose mode, the front end sends status messages which are printed on the console by jam.
-  <dt>Debug front end</dt><dd>Disabled by default. Sets the 'debug' mode of the front end computer on or off. In verbose mode, the front end computer may print out more messages to its terminal and send more messages to Jam.
-</dl>
+    <dl>
+      <dt>Autoscale--Ignore Zero</dt>
+      <dd>
+        Enabled by default. Ignore any counts in the first channel of the
+        histogram when the user clicks <em>Auto</em>.
+      </dd>
+      <dt>Autoscale--Ignore Last Channel</dt>
+      <dd>
+        Enabled by default. Ignore any counts in the last channel of the
+        histogram when the user clicks <em>Auto</em>.
+      </dd>
+      <dt>Autoscale on Expand/Zoom</dt>
+      <dd>
+        Enabled by default. When enabled, histogram display is auto-scaled any
+        time the view changes.
+      </dd>
+    </dl>
 
-<a href="index.html">Back</a> to Menus.
-</body>
+    <hr />
+    <dl>
+      <dt>Highlight Gate Channels</dt>
+      <dd>
+        Enabled by default. Disabling this option directs Jam to draw just the
+        boundary instead of filling in the gates.
+      </dd>
+      <dt>Use gradient color scale</dt>
+      <dd>
+        Enabled by default. Jam was originally used on systems with limited
+        color availability. Now, thanks to
+        <a href="mailto:elingerf@utk.edu">Eric Lingerfelt</a>, this option
+        enables a rainbow gradient for 2-dimensional histogram plots.
+      </dd>
+      <dt>Adjust color gradient...</dt>
+      <dd>Modify the appearance of the color gradient scale</dd>
+      <dt>Plot Scrolling Tiled Plots</dt>
+      <dd>When enabled, counts scroll bars are shown on tile view.</dd>
+      <dt>Axis Labels Single Plot</dt>
+      <dd>
+        When enabled, full axis labels are shown in the default "Single" plot
+        view.
+      </dd>
+
+      <dt>Invert foreground/background</dt>
+      <dd>
+        Disabled by default. Sets the display color scheme to white on black.
+      </dd>
+    </dl>
+    <hr />
+    <dl>
+      <dt>Automatic peak find</dt>
+      <dd>
+        Enabled by default. When enabled, peak channels from an automatically
+        applied Gaussian filter are marked.
+      </dd>
+      <dt>Peak Find Properties...</dt>
+      <dd>
+        Opens a dialog for customizing how peaks are found. 'Width' is the Full
+        Width at Half Max (FWHM) searched for. 'Sensitivity' defines how
+        gaussian-like a found peak must be before it is marked. Higher
+        sensitivities mean a peak must be more like a gaussian. A checkbox picks
+        whether peaks are labeled with their channel or their calibrated energy
+        (if available).
+      </dd>
+    </dl>
+
+    <hr />
+    <dl>
+      <dt>Suppress Saving Empty Histograms</dt>
+      <dd>
+        When enabled, histograms with no counts aren't saved to HDF files.
+      </dd>
+    </dl>
+    <hr />
+    <dl>
+      <dt>Verbose front end</dt>
+      <dd>
+        Disabled by default. Sends a command to the front end computer turning
+        on or off 'verbose' mode. In verbose mode, the front end sends status
+        messages which are printed on the console by jam.
+      </dd>
+      <dt>Debug front end</dt>
+      <dd>
+        Disabled by default. Sets the 'debug' mode of the front end computer on
+        or off. In verbose mode, the front end computer may print out more
+        messages to its terminal and send more messages to Jam.
+      </dd>
+    </dl>
+
+    <a href="index.html">Back</a> to Menus.
+  </body>
 </html>

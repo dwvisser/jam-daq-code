@@ -1,7 +1,6 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
    <title>Writing a Sort Routine</title>
 </head>
 <body>
@@ -14,29 +13,29 @@ language, but also requires you follow a certain syntax so that your class is a
 valid extension.</p>
 <p>A basic sort routine has several sections:
 <ol>
-    <li><i>The declaration section:</i> Here you declare names for 
+    <li><em>The declaration section:</em> Here you declare names for 
     the variables representing, among other things, references to 
     your histograms, gates, scalers, monitors and run-time 
     parameters.  Declarations made here are visible throughout 
     the sort routine, i.e., in all subsequent sections.</li>
-    <li><i>The initialization section:</i> Here you create all 
+    <li><em>The initialization section:</em> Here you create all 
     your data objects and perform any other tasks to initialize 
     the sort routine's state when it is loaded into Jam. Give your 
     Histograms, Gates, and Scalers the properties you want, e.g., 
     name, size, type, and title, etc.</li>
-    <li><i>The sort section:</i> This part of the sort routine is 
+    <li><em>The sort section:</em> This part of the sort routine is 
     called by Jam for every event. It the place to test gate 
     conditions and increment histograms.</li>
-    <li><i>The monitor section (optional): </i>This section can be used to calculate the
+    <li><em>The monitor section (optional): </em>This section can be used to calculate the
 return value of certain Monitor objects.</li>
-	<li><i>The "begin run" routine (optional):</i> If you include the 
+	<li><em>The "begin run" routine (optional):</em> If you include the 
 	<code>begin()</code> subroutine, Jam calls it 
 	during online acquisition when the user 
 clicks on <a href="online.html#beginrun">Begin</a>. If the 
 <em>Zero Histograms</em> checkbox is selected, 
 the histograms are zeroed <em>after</em> <code>begin()</code> is
 called.</li>
-	<li><i>The "end run" routine (optional):</i> If you include the
+	<li><em>The "end run" routine (optional):</em> If you include the
 	<code>end()</code> subroutine, Jam calls it during online 
 	acquisition when the user 
 clicks on <a href="online.html#endrun">End</a>. 
@@ -50,7 +49,7 @@ a sort routine that is a valid subclass of the <code>jam.sort.AbstractSortRoutin
 <ul>
     <li>
 Your sort routine file name must have the same name as the class name. For
-example, the class <tt>MySort</tt> must reside in a file name MySort.java</li>
+example, the class <em>MySort</em> must reside in a file name MySort.java</li>
 <li>
 Your sort class must extend the Jam class <code>jam.sort.AbstractSortRoutine</code>, as
 follows:
