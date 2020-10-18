@@ -102,52 +102,78 @@
     <tr><td>9L+5</td><td>NUL</td></tr>
 </table>
 
-<p>After the four CNAF list packets have been sent, a final standard command packet is sent:</p>
+<p>After the four CNAF list packets have been sent, a final standard command packet
+    is sent:</p>
 <table>
+<caption>CNAF list init packet</caption>
 <tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"list init"</td>
 </table>
+
 <h6>Expected VME response</h6>
-<p>The expected response to the verbose and debug packets is the same as before. The VME is expected to parse the CNAF list packets and store the results such that it can execute the lists on the CAMAC crate(s) when needed. Finally, the "list init" command packet indicates to the VME to execute the "cnaf init" list of CNAF commands to initialize the CAMAC crate(s) and CAMAC modules.</p>
-<h4>Datagram sent by Jam when "start" or "Begin" is clicked</h4>
-<p>Clicking start simply sends this packet. Clicking Begin will first cause Jam to open an event file, write a header to it, optionally zero the histograms and optionally send a datagram to request the scalers be zeroed, then finally send the packet shown below.</p>
-<br>
-<table>
+<p>The expected response to the verbose and debug packets is the same as before. The
+    VME is expected to parse the CNAF list packets and store the results such that it
+    can execute the lists on the CAMAC crate(s) when needed. Finally, the "list init"
+    command packet indicates to the VME to execute the "cnaf init" list of CNAF
+    commands to initialize the CAMAC crate(s) and CAMAC modules.</p>
+
+<h4 id=start-datagram>Datagram sent by Jam when "start" or "Begin" is
+    clicked</h4>
+<p>Clicking start simply sends this packet. Clicking Begin will first cause Jam to
+    open an event file, write a header to it, optionally zero the histograms and
+    optionally send a datagram to request the scalers be zeroed, then finally send
+    the packet shown below.</p>
+
+<table aria-describedby=start-datagram>
 <tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"START"</td>
 </table>
+
 <h5>Expected VME response</h5>
-<p>All modules which have channels enabled will be set to online mode, so that they'll convert the signals at their inputs when they receive gates. Additionally, the scaler module(s) should have its (their) inhibit state removed so that they can count logic pulses. In the vmeMap case, the ADC's and TDC's typically are read out when a master ADC's buffer starts to fill up. In the cnafCommands case, every gate should cause the front end computer to be strobed so it knows to execute the "event" CNAF list to read out the events. In both cases, when the send buffers are almost full, they are padded to the full 8k, and sent to Jam.</p>
-<h4>Datagram sent by Jam to request flush of VME buffer</h4>
-<table>
+<p>All modules which have channels enabled will be set to online mode, so that 
+    they'll convert the signals at their inputs when they receive gates.
+    Additionally, the scaler module(s) should have its (their) inhibit state removed
+    so that they can count logic pulses. In the vmeMap case, the ADC's and TDC's
+    typically are read out when a master ADC's buffer starts to fill up. In the
+    cnafCommands case, every gate should cause the front end computer to be strobed
+    so it knows to execute the "event" CNAF list to read out the events. In both
+    cases, when the send buffers are almost full, they are padded to the full 8k, and
+    sent to Jam.</p>
+
+<h4 id=flush-datagram>Datagram sent by Jam to request flush of VME buffer</h4>
+<table aria-describedby=flush-datagram>
 <tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"FLUSH"</td>
 </table>
+
 <h5>Expected VME response</h5>
 <p>Upon receiving this message, the VME should pad out the current send buffer and send it immediately. Of course it should do this between two event readouts, not during an event readout.</p>
-<h4>Datagram sent by Jam to request zeroing of scalers</h4>
-<table>
+
+<h4 id=zero-scalers-datagram>Datagram sent by Jam to request zeroing of scalers</h4>
+<table aria-describedby=zero-scalers-datagram>
 <tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"list clear"</td>
 </table>
 <h5>Expected VME response</h5>
 <p>All channels in the scaler module(s) should be reset to zero counts. In the cnafCommands case, this includes executing the "clear" list of CNAF commands.</p>
-<h4><a id="readscalers">Datagram sent by Jam to request scaler values</a></h4>
-<table>
+<h4 id="readscalers">Datagram sent by Jam to request scaler values</h4>
+<table aria-describedby=readscalers>
 <tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"list scaler"</td>
 </table>
 <h5>Expected VME response</h5>
 <p>A <a href="#vmetohost">VME-to-host datagram</a> with SCALER status, with the 4-byte status word (0x00000002) followed by N+1 4-byte integers. The first integer is N, the number of scaler values to follow. The first scaler value is assumed to belong to the Scaler defined first in the sort routine, the second value to the second defined Scaler, etc., regardless of the number assigned to the Scaler when it's defined. In the cnafCommands case, it is expected that the scaler readout will be accomplished by the "scale" list of CNAF commands.</p>
-<h4>Datagram sent by Jam when "stop" is clicked</h4>
-<table>
+
+<h4 id=stop-datagram>Datagram sent by Jam when "stop" is clicked</h4>
+<table aria-describedby=stop-datagram>
 <tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"STOP"</td>
 </table>
 <h5>Expected VME response</h5>
 <p>Take the ADC's and TDC's offline, and raise the inhibit state on the scaler module(s). Completely read the remaining data in the ADC and TDC buffers, sending final buffer(s) with the data. If you're using the Yale-CAEN input stream, the last buffer should be padded with <a href="CAENformat.html#padding">STOP_PAD</a>.</p>
-<h4>Datagram sent by Jam when "End" is clicked</h4>
-<table>
+
+<h4 id=end-datagram>Datagram sent by Jam when "End" is clicked</h4>
+<table aria-describedby=end-datagram>
 <tr><th scope=col>integer</th><th scope=col>string</th></tr>
 <tr><td>0</td><td>"END"</td>
 </table>
@@ -172,10 +198,10 @@
 <dd>NUL-terminated string containing either a message notifying of successful Host-to-VME call and execution or an error message as appropriate.</dd>
 </dl>
 
-<h4>Scaler reply datagram (type 2)</h4>
-<table>
+<h4 id=scaler-reply-datagram-2>Scaler reply datagram (type 2)</h4>
+<table aria-describedby=scaler-reply-datagram-2>
 <tr>
-<td>Bytes</td><td>Item</td>
+<th scope=col>Bytes</th><th scope=col>Item</th>
 </tr>
 <tr>
 <td>5-8</td><td>Number of scalers read (N)</td>
