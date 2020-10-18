@@ -2,9 +2,9 @@ package test.data;
 
 import jam.data.*;
 import jam.data.func.LinearFunction;
-import junit.framework.Assert;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -76,7 +76,7 @@ public final class HistogramTest {// NOPMD
         final double area1before = hist1.getArea();
         Assert.assertEquals(
                 "Expected getArea() and getCount() to yield the same result.",
-                area1before, hist1.getCount());
+                area1before, hist1.getCount(), 0.001);
         hist1.addCounts(hist1.getCounts());
         assertAreaDoubled(hist1, area1before);
         final double area2before = hist2.getArea();
@@ -101,7 +101,7 @@ public final class HistogramTest {// NOPMD
             final double area1before) {
         final String should = "should be double before.";
         Assert.assertEquals(histogram.getName() + should, histogram.getArea(),
-                2 * area1before);
+                2 * area1before, 0.001);
     }
 
     /**

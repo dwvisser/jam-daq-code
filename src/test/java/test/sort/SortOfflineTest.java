@@ -36,7 +36,7 @@ import jam.ui.MultipleFileChooser;
 
 	private static void assertHistogramZeroed(final AbstractHistogram histogram) {
 		assertEquals("Expected '" + histogram.getName() + "' to be zeroed.",
-				histogram.getArea(), 0.0);
+				histogram.getArea(), 0.0, 0.001);
 	}
 
 	private void sortEventFile(final String eventFileName, final int repitition) {
@@ -66,7 +66,7 @@ import jam.ui.MultipleFileChooser;
 		assertEquals("Events sorted wasn't the same as expected.",
 				expectedEvents, session.getEventsSorted());
 		assertEquals("Area in histogram wasn't the same as expected.",
-				(double) expectedEvents, neutronE.getArea());
+				(double) expectedEvents, neutronE.getArea(), 0.001);
 	}
 
 	private HistInt1D setupYaleCAENOfflineSort() {
@@ -102,7 +102,7 @@ import jam.ui.MultipleFileChooser;
 			final HistInt1D cathode = setupYaleOfflineSort();
 			sortEventFile("sampledata/example.evn", 1);
 			assertEquals("Area in histogram wasn't the same as expected.",
-					789.0, cathode.getArea());
+					789.0, cathode.getArea(), 0.001);
 		} finally {
 			session.resetOfflineSorting();
 		}
@@ -127,7 +127,7 @@ import jam.ui.MultipleFileChooser;
 			final HistInt1D cathode = setupYaleOfflineSort();
 			sortEventFile("sampledata/example.evn", 2);
 			assertEquals("Area in histogram wasn't the same as expected.",
-					2 * 789.0, cathode.getArea());
+					2 * 789.0, cathode.getArea(), 0.001);
 		} finally {
 			session.resetOfflineSorting();
 		}
