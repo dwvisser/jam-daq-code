@@ -36,7 +36,7 @@ public final class UconnInputStream extends AbstractEventInputStream {
 
     private transient boolean newBlock = true;// NOPMD
 
-    private final long HEADER_SIZE = 2L * UconnStreamConstants.HEAD_SIZE;
+    private final long HEADER_BYTES = 2L * UconnStreamConstants.HEAD_SIZE;
 
     public UconnInputStream() {
         super();
@@ -143,8 +143,8 @@ public final class UconnInputStream extends AbstractEventInputStream {
                     readEventHeader();
                     unpackData(input);
                     // flush out rest of event
-                    final long numSkip = eventSize - HEADER_SIZE - 2
-                            * eventNumWord;
+                    final long eventBytes = 2L * eventNumWord;
+                    final long numSkip = eventSize - HEADER_BYTES - eventBytes;
                     final long skipped = dataInput.skip(numSkip);
                     if (skipped < numSkip) {
                         throw new EventException("Tried to skip " + numSkip
