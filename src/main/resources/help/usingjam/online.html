@@ -4,7 +4,7 @@
 <TITLE>Online Sorting</TITLE>
 </HEAD>
 <BODY>
-<a name="top">
+<a id="top">
 <H2>Online Sorting</H2>
 
 <p>Setting up Jam to take data takes only a few easy steps:</p>
@@ -33,7 +33,7 @@ or to store data to disk, <a href="#beginrun">begin</a> a run.
 </OL>
 
 
-<A NAME="sorting"><H3>Setup Online Sorting</H3></A>
+<A id="sorting"><H3>Setup Online Sorting</H3></A>
 
 <p>Open the <a href="../menus/setup.html#online">Setup|Online</a> 
 dialog box to set up online sorting.</p>
@@ -53,21 +53,21 @@ the name of the experiment descriptive.</dd>
     <dt>Events to Disk</dt><dd>Whether Jam should write events out to disk when performing runs. Usually this is what you want. There are some cases where you might not, though. In some environments, the front end acquisition process already stores the events for you. Sometimes, it is desireable to take a series of histograms into HDF files, but the event storage is unnecessary, such as when calibrating detectors.</dd>
 </dl>
 
-<A NAME="acquisition"><H3>Starting and stopping the acquistion system</H3>
+<A id="acquisition"><H3>Starting and stopping the acquistion system</H3>
 <p>To start and stop the data acquisition without saving the events, 
 use the menu items <a href="../menus/control.html#start">Control|start</a> and <a href="../menus/control.html#stop">Control|stop</a>. 
 If the data rate is slow, clicking <a href="../menus/control.html#flush">Control|flush</a> instructs the front
 end computer to send all data currently stored.</p>
 
-<a name="beginrun"></a><H3>Running: taking event data</H3>
+<a id="beginrun"></a><H3>Running: taking event data</H3>
 <p>Begin a run to save the event data. Open the <a href="../menus/control.html#run">Control|Run...</a> dialog box to do this.
 <em>Begin</em> will open a new event file and start acquisition. 
 The event file will be create in the directory specified in the <a href="../menus/setup.html#online">Setup|Online Sorting...</a>
  dialog box.
-<a name="endrun"><em>End</em></a> will stop acquisition, close the event file, 
+<a id="endrun"><em>End</em></a> will stop acquisition, close the event file, 
 and write out a HDF file containing the histograms, gates, and scalers.
 </p>
-<a name="classpath"><h3>Specifying the classpath</h3></a>
+<a id="classpath"><h3>Specifying the classpath</h3></a>
 <ul>
 <li>For .class files in an unnamed package, the class path ends with the directory that contains the .class files.</li>
 <li>For .class files in a named package, the class path ends with the directory that
