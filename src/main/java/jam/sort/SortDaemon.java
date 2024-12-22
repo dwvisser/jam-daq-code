@@ -207,10 +207,10 @@ public class SortDaemon extends GoodThread {
         if (eventInputStatus == EventInputStatus.END_BUFFER) {
             /* We have reached the end of a buffer. */
             incrementBufferCount();
-            yield();
+            Thread.yield();
         } else if (eventInputStatus == EventInputStatus.END_RUN) {
             incrementBufferCount();
-            yield();
+            Thread.yield();
         } else if (eventInputStatus == EventInputStatus.UNKNOWN_WORD) {
             LOGGER.warning("Unknown word in event stream.");
         } else if (eventInputStatus == EventInputStatus.END_FILE) {
@@ -263,7 +263,7 @@ public class SortDaemon extends GoodThread {
         final int COUNT_UPDATE = 1000;
         if (getEventCount() % COUNT_UPDATE == 0) {
             updateCounters();
-            yield();
+            Thread.yield();
         }
     }
 
@@ -512,7 +512,7 @@ public class SortDaemon extends GoodThread {
                 eventInputStatus = eventInputStream.readEvent(eventData);
             }
             handleStatusOnline();
-            yield();
+            Thread.yield();
         }// end infinite loop
     }
 

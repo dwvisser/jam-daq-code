@@ -315,7 +315,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
                 }
                 controller.atWriteEnd();
             }
-            yield();
+            Thread.yield();
         }
         // end loop forever
     }
