@@ -7,7 +7,7 @@ import jam.data.control.GateNew;
 /**
  * Show the new gate dialog.
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogNewGateCmd extends AbstractShowGateDialog {
 
     /**

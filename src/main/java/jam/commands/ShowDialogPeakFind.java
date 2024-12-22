@@ -10,7 +10,7 @@ import jam.PeakFindDialog;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogPeakFind extends AbstractShowDialog {
 
 	@Inject

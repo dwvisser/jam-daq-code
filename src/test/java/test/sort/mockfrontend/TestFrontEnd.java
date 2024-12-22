@@ -18,7 +18,7 @@ import javax.swing.UIManager;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Feb 15, 2004
  */
-@SuppressWarnings("serial")
+
 public class TestFrontEnd extends JFrame {
 
     private transient MessageReceiver receiver;// NOPMD

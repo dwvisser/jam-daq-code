@@ -16,7 +16,7 @@ import jam.data.control.MonitorDisplay;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 4, 2004
  */
-@SuppressWarnings("serial")
+
 final class ShowMonitorDisplay extends AbstractShowDialog implements PropertyChangeListener {
 
 	@Inject

@@ -11,7 +11,7 @@ import javax.swing.AbstractAction;
  * @author Dale Visser
  * 
  */
-@SuppressWarnings("serial")
+
 public final class WindowCancelAction extends AbstractAction {
 
 	private transient Window window;

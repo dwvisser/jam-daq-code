@@ -6,7 +6,7 @@ package jam.commands;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 public class CommandException extends Exception {
 
 	/**

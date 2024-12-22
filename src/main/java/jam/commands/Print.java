@@ -24,7 +24,7 @@ import jam.ui.SelectionTree;
  * Command for Page Setup.
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class Print extends AbstractPrintingCommand implements PropertyChangeListener,
         Predicate<Nameable> {
 

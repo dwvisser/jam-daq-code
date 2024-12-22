@@ -10,7 +10,7 @@ import jam.sort.control.ConfigurationDisplay;
  * @author Dale Visser
  * 
  */
-@SuppressWarnings("serial")
+
 public class ShowDialogConfiguration extends AbstractShowDialog {
 
 	@Inject

@@ -12,7 +12,6 @@ import jam.ui.SelectionTree;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
 class AbstractExportFile extends AbstractImportExport {
 
 	AbstractExportFile() {

@@ -18,7 +18,7 @@ import jam.sort.control.SetupSortOn;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jun 4, 2004
  */
-@SuppressWarnings("serial")
+
 final class ShowSetupOnline extends AbstractShowDialog implements PropertyChangeListener {
 
 	private transient final JamStatus status;

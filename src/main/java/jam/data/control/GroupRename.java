@@ -23,7 +23,7 @@ import jam.ui.PanelOKApplyCancelButtons;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 public class GroupRename extends AbstractControl {
 
 	private transient Group currentGroup;

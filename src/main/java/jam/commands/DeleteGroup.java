@@ -19,7 +19,7 @@ import jam.global.Nameable;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 public class DeleteGroup extends AbstractCommand {
 
 	private transient final JFrame frame;

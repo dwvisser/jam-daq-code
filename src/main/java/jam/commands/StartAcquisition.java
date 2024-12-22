@@ -22,7 +22,7 @@ import jam.sort.control.RunControl;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 7, 2004
  */
-@SuppressWarnings("serial")
+
 final class StartAcquisition extends AbstractCommand implements PropertyChangeListener {
 
     private transient final RunControl runControl;

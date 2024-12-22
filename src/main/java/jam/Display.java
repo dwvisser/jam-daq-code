@@ -20,7 +20,7 @@ import jam.ui.SummaryTable;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 public class Display extends JPanel implements PropertyChangeListener {
 
 	private static final String KEY_PLOT = "plot";

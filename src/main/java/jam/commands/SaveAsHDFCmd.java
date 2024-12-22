@@ -19,7 +19,7 @@ import jam.io.hdf.HDFileFilter;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class SaveAsHDFCmd extends AbstractCommand {
 
 	private transient final HDFIO hdfio;

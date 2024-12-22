@@ -13,7 +13,7 @@ import injection.GuiceInjector;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class ShowExitDialog extends AbstractCommand {
 
 	ShowExitDialog() {

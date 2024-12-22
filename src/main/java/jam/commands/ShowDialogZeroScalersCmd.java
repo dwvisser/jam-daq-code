@@ -14,7 +14,7 @@ import jam.data.control.ScalerZero;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogZeroScalersCmd extends AbstractShowDialog implements
 		PropertyChangeListener {
 

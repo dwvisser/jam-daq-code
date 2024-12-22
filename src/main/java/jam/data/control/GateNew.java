@@ -22,7 +22,7 @@ import jam.ui.SelectionTree;
  * A dialog for defining new gates.
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 public class GateNew extends AbstractControl {
 
     /* new gate dialog box */

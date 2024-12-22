@@ -8,7 +8,7 @@ package jam.sort.stream;
  * @version 0.5
  * @since JDK 1.1
  */
-@SuppressWarnings("serial")
+
 public final class EventException extends Exception {
 
 	EventException(final String msg) {

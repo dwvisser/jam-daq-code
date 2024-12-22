@@ -15,7 +15,7 @@ import jam.data.AbstractHistogram;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 1.4.2 RC3
  */
-@SuppressWarnings("serial")
+
 final class HistogramComboBoxModel extends DefaultComboBoxModel<Object> {
 
 	private transient Object selection = null;

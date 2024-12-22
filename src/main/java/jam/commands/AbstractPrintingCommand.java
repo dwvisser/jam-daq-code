@@ -9,7 +9,6 @@ import java.awt.print.PrinterJob;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
 abstract class AbstractPrintingCommand extends AbstractCommand {// NOPMD
 
 	private static final double MARGIN_BOTTOM = 0.5;

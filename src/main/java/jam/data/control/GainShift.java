@@ -43,7 +43,7 @@ import jam.util.NumberUtilities;
  * @author Dale Visser, Ken Swartz
  * @version JDK 1.1
  */
-@SuppressWarnings("serial")
+
 public class GainShift extends AbstractManipulation implements ItemListener {
 
 	private static final double BIN_CENTER_OFFSET = 0.5;

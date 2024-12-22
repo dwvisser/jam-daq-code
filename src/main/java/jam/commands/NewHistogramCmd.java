@@ -10,7 +10,7 @@ import jam.global.JamStatus;
  * Command to create a histogram
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class NewHistogramCmd extends AbstractCommand {
 
     NewHistogramCmd() {

@@ -24,7 +24,7 @@ import jam.io.hdf.HDFIO;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 final class SaveHDFCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final JamStatus status;

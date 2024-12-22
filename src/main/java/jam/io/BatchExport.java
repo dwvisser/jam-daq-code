@@ -51,7 +51,7 @@ import jam.util.FileUtilities;
  * 
  * @author <a href=mailto:dwvisser@users.sourceforge.net>Dale Visser </a>
  */
-@SuppressWarnings("serial")
+
 public final class BatchExport extends JDialog implements PropertyChangeListener {
 
 	private static final Logger LOGGER = Logger.getLogger(BatchExport.class

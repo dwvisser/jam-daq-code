@@ -29,7 +29,7 @@ import jam.global.JamProperties;
 /**
  * Dialog to so the configuration
  */
-@SuppressWarnings("serial")
+
 public class ConfigurationDisplay extends JDialog {
 
 	private transient final JTextPane textConfig = new JTextPane();

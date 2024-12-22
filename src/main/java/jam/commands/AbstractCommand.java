@@ -18,7 +18,6 @@ import jam.global.CommandListenerException;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
 public abstract class AbstractCommand extends AbstractAction implements
 		Commandable {
 

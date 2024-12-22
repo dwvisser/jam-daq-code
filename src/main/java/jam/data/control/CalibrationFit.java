@@ -42,7 +42,7 @@ import jam.ui.SelectionTree;
  * @author Ken Swartz
  * @version 0.5
  */
-@SuppressWarnings("serial")
+
 public class CalibrationFit extends AbstractControl {
 
 	private static final int NUM_POINTS = 10;

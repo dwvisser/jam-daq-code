@@ -7,7 +7,7 @@ package jam.global;
  * @version 17 July 98
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 public class JamException extends Exception {
 
 	/**

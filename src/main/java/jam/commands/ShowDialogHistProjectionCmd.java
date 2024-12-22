@@ -9,7 +9,7 @@ import jam.data.control.Projections;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogHistProjectionCmd extends AbstractShowDialog {
 
 	@Inject

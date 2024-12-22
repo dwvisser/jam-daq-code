@@ -9,7 +9,7 @@ import jam.data.control.GainShift;
  * 
  * @author Ken
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogGainShiftCmd extends AbstractShowDialog {
 
 	@Inject

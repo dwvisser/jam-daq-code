@@ -23,7 +23,7 @@ import jam.global.RunInfo;
 /**
  * Allows remote access to histograms
  */
-@SuppressWarnings("serial")
+
 public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 
 	/**

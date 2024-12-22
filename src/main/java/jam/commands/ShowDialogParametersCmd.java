@@ -14,7 +14,7 @@ import jam.data.control.ParameterControl;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogParametersCmd extends AbstractShowDialog implements PropertyChangeListener {
 
 	/**

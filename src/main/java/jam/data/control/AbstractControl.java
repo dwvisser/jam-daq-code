@@ -19,7 +19,6 @@ import jam.global.Broadcaster;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
 public abstract class AbstractControl extends JDialog implements PropertyChangeListener {
 
 	/**

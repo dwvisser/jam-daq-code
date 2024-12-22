@@ -33,7 +33,7 @@ import jam.global.LoggerConfig;
  * @version 0.5 last edit 1-99
  */
 @Singleton
-@SuppressWarnings("serial")
+
 public class Console extends JPanel {
 
 	/**

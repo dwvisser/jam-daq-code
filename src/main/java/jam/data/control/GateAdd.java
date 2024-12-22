@@ -28,7 +28,7 @@ import jam.ui.WindowCancelAction;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jun 4, 2004
  */
-@SuppressWarnings("serial")
+
 public final class GateAdd extends AbstractControl {
 
 	private transient final JComboBox<Object> cadd;

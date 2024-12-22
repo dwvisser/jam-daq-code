@@ -16,7 +16,7 @@ import jam.global.Nameable;
  * Show the zero histograms dialog.
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogZeroHistogram extends AbstractShowDialog implements
         PropertyChangeListener, Predicate<Nameable> {
 

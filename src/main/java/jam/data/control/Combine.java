@@ -7,7 +7,6 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.logging.Level;
 
 import javax.swing.ButtonGroup;
@@ -40,8 +39,7 @@ import jam.util.NumberUtilities;
  * 
  * @author Dale Visser, Ken Swartz
  */
-@SuppressWarnings("serial")
-public class Combine extends AbstractManipulation implements PropertyChangeListener {
+public class Combine extends AbstractManipulation {
 
 	private transient final JComboBox<Object> cfrom1, cfrom2, cto;
 

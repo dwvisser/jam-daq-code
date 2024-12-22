@@ -22,7 +22,7 @@ import jam.ui.SelectionTree;
  * Command for file menu new also clears.
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class DeleteHistogram extends AbstractCommand implements PropertyChangeListener,
         Predicate<Nameable> {
 

@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 import jam.global.Broadcaster;
 import jam.ui.Console;
 
-@SuppressWarnings("serial")
+
 final class DisplayAndConsolePanel extends JSplitPane {
 
 	@Inject

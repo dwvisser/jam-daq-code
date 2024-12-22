@@ -15,7 +15,7 @@ import jam.io.BatchExport;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 4, 2004
  */
-@SuppressWarnings("serial")
+
 final class ShowBatchExport extends AbstractShowDialog {
 
 	@Inject

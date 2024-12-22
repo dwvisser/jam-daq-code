@@ -14,7 +14,7 @@ import jam.global.CommandListenerException;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 final class PageSetupCmd extends AbstractPrintingCommand {
 
 	PageSetupCmd() {

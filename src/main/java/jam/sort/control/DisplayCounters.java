@@ -31,7 +31,7 @@ import jam.sort.SortDaemon;
  * @version 05 newest done 9-98
  */
 @Singleton
-@SuppressWarnings("serial")
+
 public final class DisplayCounters extends JDialog implements PropertyChangeListener {// NOPMD
 
 	private transient final JamStatus status;

@@ -8,7 +8,7 @@ package jam.io.hdf;
  * @author Dale Visser
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 public class HDFException extends Exception {
 
 	HDFException(final String errorMessage) {

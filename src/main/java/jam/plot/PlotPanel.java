@@ -12,7 +12,7 @@ import jam.data.AbstractHistogram;
 import jam.plot.color.Mode;
 import jam.plot.color.PlotColorMap;
 
-@SuppressWarnings("serial")
+
 final class PlotPanel extends JPanel implements CountsContainer {
 
 	/**

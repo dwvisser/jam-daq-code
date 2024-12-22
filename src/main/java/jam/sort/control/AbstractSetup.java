@@ -56,7 +56,7 @@ abstract class AbstractSetup {
 	 * 
 	 * @author dvk
 	 */
-	@SuppressWarnings("serial")
+	
 	protected final class ApplyAction extends AbstractAction {
 		private final static String APPLY = "Apply";
 

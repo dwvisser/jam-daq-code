@@ -12,7 +12,7 @@ import jam.global.JamStatus;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 public final class ScalersCmd extends AbstractCommand {
 
 	private static final int READ = 1;

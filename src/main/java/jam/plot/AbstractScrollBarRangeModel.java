@@ -10,7 +10,7 @@ import jam.ui.SelectionTree;
  * @author Dale Visser
  * 
  */
-@SuppressWarnings("serial")
+
 abstract class AbstractScrollBarRangeModel extends DefaultBoundedRangeModel {
 
 	/**

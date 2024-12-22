@@ -34,7 +34,7 @@ import jam.global.Broadcaster;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 public class MonitorDisplay extends AbstractControl {
 
 	private final static int BORDER_HEIGHT = 5;

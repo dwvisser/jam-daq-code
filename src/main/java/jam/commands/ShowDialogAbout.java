@@ -9,7 +9,7 @@ import jam.AboutDialog;
  * Show the about dialog
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogAbout extends AbstractShowDialog {
 
     /**

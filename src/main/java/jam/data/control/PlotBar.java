@@ -20,7 +20,7 @@ import jam.data.Monitor;
  * @version 0.5
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 public final class PlotBar extends JPanel {
 	/**
 	 * border area at ends of bars

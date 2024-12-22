@@ -40,7 +40,7 @@ import jam.util.FileUtilities;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 public final class ParameterControl extends AbstractControl {
 
 	private static final int BORDER_HEIGHT = 5;

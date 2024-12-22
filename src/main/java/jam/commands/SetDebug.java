@@ -14,7 +14,7 @@ import jam.global.SortMode;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 2004-06-11
  */
-@SuppressWarnings("serial")
+
 final class SetDebug extends AbstractSetBooleanPreference implements PropertyChangeListener {
 
     SetDebug() {

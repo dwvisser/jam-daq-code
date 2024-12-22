@@ -16,7 +16,7 @@ import jam.ui.SelectionTree;
  * 
  * @author Dale Visser
  */
-@SuppressWarnings("serial")
+
 final class ExportRadware extends AbstractExportFile implements PropertyChangeListener {
 
 	@Inject

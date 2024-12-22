@@ -23,7 +23,7 @@ import jam.ui.SelectionTree;
 /**
  * Zero histograms dialog
  */
-@SuppressWarnings("serial")
+
 public class HistogramZero extends AbstractControl {
 
 	/**

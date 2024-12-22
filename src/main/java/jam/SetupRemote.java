@@ -40,7 +40,7 @@ import jam.global.SortMode;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 public class SetupRemote extends JDialog implements ActionListener,
 		ItemListener {
 

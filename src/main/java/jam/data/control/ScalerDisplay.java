@@ -44,7 +44,7 @@ import jam.global.Nameable;
  * @author Ken Swartz
  * @since JDK1.1
  */
-@SuppressWarnings("serial")
+
 public final class ScalerDisplay extends AbstractControl {
 
 	private static final int BORDER_HEIGHT = 5;

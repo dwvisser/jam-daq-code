@@ -8,7 +8,7 @@ import jam.io.hdf.HDFPrefs;
  * @author ken
  *
  */
-@SuppressWarnings("serial")
+
 public class SetHDFSuppressSaveEmpty extends AbstractSetBooleanPreference {
 
 	SetHDFSuppressSaveEmpty(){

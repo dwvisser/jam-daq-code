@@ -19,7 +19,7 @@ import jam.sort.control.SortControl;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 2004-06-04
  */
-@SuppressWarnings("serial")
+
 final class ShowSortControl extends AbstractShowDialog implements PropertyChangeListener {
 
 	private transient final JamStatus status;

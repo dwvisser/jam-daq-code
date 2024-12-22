@@ -10,7 +10,7 @@ import jam.data.control.HistogramNew;
  * @author Ken
  * 
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogNewHistogramCmd extends AbstractShowDialog {
 
 	/**

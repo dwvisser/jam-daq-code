@@ -11,7 +11,7 @@ import jam.io.control.SaveSelectedHistogram;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 final class SaveSelectHistogramsHDFCmd extends AbstractCommand {
 
 	private transient final SaveSelectedHistogram saveDlg;

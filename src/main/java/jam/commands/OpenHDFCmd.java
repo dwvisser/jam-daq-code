@@ -33,7 +33,7 @@ import jam.ui.SelectionTree;
  * Open a hdf file
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class OpenHDFCmd extends AbstractCommand implements PropertyChangeListener,
         HDFIO.AsyncListener {
 

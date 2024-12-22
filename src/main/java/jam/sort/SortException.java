@@ -7,7 +7,7 @@ package jam.sort;
  * @version 0.9
  * @since JDK 1.1
  */
-@SuppressWarnings("serial")
+
 public class SortException extends Exception {
 
 	/**

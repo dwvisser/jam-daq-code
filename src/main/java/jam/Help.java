@@ -33,7 +33,7 @@ import com.google.inject.Inject;
  * @author Dale Visser
  * @version version 0.5 November 98
  */
-@SuppressWarnings("serial")
+
 public class Help extends JDialog {
 	private final static int POS_X = 20;
 

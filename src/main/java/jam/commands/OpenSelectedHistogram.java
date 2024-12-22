@@ -19,7 +19,7 @@ import jam.global.CommandListenerException;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 3, 2004
  */
-@SuppressWarnings("serial")
+
 final class OpenSelectedHistogram extends AbstractCommand {
 
 	private transient final Frame frame;

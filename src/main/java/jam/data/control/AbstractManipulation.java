@@ -19,7 +19,7 @@ import jam.global.Broadcaster;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 abstract class AbstractManipulation extends AbstractControl {
 	@Override
 	public abstract void doSetup();

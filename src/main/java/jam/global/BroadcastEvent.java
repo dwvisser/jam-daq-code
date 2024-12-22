@@ -7,7 +7,7 @@ import java.beans.PropertyChangeEvent;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 public final class BroadcastEvent extends PropertyChangeEvent {
 
 	/**

@@ -17,7 +17,7 @@ import jam.util.YaleCAENgetScalers;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class OpenScalersYaleCAEN extends AbstractCommand {
 
 	private transient final YaleCAENgetScalers ycs;

@@ -30,7 +30,7 @@ import jam.ui.PanelOKApplyCancelButtons;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 class ShowDialogDeleteView extends AbstractShowDialog {
 
 	private static class ViewDelete extends JDialog {

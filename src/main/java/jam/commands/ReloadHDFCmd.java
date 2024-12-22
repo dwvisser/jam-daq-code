@@ -26,7 +26,7 @@ import jam.ui.SelectionTree;
  * Reload data from a hdf file
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class ReloadHDFCmd extends AbstractLoaderHDF {
 
     @Inject

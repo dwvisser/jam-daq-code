@@ -10,7 +10,7 @@ import jam.data.control.GroupNew;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 public class ShowDialogNewGroup extends AbstractShowDialog {
 
 	/**

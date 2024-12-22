@@ -8,7 +8,7 @@ import jam.plot.PlotPreferences;
  * @author ken
  *
  */
-@SuppressWarnings("serial")
+
 public class SetAxisLabels extends AbstractSetBooleanPreference {
 
 	SetAxisLabels(){

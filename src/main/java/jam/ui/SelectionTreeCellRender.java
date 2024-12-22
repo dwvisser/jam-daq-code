@@ -19,7 +19,7 @@ import jam.data.Group;
  * @author Ken Swartz
  * @version Nov 26, 2004
  */
-@SuppressWarnings("serial")
+
 public final class SelectionTreeCellRender extends DefaultTreeCellRenderer {
 
 	private transient final Color defaultBackground;

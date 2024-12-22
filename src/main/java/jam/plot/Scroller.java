@@ -17,7 +17,7 @@ import javax.swing.JScrollBar;
  * @author Ken Swartz
  * @author Dale Visser
  */
-@SuppressWarnings("serial")
+
 class Scroller extends JPanel implements AdjustmentListener, Limitable {
 
 	// constants for count scroll bar

@@ -40,7 +40,7 @@ import jam.ui.SelectionTree;
  * @version 0.5 April 1998
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 public final class GateSet extends AbstractControl {
 
 	private transient final JButton addP, removeP, unset, save, cancel;

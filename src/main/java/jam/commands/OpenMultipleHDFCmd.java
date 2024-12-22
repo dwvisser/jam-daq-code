@@ -21,7 +21,7 @@ import jam.io.control.OpenMultipleFiles;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 public class OpenMultipleHDFCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final OpenMultipleFiles openMultiple;

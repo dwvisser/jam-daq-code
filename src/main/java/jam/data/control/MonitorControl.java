@@ -46,7 +46,7 @@ import jam.ui.WindowCancelAction;
  * @since JDK1.1
  */
 @Singleton
-@SuppressWarnings("serial")
+
 public final class MonitorControl extends AbstractControl implements Runnable {
 
 	private static final int THRESHOLD_INDEX = 1;

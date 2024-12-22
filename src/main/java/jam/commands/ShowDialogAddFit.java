@@ -10,7 +10,7 @@ import jam.global.CommandListenerException;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogAddFit extends AbstractCommand {
 
 	private transient final LoadFit loadFit;

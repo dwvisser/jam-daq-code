@@ -7,7 +7,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.text.JTextComponent;
 
-@SuppressWarnings("serial")
+
 final class PathBrowseButton extends JButton {
 
 	private transient File path;

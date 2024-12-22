@@ -8,7 +8,7 @@ import javax.swing.Action;
 import injection.GuiceInjector;
 import jam.ui.Icons;
 
-@SuppressWarnings("serial")
+
 class End extends AbstractAction {
 
     private transient final RunController runControl;

@@ -28,7 +28,7 @@ import jam.global.MessageHandler;
  * @version 0.5 last edit 11-98
  * @version 0.5 last edit 1-99
  */
-@SuppressWarnings("serial")
+
 public class FitConsole extends JPanel implements MessageHandler {
 
 	private static final String EMPTY = "";

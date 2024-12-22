@@ -44,7 +44,7 @@ import jam.global.Validator;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 public final class SelectionTree extends JPanel implements PropertyChangeListener {
 	private transient final Broadcaster broadcaster;
 

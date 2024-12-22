@@ -24,7 +24,7 @@ import jam.global.JamStatus;
  * @author Ken Swartz
  */
 @Singleton
-@SuppressWarnings("serial")
+
 public class SummaryTable extends JPanel implements PropertyChangeListener {
 
 	/**

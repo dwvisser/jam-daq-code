@@ -7,7 +7,7 @@ import jam.plot.PlotPreferences;
  * 
  * @author ken
  */
-@SuppressWarnings("serial")
+
 public class SetEnableScrolling extends AbstractSetBooleanPreference {
 
 	SetEnableScrolling(){

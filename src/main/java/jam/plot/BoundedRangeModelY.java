@@ -8,7 +8,7 @@ package jam.plot;
  * @author Dale Visser
  * @version 1.2
  */
-@SuppressWarnings("serial")
+
 final class BoundedRangeModelY extends AbstractScrollBarRangeModel {
 
 	BoundedRangeModelY(final PlotContainer container) {

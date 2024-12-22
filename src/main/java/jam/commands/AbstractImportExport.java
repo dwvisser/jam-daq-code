@@ -10,7 +10,6 @@ import jam.io.AbstractImpExp;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
 abstract class AbstractImportExport extends AbstractCommand {// NOPMD
 
 	/**

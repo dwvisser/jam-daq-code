@@ -10,7 +10,7 @@ import jam.io.ImportBanGates;
  * 
  * @author Dale Visser
  */
-@SuppressWarnings("serial")
+
 final class ImportORNLban extends AbstractImportFile {
 
 	@Inject

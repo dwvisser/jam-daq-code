@@ -16,7 +16,7 @@ import java.util.List;
  * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  */
-@SuppressWarnings("serial")
+
 final class Multiplet extends ArrayList<Peak> {
 
 	private Multiplet() {

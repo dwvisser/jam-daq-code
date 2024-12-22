@@ -17,7 +17,7 @@ import jam.sort.control.DisplayCounters;
  * @author Dale Visser
  * 
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogCounters extends AbstractShowDialog implements PropertyChangeListener {
 
 	private transient final JamStatus status;

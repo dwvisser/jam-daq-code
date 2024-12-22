@@ -17,7 +17,7 @@ import jam.io.hdf.HDFileFilter;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 final class SaveGatesCmd extends AbstractCommand {
 
 	private transient final Frame frame;

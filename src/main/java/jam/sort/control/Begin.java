@@ -15,7 +15,7 @@ import jam.global.JamException;
 import jam.sort.SortException;
 import jam.ui.Icons;
 
-@SuppressWarnings("serial")
+
 class Begin extends AbstractAction {
 
     private static final Logger LOGGER = Logger.getLogger(Begin.class

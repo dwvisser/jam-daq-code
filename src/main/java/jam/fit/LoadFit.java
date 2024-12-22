@@ -118,7 +118,7 @@ public class LoadFit {
 		return set.toArray();
 	}
 
-	@SuppressWarnings("serial")
+	
 	private void makeFit(final Class<? extends AbstractFit> fitClass)
 			throws JamException {
 		final String fitName = fitClass.getName();

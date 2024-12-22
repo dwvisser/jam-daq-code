@@ -16,7 +16,7 @@ import jam.global.Nameable;
  * Show the scalers dialog box.
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogSetGate extends AbstractShowDialog implements PropertyChangeListener,
         Predicate<Nameable> {
 

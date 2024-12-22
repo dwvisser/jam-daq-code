@@ -18,7 +18,7 @@ import jam.io.hdf.HDFIO;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class AddHDF extends AbstractLoaderHDF {
 
 	private transient final JamStatus status;

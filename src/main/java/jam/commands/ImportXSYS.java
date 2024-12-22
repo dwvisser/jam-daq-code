@@ -10,7 +10,7 @@ import jam.io.ImpExpXSYS;
  * 
  * @author Dale Visser
  */
-@SuppressWarnings("serial")
+
 final class ImportXSYS extends AbstractImportFile {
 
 	@Inject

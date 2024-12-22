@@ -18,7 +18,7 @@ import jam.ui.Icons;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 17 Dec 2003
  */
-@SuppressWarnings("serial")
+
 final class GateListCellRenderer extends DefaultListCellRenderer {
 
 	private transient final Icons icons;

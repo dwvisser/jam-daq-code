@@ -31,7 +31,7 @@ import injection.GuiceInjector;
  * window disappears after a specified timeout period or when the user clicks on
  * it.
  */
-@SuppressWarnings("serial")
+
 class SplashWindow extends JWindow {
 
     private transient final URL urlNukeIcon;

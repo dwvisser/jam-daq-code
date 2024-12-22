@@ -24,7 +24,6 @@ import jam.ui.SelectionTree;
  * Add counts to histograms in memory from histograms in an HDF file.
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
 abstract class AbstractLoaderHDF extends AbstractCommand implements PropertyChangeListener,
         HDFIO.AsyncListener {
 

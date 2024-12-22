@@ -15,7 +15,7 @@ import javax.swing.JToolBar;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 class SummaryTableToolbar extends JToolBar {
 
 	private transient final JCheckBox chkShowScaler = new JCheckBox("Scalers",

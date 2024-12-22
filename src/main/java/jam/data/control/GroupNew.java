@@ -19,7 +19,7 @@ import jam.ui.PanelOKApplyCancelButtons;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 public class GroupNew extends AbstractControl {
 
 	private transient final JTextField textName;

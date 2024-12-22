@@ -16,7 +16,7 @@ import jam.global.CommandListenerException;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jun 10, 2004
  */
-@SuppressWarnings("serial")
+
 public abstract class AbstractSetBooleanPreference extends AbstractCommand {// NOPMD
 
 	AbstractSetBooleanPreference() {

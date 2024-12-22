@@ -10,7 +10,7 @@ import jam.global.Help;
 /**
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class ShowUserGuide extends AbstractCommand {
 
 	private transient final JButton proxy = new JButton();

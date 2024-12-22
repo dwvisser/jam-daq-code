@@ -10,7 +10,7 @@ import jam.data.control.GroupRename;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 public class ShowDialogRenameGroup extends AbstractShowDialog {
 
 	/**

@@ -48,7 +48,7 @@ import jam.ui.MultipleFileChooser;
  * @version 1.0
  */
 @Singleton
-@SuppressWarnings("serial")
+
 public final class SortControl extends javax.swing.JDialog implements
 		OfflineController {
 

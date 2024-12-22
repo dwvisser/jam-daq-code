@@ -24,7 +24,7 @@ import jam.io.hdf.HDFileFilter;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 final class SaveSortGroupHDFCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final Frame frame;

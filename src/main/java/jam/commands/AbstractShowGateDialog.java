@@ -11,7 +11,7 @@ import jam.global.Nameable;
  * Provides Observer implementation for gate dialog subclasses.
  * @author Dale Visser
  */
-@SuppressWarnings("serial")
+
 public abstract class AbstractShowGateDialog extends AbstractShowDialog
         implements PropertyChangeListener, Predicate<Nameable> {
 

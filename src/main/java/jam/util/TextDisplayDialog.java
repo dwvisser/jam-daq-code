@@ -22,7 +22,7 @@ import javax.swing.JTextArea;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Apr 2, 2004
  */
-@SuppressWarnings("serial")
+
 public class TextDisplayDialog extends JDialog {
 
 	/**

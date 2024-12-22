@@ -14,7 +14,7 @@ import jam.commands.CommandNames;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 final class ToolBar extends javax.swing.JToolBar {
 
 	private transient final CommandManager commands;

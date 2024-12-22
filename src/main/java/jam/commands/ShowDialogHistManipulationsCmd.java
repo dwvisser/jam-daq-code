@@ -9,7 +9,7 @@ import jam.data.control.Combine;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogHistManipulationsCmd extends AbstractShowDialog {
 
 	@Inject

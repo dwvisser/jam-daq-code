@@ -33,7 +33,7 @@ import com.google.inject.Inject;
  * 
  * @author Dale Visser
  */
-@SuppressWarnings("serial")
+
 final class Toolbar extends JToolBar implements ActionListener {
 
 	/**

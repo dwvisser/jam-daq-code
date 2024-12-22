@@ -26,7 +26,7 @@ import jam.ui.SelectionTree;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 public class OpenAdditionalHDF extends AbstractCommand implements
 		HDFIO.AsyncListener {
 

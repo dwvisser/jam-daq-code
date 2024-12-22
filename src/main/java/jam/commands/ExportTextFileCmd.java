@@ -10,7 +10,7 @@ import jam.io.ImpExpASCII;
  * @author Ken Swartz
  * @author Dale Visser
  */
-@SuppressWarnings("serial")
+
 final class ExportTextFileCmd extends AbstractExportFile {
 
 	@Inject

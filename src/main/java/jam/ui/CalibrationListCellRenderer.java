@@ -16,7 +16,7 @@ import jam.data.func.CalibrationFunctionCollection;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 17 Dec 2003
  */
-@SuppressWarnings("serial")
+
 public class CalibrationListCellRenderer extends DefaultListCellRenderer {
 
 	/**

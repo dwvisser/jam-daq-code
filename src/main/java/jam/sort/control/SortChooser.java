@@ -17,7 +17,7 @@ import jam.global.JamException;
 import jam.global.RuntimeSubclassIdentifier;
 import jam.sort.AbstractSortRoutine;
 
-@SuppressWarnings("serial")
+
 final class SortChooser extends JComboBox<Class<? extends AbstractSortRoutine>> {
 
 	private transient File classPath;

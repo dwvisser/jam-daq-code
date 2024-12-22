@@ -31,7 +31,7 @@ import javax.swing.filechooser.FileFilter;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 public final class MultipleFileChooser extends JPanel {
 
 	private static final Logger LOGGER = Logger

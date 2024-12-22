@@ -43,7 +43,7 @@ import jam.ui.WindowCancelAction;
  * @author Ken Swartz
  * @version 0.5
  */
-@SuppressWarnings("serial")
+
 public class HistogramNew extends AbstractControl {
 
 	private static final NameValueCollection<Group> GROUPS = Warehouse

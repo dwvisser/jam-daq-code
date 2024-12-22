@@ -17,7 +17,7 @@ import jam.ui.SelectionTree;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version 1.4.2 RC 3
  */
-@SuppressWarnings("serial")
+
 final class GateComboBoxModel extends DefaultComboBoxModel<Object> {
 
 	/**

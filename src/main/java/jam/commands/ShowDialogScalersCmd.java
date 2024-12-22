@@ -14,7 +14,7 @@ import jam.data.control.ScalerDisplay;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogScalersCmd extends AbstractShowDialog implements PropertyChangeListener {
 
 	@Inject

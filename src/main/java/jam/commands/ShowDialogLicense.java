@@ -9,7 +9,7 @@ import jam.Help;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogLicense extends AbstractShowDialog {
 
 	@Inject

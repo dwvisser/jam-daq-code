@@ -63,7 +63,7 @@ import jam.sort.SortException;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser </a>
  */
 @Singleton
-@SuppressWarnings("serial")
+
 public final class RunControl extends JDialog implements Controller,
 		RunController {
 

@@ -10,7 +10,7 @@ import jam.io.ImpExpORNL;
  * 
  * @author Dale Visser
  */
-@SuppressWarnings("serial")
+
 final class ImportDamm extends AbstractImportFile {
 
 	@Inject

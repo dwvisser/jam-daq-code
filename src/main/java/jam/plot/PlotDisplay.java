@@ -44,7 +44,7 @@ import jam.ui.SelectionTree;
  * @since JDK1.1
  */
 @Singleton
-@SuppressWarnings("serial")
+
 public final class PlotDisplay extends JPanel implements
         PreferenceChangeListener, PropertyChangeListener, CurrentPlotAccessor,
         PlotSelectListener {

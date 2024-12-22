@@ -13,7 +13,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.logging.Level;
 
 import javax.swing.ButtonGroup;
@@ -46,9 +45,7 @@ import jam.util.NumberUtilities;
  * 
  * @author Dale Visser, Ken Swartz
  */
-@SuppressWarnings("serial")
-public final class Projections extends AbstractManipulation implements
-		PropertyChangeListener {
+public final class Projections extends AbstractManipulation {
 
 	private static final int CHOOSER_SIZE = 200;
 

@@ -14,7 +14,6 @@ import jam.io.ImpExpException;
  * object.
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
 class AbstractImportFile extends AbstractImportExport {
 
     private transient final Broadcaster broadcaster;

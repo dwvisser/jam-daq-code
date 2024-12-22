@@ -25,7 +25,7 @@ import jam.ui.SummaryTable;
  * @author Kennneth Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 public class ExportSummaryTableCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private final static int BUFFER_SIZE = 256 * 2;

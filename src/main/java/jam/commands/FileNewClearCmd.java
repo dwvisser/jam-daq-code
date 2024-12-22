@@ -23,7 +23,7 @@ import jam.global.SortMode;
  * @author Ken Swartz
  * 
  */
-@SuppressWarnings("serial")
+
 final class FileNewClearCmd extends AbstractCommand implements PropertyChangeListener {
 
 	private transient final JFrame frame;

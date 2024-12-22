@@ -12,7 +12,7 @@ import com.google.inject.Singleton;
  * @author Ken Swartz
  */
 @Singleton
-@SuppressWarnings("serial")
+
 public final class Broadcaster extends PropertyChangeSupport {
 
 	protected Broadcaster() {

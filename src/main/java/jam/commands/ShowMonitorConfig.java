@@ -14,7 +14,7 @@ import jam.global.JamStatus;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 4, 2004
  */
-@SuppressWarnings("serial")
+
 final class ShowMonitorConfig extends AbstractShowDialog implements PropertyChangeListener {
 
 	private transient final JamStatus status;

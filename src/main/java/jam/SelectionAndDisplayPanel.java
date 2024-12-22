@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 
 import jam.ui.SelectionTree;
 
-@SuppressWarnings("serial")
 final class SelectionAndDisplayPanel extends JSplitPane {
 	@Inject
 	protected SelectionAndDisplayPanel(final SelectionTree selectTree,

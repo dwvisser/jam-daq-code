@@ -23,7 +23,7 @@ import jam.ui.PanelOKApplyCancelButtons;
  * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  */
-@SuppressWarnings("serial")
+
 public class PeakFindDialog extends JDialog {
 
 	private static final Logger LOGGER = Logger.getLogger(PeakFindDialog.class

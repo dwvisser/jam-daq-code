@@ -10,7 +10,7 @@ import jam.io.ImpExpSPE;
  * 
  * @author Dale Visser
  */
-@SuppressWarnings("serial")
+
 final class ImportRadware extends AbstractImportFile {
 
 	@Inject

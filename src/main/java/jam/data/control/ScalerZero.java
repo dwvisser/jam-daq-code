@@ -26,7 +26,7 @@ import jam.global.Broadcaster;
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version June 3, 2004
  */
-@SuppressWarnings("serial")
+
 public class ScalerZero extends AbstractControl {
 
 	private transient final JButton bzero2;

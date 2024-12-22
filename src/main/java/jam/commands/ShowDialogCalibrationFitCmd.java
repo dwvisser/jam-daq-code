@@ -16,7 +16,7 @@ import jam.ui.SelectionTree;
  * 
  * @author Ken Swartz
  */
-@SuppressWarnings("serial")
+
 final class ShowDialogCalibrationFitCmd extends AbstractShowDialog implements
 		PropertyChangeListener {
 

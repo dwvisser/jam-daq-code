@@ -7,7 +7,7 @@ import jam.plot.color.ColorSettingsFrame;
  * @author Ken
  *
  */
-@SuppressWarnings("serial")
+
 final class ShowGradientSettings extends AbstractShowDialog {
 	
 	/**

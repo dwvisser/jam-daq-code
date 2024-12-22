@@ -5,3 +5,4 @@ classes/
 target/
 .settings/
 .project
+.classpath
