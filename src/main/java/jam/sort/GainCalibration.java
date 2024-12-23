@@ -150,7 +150,10 @@ public final class GainCalibration {
 		final StreamTokenizer tokenizer = new StreamTokenizer(lnr);
 		tokenizer.eolIsSignificant(false);
 		for (int i = 0; i < rows; i++) {
-			tokenizer.nextToken();
+			final int ttype = tokenizer.nextToken();
+			if (ttype == StreamTokenizer.TT_EOF) {
+				break;
+			}
 			final int parameter = (int) tokenizer.nval;
 			tokenizer.nextToken();
 			final double gain = tokenizer.nval;
