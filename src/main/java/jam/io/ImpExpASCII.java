@@ -183,7 +183,7 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 			lnr.readLine();
 		}
 		try (final Scanner scanner = new Scanner(lnr)) {
-			for (int i = 0; i < rows; i++) {
+			for (int i = 0; i < rows && scanner.hasNextDouble(); i++) {
 				final double nval = scanner.nextDouble();
 				if (nval > maxX) {
 					maxX = (int) nval;
@@ -225,7 +225,7 @@ public class ImpExpASCII extends AbstractImpExp {// NOPMD
 			lnr.readLine();
 		}
 		try (final Scanner scanner = new Scanner(lnr)) {
-			for (int i = 0; i < rows; i++) {
+			for (int i = 0; i < rows && scanner.hasNextDouble(); i++) {
 				final int channel = (int) scanner.nextDouble();
 				counts[channel] = scanner.nextDouble();
 			}
