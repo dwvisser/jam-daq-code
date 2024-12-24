@@ -48,3 +48,11 @@ lifecycle before
 the package phase:
 
     > mvn clean package
+
+I am not a Maven expert, so I am recording here what works for me to create a
+release executable jar file:
+
+    > mvn clean package assembly:single
+
+This will create a `target/Jam-X.y.z-jar-with-dependencies.jar` file that can be
+run as described above in [To Launch Jam](#to-launch-jam).
