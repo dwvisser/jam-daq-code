@@ -10,8 +10,6 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -158,8 +156,7 @@ public final class RuntimeSubclassIdentifier {
             }
             if (url != null) {
                 final URL passUrl = url;
-                loader = AccessController
-                        .doPrivileged((PrivilegedAction<ClassLoader>) () -> new URLClassLoader(new URL[] {passUrl }));
+                loader = new URLClassLoader(new URL[] {passUrl });
             }
         }
         if (classpath != null) {
@@ -374,8 +371,7 @@ public final class RuntimeSubclassIdentifier {
         }
         if (url != null) {
             final URL passUrl = url;
-            final ClassLoader loader = AccessController
-                    .doPrivileged((PrivilegedAction<ClassLoader>) () -> new URLClassLoader(new URL[] {passUrl }));
+            final ClassLoader loader = new URLClassLoader(new URL[] {passUrl });
             try {
                 rval = loader.loadClass(className);
             } catch (ClassNotFoundException e) {
