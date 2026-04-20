@@ -12,10 +12,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.internal.ArrayComparisonFailure;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * JUnit tests for <code>jam.sort.IRingBuffer</code>.
@@ -41,28 +40,25 @@ public final class RingBufferTest {// NOPMD
      *            result of getBuffer
      * @param input
      *            passed to putBuffer
-     * @throws ArrayComparisonFailure if array comparison is impossible
      */
     private void assertArraysEqualButNotSame(final byte[] output,
-            final byte[] input) throws ArrayComparisonFailure {
-        Assert.assertArrayEquals(ARRAYS_NOT_EQUAL, input, output);
-        Assert.assertNotSame("Expect two different arrays.", input, output);
+            final byte[] input) {
+        Assertions.assertArrayEquals(input, output, ARRAYS_NOT_EQUAL);
+        Assertions.assertNotSame(input, output, "Expect two different arrays.");
     }
 
     private void assertRingBufferEmpty(final RingBuffer ring2) {
-        Assert.assertTrue("Expected empty ring buffer.", ring2.isEmpty());
-        Assert.assertFalse("Expected ring buffer to not be full.",
-                ring2.isFull());
-        Assert.assertEquals("Expected all buffers in ring to be available.",
-                RingBuffer.NUMBER_BUFFERS, ring2.getAvailableBuffers());
+        Assertions.assertTrue(ring2.isEmpty(), "Expected empty ring buffer.");
+        Assertions.assertFalse(ring2.isFull(), "Expected ring buffer to not be full.");
+        Assertions.assertEquals(RingBuffer.NUMBER_BUFFERS, ring2.getAvailableBuffers(),
+                "Expected all buffers in ring to be available.");
     }
 
     private void assertRingBufferFull(final RingBuffer ring2) {
-        Assert.assertFalse("Expected ring buffer to not be empty.",
-                ring2.isEmpty());
-        Assert.assertTrue("Expected full ring buffer.", ring2.isFull());
-        Assert.assertEquals("Expected zero available buffers.", 0,
-                ring2.getAvailableBuffers());
+        Assertions.assertFalse(ring2.isEmpty(), "Expected ring buffer to not be empty.");
+        Assertions.assertTrue(ring2.isFull(), "Expected full ring buffer.");
+        Assertions.assertEquals(0, ring2.getAvailableBuffers(),
+                "Expected zero available buffers.");
     }
 
     /**
@@ -71,11 +67,11 @@ public final class RingBufferTest {// NOPMD
      */
     private void assertUsedBuffers(final RingBuffer ring2,
             final int usedBuffers) {
-        Assert.assertEquals("Expected " + usedBuffers + " buffers used.",
-                usedBuffers, ring2.getUsedBuffers());
+        Assertions.assertEquals(usedBuffers, ring2.getUsedBuffers(),
+                "Expected " + usedBuffers + " buffers used.");
         final int available = RingBuffer.NUMBER_BUFFERS - usedBuffers;
-        Assert.assertEquals("Expected " + available + " buffers available.",
-                available, ring2.getAvailableBuffers());
+        Assertions.assertEquals(available, ring2.getAvailableBuffers(),
+                "Expected " + available + " buffers available.");
     }
 
     private void clear(final RingBuffer ring2) {
@@ -105,19 +101,19 @@ public final class RingBufferTest {// NOPMD
      */
     private void putBuffer(final RingBuffer ring2, final byte[] buffer,
             final boolean expectedSuccess) {
-        final String message = expectedSuccess ? "Expected success putting buffer into ring."
-                : "Expected failure putting buffer into full ring.";
-        if (expectedSuccess) {
-            Assert.assertTrue(message, ring2.tryPutBuffer(buffer));
-        } else {
-            Assert.assertFalse(message, ring2.tryPutBuffer(buffer));
-        }
+            final String message = expectedSuccess ? "Expected success putting buffer into ring."
+                    : "Expected failure putting buffer into full ring.";
+            if (expectedSuccess) {
+                Assertions.assertTrue(ring2.tryPutBuffer(buffer), message);
+            } else {
+                Assertions.assertFalse(ring2.tryPutBuffer(buffer), message);
+            }
     }
 
     /**
      * Set up the test.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         ring = ringFactory.create();
         emptyRing = ringFactory.create(true);
@@ -130,8 +126,7 @@ public final class RingBufferTest {// NOPMD
     @Test
     public void testCorrectRingBufferClassForJRE() {
         final String actualClassName = ring.getClass().getName();
-        Assert.assertEquals("Expected a certain class.", actualClassName,
-                expectedClassName);
+        Assertions.assertEquals(expectedClassName, actualClassName, "Expected a certain class.");
     }
 
     /**
@@ -142,8 +137,7 @@ public final class RingBufferTest {// NOPMD
         this.clear(ring);
         this.fillEmptyRingBuffer(ring, RingBuffer.NUMBER_BUFFERS
                 - RingBuffer.CLOSE_TO_CAPACITY + 1);
-        Assert.assertTrue("Expected buffer to be close to full.",
-                ring.isCloseToFull());
+        Assertions.assertTrue(ring.isCloseToFull(), "Expected buffer to be close to full.");
     }
 
     /**
@@ -151,16 +145,16 @@ public final class RingBufferTest {// NOPMD
      */
     @Test
     public void testGetAvailableBuffers() {
-        Assert.assertEquals("Expected all buffers to be available.",
-                RingBuffer.NUMBER_BUFFERS, ring.getAvailableBuffers());
+        Assertions.assertEquals(RingBuffer.NUMBER_BUFFERS, ring.getAvailableBuffers(),
+                "Expected all buffers to be available.");
         final byte[] buffer = ringFactory.freshBuffer();
         for (int i = 0; i < RingBuffer.NUMBER_BUFFERS; i++) {
             putBuffer(ring, buffer, true);
             assertUsedBuffers(ring, i + 1);
         }
         assertRingBufferFull(ring);
-        Assert.assertEquals("Expect no available buffers in empty ring.", 0,
-                emptyRing.getAvailableBuffers());
+        Assertions.assertEquals(0, emptyRing.getAvailableBuffers(),
+                "Expect no available buffers in empty ring.");
         this.clear(ring);
     }
 
@@ -169,14 +163,13 @@ public final class RingBufferTest {// NOPMD
      */
     @Test
     public void testIsNull() {
-        Assert.assertTrue("emptyRing explicitly 'null'", emptyRing.isNull());
-        Assert.assertFalse("Allocated ring not null.", ring.isNull());
-        Assert.assertTrue("'null' rings are full.", emptyRing.isFull());
-        Assert.assertTrue("'null' rings are nearly full.",
-                emptyRing.isCloseToFull());
-        Assert.assertTrue("'null' rings are empty.", emptyRing.isEmpty());
-        Assert.assertEquals("'null' rings never have used buffers.", 0,
-                emptyRing.getUsedBuffers());
+        Assertions.assertTrue(emptyRing.isNull(), "emptyRing explicitly 'null'");
+        Assertions.assertFalse(ring.isNull(), "Allocated ring not null.");
+        Assertions.assertTrue(emptyRing.isFull(), "'null' rings are full.");
+        Assertions.assertTrue(emptyRing.isCloseToFull(), "'null' rings are nearly full.");
+        Assertions.assertTrue(emptyRing.isEmpty(), "'null' rings are empty.");
+        Assertions.assertEquals(0, emptyRing.getUsedBuffers(),
+                "'null' rings never have used buffers.");
     }
 
     /**
@@ -202,10 +195,8 @@ public final class RingBufferTest {// NOPMD
         assertRingBufferFull(ring);
         ring.getBuffer(out);
         /* Ring buffer is FIFO. */
-        Assert.assertFalse("Expected arrays to not be equal.",
-                Arrays.equals(buffer, out));
-        Assert.assertFalse("Expected ring buffer to not be full.",
-                ring.isFull());
+        Assertions.assertFalse(Arrays.equals(buffer, out), "Expected arrays to not be equal.");
+        Assertions.assertFalse(ring.isFull(), "Expected ring buffer to not be full.");
         putBuffer(ring, buffer, true);
         assertRingBufferFull(ring);
         putBuffer(ring, buffer, false);
@@ -224,15 +215,15 @@ public final class RingBufferTest {// NOPMD
         final Future<Boolean> putFuture = executor.submit(putter);
         final Future<byte[]> getFuture = executor.submit(getter);
         try {
-            Assert.assertTrue("Expected put to return true.",
-                    putFuture.get(timeoutMsec, TimeUnit.MILLISECONDS));
+            Assertions.assertTrue(putFuture.get(timeoutMsec, TimeUnit.MILLISECONDS),
+                    "Expected put to return true.");
             getFuture.get(timeoutMsec, TimeUnit.MILLISECONDS);
         } catch (InterruptedException ie) {
-            Assert.fail("Test interrupted.\n" + ie.getMessage());
+            Assertions.fail("Test interrupted.\n" + ie.getMessage());
         } catch (TimeoutException te) {
-            Assert.fail("Test timed out.\n" + te.getMessage());
+            Assertions.fail("Test timed out.\n" + te.getMessage());
         } catch (ExecutionException ee) {
-            Assert.fail("Worker threw an exception.\n" + ee.getMessage());
+            Assertions.fail("Worker threw an exception.\n" + ee.getMessage());
         }
     }
 

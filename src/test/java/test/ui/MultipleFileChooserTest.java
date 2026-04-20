@@ -1,6 +1,6 @@
 package test.ui;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import jam.ui.MultipleFileChooser;
 
 import java.io.File;
@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import javax.swing.JFileChooser;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Writing regression tests of some behavior of MultipleFileChooser, for bug

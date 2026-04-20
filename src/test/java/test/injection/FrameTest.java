@@ -1,13 +1,13 @@
 package test.injection;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import injection.Module;
 
 import java.awt.Frame;
 
 import javax.swing.JFrame;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -24,8 +24,8 @@ public class FrameTest {
     public void injectsCorrectFrame() {
         final Injector injector = Guice.createInjector(new Module());
         final JFrame jframe = injector.getInstance(JFrame.class);
-        assertEquals("Frame title should be 'Jam'", "Jam", jframe.getTitle());
+        assertEquals("Jam", jframe.getTitle(), "Frame title should be 'Jam'");
         final Frame frame = injector.getInstance(Frame.class);
-        assertEquals("jframe and frame should be same object", jframe, frame);
+        assertEquals(frame, jframe, "jframe and frame should be same object");
     }
 }

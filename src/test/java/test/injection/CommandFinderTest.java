@@ -1,10 +1,10 @@
 package test.injection;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import injection.Module;
 import jam.global.CommandFinder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -21,6 +21,6 @@ public class CommandFinderTest {
     public void testCommandFinderInjection() {
         final Injector injector = Guice.createInjector(new Module());
         final CommandFinder finder = injector.getInstance(CommandFinder.class);
-        assertNotNull("Want non-null CommandFinder injected.", finder);
+        assertNotNull(finder, "Want non-null CommandFinder injected.");
     }
 }

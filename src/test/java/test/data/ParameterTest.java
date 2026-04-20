@@ -1,12 +1,13 @@
 package test.data;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import jam.data.DataBase;
 import jam.data.DataParameter;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * JUnit tests for <code>jam.data.DataParameter</code>.
@@ -18,7 +19,7 @@ public class ParameterTest {// NOPMD
 	/**
 	 * Make sure DataParameter constructor throws for too long name.
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void createParameterFail() {
 		final StringBuilder name = new StringBuilder();
 		// loop generates name with one character too many
@@ -26,7 +27,7 @@ public class ParameterTest {// NOPMD
 			name.append('x');
 		}
 
-		new DataParameter(name.toString());
+		assertThrows(IllegalArgumentException.class, () -> new DataParameter(name.toString()));
 	}
 
 	/**
@@ -38,11 +39,10 @@ public class ParameterTest {// NOPMD
 		final String name = "param";
 		final String compare = name + "           ";
 		final DataParameter parameter1 = new DataParameter(name);
-		assertEquals("Expected unmodified name.", compare, parameter1
-				.getName());
+		assertEquals(compare, parameter1.getName(), "Expected unmodified name.");
 		final DataParameter parameter2 = new DataParameter(name);
 		final String compare2 = name + "        [1]";
-		assertEquals("Expected modified name.", compare2, parameter2.getName());
+		assertEquals(compare2, parameter2.getName(), "Expected modified name.");
 	}
 
 	/**
@@ -51,12 +51,12 @@ public class ParameterTest {// NOPMD
 	@Test
 	public void testGetSetValue() {
 		final DataParameter testParameter = new DataParameter("testValue");
-		assertEquals("Expected paramter inital value to be 0.", 0.0,
-				testParameter.getValue(), 0.001);
+		assertEquals(0.0, testParameter.getValue(), 0.001,
+			"Expected paramter inital value to be 0.");
 		final double value = 3.141592;
 		testParameter.setValue(value);
-		assertEquals("Expected the value we set.", value, testParameter
-				.getValue(), 0.001);
+		assertEquals(value, testParameter.getValue(), 0.001,
+			"Expected the value we set.");
 	}
 
 	/**
@@ -67,15 +67,8 @@ public class ParameterTest {// NOPMD
 		final String name = "testGet";
 		final DataParameter testParameter = new DataParameter(name);
 		final String paddedName = name + "         ";
-		assertSame("Expected to get parameter by name.", DataParameter
-				.getParameter(paddedName), testParameter);
-	}
-
-	/**
-	 * Clean up after tests.
-	 */
-	@After
-	public void tearDown() {
+		assertSame(DataParameter.getParameter(paddedName), testParameter,
+			"Expected to get parameter by name.");
 		DataBase.getInstance().clearAllLists();
 	}
 }

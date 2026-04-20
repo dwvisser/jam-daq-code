@@ -1,7 +1,7 @@
 package test.data;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import jam.data.AbstractHistogram;
 import jam.data.DataBase;
 import jam.data.Factory;
@@ -10,8 +10,8 @@ import jam.data.Group;
 
 import java.awt.Polygon;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * JUnit tests for <code>jam.data.Gate</code>.
@@ -46,12 +46,11 @@ public class GateTest {// NOPMD
 		final Gate gate1 = new Gate("g1", hist1);
 		gate1.setLimits(LOWER_LIMIT, UPPER_LIMIT);
 		final String expected = "Expected channel in gate1: ";
-		assertTrue(expected + LOWER_LIMIT, gate1.inGate(LOWER_LIMIT));
-		assertTrue(expected + UPPER_LIMIT, gate1.inGate(UPPER_LIMIT));
+		assertTrue(gate1.inGate(LOWER_LIMIT), expected + LOWER_LIMIT);
+		assertTrue(gate1.inGate(UPPER_LIMIT), expected + UPPER_LIMIT);
 		final String notExpected = "Did not expect channel in gate1: ";
-		assertFalse(notExpected + LL_MINUS_1, gate1.inGate(LL_MINUS_1));
-		assertFalse(notExpected + UL_PLUS_1, gate1
-				.inGate(UL_PLUS_1));
+		assertFalse(gate1.inGate(LL_MINUS_1), notExpected + LL_MINUS_1);
+		assertFalse(gate1.inGate(UL_PLUS_1), notExpected + UL_PLUS_1);
 	}
 
 	private String getAssertMessage(final int xchan, final int ychan,
@@ -76,36 +75,36 @@ public class GateTest {// NOPMD
 				GateTest.UL_PLUS_1, GateTest.UL_PLUS_1 };
 		final Polygon box = new Polygon(xpoints, ypoints, 4);
 		gate2.setLimits(box);
-		assertTrue(getAssertMessage(GateTest.LOWER_LIMIT, GateTest.IN_GATE,
-				true), gate2.inGate(GateTest.LOWER_LIMIT, GateTest.IN_GATE));
-		assertFalse(this.getAssertMessage(GateTest.LL_MINUS_1,
-				GateTest.IN_GATE, false), gate2.inGate(GateTest.LL_MINUS_1,
-				GateTest.IN_GATE));
-		assertTrue(this.getAssertMessage(GateTest.UPPER_LIMIT,
-				GateTest.IN_GATE, true), gate2.inGate(GateTest.UPPER_LIMIT,
-				GateTest.IN_GATE));
-		assertFalse(this.getAssertMessage(GateTest.UL_PLUS_1,
-				GateTest.IN_GATE, false), gate2.inGate(
-				GateTest.UL_PLUS_1, GateTest.IN_GATE));
-		assertTrue(this.getAssertMessage(GateTest.IN_GATE,
-				GateTest.LOWER_LIMIT, true), gate2.inGate(GateTest.IN_GATE,
-				GateTest.LOWER_LIMIT));
-		assertFalse(this.getAssertMessage(GateTest.IN_GATE,
-				GateTest.LL_MINUS_1, false), gate2.inGate(GateTest.IN_GATE,
-				GateTest.LL_MINUS_1));
-		assertTrue(this.getAssertMessage(GateTest.IN_GATE,
-				GateTest.UPPER_LIMIT, true), gate2.inGate(GateTest.IN_GATE,
-				GateTest.UPPER_LIMIT));
-		assertFalse(this.getAssertMessage(GateTest.IN_GATE,
-				GateTest.UL_PLUS_1, false), gate2.inGate(
-				GateTest.IN_GATE, GateTest.UL_PLUS_1));
+		assertTrue(gate2.inGate(GateTest.LOWER_LIMIT, GateTest.IN_GATE), getAssertMessage(GateTest.LOWER_LIMIT, GateTest.IN_GATE,
+				true));
+		assertFalse(gate2.inGate(GateTest.LL_MINUS_1,
+				GateTest.IN_GATE), this.getAssertMessage(GateTest.LL_MINUS_1,
+				GateTest.IN_GATE, false));
+		assertTrue(gate2.inGate(GateTest.UPPER_LIMIT,
+				GateTest.IN_GATE), this.getAssertMessage(GateTest.UPPER_LIMIT,
+				GateTest.IN_GATE, true));
+		assertFalse(gate2.inGate(
+				GateTest.UL_PLUS_1, GateTest.IN_GATE), this.getAssertMessage(GateTest.UL_PLUS_1,
+				GateTest.IN_GATE, false));
+		assertTrue(gate2.inGate(GateTest.IN_GATE,
+				GateTest.LOWER_LIMIT), this.getAssertMessage(GateTest.IN_GATE,
+				GateTest.LOWER_LIMIT, true));
+		assertFalse(gate2.inGate(GateTest.IN_GATE,
+				GateTest.LL_MINUS_1), this.getAssertMessage(GateTest.IN_GATE,
+				GateTest.LL_MINUS_1, false));
+		assertTrue(gate2.inGate(GateTest.IN_GATE,
+				GateTest.UPPER_LIMIT), this.getAssertMessage(GateTest.IN_GATE,
+				GateTest.UPPER_LIMIT, true));
+		assertFalse(gate2.inGate(
+				GateTest.IN_GATE, GateTest.UL_PLUS_1), this.getAssertMessage(GateTest.IN_GATE,
+				GateTest.UL_PLUS_1, false));
 
 	}
 
 	/**
 	 * Clear all data.
 	 */
-	@After
+	@AfterEach
 	public void tearDown() {
 		DataBase.getInstance().clearAllLists();
 	}

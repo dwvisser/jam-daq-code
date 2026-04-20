@@ -1,12 +1,12 @@
 package test.sort;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.After;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import injection.GuiceInjector;
 import jam.data.HistInt1D;
@@ -17,7 +17,7 @@ import jam.script.Session;
  * Suite of tests checking the proper behavior of the online sorting mode.
  * @author Dale Visser
  */
-@Ignore
+@Disabled
  public class SortOnlineTest {
 
     // TODO Make these tests pass *reliably*, and turn off Ignore.
@@ -32,14 +32,14 @@ import jam.script.Session;
         final String sortRoutineName = "help.sortfiles.EvsDE";
         OnlineTestCommon.setupWithinTimeoutPeriod(sortRoutineName);
         final HistInt1D energy = Utility.getOneDHistogramFromSortGroup("E");
-        assertNotNull("Expected histogram to exist.", energy);
+        assertNotNull(energy, "Expected histogram to exist.");
         return energy;
     }
 
     /**
      * Run after every test.
      */
-    @After
+    @AfterEach
     public void tearDown() {
         session.cancelOnline();
     }
@@ -69,7 +69,7 @@ import jam.script.Session;
             fail("Interrupted while sleeping." + ie.getMessage());
         }
         session.online.stop();
-        assertTrue("Expected counts > 0.", energy.getArea() > 0.0);
+        assertTrue(energy.getArea() > 0.0, "Expected counts > 0.");
     }
 
 }

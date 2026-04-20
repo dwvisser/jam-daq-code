@@ -1,7 +1,7 @@
 package test.sort;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import injection.GuiceInjector;
 import jam.data.Scaler;
@@ -38,7 +38,7 @@ public class OnlineScalerTest implements PropertyChangeListener {
     /**
      * set up before test
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         this.BROADCASTER.addPropertyChangeListener(this);
     }
@@ -46,7 +46,7 @@ public class OnlineScalerTest implements PropertyChangeListener {
     /**
      * Run after every test.
      */
-    @After
+    @AfterEach
     public void tearDown() {
         this.BROADCASTER.removePropertyChangeListener(this);
         session.cancelOnline();
@@ -58,30 +58,29 @@ public class OnlineScalerTest implements PropertyChangeListener {
      * @throws InterruptedException
      *             if times out waiting for scalers to update
      */
-    @Ignore
+    @Disabled
     @Test
     public void testListScalerSendsScalerValues() throws InterruptedException {
         // TODO Make this test pass *reliably*, and turn off Ignore.
         OnlineTestCommon
                 .setupWithinTimeoutPeriod("help.sortfiles.CamacScalerTest");
         final List<Scaler> scalerList = Scaler.getScalerList();
-        assertEquals("Expected list to have one element.", 1,
-                scalerList.size());
+        assertEquals(1, scalerList.size(),
+                "Expected list to have one element.");
         final Scaler scaler = scalerList.get(0);
         assertScalerValue(scaler, 0);
-        assertTrue("Expected status to be online.", GuiceInjector
-                .getObjectInstance(JamStatus.class).isOnline());
+        assertTrue(GuiceInjector
+                .getObjectInstance(JamStatus.class).isOnline(), "Expected status to be online.");
         session.readScalers();
         latch.await(500, TimeUnit.MILLISECONDS);
         assertTrue(
-                "Expected front end to have received a 'list scaler' command.",
-                OnlineTestCommon.getMessageReceiver().hasReceivedListScaler());
+                OnlineTestCommon.getMessageReceiver().hasReceivedListScaler(),
+                "Expected front end to have received a 'list scaler' command.");
         assertScalerValue(scaler, MessageSender.SCALER_VALUE);
     }
 
     private void assertScalerValue(final Scaler scaler, final int value) {
-        assertEquals("Expected scaler to have a value of " + value + ".",
-                value, scaler.getValue());
+        assertEquals(value, scaler.getValue(), "Expected scaler to have a value of " + value + ".");
     }
 
     @Override

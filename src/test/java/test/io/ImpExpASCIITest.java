@@ -1,8 +1,8 @@
 package test.io;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.data.Group;
@@ -16,9 +16,9 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for importing and exporting ASCII feature.
@@ -49,13 +49,10 @@ public final class ImpExpASCIITest {// NOPMD
     }
 
     private void assertCorrectHistogramProperties(final AbstractHistogram hist) {
-        assertNotNull("Expected to read a histogram.", hist);
-        assertEquals("Expecting a certain number of channels.", HIST_SIZE,
-                hist.getSizeX());
-        assertEquals("Expected one dimension.", HIST_DIMENSION,
-                hist.getDimensionality());
-        assertEquals("Expected a certain sum.", HIST_SUM,
-                Math.round(hist.getArea()));
+        assertNotNull(hist, "Expected to read a histogram.");
+        assertEquals(HIST_SIZE, hist.getSizeX(), "Expecting a certain number of channels.");
+        assertEquals(HIST_DIMENSION, hist.getDimensionality(), "Expected one dimension.");
+        assertEquals(HIST_SUM, Math.round(hist.getArea()), "Expected a certain sum.");
     }
 
     private void readHistDataAndCheck(final File file) throws ImpExpException {
@@ -71,7 +68,7 @@ public final class ImpExpASCIITest {// NOPMD
     /**
      * Setup for tests.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         AbstractHistogram.clearList();
         try {
@@ -92,7 +89,7 @@ public final class ImpExpASCIITest {// NOPMD
     /**
      * Tear down for tests.
      */
-    @After
+    @AfterEach
     public void tearDown() {
         AbstractHistogram.clearList();
     }

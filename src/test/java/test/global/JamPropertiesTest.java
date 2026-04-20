@@ -1,6 +1,6 @@
 package test.global;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jam.global.JamProperties;
 
@@ -9,8 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for property file parsing.
@@ -30,7 +30,7 @@ public final class JamPropertiesTest {// NOPMD
     /**
      * Setup for tests.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         final String tmpDir = System.getProperty(JAVA_IO_TMPDIR);
         final File out = new File(tmpDir, FILENAME);
@@ -51,7 +51,7 @@ public final class JamPropertiesTest {// NOPMD
     @Test
     public void test() {
         new JamProperties();
-        assertEquals("test property not what was set", TEST_VALUE, JamProperties
-                .getPropString(TEST_PROPERTY));
+        assertEquals(TEST_VALUE, JamProperties.getPropString(TEST_PROPERTY),
+                "test property not what was set");
     }
 }

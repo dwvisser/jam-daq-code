@@ -1,10 +1,10 @@
 package test.data.func;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import jam.data.func.CubicFunction;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test cubic fits.
@@ -30,8 +30,8 @@ public final class CubicFunctionTest {// NOPMD
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-		assertEquals("Expected number of terms = " + CUBIC_TERMS,
-				CUBIC_TERMS, function.getNumberTerms());
+		assertEquals(CUBIC_TERMS, function.getNumberTerms(),
+				"Expected number of terms = " + CUBIC_TERMS);
 	}
 
 }
