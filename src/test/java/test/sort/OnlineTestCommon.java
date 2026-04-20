@@ -1,6 +1,6 @@
 package test.sort;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import injection.GuiceInjector;
 import jam.script.Session;
 import jam.sort.stream.AbstractEventInputStream;

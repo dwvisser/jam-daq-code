@@ -3,10 +3,10 @@ package test.data;
 import jam.data.*;
 import jam.data.func.LinearFunction;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * JUnit tests for <code>jam.data.Histogram</code>.
@@ -44,7 +44,7 @@ public final class HistogramTest {// NOPMD
     /**
      * Initialize local variables for the tests.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         for (int i = 0; i < hist1.getSizeX(); i++) {
             hist1.setCounts(i, i);
@@ -63,7 +63,7 @@ public final class HistogramTest {// NOPMD
     /**
      * Clean up after tests.
      */
-    @After
+    @AfterEach
     public void tearDown() {
         DataBase.getInstance().clearAllLists();
     }
@@ -74,9 +74,8 @@ public final class HistogramTest {// NOPMD
     @Test
     public void testAddCounts() {
         final double area1before = hist1.getArea();
-        Assert.assertEquals(
-                "Expected getArea() and getCount() to yield the same result.",
-                area1before, hist1.getCount(), 0.001);
+        Assertions.assertEquals(area1before, hist1.getCount(), 0.001,
+                "Expected getArea() and getCount() to yield the same result.");
         hist1.addCounts(hist1.getCounts());
         assertAreaDoubled(hist1, area1before);
         final double area2before = hist2.getArea();
@@ -88,20 +87,19 @@ public final class HistogramTest {// NOPMD
         final double area2fbefore = hist2f.getArea();
         hist2f.addCounts(hist2f.getCounts());
         assertAreaDoubled(hist2f, area2fbefore);
-        Assert.assertFalse("Expected no errors to be set.", hist1
-                .hasErrorsSet());
+        Assertions.assertFalse(hist1.hasErrorsSet(), "Expected no errors to be set.");
         hist1.setErrors(new double[100]);
-        Assert.assertTrue("Expected errors to be set.", hist1.hasErrorsSet());
-        Assert.assertFalse("Expected no calibration.", hist1.isCalibrated());
+        Assertions.assertTrue(hist1.hasErrorsSet(), "Expected errors to be set.");
+        Assertions.assertFalse(hist1.isCalibrated(), "Expected no calibration.");
         hist1.setCalibration(new LinearFunction());
-        Assert.assertTrue("Expected calibration.", hist1.isCalibrated());
+        Assertions.assertTrue(hist1.isCalibrated(), "Expected calibration.");
     }
 
     private void assertAreaDoubled(final AbstractHistogram histogram,
             final double area1before) {
         final String should = "should be double before.";
-        Assert.assertEquals(histogram.getName() + should, histogram.getArea(),
-                2 * area1before, 0.001);
+        Assertions.assertEquals(2 * area1before, histogram.getArea(), 0.001,
+                histogram.getName() + should);
     }
 
     /**
@@ -113,8 +111,8 @@ public final class HistogramTest {// NOPMD
     public void testGetGates() {
         final int size = hist1.getGateCollection().getGates().size();
         final int expectedSize = 1;
-        Assert.assertEquals("Expected list size to be " + expectedSize, size,
-                expectedSize);
+        Assertions.assertEquals(expectedSize, size, 
+                "Expected list size to be " + expectedSize);
     }
 
     /**
@@ -123,15 +121,13 @@ public final class HistogramTest {// NOPMD
      */
     @Test
     public void testGetHistogram() {
-        Assert.assertNotNull("h1 nonexistent here", hist1);
-        Assert.assertNotNull("Couldn't find histogram named \""
-                + hist1.getFullName() + "\"", AbstractHistogram
-                .getHistogram(hist1.getFullName()));
-        Assert.assertNotNull("Couldn't find histogram named \""
-                + hist2.getFullName() + "\"", AbstractHistogram
-                .getHistogram(hist2.getFullName()));
-        Assert.assertNull("Found nonexistent histogram named \"notreal\"",
-                AbstractHistogram.getHistogram("notreal"));
+        Assertions.assertNotNull(hist1, "h1 nonexistent here");
+        Assertions.assertNotNull(AbstractHistogram.getHistogram(hist1.getFullName()), 
+                "Couldn't find histogram named \"" + hist1.getFullName() + "\"");
+        Assertions.assertNotNull(AbstractHistogram.getHistogram(hist2.getFullName()),
+                "Couldn't find histogram named \"" + hist2.getFullName() + "\"");
+        Assertions.assertNull(AbstractHistogram.getHistogram("notreal"),
+                "Found nonexistent histogram named \"notreal\"");
     }
 
     /**
@@ -156,8 +152,8 @@ public final class HistogramTest {// NOPMD
             message.append("not ");
         }
         message.append("have gate ").append(gate.getName());
-        Assert.assertEquals(message.toString(), hasGate, histogram
-                .getGateCollection().hasGate(gate));
+        Assertions.assertEquals(hasGate, histogram.getGateCollection().hasGate(gate),
+                message.toString());
     }
 
 }

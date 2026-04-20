@@ -1,6 +1,6 @@
 package test.sort;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import jam.sort.GainCalibration;
 import jam.sort.SortException;
 
@@ -8,8 +8,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the proper functioning of gain calibrations.
@@ -36,7 +36,7 @@ public final class GainCalibrationTest {
 	 * @throws IOException
 	 *             if there is a problem accessing the file system
 	 */
-	@Before
+	@BeforeEach
 	public void before() throws IOException {
 		calibrationFile = File.createTempFile("calibration", ".txt");
 		calibrationFile.deleteOnExit();
@@ -55,11 +55,11 @@ public final class GainCalibrationTest {
 	public void test() throws SortException {
 		final GainCalibration gain = new GainCalibration();
 		gain.gainFile(calibrationFile.getPath(), true);
-		assertEquals("Gain adjusted value should be 4.1", 4.1, gain
-				.adjustExact(0, 1), 0.001);
-		assertEquals("Gain adjusted value should be 3.0", 3.0, gain
-				.adjustExact(1, 1), 0.001);
-		assertEquals("Gain adjusted value should be 0.9", 0.9, gain
-				.adjustExact(2, 1), 0.001);
+		assertEquals(4.1, gain.adjustExact(0, 1), 0.001,
+				"Gain adjusted value should be 4.1");
+		assertEquals(3.0, gain.adjustExact(1, 1), 0.001,
+				"Gain adjusted value should be 3.0");
+		assertEquals(0.9, gain.adjustExact(2, 1), 0.001,
+				"Gain adjusted value should be 0.9");
 	}
 }

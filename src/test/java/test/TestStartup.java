@@ -1,13 +1,13 @@
 package test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import injection.GuiceInjector;
 import jam.Main;
 import jam.ui.ConsoleLog;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Dale Visser
@@ -18,7 +18,7 @@ public class TestStartup {
      * @throws Exception
      *             if an error occurs
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Main.main(null);
     }
@@ -27,7 +27,7 @@ public class TestStartup {
      * @throws Exception
      *             if an error occurs
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         // how do I do this?
         // until there is a nice way besides System.exit(0) to shut down the Jam
@@ -42,7 +42,6 @@ public class TestStartup {
         final String welcome = "Welcome to Jam";
         final String logString = GuiceInjector.getObjectInstance(
                 ConsoleLog.class).toString();
-        assertTrue("Expected log to start with \"" + welcome + "\".",
-                logString.contains(welcome));
+        assertTrue(logString.contains(welcome), "Expected log to start with \"" + welcome + "\".");
     }
 }

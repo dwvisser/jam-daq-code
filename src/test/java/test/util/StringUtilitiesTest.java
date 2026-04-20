@@ -6,8 +6,8 @@ package test.util;
 import injection.GuiceInjector;
 import jam.util.StringUtilities;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser </a>
@@ -25,12 +25,12 @@ public class StringUtilitiesTest {// NOPMD
         final int testLength = 8;
         final String test1 = "Dale";
         final String answer1 = "Dale    ";
-        Assert.assertEquals("Failed to lengthen String properly.",
-                util.makeLength(test1, testLength), answer1);
+        Assertions.assertEquals(answer1, util.makeLength(test1, testLength),
+                "Failed to lengthen String properly.");
         final String test2 = "Dale Visser";
         final String answer2 = "Dale Vis";
-        Assert.assertEquals("Failed to shorten String properly.",
-                util.makeLength(test2, testLength), answer2);
+        Assertions.assertEquals(answer2, util.makeLength(test2, testLength),
+                "Failed to shorten String properly.");
     }
 
     /**
@@ -40,8 +40,8 @@ public class StringUtilitiesTest {// NOPMD
     public final void testGetASCIIstring() {
         final byte[] hell = {0x48, 0x65, 0x6c, 0x6c };
         final String sHell = "Hell";
-        Assert.assertEquals("Failed to convert ASCII byte array properly.",
-                util.getASCIIstring(hell), sHell);
+        Assertions.assertEquals(sHell, util.getASCIIstring(hell),
+                "Failed to convert ASCII byte array properly.");
     }
 
 }

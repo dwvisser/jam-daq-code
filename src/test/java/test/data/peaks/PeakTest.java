@@ -1,9 +1,9 @@
 package test.data.peaks;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import jam.data.peaks.Peak;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * JUnit tests for <code>jam.data.peak.PeakTest</code>.
@@ -17,16 +17,16 @@ public final class PeakTest {// NOPMD
 	private static final String PEAK2 = " peak2";
 
 	private void assertGreaterThan(final Peak peak1, final Peak peak2) {
-		assertEquals(SHOULD + ">" + PEAK2, 1, peak1.compareTo(peak2));
-	}
+        assertEquals(1, peak1.compareTo(peak2), SHOULD + ">" + PEAK2);
+    }
 
-	private void assertLessThan(final Peak peak1, final Peak peak2) {
-		assertEquals(SHOULD + "<" + PEAK2, -1, peak1.compareTo(peak2));
-	}
+    private void assertLessThan(final Peak peak1, final Peak peak2) {
+        assertEquals(-1, peak1.compareTo(peak2), SHOULD + "<" + PEAK2);
+    }
 
-	private void assertSameAs(final Peak peak1, final Peak peak2) {
-		assertEquals(SHOULD + "==" + PEAK2, 0, peak1.compareTo(peak2));
-	}
+    private void assertSameAs(final Peak peak1, final Peak peak2) {
+        assertEquals(0, peak1.compareTo(peak2), SHOULD + "==" + PEAK2);
+    }
 
 	/**
 	 * Test for <code>compareTo(Object)</code>.

@@ -1,7 +1,7 @@
 package test;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.platform.suite.api.SelectClasses;
+import org.junit.platform.suite.api.Suite;
 
 import test.data.GateTest;
 import test.data.HistogramTest;
@@ -26,8 +26,8 @@ import test.util.StringUtilitiesTest;
  * 
  * @author Dale Visser
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ GateTest.class, HistogramTest.class, ParameterTest.class,
+@Suite
+@SelectClasses({ GateTest.class, HistogramTest.class, ParameterTest.class,
 		PeakTest.class, ImpExpASCIITest.class, GainCalibrationTest.class,
 		RingBufferTest.class, CubicFunctionTest.class, JamPropertiesTest.class,
 		SortOfflineTest.class, SortOnlineTest.class, OnlineScalerTest.class,

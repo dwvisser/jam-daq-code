@@ -7,8 +7,8 @@ import jam.script.Session;
 
 import java.io.File;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests reading HDF files.
@@ -27,10 +27,9 @@ public class HDFIOTest {
         try {
             final File file = session.defineFile(SAMPLE_HDF);
             final HDFIO hdfio = GuiceInjector.getObjectInstance(HDFIO.class);
-            Assert.assertTrue("Expected readFile success = true.",
-                    hdfio.readFile(FileOpenMode.OPEN, file));
+            Assertions.assertTrue(hdfio.readFile(FileOpenMode.OPEN, file), "Expected readFile success = true.");
         } catch (RuntimeException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
     }
 
