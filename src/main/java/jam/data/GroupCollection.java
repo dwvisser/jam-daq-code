@@ -1,128 +1,120 @@
 package jam.data;
 
 import jam.data.Group.Type;
-
 import java.util.*;
 
 /**
  * Collection of groups.
- * 
+ *
  * @author Dale Visser
- * 
  */
-final class GroupCollection implements NameValueCollection<Group>,
-		SortGroupGetter {
+final class GroupCollection implements NameValueCollection<Group>, SortGroupGetter {
 
-	private GroupCollection() {
-		// singleton
-	}
+  private GroupCollection() {
+    // singleton
+  }
 
-	/**
-	 * Clear a group, removes it
-	 * 
-	 * @param group to remove
-	 */
-	public void remove(final Group group) {
-		this.map.remove(group.getName());
-		this.list.remove(group);
-	}
+  /**
+   * Clear a group, removes it
+   *
+   * @param group to remove
+   */
+  public void remove(final Group group) {
+    this.map.remove(group.getName());
+    this.list.remove(group);
+  }
 
-	/** Map of all groups using name */
-	private transient final Map<String, Group> map = new HashMap<>();
-	/** List of all groups */
-	private transient final List<Group> list = new ArrayList<>();
+  /** Map of all groups using name */
+  private final transient Map<String, Group> map = new HashMap<>();
 
-	private transient final Object lock = new Object();
-	/** The sort group, group with sort histogram */
-	private transient Group sortGroup;
+  /** List of all groups */
+  private final transient List<Group> list = new ArrayList<>();
 
-	public void remap(final Group group, final String oldName,
-			final String newName) {
-		if (group != get(oldName)) {
-			throw new IllegalArgumentException(
-					"Given group is not currently mapped to '" + oldName + "'.");
-		}
+  private final transient Object lock = new Object();
 
-		if (this.containsName(newName)) {
-			throw new IllegalArgumentException(
-					"You may not rename to an existing name.");
-		}
+  /** The sort group, group with sort histogram */
+  private transient Group sortGroup;
 
-		this.map.remove(oldName);
-		this.map.put(newName, group);
-	}
+  public void remap(final Group group, final String oldName, final String newName) {
+    if (group != get(oldName)) {
+      throw new IllegalArgumentException(
+          "Given group is not currently mapped to '" + oldName + "'.");
+    }
 
-	/**
-	 * Clear all groups
-	 */
-	public void clear() {
-		synchronized (lock) {
-			this.map.clear();
-			this.list.clear();
-			this.sortGroup = null; // NOPMD
-		}
-	}
+    if (this.containsName(newName)) {
+      throw new IllegalArgumentException("You may not rename to an existing name.");
+    }
 
-	/**
-	 * Returns the group with the given name.
-	 * 
-	 * @param name
-	 *            of group
-	 * @return the group
-	 */
-	public Group get(final String name) {
-		return this.map.get(name);
-	}
+    this.map.remove(oldName);
+    this.map.put(newName, group);
+  }
 
-	/**
-	 * @param name
-	 *            of group
-	 * @return whether collection contains a group with the given name
-	 */
-	public boolean containsName(final String name) {
-		return this.map.containsKey(name);
-	}
+  /** Clear all groups */
+  public void clear() {
+    synchronized (lock) {
+      this.map.clear();
+      this.list.clear();
+      this.sortGroup = null; // NOPMD
+    }
+  }
 
-	public Set<String> getNameSet() {
-		return this.map.keySet();
-	}
+  /**
+   * Returns the group with the given name.
+   *
+   * @param name of group
+   * @return the group
+   */
+  public Group get(final String name) {
+    return this.map.get(name);
+  }
 
-	public void add(final Group group, final String uniqueName) {
-		if (Type.SORT == group.getType()) {
-			if (this.sortGroup != null) {
-				throw new IllegalStateException(
-						"There may not be more than 1 sort group.");
-			}
-			this.sortGroup = group;
-		}
-		this.list.add(group);
-		this.map.put(uniqueName, group);
-	}
+  /**
+   * @param name of group
+   * @return whether collection contains a group with the given name
+   */
+  public boolean containsName(final String name) {
+    return this.map.containsKey(name);
+  }
 
-	/**
-	 * Gets a list of all groups.
-	 * 
-	 * @return list of all groups
-	 */
-	public List<Group> getList() {
-		return Collections.unmodifiableList(this.list);
-	}
+  public Set<String> getNameSet() {
+    return this.map.keySet();
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see jam.data.SortGroupGetter#getSortGroup()
-	 */
-	public Group getSortGroup() {
-		return this.sortGroup;
-	}
+  public void add(final Group group, final String uniqueName) {
+    if (Type.SORT == group.getType()) {
+      if (this.sortGroup != null) {
+        throw new IllegalStateException("There may not be more than 1 sort group.");
+      }
+      this.sortGroup = group;
+    }
+    this.list.add(group);
+    this.map.put(uniqueName, group);
+  }
 
-	private static final GroupCollection INSTANCE = new GroupCollection();
+  /**
+   * Gets a list of all groups.
+   *
+   * @return list of all groups
+   */
+  public List<Group> getList() {
+    return Collections.unmodifiableList(this.list);
+  }
 
-	/**
-	 * @return the singleton instance
-	 */
-	protected static SortGroupGetter getInstance() {
-		return INSTANCE;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see jam.data.SortGroupGetter#getSortGroup()
+   */
+  public Group getSortGroup() {
+    return this.sortGroup;
+  }
+
+  private static final GroupCollection INSTANCE = new GroupCollection();
+
+  /**
+   * @return the singleton instance
+   */
+  protected static SortGroupGetter getInstance() {
+    return INSTANCE;
+  }
 }

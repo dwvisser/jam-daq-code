@@ -1,54 +1,54 @@
 package jam.plot;
 
 /**
- * Defines the pixel coordinates that contain the plot itself. I.e., doesn't
- * count labels or axes, just internal points to the plot.
- * 
+ * Defines the pixel coordinates that contain the plot itself. I.e., doesn't count labels or axes,
+ * just internal points to the plot.
+ *
  * @author Dale Visser
  */
 final class PlotInternalView {
 
-	PlotInternalView() {
-		super();
-	}
+  PlotInternalView() {
+    super();
+  }
 
-	private transient int right;
+  private transient int right;
 
-	private transient int bottom;
+  private transient int bottom;
 
-	private transient int width;
+  private transient int width;
 
-	private transient int height;
+  private transient int height;
 
-	protected void setRight(final int value) {
-		right = value;
-	}
+  protected void setRight(final int value) {
+    right = value;
+  }
 
-	protected int getRight() {
-		return right;
-	}
+  protected int getRight() {
+    return right;
+  }
 
-	protected void setBottom(final int value) {
-		bottom = value;
-	}
+  protected void setBottom(final int value) {
+    bottom = value;
+  }
 
-	protected int getBottom() {
-		return bottom;
-	}
+  protected int getBottom() {
+    return bottom;
+  }
 
-	protected void setWidth(final int value) {
-		width = value;
-	}
+  protected void setWidth(final int value) {
+    width = value;
+  }
 
-	protected int getWidth() {
-		return width;
-	}
+  protected int getWidth() {
+    return width;
+  }
 
-	protected void setHeight(final int value) {
-		height = value;
-	}
+  protected void setHeight(final int value) {
+    height = value;
+  }
 
-	protected int getHeight() {
-		return height;
-	}
+  protected int getHeight() {
+    return height;
+  }
 }

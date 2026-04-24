@@ -2,40 +2,27 @@ package jam.plot;
 
 /**
  * Enumeration type to represent the different modes of gate setting.
- * 
+ *
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Jan 26, 2004
  */
 enum GateSetMode {
-	
-	/**
-	 * settting a new gate
-	 */
-	GATE_NEW,
 
-	/**
-	 * cancel the setting of a gate
-	 */
-	GATE_CANCEL,
+  /** settting a new gate */
+  GATE_NEW,
 
-	/**
-	 * continue setting gate
-	 */
-	GATE_CONTINUE,
-	
-	/**
-	 * add a point to setting gate
-	 */
-	GATE_ADD,
-	
-	/**
-	 * add a point to setting gate
-	 */
-	GATE_REMOVE,
+  /** cancel the setting of a gate */
+  GATE_CANCEL,
 
-	/**
-	 * save the gate that is being set
-	 */
-	GATE_SAVE
+  /** continue setting gate */
+  GATE_CONTINUE,
+
+  /** add a point to setting gate */
+  GATE_ADD,
+
+  /** add a point to setting gate */
+  GATE_REMOVE,
+
+  /** save the gate that is being set */
+  GATE_SAVE
 }
-	

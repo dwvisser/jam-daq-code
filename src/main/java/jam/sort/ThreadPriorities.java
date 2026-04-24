@@ -1,10 +1,10 @@
 package jam.sort;
 
 /**
- * <p>Constants affecting thread priorities. Conventional
- * priorities are listed in the table below. The table source notes, however, that
- * particular JVMs may use the priorities differently, and may
- * choose to ignore <code>Thread.setPriority()</code> altogether.</p>
+ * Constants affecting thread priorities. Conventional priorities are listed in the table below. The
+ * table source notes, however, that particular JVMs may use the priorities differently, and may
+ * choose to ignore <code>Thread.setPriority()</code> altogether.
+ *
  * <table>
  * <caption>Thread priorities taken from
  * <cite>Concurrent Programming in Java, 2nd Ed.</cite>.</caption>
@@ -15,41 +15,36 @@ package jam.sort;
  * <tr><td>2-3</td><td>Background computation</td></tr>
  * <tr><td>1</td><td>Run only if nothing else can</td></tr>
  * </table>
- * 
+ *
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Apr 12, 2004
  */
 public final class ThreadPriorities {
-	
-	private ThreadPriorities(){
-		super();
-	}
 
-	/**
-	 * Priority value for <code>jam.sort.NetDaemon</code>. Note that
-	 * while this may seem like I/O, the arrival of a data packet
-	 * is an important <em>event</em> that must be handled ASAP.
-	 */
-	public static final int NET = 9;
+  private ThreadPriorities() {
+    super();
+  }
 
-	/**
-	 * Priority value for <code>jam.VMECommunication</code>. Messages
-	 * from the VME are also events, but of a lower priority than
-	 * data packets.
-	 */
-	public static final int MESSAGING = 7;
+  /**
+   * Priority value for <code>jam.sort.NetDaemon</code>. Note that while this may seem like I/O, the
+   * arrival of a data packet is an important <em>event</em> that must be handled ASAP.
+   */
+  public static final int NET = 9;
 
-	/**
-	 * Priority value for <code>jam.sort.StorageDaemon</code>, a 
-	 * relatively high priority thread for writing event data to 
-	 * disk.
-	 */
-	public static final int STORAGE = 6;
-	
-	/**
-	 * Priority value for <code>jam.sort.SortDaemon</code>, which
-	 * qualifies as background computation.
-	 */
-	public static final int SORT = 3;
-	
+  /**
+   * Priority value for <code>jam.VMECommunication</code>. Messages from the VME are also events,
+   * but of a lower priority than data packets.
+   */
+  public static final int MESSAGING = 7;
+
+  /**
+   * Priority value for <code>jam.sort.StorageDaemon</code>, a relatively high priority thread for
+   * writing event data to disk.
+   */
+  public static final int STORAGE = 6;
+
+  /**
+   * Priority value for <code>jam.sort.SortDaemon</code>, which qualifies as background computation.
+   */
+  public static final int SORT = 3;
 }

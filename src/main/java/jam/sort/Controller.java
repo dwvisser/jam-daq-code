@@ -1,9 +1,9 @@
 package jam.sort;
 
 /**
- * Interface that a class for data taking must implement. Contains methods that
- * SortDaemon and StorageDaemon call when done sorting and writing out data.
- * 
+ * Interface that a class for data taking must implement. Contains methods that SortDaemon and
+ * StorageDaemon call when done sorting and writing out data.
+ *
  * @author Ken Swartz
  * @author Dale Visser
  * @version 0.9
@@ -11,15 +11,14 @@ package jam.sort;
  */
 public interface Controller {
 
-	/**
-	 * Called back by sortDaemon thread when sort encounters a end-run-marker or
-	 * a end of file marker.
-	 */
-	void atSortEnd();
+  /**
+   * Called back by sortDaemon thread when sort encounters a end-run-marker or a end of file marker.
+   */
+  void atSortEnd();
 
-	/**
-	 * Method called back by <code>StorageDaemon</code> when it encouters a
-	 * end-run-marker and has closed the data event file it was writing data to.
-	 */
-	void atWriteEnd();
+  /**
+   * Method called back by <code>StorageDaemon</code> when it encouters a end-run-marker and has
+   * closed the data event file it was writing data to.
+   */
+  void atWriteEnd();
 }

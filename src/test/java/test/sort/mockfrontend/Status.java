@@ -7,47 +7,42 @@
 package test.sort.mockfrontend;
 
 /**
- * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Feb 15, 2004
  */
-
 public class Status extends NamedTextPanel {
-	static class Value {
+  static class Value {
 
-		private static final String[] VALUES = { "Booted", "Initialized",
-				"Started", "Stopped" };
+    private static final String[] VALUES = {"Booted", "Initialized", "Started", "Stopped"};
 
-		private transient final String stringValue;
+    private final transient String stringValue;
 
-		private Value(final int value) {
-			this.stringValue = VALUES[value];
-		}
+    private Value(final int value) {
+      this.stringValue = VALUES[value];
+    }
 
-		public static final Value BOOTED = new Value(0);
-		public static final Value INIT = new Value(1);
-		public static final Value START = new Value(2);
-		public static final Value STOP = new Value(3);
+    public static final Value BOOTED = new Value(0);
+    public static final Value INIT = new Value(1);
+    public static final Value START = new Value(2);
+    public static final Value STOP = new Value(3);
 
-		@Override
-		public String toString() {
-			return stringValue;
-		}
-	}
+    @Override
+    public String toString() {
+      return stringValue;
+    }
+  }
 
-	/**
-	 * @param init
-	 *            initial value
-	 */
-	public Status(final Value init) {
-		super("Status", init.toString());
-	}
+  /**
+   * @param init initial value
+   */
+  public Status(final Value init) {
+    super("Status", init.toString());
+  }
 
-	/**
-	 * @param value
-	 *            new value
-	 */
-	public final void setValue(final Value value) {
-		this.setText(value.toString());
-	}
+  /**
+   * @param value new value
+   */
+  public final void setValue(final Value value) {
+    this.setText(value.toString());
+  }
 }

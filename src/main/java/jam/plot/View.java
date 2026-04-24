@@ -4,174 +4,175 @@ import injection.GuiceInjector;
 import jam.data.AbstractHistogram;
 import jam.global.Nameable;
 import jam.util.StringUtilities;
-
 import java.util.*;
 
 /**
- * Represents the number and arrangements of plots to show within the
- * <code>Display</code>.
+ * Represents the number and arrangements of plots to show within the <code>Display</code>.
+ *
  * @author Ken Swartz
  * @version 2004-11-03
  * @see PlotDisplay
  */
 public final class View {
 
-    private final static List<String> NAME_LIST;
+  private static final List<String> NAME_LIST;
 
-    private final static Map<String, View> MAP;
+  private static final Map<String, View> MAP;
 
-    static {
-        NAME_LIST = new ArrayList<>();
-        MAP = new TreeMap<>();
+  static {
+    NAME_LIST = new ArrayList<>();
+    MAP = new TreeMap<>();
+  }
+
+  /** Default view--one plot in the window. */
+  public static final View SINGLE = new View("Single", 1, 1);
+
+  private static final int NAME_LENGTH = 20;
+
+  private final transient String name;
+
+  private final transient int nRows;
+
+  private final transient int nCols;
+
+  private final transient String[] histogramNames;
+
+  /**
+   * Constructs a new view.
+   *
+   * @param viewName the name to associate with the view.
+   * @param rows number of rows of plots
+   * @param cols number of columns of plots
+   */
+  public View(final String viewName, final int rows, final int cols) {
+    super();
+    if (rows < 1) {
+      throw new IllegalArgumentException("Can't have a view with " + rows + " rows.");
     }
-
-    /**
-     * Default view--one plot in the window.
-     */
-    public static final View SINGLE = new View("Single", 1, 1);
-
-    private static final int NAME_LENGTH = 20;
-
-    private transient final String name;
-
-    private transient final int nRows;
-
-    private transient final int nCols;
-
-    private transient final String[] histogramNames;
-
-    /**
-     * Constructs a new view.
-     * @param viewName
-     *            the name to associate with the view.
-     * @param rows
-     *            number of rows of plots
-     * @param cols
-     *            number of columns of plots
-     */
-    public View(final String viewName, final int rows, final int cols) {
-        super();
-        if (rows < 1) {
-            throw new IllegalArgumentException("Can't have a view with "
-                    + rows + " rows.");
-        }
-        if (cols < 1) {
-            throw new IllegalArgumentException("Can't have a view with "
-                    + cols + " columns.");
-        }
-        String tempName = viewName;
-        nRows = rows;
-        nCols = cols;
-        int prime;
-        final int numHists = rows * cols;
-        histogramNames = new String[numHists];
-        prime = 1;
-        while (MAP.containsKey(tempName)) {
-            final String addition = "[" + prime + "]";
-            tempName = GuiceInjector.getObjectInstance(StringUtilities.class)
-                    .makeLength(tempName, // NOPMD
-                            NAME_LENGTH - addition.length());
-            tempName += addition;// NOPMD
-            prime++;
-        }
-        name = tempName;
-        addView(name, this);
+    if (cols < 1) {
+      throw new IllegalArgumentException("Can't have a view with " + cols + " columns.");
     }
-
-    private static void addView(final String name, final View view) {
-        synchronized (View.class) {
-            MAP.put(name, view);
-            NAME_LIST.add(name);
-        }
+    String tempName = viewName;
+    nRows = rows;
+    nCols = cols;
+    int prime;
+    final int numHists = rows * cols;
+    histogramNames = new String[numHists];
+    prime = 1;
+    while (MAP.containsKey(tempName)) {
+      final String addition = "[" + prime + "]";
+      tempName =
+          GuiceInjector.getObjectInstance(StringUtilities.class)
+              .makeLength(
+                  tempName, // NOPMD
+                  NAME_LENGTH - addition.length());
+      tempName += addition; // NOPMD
+      prime++;
     }
+    name = tempName;
+    addView(name, this);
+  }
 
-    /**
-     * Gets the list of view names.
-     * @return list of the names of the existing views
-     */
-    public static List<String> getNameList() {
-        return Collections.unmodifiableList(NAME_LIST);
+  private static void addView(final String name, final View view) {
+    synchronized (View.class) {
+      MAP.put(name, view);
+      NAME_LIST.add(name);
     }
+  }
 
-    /**
-     * Get the view with the given name.
-     * @param name
-     *            of the view
-     * @return the view
-     */
-    public static View getView(final String name) {
-        synchronized (View.class) {
-            return MAP.get(name);
-        }
-    }
+  /**
+   * Gets the list of view names.
+   *
+   * @return list of the names of the existing views
+   */
+  public static List<String> getNameList() {
+    return Collections.unmodifiableList(NAME_LIST);
+  }
 
-    /**
-     * Remove the view with the given name.
-     * @param name
-     *            of view to delete
-     */
-    public static void removeView(final String name) {
-        synchronized (View.class) {
-            MAP.remove(name);
-            NAME_LIST.remove(name);
-        }
+  /**
+   * Get the view with the given name.
+   *
+   * @param name of the view
+   * @return the view
+   */
+  public static View getView(final String name) {
+    synchronized (View.class) {
+      return MAP.get(name);
     }
+  }
 
-    /**
-     * Get the number of rows
-     * @return rows
-     */
-    protected int getRows() {
-        return nRows;
+  /**
+   * Remove the view with the given name.
+   *
+   * @param name of view to delete
+   */
+  public static void removeView(final String name) {
+    synchronized (View.class) {
+      MAP.remove(name);
+      NAME_LIST.remove(name);
     }
+  }
 
-    /**
-     * Get the number of columns
-     * @return columns
-     */
-    protected int getColumns() {
-        return nCols;
-    }
+  /**
+   * Get the number of rows
+   *
+   * @return rows
+   */
+  protected int getRows() {
+    return nRows;
+  }
 
-    /**
-     * Get the number of histogram plots.
-     * @return the number of plots
-     */
-    protected int getNumberHists() {
-        return histogramNames.length;
-    }
+  /**
+   * Get the number of columns
+   *
+   * @return columns
+   */
+  protected int getColumns() {
+    return nCols;
+  }
 
-    /**
-     * Returns the histogram associatied with the given plot.
-     * @param num
-     *            which plot
-     * @return histogram for the given plot
-     */
-    protected AbstractHistogram getHistogram(final int num) {
-        return AbstractHistogram.getHistogram(histogramNames[num]);
-    }
+  /**
+   * Get the number of histogram plots.
+   *
+   * @return the number of plots
+   */
+  protected int getNumberHists() {
+    return histogramNames.length;
+  }
 
-    /**
-     * Associates the given histogram with the given plot.
-     * @param num
-     *            which plot
-     * @param histIn
-     *            the Histogram
-     */
-    protected void setHistogram(final int num, final Nameable histIn) {
-        if (histIn == null) {
-            histogramNames[num] = "";
-        } else {
-            histogramNames[num] = histIn instanceof AbstractHistogram ? ((AbstractHistogram) histIn)
-                    .getFullName() : histIn.getName();
-        }
-    }
+  /**
+   * Returns the histogram associatied with the given plot.
+   *
+   * @param num which plot
+   * @return histogram for the given plot
+   */
+  protected AbstractHistogram getHistogram(final int num) {
+    return AbstractHistogram.getHistogram(histogramNames[num]);
+  }
 
-    /**
-     * Gets the name of this view.
-     * @return the name of this view
-     */
-    public String getName() {
-        return name;
+  /**
+   * Associates the given histogram with the given plot.
+   *
+   * @param num which plot
+   * @param histIn the Histogram
+   */
+  protected void setHistogram(final int num, final Nameable histIn) {
+    if (histIn == null) {
+      histogramNames[num] = "";
+    } else {
+      histogramNames[num] =
+          histIn instanceof AbstractHistogram
+              ? ((AbstractHistogram) histIn).getFullName()
+              : histIn.getName();
     }
+  }
+
+  /**
+   * Gets the name of this view.
+   *
+   * @return the name of this view
+   */
+  public String getName() {
+    return name;
+  }
 }

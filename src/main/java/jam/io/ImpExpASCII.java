@@ -1,5 +1,14 @@
 package jam.io;
 
+import com.google.inject.Inject;
+import jam.data.AbstractHistogram;
+import jam.data.Factory;
+import jam.data.HistDouble1D;
+import jam.data.HistDouble2D;
+import jam.data.HistInt1D;
+import jam.data.HistInt2D;
+import jam.data.HistogramType;
+import jam.ui.ExtensionFileFilter;
 import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,418 +22,392 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.nio.CharBuffer;
 import java.util.Scanner;
-
 import javax.swing.filechooser.FileFilter;
 
-import com.google.inject.Inject;
-
-import jam.data.AbstractHistogram;
-import jam.data.Factory;
-import jam.data.HistDouble1D;
-import jam.data.HistDouble2D;
-import jam.data.HistInt1D;
-import jam.data.HistInt2D;
-import jam.data.HistogramType;
-import jam.ui.ExtensionFileFilter;
-
 /**
- * Imports and exports histograms in ASCII channel-space-counts-return format.
- * This is usefol for easy import into other applications. For 1-D histograms,
- * the format looks like, e.g. <code><br>
+ * Imports and exports histograms in ASCII channel-space-counts-return format. This is usefol for
+ * easy import into other applications. For 1-D histograms, the format looks like, e.g. <code><br>
  * 0 0<br>
  * 1 2<br>
  * 3 5<br>
  * ...</code>
- * <P>
- * For 2-d histograms, the format all bins for a particular x-channel on one
- * line, with the y channels listed sequentially on the line. E.g., a 4x4
- * histogram where the bin counts are '2x+y' looks as follows:<code><br>
+ *
+ * <p>For 2-d histograms, the format all bins for a particular x-channel on one line, with the y
+ * channels listed sequentially on the line. E.g., a 4x4 histogram where the bin counts are '2x+y'
+ * looks as follows:<code><br>
  * 0 1 2 3<br>
  * 2 3 4 5<br>
  * 4 5 6 7<br>
  * 6 7 8 9<br></code>
- * </p>
- * 
+ *
  * @author Ken Swartz
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale W Visser</a>
  * @version 1.0
  */
-public class ImpExpASCII extends AbstractImpExp {// NOPMD
+public class ImpExpASCII extends AbstractImpExp { // NOPMD
 
-	private transient boolean line1isTitle = false;
+  private transient boolean line1isTitle = false;
 
-	private static final String[] EXTS = { "dat", "txt" };
+  private static final String[] EXTS = {"dat", "txt"};
 
-	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
-			EXTS, "Text file");
+  private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(EXTS, "Text file");
 
-	/**
-	 * @param frame
-	 *            application frame
-	 */
-	@Inject
-	public ImpExpASCII(final Frame frame) {
-		super(frame);
-	}
+  /**
+   * @param frame application frame
+   */
+  @Inject
+  public ImpExpASCII(final Frame frame) {
+    super(frame);
+  }
 
-	@Override
-	protected FileFilter getFileFilter() {
-		return FILTER;
-	}
+  @Override
+  protected FileFilter getFileFilter() {
+    return FILTER;
+  }
 
-	@Override
-	protected String getDefaultExtension() {
-		return FILTER.getExtension(0);
-	}
+  @Override
+  protected String getDefaultExtension() {
+    return FILTER.getExtension(0);
+  }
 
-	@Override
-	public String getFormatDescription() {
-		return FILTER.getDescription();
-	}
+  @Override
+  public String getFormatDescription() {
+    return FILTER.getDescription();
+  }
 
-	@Override
-	public boolean openFile(final File file) throws ImpExpException {
-		return openFile(file, "Import text file ");
-	}
+  @Override
+  public boolean openFile(final File file) throws ImpExpException {
+    return openFile(file, "Import text file ");
+  }
 
-	/**
-	 * Write out the data as a ASCII file. XVGR can read the format directly.
-	 * 
-	 * @param hist
-	 *            the current <code>Histogram</code>
-	 * @exception ImpExpException
-	 *                all exceptions given to <code>ImpExpException</code> go to
-	 *                the msgHandler
-	 */
-	@Override
-	public void saveFile(final AbstractHistogram hist) throws ImpExpException {
-		saveFile("Export text file ", hist);
-	}
+  /**
+   * Write out the data as a ASCII file. XVGR can read the format directly.
+   *
+   * @param hist the current <code>Histogram</code>
+   * @exception ImpExpException all exceptions given to <code>ImpExpException</code> go to the
+   *     msgHandler
+   */
+  @Override
+  public void saveFile(final AbstractHistogram hist) throws ImpExpException {
+    saveFile("Export text file ", hist);
+  }
 
-	/**
-	 * Read ASCII data from an <code>InputStream</code>. The first lines may be
-	 * a header these lines are read in until a line with leading token that is
-	 * a number is found. The first line of the header will be used as the
-	 * title. (Its first token as above cannot be a number.)
-	 * 
-	 * <p>
-	 * Data after the header may be one or two numbers per line. For one number
-	 * per line, these are assumed to be the counts starting at ch 0. For two
-	 * numbers per line, the first number is the channel and the second number
-	 * the counts in that channel.
-	 * </p>
-	 * 
-	 * @param inStream
-	 *            the stream to read the histogram from
-	 * @exception ImpExpException
-	 *                exception related to import/export
-	 */
-	@Override
-	protected void readData(final InputStream inStream) throws ImpExpException {
-		double[] counts;
-		double[][] counts2d;
+  /**
+   * Read ASCII data from an <code>InputStream</code>. The first lines may be a header these lines
+   * are read in until a line with leading token that is a number is found. The first line of the
+   * header will be used as the title. (Its first token as above cannot be a number.)
+   *
+   * <p>Data after the header may be one or two numbers per line. For one number per line, these are
+   * assumed to be the counts starting at ch 0. For two numbers per line, the first number is the
+   * channel and the second number the counts in that channel.
+   *
+   * @param inStream the stream to read the histogram from
+   * @exception ImpExpException exception related to import/export
+   */
+  @Override
+  protected void readData(final InputStream inStream) throws ImpExpException {
+    double[] counts;
+    double[][] counts2d;
 
-		try {
-			final String titleHist = getHistTitle();
-			// also determines whether 1st line is title
-			String nameHist = getFileName(getLastFile());
-			nameHist = nameHist.substring(0, nameHist.indexOf('.'));
-			final int rows = getNumberOfRows();
-			final int cols = getNumberOfColumns();
-			switch (cols) {
-			case 0:
-				return;
-			case 1:
-				counts = new double[rows];
-				readHistY(inStream, nameHist, titleHist, counts);
-				break;
-			case 2:
-				getMaxChannelsXY(rows);
-				counts = new double[maxX + 1];
-				readHistXY(inStream, nameHist, titleHist, counts, rows);
-				break;
-			case 3:
-				getMaxChannelsXYZ(rows);
-				counts2d = new double[maxX + 1][maxY + 1];
-				readHistXYZ(inStream, nameHist, titleHist, counts2d, rows);
-				break;
-			default:// >=4 cases
-				counts2d = new double[rows][cols];
-				readHistMatrix(inStream, nameHist, titleHist, counts2d);
-				break;
-			}
-		} catch (IOException ioe) {
-			throw new ImpExpException("Problem importing ASCII.", ioe);
-		}
-	}
+    try {
+      final String titleHist = getHistTitle();
+      // also determines whether 1st line is title
+      String nameHist = getFileName(getLastFile());
+      nameHist = nameHist.substring(0, nameHist.indexOf('.'));
+      final int rows = getNumberOfRows();
+      final int cols = getNumberOfColumns();
+      switch (cols) {
+        case 0:
+          return;
+        case 1:
+          counts = new double[rows];
+          readHistY(inStream, nameHist, titleHist, counts);
+          break;
+        case 2:
+          getMaxChannelsXY(rows);
+          counts = new double[maxX + 1];
+          readHistXY(inStream, nameHist, titleHist, counts, rows);
+          break;
+        case 3:
+          getMaxChannelsXYZ(rows);
+          counts2d = new double[maxX + 1][maxY + 1];
+          readHistXYZ(inStream, nameHist, titleHist, counts2d, rows);
+          break;
+        default: // >=4 cases
+          counts2d = new double[rows][cols];
+          readHistMatrix(inStream, nameHist, titleHist, counts2d);
+          break;
+      }
+    } catch (IOException ioe) {
+      throw new ImpExpException("Problem importing ASCII.", ioe);
+    }
+  }
 
-	private void readHistY(final InputStream inputStream, final String name,
-			final String title, double[] counts) throws IOException {
-		final LineNumberReader lnr = new LineNumberReader(
-				new InputStreamReader(inputStream));
-		if (this.line1isTitle) {
-			lnr.readLine();
-		}
-		try (final Scanner scanner = new Scanner(lnr)) {
-			for (int i = 0; i < counts.length; i++) {
-				counts[i] = scanner.nextDouble();
-			}
-		}
-		Factory.createHistogram(importGroup, counts, name, title);
-	}
+  private void readHistY(
+      final InputStream inputStream, final String name, final String title, double[] counts)
+      throws IOException {
+    final LineNumberReader lnr = new LineNumberReader(new InputStreamReader(inputStream));
+    if (this.line1isTitle) {
+      lnr.readLine();
+    }
+    try (final Scanner scanner = new Scanner(lnr)) {
+      for (int i = 0; i < counts.length; i++) {
+        counts[i] = scanner.nextDouble();
+      }
+    }
+    Factory.createHistogram(importGroup, counts, name, title);
+  }
 
-	private transient int maxX, maxY;
+  private transient int maxX, maxY;
 
-	private void getMaxChannelsXY(final int rows) throws IOException {
-		maxX = 0;
-		final LineNumberReader lnr = new LineNumberReader(new FileReader(
-				getLastFile()));
-		if (this.line1isTitle) {
-			lnr.readLine();
-		}
-		try (final Scanner scanner = new Scanner(lnr)) {
-			for (int i = 0; i < rows && scanner.hasNextDouble(); i++) {
-				final double nval = scanner.nextDouble();
-				if (nval > maxX) {
-					maxX = (int) nval;
-				}
-				scanner.nextDouble();
-			}
-		}
-	}
+  private void getMaxChannelsXY(final int rows) throws IOException {
+    maxX = 0;
+    final LineNumberReader lnr = new LineNumberReader(new FileReader(getLastFile()));
+    if (this.line1isTitle) {
+      lnr.readLine();
+    }
+    try (final Scanner scanner = new Scanner(lnr)) {
+      for (int i = 0; i < rows && scanner.hasNextDouble(); i++) {
+        final double nval = scanner.nextDouble();
+        if (nval > maxX) {
+          maxX = (int) nval;
+        }
+        scanner.nextDouble();
+      }
+    }
+  }
 
-	private void getMaxChannelsXYZ(final int rows) throws IOException {
-		maxX = 0;
-		maxY = 0;
-		final LineNumberReader lnr = new LineNumberReader(new FileReader(
-				getLastFile()));
-		if (this.line1isTitle) {
-			lnr.readLine();
-		}
-		try (final Scanner scanner = new Scanner(lnr)) {
-			for (int i = 0; i < rows; i++) {
-				double nval = scanner.nextDouble();
-				if (nval > maxX) {
-					maxX = (int) nval;
-				}
-				nval = scanner.nextDouble();
-				if (nval > maxY) {
-					maxY = (int) nval;
-				}
-				scanner.nextDouble();
-			}
-		}
-	}
+  private void getMaxChannelsXYZ(final int rows) throws IOException {
+    maxX = 0;
+    maxY = 0;
+    final LineNumberReader lnr = new LineNumberReader(new FileReader(getLastFile()));
+    if (this.line1isTitle) {
+      lnr.readLine();
+    }
+    try (final Scanner scanner = new Scanner(lnr)) {
+      for (int i = 0; i < rows; i++) {
+        double nval = scanner.nextDouble();
+        if (nval > maxX) {
+          maxX = (int) nval;
+        }
+        nval = scanner.nextDouble();
+        if (nval > maxY) {
+          maxY = (int) nval;
+        }
+        scanner.nextDouble();
+      }
+    }
+  }
 
-	private void readHistXY(final InputStream inputStream, final String name,
-			final String title, double[] counts, final int rows)
-			throws IOException {
-		final LineNumberReader lnr = new LineNumberReader(
-				new InputStreamReader(inputStream));
-		if (this.line1isTitle) {
-			lnr.readLine();
-		}
-		try (final Scanner scanner = new Scanner(lnr)) {
-			for (int i = 0; i < rows && scanner.hasNextDouble(); i++) {
-				final int channel = (int) scanner.nextDouble();
-				counts[channel] = scanner.nextDouble();
-			}
-		}
-		Factory.createHistogram(importGroup, counts, name, title);
-	}
+  private void readHistXY(
+      final InputStream inputStream,
+      final String name,
+      final String title,
+      double[] counts,
+      final int rows)
+      throws IOException {
+    final LineNumberReader lnr = new LineNumberReader(new InputStreamReader(inputStream));
+    if (this.line1isTitle) {
+      lnr.readLine();
+    }
+    try (final Scanner scanner = new Scanner(lnr)) {
+      for (int i = 0; i < rows && scanner.hasNextDouble(); i++) {
+        final int channel = (int) scanner.nextDouble();
+        counts[channel] = scanner.nextDouble();
+      }
+    }
+    Factory.createHistogram(importGroup, counts, name, title);
+  }
 
-	private void readHistXYZ(final InputStream inputStream, final String name,
-			final String title, double[][] counts, final int rows)
-			throws IOException {
-		final LineNumberReader lnr = new LineNumberReader(
-				new InputStreamReader(inputStream));
-		if (this.line1isTitle) {
-			lnr.readLine();
-		}
-		try (final Scanner scanner = new Scanner(lnr)) {
-			for (int i = 0; i < rows; i++) {
-				final int channelX = (int) scanner.nextDouble();
-				final int channelY = (int) scanner.nextDouble();
-				counts[channelX][channelY] = scanner.nextDouble();
-			}
-		}
-		Factory.createHistogram(importGroup, counts, name, title);
-	}
+  private void readHistXYZ(
+      final InputStream inputStream,
+      final String name,
+      final String title,
+      double[][] counts,
+      final int rows)
+      throws IOException {
+    final LineNumberReader lnr = new LineNumberReader(new InputStreamReader(inputStream));
+    if (this.line1isTitle) {
+      lnr.readLine();
+    }
+    try (final Scanner scanner = new Scanner(lnr)) {
+      for (int i = 0; i < rows; i++) {
+        final int channelX = (int) scanner.nextDouble();
+        final int channelY = (int) scanner.nextDouble();
+        counts[channelX][channelY] = scanner.nextDouble();
+      }
+    }
+    Factory.createHistogram(importGroup, counts, name, title);
+  }
 
-	private void readHistMatrix(final InputStream inputStream,
-			final String name, final String title, double[][] counts)
-			throws IOException {
-		final LineNumberReader lnr = new LineNumberReader(
-				new InputStreamReader(inputStream));
-		if (this.line1isTitle) {
-			lnr.readLine();
-		}
-		try (final Scanner scanner = new Scanner(lnr)) {
-			for (int i = 0; i < counts.length; i++) {
-				for (int j = 0; j < counts[0].length; j++) {
-					counts[i][j] = scanner.nextDouble();
-				}
-			}
-		}
-		Factory.createHistogram(importGroup, counts, name, title);
-	}
+  private void readHistMatrix(
+      final InputStream inputStream, final String name, final String title, double[][] counts)
+      throws IOException {
+    final LineNumberReader lnr = new LineNumberReader(new InputStreamReader(inputStream));
+    if (this.line1isTitle) {
+      lnr.readLine();
+    }
+    try (final Scanner scanner = new Scanner(lnr)) {
+      for (int i = 0; i < counts.length; i++) {
+        for (int j = 0; j < counts[0].length; j++) {
+          counts[i][j] = scanner.nextDouble();
+        }
+      }
+    }
+    Factory.createHistogram(importGroup, counts, name, title);
+  }
 
-	private String getHistTitle() throws IOException {
-		String rval;
-		try (final InputStreamReader isr = new InputStreamReader(
-				new FileInputStream(getLastFile()));
-			 final Scanner scanner = new Scanner(isr)) {
-			/* Make a tokenizer for input stream. */
-			/*
-			* Read in header lines, header are lines that start with a non-number
-			* token.
-			*/
+  private String getHistTitle() throws IOException {
+    String rval;
+    try (final InputStreamReader isr = new InputStreamReader(new FileInputStream(getLastFile()));
+        final Scanner scanner = new Scanner(isr)) {
+      /* Make a tokenizer for input stream. */
+      /*
+       * Read in header lines, header are lines that start with a non-number
+       * token.
+       */
 
-			line1isTitle = scanner.hasNext("[a-zA-Z]\\w*");
-			if (line1isTitle) {
-				rval = scanner.next();
-			} else {
-				rval = getFileName(getLastFile());
-				rval = rval.substring(0, rval.indexOf('.'));
-			}
-		}
-		return rval;
-	}
+      line1isTitle = scanner.hasNext("[a-zA-Z]\\w*");
+      if (line1isTitle) {
+        rval = scanner.next();
+      } else {
+        rval = getFileName(getLastFile());
+        rval = rval.substring(0, rval.indexOf('.'));
+      }
+    }
+    return rval;
+  }
 
-	private int getNumberOfRows() throws IOException {
-		int rval;
-		LineNumberReader lnr = null;
-		try {
-			lnr = new LineNumberReader(new FileReader(getLastFile()));
-			/*
-			 * Read in header lines. Headers are lines that start with a
-			 * non-number token.
-			 */
-			if (line1isTitle) {
-				lnr.readLine();
-			} else {
-				lnr.setLineNumber(1);
-			}
-			final CharBuffer buffer = CharBuffer.allocate(8 * 1024);
-			int numRead;
-			do {
-				numRead = lnr.read(buffer);
-				buffer.clear();
-			} while (numRead >= 0);
-			rval = lnr.getLineNumber();
-		} finally {
-			if (lnr != null) {
-				lnr.close();
-			}
-		}
-		return rval;
-	}
+  private int getNumberOfRows() throws IOException {
+    int rval;
+    LineNumberReader lnr = null;
+    try {
+      lnr = new LineNumberReader(new FileReader(getLastFile()));
+      /*
+       * Read in header lines. Headers are lines that start with a
+       * non-number token.
+       */
+      if (line1isTitle) {
+        lnr.readLine();
+      } else {
+        lnr.setLineNumber(1);
+      }
+      final CharBuffer buffer = CharBuffer.allocate(8 * 1024);
+      int numRead;
+      do {
+        numRead = lnr.read(buffer);
+        buffer.clear();
+      } while (numRead >= 0);
+      rval = lnr.getLineNumber();
+    } finally {
+      if (lnr != null) {
+        lnr.close();
+      }
+    }
+    return rval;
+  }
 
-	private int getNumberOfColumns() throws IOException {
-		int result = 0;
-		LineNumberReader lnr = null;
-		String line;
-		try {
-			lnr = new LineNumberReader(new FileReader(getLastFile()));
-			/*
-			 * Read in header lines. Headers are lines that start with a
-			 * non-number token.
-			 */
-			if (line1isTitle) {
-				lnr.readLine();
-			}
-			line = lnr.readLine();
-		} finally {
-			if (lnr != null) {
-				lnr.close();
-			}
-		}
-		if (line != null) {
-			try (final Scanner scanner = new Scanner(new StringReader(line))) {
-				while (scanner.hasNextDouble()) {
-					scanner.nextDouble();
-					result++;
-				}
-			}
-		}
-		return result;
-	}
+  private int getNumberOfColumns() throws IOException {
+    int result = 0;
+    LineNumberReader lnr = null;
+    String line;
+    try {
+      lnr = new LineNumberReader(new FileReader(getLastFile()));
+      /*
+       * Read in header lines. Headers are lines that start with a
+       * non-number token.
+       */
+      if (line1isTitle) {
+        lnr.readLine();
+      }
+      line = lnr.readLine();
+    } finally {
+      if (lnr != null) {
+        lnr.close();
+      }
+    }
+    if (line != null) {
+      try (final Scanner scanner = new Scanner(new StringReader(line))) {
+        while (scanner.hasNextDouble()) {
+          scanner.nextDouble();
+          result++;
+        }
+      }
+    }
+    return result;
+  }
 
-	/**
-	 * Write out a data into a ascii text file.
-	 * 
-	 * @param buffout
-	 *            the stream to write the histogram to
-	 * @param hist
-	 *            the histogram to write
-	 * @exception ImpExpException
-	 *                all exceptions given to <code>ImpExpException</code> go to
-	 *                the msgHandler
-	 */
-	@Override
-	protected void writeHist(final OutputStream buffout,
-			final AbstractHistogram hist) throws ImpExpException {
-		try {
-			final PrintWriter writer = new PrintWriter(buffout);
-			if (hist.getType() == HistogramType.ONE_DIM_INT) {
-				final int[] counts = ((HistInt1D) hist).getCounts();
-				writeHist(writer, counts, hist.getSizeX());
-			} else if (hist.getType() == HistogramType.ONE_D_DOUBLE) {
-				final double[] countsD = ((HistDouble1D) hist).getCounts();
-				for (int i = 0; i < hist.getSizeX(); i++) {
-					// output a row of data channel counts
-					writer.print(i);
-					writer.print("   ");
-					writer.println(countsD[i]);
-				}
-			} else if (hist.getType() == HistogramType.TWO_DIM_INT) {
-				final int[][] counts = ((HistInt2D) hist).getCounts();
-				writeHist(writer, counts, hist.getSizeX(), hist.getSizeY());
-			} else if (hist.getType() == HistogramType.TWO_D_DOUBLE) {
-				final double[][] counts = ((HistDouble2D) hist).getCounts();
-				for (int x = 0; x < hist.getSizeX(); x++) {
-					for (int y = 0; y < hist.getSizeY(); y++) {
-						writer.print(counts[x][y]);
-						writer.print("\t");
-					}
-					writer.println();
-				}
-			}
-			writer.flush();
-			buffout.flush();
-		} catch (IOException ioe) {
-			throw new ImpExpException(ioe);
-		}
-	}
+  /**
+   * Write out a data into a ascii text file.
+   *
+   * @param buffout the stream to write the histogram to
+   * @param hist the histogram to write
+   * @exception ImpExpException all exceptions given to <code>ImpExpException</code> go to the
+   *     msgHandler
+   */
+  @Override
+  protected void writeHist(final OutputStream buffout, final AbstractHistogram hist)
+      throws ImpExpException {
+    try {
+      final PrintWriter writer = new PrintWriter(buffout);
+      if (hist.getType() == HistogramType.ONE_DIM_INT) {
+        final int[] counts = ((HistInt1D) hist).getCounts();
+        writeHist(writer, counts, hist.getSizeX());
+      } else if (hist.getType() == HistogramType.ONE_D_DOUBLE) {
+        final double[] countsD = ((HistDouble1D) hist).getCounts();
+        for (int i = 0; i < hist.getSizeX(); i++) {
+          // output a row of data channel counts
+          writer.print(i);
+          writer.print("   ");
+          writer.println(countsD[i]);
+        }
+      } else if (hist.getType() == HistogramType.TWO_DIM_INT) {
+        final int[][] counts = ((HistInt2D) hist).getCounts();
+        writeHist(writer, counts, hist.getSizeX(), hist.getSizeY());
+      } else if (hist.getType() == HistogramType.TWO_D_DOUBLE) {
+        final double[][] counts = ((HistDouble2D) hist).getCounts();
+        for (int x = 0; x < hist.getSizeX(); x++) {
+          for (int y = 0; y < hist.getSizeY(); y++) {
+            writer.print(counts[x][y]);
+            writer.print("\t");
+          }
+          writer.println();
+        }
+      }
+      writer.flush();
+      buffout.flush();
+    } catch (IOException ioe) {
+      throw new ImpExpException(ioe);
+    }
+  }
 
-	private void writeHist(final PrintWriter writer, final int[] counts,
-			final int sizeX) {
-		for (int i = 0; i < sizeX; i++) {
-			// output a row of data channel counts
-			writer.print(i);
-			writer.print("   ");
-			writer.println(counts[i]);
-		}
-	}
+  private void writeHist(final PrintWriter writer, final int[] counts, final int sizeX) {
+    for (int i = 0; i < sizeX; i++) {
+      // output a row of data channel counts
+      writer.print(i);
+      writer.print("   ");
+      writer.println(counts[i]);
+    }
+  }
 
-	private void writeHist(final PrintWriter writer, final int[][] counts,
-			final int sizeX, final int sizeY) {
-		for (int x = 0; x < sizeX; x++) {
-			for (int y = 0; y < sizeY; y++) {
-				writer.print(counts[x][y]);
-				writer.print("\t");
-			}
-			writer.println();
-		}
-	}
+  private void writeHist(
+      final PrintWriter writer, final int[][] counts, final int sizeX, final int sizeY) {
+    for (int x = 0; x < sizeX; x++) {
+      for (int y = 0; y < sizeY; y++) {
+        writer.print(counts[x][y]);
+        writer.print("\t");
+      }
+      writer.println();
+    }
+  }
 
-	@Override
-	public boolean canExport() {
-		return true;
-	}
+  @Override
+  public boolean canExport() {
+    return true;
+  }
 
-	@Override
-	protected boolean batchExportAllowed() {
-		return true;
-	}
+  @Override
+  protected boolean batchExportAllowed() {
+    return true;
+  }
 }

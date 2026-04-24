@@ -1,25 +1,6 @@
 package jam.data.control;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.beans.PropertyChangeEvent;
-import java.util.logging.Level;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-
 import com.google.inject.Inject;
-
 import jam.data.AbstractHist1D;
 import jam.data.AbstractHistogram;
 import jam.data.DataException;
@@ -33,412 +14,434 @@ import jam.global.JamStatus;
 import jam.ui.PanelOKApplyCancelButtons;
 import jam.ui.SelectionTree;
 import jam.util.NumberUtilities;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.beans.PropertyChangeEvent;
+import java.util.logging.Level;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Combine histograms and also normalize a histogram
- * 
+ *
  * @author Dale Visser, Ken Swartz
  */
 public class Combine extends AbstractManipulation {
 
-	private transient final JComboBox<Object> cfrom1, cfrom2, cto;
+  private final transient JComboBox<Object> cfrom1, cfrom2, cto;
 
-	private transient JCheckBox cnorm;
+  private transient JCheckBox cnorm;
 
-	private transient final JCheckBox cplus, cminus, ctimes, cdiv;
+  private final transient JCheckBox cplus, cminus, ctimes, cdiv;
 
-	private transient double fac1;
+  private transient double fac1;
 
-	private transient double fac2;
+  private transient double fac2;
 
-	private transient AbstractHist1D hto;
+  private transient AbstractHist1D hto;
 
-	private transient final JLabel lname, lWith;
+  private final transient JLabel lname, lWith;
+  private final transient JTextField ttextto, ttimes1, ttimes2;
 
-	private transient final JTextField ttextto, ttimes1, ttimes2;
+  private final transient NumberUtilities numberUtilities;
 
-	private transient final NumberUtilities numberUtilities;
+  /**
+   * Construct a new "manipulate histograms" dialog.
+   *
+   * @param frame application frame
+   * @param status application status
+   * @param broadcaster broadcasts state changes
+   * @param numberUtilities number utilities
+   */
+  @Inject
+  public Combine(
+      final Frame frame,
+      final JamStatus status,
+      final Broadcaster broadcaster,
+      final NumberUtilities numberUtilities) {
+    super(frame, "Manipulate 1-D Histograms", false, broadcaster);
+    this.numberUtilities = numberUtilities;
+    setResizable(false);
+    Dimension dim;
+    int meanCharWidth;
+    // UI
+    final Container cdmanip = getContentPane();
+    int hgap = 5;
+    int vgap = 5;
+    cdmanip.setLayout(new BorderLayout(hgap, vgap));
+    setLocation(20, 50);
 
-	/**
-	 * Construct a new "manipulate histograms" dialog.
-	 * 
-	 * @param frame
-	 *            application frame
-	 * 
-	 * @param status
-	 *            application status
-	 * @param broadcaster
-	 *            broadcasts state changes
-	 * @param numberUtilities
-	 *            number utilities
-	 * 
-	 */
-	@Inject
-	public Combine(final Frame frame, final JamStatus status,
-			final Broadcaster broadcaster, final NumberUtilities numberUtilities) {
-		super(frame, "Manipulate 1-D Histograms", false, broadcaster);
-		this.numberUtilities = numberUtilities;
-		setResizable(false);
-		Dimension dim;
-		int meanCharWidth;
-		// UI
-		final Container cdmanip = getContentPane();
-		int hgap = 5;
-		int vgap = 5;
-		cdmanip.setLayout(new BorderLayout(hgap, vgap));
-		setLocation(20, 50);
+    // Labels panel
+    final JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
+    pLabels.setBorder(new EmptyBorder(10, 10, 0, 0));
+    cdmanip.add(pLabels, BorderLayout.WEST);
+    lWith = new JLabel("With histogram", SwingConstants.RIGHT);
+    pLabels.add(new JLabel("From  histogram", SwingConstants.RIGHT));
+    pLabels.add(new JLabel("Operation", SwingConstants.RIGHT));
+    pLabels.add(lWith);
+    pLabels.add(new JLabel("To histogram", SwingConstants.RIGHT));
 
-		// Labels panel
-		final JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
-		pLabels.setBorder(new EmptyBorder(10, 10, 0, 0));
-		cdmanip.add(pLabels, BorderLayout.WEST);
-		lWith = new JLabel("With histogram", SwingConstants.RIGHT);
-		pLabels.add(new JLabel("From  histogram", SwingConstants.RIGHT));
-		pLabels.add(new JLabel("Operation", SwingConstants.RIGHT));
-		pLabels.add(lWith);
-		pLabels.add(new JLabel("To histogram", SwingConstants.RIGHT));
+    // Entries Panel
+    final JPanel pEntries = new JPanel(new GridLayout(0, 1, hgap, vgap));
+    pEntries.setBorder(new EmptyBorder(10, 0, 0, 10));
+    cdmanip.add(pEntries, BorderLayout.CENTER);
 
-		// Entries Panel
-		final JPanel pEntries = new JPanel(new GridLayout(0, 1, hgap, vgap));
-		pEntries.setBorder(new EmptyBorder(10, 0, 0, 10));
-		cdmanip.add(pEntries, BorderLayout.CENTER);
+    // From Panel
+    final JPanel pfrom1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    pEntries.add(pfrom1);
+    cfrom1 = new JComboBox<>();
+    meanCharWidth = getMeanCharWidth(cfrom1.getFontMetrics(cfrom1.getFont()));
+    dim = cfrom1.getPreferredSize();
+    dim.width = CHAR_LENGTH * meanCharWidth;
+    cfrom1.setPreferredSize(dim);
 
-		// From Panel
-		final JPanel pfrom1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		pEntries.add(pfrom1);
-		cfrom1 = new JComboBox<>();
-		meanCharWidth = getMeanCharWidth(cfrom1
-				.getFontMetrics(cfrom1.getFont()));
-		dim = cfrom1.getPreferredSize();
-		dim.width = CHAR_LENGTH * meanCharWidth;
-		cfrom1.setPreferredSize(dim);
+    cfrom1.addItem("1DHISTOGRAM1");
+    pfrom1.add(cfrom1);
+    pfrom1.add(new JLabel("x"));
+    ttimes1 = new JTextField("1.0", 8);
+    pfrom1.add(ttimes1);
 
-		cfrom1.addItem("1DHISTOGRAM1");
-		pfrom1.add(cfrom1);
-		pfrom1.add(new JLabel("x"));
-		ttimes1 = new JTextField("1.0", 8);
-		pfrom1.add(ttimes1);
+    // Operation Panel
+    final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    pEntries.add(pradio);
+    final ButtonGroup cbg = new ButtonGroup();
 
-		// Operation Panel
-		final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		pEntries.add(pradio);
-		final ButtonGroup cbg = new ButtonGroup();
+    addNormCheckbox(pradio, cbg);
 
-		addNormCheckbox(pradio, cbg);
+    cplus = new JCheckBox("Add", false);
+    cplus.addItemListener(event -> enableInputWith(true));
+    cbg.add(cplus);
+    pradio.add(cplus);
 
-		cplus = new JCheckBox("Add", false);
-		cplus.addItemListener(event -> enableInputWith(true));
-		cbg.add(cplus);
-		pradio.add(cplus);
+    cminus = new JCheckBox("Subtract", false);
+    cminus.addItemListener(event -> enableInputWith(true));
+    cbg.add(cminus);
+    pradio.add(cminus);
 
-		cminus = new JCheckBox("Subtract", false);
-		cminus.addItemListener(event -> enableInputWith(true));
-		cbg.add(cminus);
-		pradio.add(cminus);
+    ctimes = new JCheckBox("Multiply", false);
+    ctimes.addItemListener(event -> enableInputWith(true));
+    cbg.add(ctimes);
+    pradio.add(ctimes);
 
-		ctimes = new JCheckBox("Multiply", false);
-		ctimes.addItemListener(event -> enableInputWith(true));
-		cbg.add(ctimes);
-		pradio.add(ctimes);
+    cdiv = new JCheckBox("Divide", false);
+    cdiv.addItemListener(event -> enableInputWith(true));
+    cbg.add(cdiv);
+    pradio.add(cdiv);
 
-		cdiv = new JCheckBox("Divide", false);
-		cdiv.addItemListener(event -> enableInputWith(true));
-		cbg.add(cdiv);
-		pradio.add(cdiv);
+    // With panel
+    final JPanel pfrom2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    pEntries.add(pfrom2);
+    cfrom2 = new JComboBox<>();
+    meanCharWidth = getMeanCharWidth(cfrom2.getFontMetrics(cfrom2.getFont()));
+    dim = cfrom2.getPreferredSize();
+    dim.width = CHAR_LENGTH * meanCharWidth;
+    cfrom2.setPreferredSize(dim);
+    cfrom2.addItem("1DHISTOGRAM2");
+    ttimes2 = new JTextField("1.0", 8);
+    pfrom2.add(cfrom2);
+    pfrom2.add(new JLabel("x"));
+    pfrom2.add(ttimes2);
+    enableInputWith(true);
 
-		// With panel
-		final JPanel pfrom2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		pEntries.add(pfrom2);
-		cfrom2 = new JComboBox<>();
-		meanCharWidth = getMeanCharWidth(cfrom2
-				.getFontMetrics(cfrom2.getFont()));
-		dim = cfrom2.getPreferredSize();
-		dim.width = CHAR_LENGTH * meanCharWidth;
-		cfrom2.setPreferredSize(dim);
-		cfrom2.addItem("1DHISTOGRAM2");
-		ttimes2 = new JTextField("1.0", 8);
-		pfrom2.add(cfrom2);
-		pfrom2.add(new JLabel("x"));
-		pfrom2.add(ttimes2);
-		enableInputWith(true);
-
-		// To panel
-		final JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		pEntries.add(pto);
-		cto = new JComboBox<>();
-		meanCharWidth = getMeanCharWidth(cfrom1
-				.getFontMetrics(cfrom1.getFont()));
-		dim = cto.getPreferredSize();
-		dim.width = CHAR_LENGTH * meanCharWidth;
-		cto.setPreferredSize(dim);
-		cto.addItem(NEW_HIST);
-		cto.addItemListener(event -> {
-            if (cto.getSelectedItem() != null) {
-                setUseHist((String) cto.getSelectedItem());
-            }
+    // To panel
+    final JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    pEntries.add(pto);
+    cto = new JComboBox<>();
+    meanCharWidth = getMeanCharWidth(cfrom1.getFontMetrics(cfrom1.getFont()));
+    dim = cto.getPreferredSize();
+    dim.width = CHAR_LENGTH * meanCharWidth;
+    cto.setPreferredSize(dim);
+    cto.addItem(NEW_HIST);
+    cto.addItemListener(
+        event -> {
+          if (cto.getSelectedItem() != null) {
+            setUseHist((String) cto.getSelectedItem());
+          }
         });
-		ttextto = new JTextField("combine", TEXT_LENGTH);
-		pto.add(cto);
-		lname = new JLabel("Name");
-		pto.add(lname);
-		pto.add(ttextto);
-		/* button panel */
-		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
-				new PanelOKApplyCancelButtons.AbstractListener(this) {
-					public void apply() {
-						try {
-							combine();
-							broadcaster
-									.broadcast(BroadcastEvent.Command.REFRESH);
-							SelectionTree.setCurrentHistogram(hto);
-							status.setCurrentGroup(DataUtility.getGroup(hto));
-							broadcaster.broadcast(
-									BroadcastEvent.Command.HISTOGRAM_SELECT,
-									hto);
-						} catch (DataException je) {
-							LOGGER.log(Level.SEVERE, je.getMessage(), je);
-						}
-					}
-				});
-		cdmanip.add(pButtons.getComponent(), BorderLayout.SOUTH);
-		pack();
-	}
+    ttextto = new JTextField("combine", TEXT_LENGTH);
+    pto.add(cto);
+    lname = new JLabel("Name");
+    pto.add(lname);
+    pto.add(ttextto);
+    /* button panel */
+    final PanelOKApplyCancelButtons pButtons =
+        new PanelOKApplyCancelButtons(
+            new PanelOKApplyCancelButtons.AbstractListener(this) {
+              public void apply() {
+                try {
+                  combine();
+                  broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
+                  SelectionTree.setCurrentHistogram(hto);
+                  status.setCurrentGroup(DataUtility.getGroup(hto));
+                  broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hto);
+                } catch (DataException je) {
+                  LOGGER.log(Level.SEVERE, je.getMessage(), je);
+                }
+              }
+            });
+    cdmanip.add(pButtons.getComponent(), BorderLayout.SOUTH);
+    pack();
+  }
 
-	private void addNormCheckbox(final JPanel pradio, final ButtonGroup cbg) {
-		cnorm = new JCheckBox("Renormalize", true);
-		cnorm.addItemListener(event -> enableInputWith(false));
-		cbg.add(cnorm);
-		pradio.add(cnorm);
-	}
+  private void addNormCheckbox(final JPanel pradio, final ButtonGroup cbg) {
+    cnorm = new JCheckBox("Renormalize", true);
+    cnorm.addItemListener(event -> enableInputWith(false));
+    cbg.add(cnorm);
+    pradio.add(cnorm);
+  }
 
-	/*
-	 * non-javadoc: Does the work of manipulating histograms
-	 */
-	private void combine() throws DataException {
-		String operation = "";
-		validateFactors();
-		final AbstractHist1D hfrom1 = (AbstractHist1D) AbstractHistogram
-				.getHistogram((String) cfrom1.getSelectedItem());
-		AbstractHist1D hfrom2 = null;
-		double[] in1 = doubleCountsArray(hfrom1);
-		double[] err1 = hfrom1.getErrors();
-		double[] in2 = null;
-		double[] err2 = null;
-		if (cfrom2.isEnabled()) {
-			hfrom2 = (AbstractHist1D) AbstractHistogram
-					.getHistogram((String) cfrom2.getSelectedItem());
-			in2 = doubleCountsArray(hfrom2);
-			err2 = hfrom2.getErrors();
-		}
-		assignDestinationHistogram(hfrom1);
-		hto.setZero();
-		double[] out = doubleCountsArray(hto);
-		double[] errOut = hto.getErrors();
-		final int numChannels = getNumChannels(in1, in2, out);
-		// Do calculation
-		if (cnorm.isSelected()) {
-			operation = normalize(in1, err1, out, errOut, numChannels);
-		} else if (cplus.isSelected()) {
-			operation = add(in1, err1, in2, err2, out, errOut, numChannels);
-		} else if (cminus.isSelected()) {
-			operation = subtract(in1, err1, in2, err2, out, errOut, numChannels);
-		} else if (ctimes.isSelected()) {
-			operation = multiply(in1, err1, in2, err2, out, errOut, numChannels);
-		} else if (cdiv.isSelected()) {
-			operation = divide(in1, err1, in2, err2, out, errOut, numChannels);
-		}
-		hto.setErrors(errOut);
+  /*
+   * non-javadoc: Does the work of manipulating histograms
+   */
+  private void combine() throws DataException {
+    String operation = "";
+    validateFactors();
+    final AbstractHist1D hfrom1 =
+        (AbstractHist1D) AbstractHistogram.getHistogram((String) cfrom1.getSelectedItem());
+    AbstractHist1D hfrom2 = null;
+    double[] in1 = doubleCountsArray(hfrom1);
+    double[] err1 = hfrom1.getErrors();
+    double[] in2 = null;
+    double[] err2 = null;
+    if (cfrom2.isEnabled()) {
+      hfrom2 = (AbstractHist1D) AbstractHistogram.getHistogram((String) cfrom2.getSelectedItem());
+      in2 = doubleCountsArray(hfrom2);
+      err2 = hfrom2.getErrors();
+    }
+    assignDestinationHistogram(hfrom1);
+    hto.setZero();
+    double[] out = doubleCountsArray(hto);
+    double[] errOut = hto.getErrors();
+    final int numChannels = getNumChannels(in1, in2, out);
+    // Do calculation
+    if (cnorm.isSelected()) {
+      operation = normalize(in1, err1, out, errOut, numChannels);
+    } else if (cplus.isSelected()) {
+      operation = add(in1, err1, in2, err2, out, errOut, numChannels);
+    } else if (cminus.isSelected()) {
+      operation = subtract(in1, err1, in2, err2, out, errOut, numChannels);
+    } else if (ctimes.isSelected()) {
+      operation = multiply(in1, err1, in2, err2, out, errOut, numChannels);
+    } else if (cdiv.isSelected()) {
+      operation = divide(in1, err1, in2, err2, out, errOut, numChannels);
+    }
+    hto.setErrors(errOut);
 
-		/* cast to int array if needed */
-		if (hto.getType() == HistogramType.ONE_DIM_INT) {
-			hto.setCounts(this.numberUtilities.doubleToIntArray(out));
-		} else {
-			hto.setCounts(out);
-		}
+    /* cast to int array if needed */
+    if (hto.getType() == HistogramType.ONE_DIM_INT) {
+      hto.setCounts(this.numberUtilities.doubleToIntArray(out));
+    } else {
+      hto.setCounts(out);
+    }
 
-		if (hfrom2 == null) {
-			LOGGER.info("Normalize " + hfrom1.getFullName().trim() + " to "
-					+ hto.getFullName());
-		} else {
-			LOGGER.info("Combine " + hfrom1.getFullName().trim() + operation
-					+ hfrom2.getFullName().trim() + " to " + hto.getFullName());
-		}
-	}
+    if (hfrom2 == null) {
+      LOGGER.info("Normalize " + hfrom1.getFullName().trim() + " to " + hto.getFullName());
+    } else {
+      LOGGER.info(
+          "Combine "
+              + hfrom1.getFullName().trim()
+              + operation
+              + hfrom2.getFullName().trim()
+              + " to "
+              + hto.getFullName());
+    }
+  }
 
-	private int getNumChannels(final double[] in1, final double[] in2,
-			final double[] out) {
-		// Minimum size of both out an in1
-		int numChannels = Math.min(out.length, in1.length);
-		// Minimum size of all out an in1 and in2
-		if (!cnorm.isSelected()) {
-			numChannels = Math.min(numChannels, in2.length);
-		}
-		return numChannels;
-	}
+  private int getNumChannels(final double[] in1, final double[] in2, final double[] out) {
+    // Minimum size of both out an in1
+    int numChannels = Math.min(out.length, in1.length);
+    // Minimum size of all out an in1 and in2
+    if (!cnorm.isSelected()) {
+      numChannels = Math.min(numChannels, in2.length);
+    }
+    return numChannels;
+  }
 
-	private void assignDestinationHistogram(final AbstractHist1D hfrom1) {
-		// read in information for to histogram
-		final String name = (String) cto.getSelectedItem();
-		if (isNewHistogram(name)) {
-			final String histName = ttextto.getText().trim();
-			final String groupName = parseGroupName(name);
-			hto = (AbstractHist1D) createNewDoubleHistogram(groupName,
-					histName, hfrom1.getSizeX());
-			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
-					+ "'");
-		} else {
-			hto = (AbstractHist1D) AbstractHistogram.getHistogram(name);
-		}
-	}
+  private void assignDestinationHistogram(final AbstractHist1D hfrom1) {
+    // read in information for to histogram
+    final String name = (String) cto.getSelectedItem();
+    if (isNewHistogram(name)) {
+      final String histName = ttextto.getText().trim();
+      final String groupName = parseGroupName(name);
+      hto = (AbstractHist1D) createNewDoubleHistogram(groupName, histName, hfrom1.getSizeX());
+      LOGGER.info("New Histogram created: '" + groupName + "/" + histName + "'");
+    } else {
+      hto = (AbstractHist1D) AbstractHistogram.getHistogram(name);
+    }
+  }
 
-	private String divide(final double[] in1, final double[] err1,
-			final double[] in2, final double[] err2, final double[] out,
-			final double[] errOut, final int numChannels) {
-		String operation;
-		for (int i = 0; i < numChannels; i++) {
-			out[i] = fac1 * in1[i] / (fac2 * in2[i]);
-			errOut[i] = in1[i]
-					/ in2[i]
-					* Math.sqrt(fac1 * fac1 / (err1[i] * err1[i]) + fac2 * fac2
-							/ (err2[i] * err2[i]));
-		}
-		operation = " Divided by ";
-		return operation;
-	}
+  private String divide(
+      final double[] in1,
+      final double[] err1,
+      final double[] in2,
+      final double[] err2,
+      final double[] out,
+      final double[] errOut,
+      final int numChannels) {
+    String operation;
+    for (int i = 0; i < numChannels; i++) {
+      out[i] = fac1 * in1[i] / (fac2 * in2[i]);
+      errOut[i] =
+          in1[i]
+              / in2[i]
+              * Math.sqrt(fac1 * fac1 / (err1[i] * err1[i]) + fac2 * fac2 / (err2[i] * err2[i]));
+    }
+    operation = " Divided by ";
+    return operation;
+  }
 
-	private String multiply(final double[] in1, final double[] err1,
-			final double[] in2, final double[] err2, final double[] out,
-			final double[] errOut, final int numChannels) {
-		String operation;
-		for (int i = 0; i < numChannels; i++) {
-			out[i] = fac1 * in1[i] * fac2 * in2[i];
-			errOut[i] = Math.sqrt(fac2 * fac2 * err1[i] * err1[i] + fac1 * fac1
-					* err2[i] * err2[i]);
-		}
-		operation = " Multiplied with ";
-		return operation;
-	}
+  private String multiply(
+      final double[] in1,
+      final double[] err1,
+      final double[] in2,
+      final double[] err2,
+      final double[] out,
+      final double[] errOut,
+      final int numChannels) {
+    String operation;
+    for (int i = 0; i < numChannels; i++) {
+      out[i] = fac1 * in1[i] * fac2 * in2[i];
+      errOut[i] = Math.sqrt(fac2 * fac2 * err1[i] * err1[i] + fac1 * fac1 * err2[i] * err2[i]);
+    }
+    operation = " Multiplied with ";
+    return operation;
+  }
 
-	private String subtract(final double[] in1, final double[] err1,
-			final double[] in2, final double[] err2, final double[] out,
-			final double[] errOut, final int numChannels) {
-		String operation;
-		for (int i = 0; i < numChannels; i++) {
-			out[i] = fac1 * in1[i] - fac2 * in2[i];
-			errOut[i] = Math.sqrt(fac1 * fac1 * err1[i] * err1[i] + fac2 * fac2
-					* err2[i] * err2[i]);
-		}
-		operation = " Subtracted from ";
-		return operation;
-	}
+  private String subtract(
+      final double[] in1,
+      final double[] err1,
+      final double[] in2,
+      final double[] err2,
+      final double[] out,
+      final double[] errOut,
+      final int numChannels) {
+    String operation;
+    for (int i = 0; i < numChannels; i++) {
+      out[i] = fac1 * in1[i] - fac2 * in2[i];
+      errOut[i] = Math.sqrt(fac1 * fac1 * err1[i] * err1[i] + fac2 * fac2 * err2[i] * err2[i]);
+    }
+    operation = " Subtracted from ";
+    return operation;
+  }
 
-	private String add(final double[] in1, final double[] err1,
-			final double[] in2, final double[] err2, final double[] out,
-			final double[] errOut, final int numChannels) {
-		String operation;
-		for (int i = 0; i < numChannels; i++) {
-			out[i] = fac1 * in1[i] + fac2 * in2[i];
-			errOut[i] = Math.sqrt(fac1 * fac1 * err1[i] * err1[i] + fac2 * fac2
-					* err2[i] * err2[i]);
-		}
-		operation = " Added with ";
-		return operation;
-	}
+  private String add(
+      final double[] in1,
+      final double[] err1,
+      final double[] in2,
+      final double[] err2,
+      final double[] out,
+      final double[] errOut,
+      final int numChannels) {
+    String operation;
+    for (int i = 0; i < numChannels; i++) {
+      out[i] = fac1 * in1[i] + fac2 * in2[i];
+      errOut[i] = Math.sqrt(fac1 * fac1 * err1[i] * err1[i] + fac2 * fac2 * err2[i] * err2[i]);
+    }
+    operation = " Added with ";
+    return operation;
+  }
 
-	private String normalize(final double[] in1, final double[] err1,
-			final double[] out, final double[] errOut, final int numChannels) {
-		String operation;
-		for (int i = 0; i < numChannels; i++) {
-			out[i] = fac1 * in1[i];
-			errOut[i] = fac1 * err1[i];
-		}
-		operation = " Normalized ";
-		return operation;
-	}
+  private String normalize(
+      final double[] in1,
+      final double[] err1,
+      final double[] out,
+      final double[] errOut,
+      final int numChannels) {
+    String operation;
+    for (int i = 0; i < numChannels; i++) {
+      out[i] = fac1 * in1[i];
+      errOut[i] = fac1 * err1[i];
+    }
+    operation = " Normalized ";
+    return operation;
+  }
 
-	/**
-	 * Loads the list of gates and set co-ordinates as x y if 2d or lower upper
-	 * if 1 d
-	 * 
-	 */
-	@Override
-	public void doSetup() {
-		String lfrom1, lfrom2, lto;
+  /** Loads the list of gates and set co-ordinates as x y if 2d or lower upper if 1 d */
+  @Override
+  public void doSetup() {
+    String lfrom1, lfrom2, lto;
 
-		lfrom1 = (String) cfrom1.getSelectedItem();
-		lfrom2 = (String) cfrom2.getSelectedItem();
-		lto = (String) cto.getSelectedItem();
+    lfrom1 = (String) cfrom1.getSelectedItem();
+    lfrom2 = (String) cfrom2.getSelectedItem();
+    lto = (String) cto.getSelectedItem();
 
-		cfrom1.removeAllItems();
-		loadAllHists(cfrom1, false, HistogramType.ONE_D);
-		cfrom1.setSelectedItem(lfrom1);
-		cfrom2.removeAllItems();
-		loadAllHists(cfrom2, false, HistogramType.ONE_D);
+    cfrom1.removeAllItems();
+    loadAllHists(cfrom1, false, HistogramType.ONE_D);
+    cfrom1.setSelectedItem(lfrom1);
+    cfrom2.removeAllItems();
+    loadAllHists(cfrom2, false, HistogramType.ONE_D);
 
-		cfrom2.setSelectedItem(lfrom2);
-		cto.removeAllItems();
-		cto.addItem(NEW_HIST);
-		loadAllHists(cto, true, HistogramType.ONE_D);
-		cto.setSelectedItem(lto);
-		setUseHist((String) cto.getSelectedItem());
+    cfrom2.setSelectedItem(lfrom2);
+    cto.removeAllItems();
+    cto.addItem(NEW_HIST);
+    loadAllHists(cto, true, HistogramType.ONE_D);
+    cto.setSelectedItem(lto);
+    setUseHist((String) cto.getSelectedItem());
 
-		enableInputWith(!cnorm.isSelected());
-	}
+    enableInputWith(!cnorm.isSelected());
+  }
 
-	private double[] doubleCountsArray(final AbstractHist1D hist) {
-		double[] dCounts;
-		if (hist.getType() == HistogramType.ONE_DIM_INT) {
-			dCounts = this.numberUtilities.intToDoubleArray(((HistInt1D) hist)
-					.getCounts());
-		} else {
-			dCounts = ((HistDouble1D) hist).getCounts();
-		}
-		return dCounts;
-	}
+  private double[] doubleCountsArray(final AbstractHist1D hist) {
+    double[] dCounts;
+    if (hist.getType() == HistogramType.ONE_DIM_INT) {
+      dCounts = this.numberUtilities.intToDoubleArray(((HistInt1D) hist).getCounts());
+    } else {
+      dCounts = ((HistDouble1D) hist).getCounts();
+    }
+    return dCounts;
+  }
 
-	/*
-	 * non-javadoc: A second histogram is needed
-	 */
-	private void enableInputWith(final boolean state) {
-		cfrom2.setEnabled(state);
-		ttimes2.setEnabled(state);
-		lWith.setEnabled(state);
-	}
+  /*
+   * non-javadoc: A second histogram is needed
+   */
+  private void enableInputWith(final boolean state) {
+    cfrom2.setEnabled(state);
+    ttimes2.setEnabled(state);
+    lWith.setEnabled(state);
+  }
 
-	/*
-	 * non-javadoc: Set dialog box for new histogram to be created
-	 */
-	private void setUseHist(final String name) {
-		if (isNewHistogram(name)) {
-			lname.setEnabled(true);
-			ttextto.setEnabled(true);
-		} else {
-			lname.setEnabled(false);
-			ttextto.setEnabled(false);
+  /*
+   * non-javadoc: Set dialog box for new histogram to be created
+   */
+  private void setUseHist(final String name) {
+    if (isNewHistogram(name)) {
+      lname.setEnabled(true);
+      ttextto.setEnabled(true);
+    } else {
+      lname.setEnabled(false);
+      ttextto.setEnabled(false);
+    }
+  }
 
-		}
-	}
+  @Override
+  public void propertyChange(PropertyChangeEvent evt) {
+    final BroadcastEvent.Command command = ((BroadcastEvent) evt).getCommand();
+    if (command == BroadcastEvent.Command.HISTOGRAM_NEW
+        || command == BroadcastEvent.Command.HISTOGRAM_ADD) {
+      doSetup();
+    }
+  }
 
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		final BroadcastEvent.Command command = ((BroadcastEvent) evt).getCommand();
-		if (command == BroadcastEvent.Command.HISTOGRAM_NEW
-				|| command == BroadcastEvent.Command.HISTOGRAM_ADD) {
-			doSetup();
-		}
-	}
-
-	private void validateFactors() throws DataException {
-		try {// read information for first histogram
-			fac1 = Double.parseDouble(ttimes1.getText().trim());
-		} catch (NumberFormatException nfe) {
-			throw new DataException("First factor is not a valid number.", nfe);
-		}
-		try {// read in information for second histogram
-			fac2 = Double.parseDouble(ttimes2.getText().trim());
-		} catch (NumberFormatException nfe) {
-			throw new DataException("Second factor is not a valid number.", nfe);
-		}
-	}
-
+  private void validateFactors() throws DataException {
+    try { // read information for first histogram
+      fac1 = Double.parseDouble(ttimes1.getText().trim());
+    } catch (NumberFormatException nfe) {
+      throw new DataException("First factor is not a valid number.", nfe);
+    }
+    try { // read in information for second histogram
+      fac2 = Double.parseDouble(ttimes2.getText().trim());
+    } catch (NumberFormatException nfe) {
+      throw new DataException("Second factor is not a valid number.", nfe);
+    }
+  }
 }

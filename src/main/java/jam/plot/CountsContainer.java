@@ -1,5 +1,5 @@
 package jam.plot;
 
 interface CountsContainer {
-	Object getCounts();
+  Object getCounts();
 }
