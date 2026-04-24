@@ -4,64 +4,58 @@ import java.util.*;
 
 /**
  * A collection of histograms, used by Group.
- * 
+ *
  * @author Dale Visser
- * 
  */
-public final class HistogramCollection implements
-		NameValueCollection<AbstractHistogram> {
+public final class HistogramCollection implements NameValueCollection<AbstractHistogram> {
 
-	/** children of group */
-	private transient final Map<String, AbstractHistogram> histogramMap = new HashMap<>();
-	/** children histograms of group */
-	private transient final List<AbstractHistogram> histList = new ArrayList<>();
+  /** children of group */
+  private final transient Map<String, AbstractHistogram> histogramMap = new HashMap<>();
 
-	/**
-	 * @return list of histograms in this group
-	 */
-	public List<AbstractHistogram> getList() {
-		return Collections.unmodifiableList(this.histList);
-	}
+  /** children histograms of group */
+  private final transient List<AbstractHistogram> histList = new ArrayList<>();
 
-	/**
-	 * Remove a histogram from the group
-	 * 
-	 * @param hist to remove
-	 */
-	public void remove(final AbstractHistogram hist) {
-		this.histList.remove(hist);
-		this.histogramMap.remove(hist.getName());
-	}
+  /**
+   * @return list of histograms in this group
+   */
+  public List<AbstractHistogram> getList() {
+    return Collections.unmodifiableList(this.histList);
+  }
 
-	/**
-	 * Retrieve a histogram given its name
-	 * 
-	 * @param name
-	 *            the histogram name
-	 * 
-	 * @return the histogram
-	 */
-	public AbstractHistogram get(final String name) {
-		return this.histogramMap.get(name);
-	}
+  /**
+   * Remove a histogram from the group
+   *
+   * @param hist to remove
+   */
+  public void remove(final AbstractHistogram hist) {
+    this.histList.remove(hist);
+    this.histogramMap.remove(hist.getName());
+  }
 
-	public Set<String> getNameSet() {
-		return this.histogramMap.keySet();
-	}
+  /**
+   * Retrieve a histogram given its name
+   *
+   * @param name the histogram name
+   * @return the histogram
+   */
+  public AbstractHistogram get(final String name) {
+    return this.histogramMap.get(name);
+  }
 
-	public void add(final AbstractHistogram nameable, final String uniqueName) {
-		this.histList.add(nameable);
-		this.histogramMap.put(uniqueName, nameable);
-	}
+  public Set<String> getNameSet() {
+    return this.histogramMap.keySet();
+  }
 
-	public void clear() {
-		throw new UnsupportedOperationException(
-				"HistogramCollection does not support clear().");
-	}
+  public void add(final AbstractHistogram nameable, final String uniqueName) {
+    this.histList.add(nameable);
+    this.histogramMap.put(uniqueName, nameable);
+  }
 
-	public void remap(final AbstractHistogram nameable, final String oldName,
-			final String newName) {
-		throw new UnsupportedOperationException(
-				"HistogramCollection does not support remap().");
-	}
+  public void clear() {
+    throw new UnsupportedOperationException("HistogramCollection does not support clear().");
+  }
+
+  public void remap(final AbstractHistogram nameable, final String oldName, final String newName) {
+    throw new UnsupportedOperationException("HistogramCollection does not support remap().");
+  }
 }

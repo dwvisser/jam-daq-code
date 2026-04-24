@@ -4,6 +4,7 @@ import jam.global.JamException;
 import jam.sort.SortException;
 
 interface RunController {
-	void beginRun() throws JamException, SortException;
-	void endRun();
+  void beginRun() throws JamException, SortException;
+
+  void endRun();
 }

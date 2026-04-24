@@ -3,14 +3,13 @@ package jam.plot;
 import java.util.List;
 
 interface Commandable {
-	boolean isCursorCommand();
+  boolean isCursorCommand();
 
-	void doCommand(final String inCommand, final List<Double> inParams,
-			final boolean console);
+  void doCommand(final String inCommand, final List<Double> inParams, final boolean console);
 
-	void doCommand(final String inCommand, final boolean console);
+  void doCommand(final String inCommand, final boolean console);
 
-	String getCurrentCommand();
+  String getCurrentCommand();
 
-	void setCursor(final Bin cursorIn);
+  void setCursor(final Bin cursorIn);
 }

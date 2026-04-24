@@ -1,0 +1,34 @@
+name: Format Check
+
+on:
+  push:
+    branches:
+      - master
+      - feature/google-java-format
+  pull_request:
+    branches:
+      - master
+      - feature/google-java-format
+
+jobs:
+  google-java-format:
+    name: Google Java Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Install google-java-format
+        run: |
+          curl -sL -o /tmp/google-java-format.jar https://github.com/google/google-java-format/releases/download/v1.35.0/google-java-format-1.35.0-all-deps.jar
+
+      - name: Run Google Java Format check
+        run: |
+          java -jar /tmp/google-java-format.jar --set-exit-if-changed $(find . -name '*.java' | grep -v '^./target/' || true)

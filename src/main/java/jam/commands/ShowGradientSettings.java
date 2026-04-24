@@ -1,20 +1,17 @@
 package jam.commands;
+
 import jam.plot.color.ColorSettingsFrame;
 
 /**
  * Show the histogram dialog
- * 
- * @author Ken
  *
+ * @author Ken
  */
-
 final class ShowGradientSettings extends AbstractShowDialog {
-	
-	/**
-	 * Initialize command
-	 */
-	ShowGradientSettings(){
-		super("Adjust color gradient\u2026");
-		dialog=ColorSettingsFrame.getInstance();
-	}
+
+  /** Initialize command */
+  ShowGradientSettings() {
+    super("Adjust color gradient\u2026");
+    dialog = ColorSettingsFrame.getInstance();
+  }
 }

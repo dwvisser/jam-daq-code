@@ -13,38 +13,36 @@ import java.util.List;
 
 /**
  * Represents a group of peaks in a spectrum.
- * 
+ *
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  */
-
 final class Multiplet extends ArrayList<Peak> {
 
-	private Multiplet() {
-		super();
-	}
+  private Multiplet() {
+    super();
+  }
 
-	protected static Multiplet createMultiplet() {
-		return new Multiplet();
-	}
+  protected static Multiplet createMultiplet() {
+    return new Multiplet();
+  }
 
-	protected List<Double> getAllCentroids() {
-		final List<Double> centroids = new ArrayList<>();
-		for (Peak peak : this) {
-			centroids.add(peak.getPosition());
-		}
-		return centroids;
-	}
+  protected List<Double> getAllCentroids() {
+    final List<Double> centroids = new ArrayList<>();
+    for (Peak peak : this) {
+      centroids.add(peak.getPosition());
+    }
+    return centroids;
+  }
 
-	protected static Multiplet combineMultiplets(final Multiplet... mult) {
-		return combineMultiplets(Arrays.asList(mult));
-	}
+  protected static Multiplet combineMultiplets(final Multiplet... mult) {
+    return combineMultiplets(Arrays.asList(mult));
+  }
 
-	protected static Multiplet combineMultiplets(
-			final Collection<Multiplet> collection) {
-		final Multiplet rval = new Multiplet();
-		for (Multiplet multiplet : collection) {
-			rval.addAll(multiplet);
-		}
-		return rval;
-	}
+  protected static Multiplet combineMultiplets(final Collection<Multiplet> collection) {
+    final Multiplet rval = new Multiplet();
+    for (Multiplet multiplet : collection) {
+      rval.addAll(multiplet);
+    }
+    return rval;
+  }
 }

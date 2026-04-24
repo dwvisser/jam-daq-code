@@ -8,31 +8,29 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 final class LicenseReader {
-	private static final Logger LOGGER = Logger.getLogger(LicenseReader.class
-			.getPackage().getName());
+  private static final Logger LOGGER = Logger.getLogger(LicenseReader.class.getPackage().getName());
 
-	LicenseReader() {
-		// nothing to do.
-	}
+  LicenseReader() {
+    // nothing to do.
+  }
 
-	protected String getLicenseText() {
-		final InputStream license_in = Thread.currentThread()
-				.getContextClassLoader().getResourceAsStream("LICENSE");
-		final Reader reader = new InputStreamReader(license_in);
-		int length = 0;
-		final char[] textarray = new char[2000];
-		try {
-			length = reader.read(textarray);
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
-		} finally {
-			try {
-				reader.close();
-			} catch (IOException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			}
-		}
-		return new String(textarray, 0, length);
-	}
-
+  protected String getLicenseText() {
+    final InputStream license_in =
+        Thread.currentThread().getContextClassLoader().getResourceAsStream("LICENSE");
+    final Reader reader = new InputStreamReader(license_in);
+    int length = 0;
+    final char[] textarray = new char[2000];
+    try {
+      length = reader.read(textarray);
+    } catch (IOException e) {
+      LOGGER.log(Level.SEVERE, e.getMessage(), e);
+    } finally {
+      try {
+        reader.close();
+      } catch (IOException e) {
+        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+      }
+    }
+    return new String(textarray, 0, length);
+  }
 }

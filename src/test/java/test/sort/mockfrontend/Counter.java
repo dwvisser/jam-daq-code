@@ -7,47 +7,40 @@
 package test.sort.mockfrontend;
 
 /**
- * 
  * @author <a href="mailto:dwvisser@users.sourceforge.net">Dale Visser</a>
  * @version Feb 15, 2004
  */
-
 public final class Counter extends NamedTextPanel {
-	private transient int value = 0;
-	private transient final Object syncObject = new Object();
+  private transient int value = 0;
+  private final transient Object syncObject = new Object();
 
-	/**
-	 * @param sname
-	 *            counter name
-	 * @param init
-	 *            initial value
-	 */
-	public Counter(final String sname, final int init) {
-		super(sname, String.valueOf(init));
-	}
+  /**
+   * @param sname counter name
+   * @param init initial value
+   */
+  public Counter(final String sname, final int init) {
+    super(sname, String.valueOf(init));
+  }
 
-	/**
-	 * @param value
-	 *            new value
-	 */
-	public void setValue(final int value) {
-		synchronized (this.syncObject) {
-			this.value = value;
-			this.updateLabel();
-		}
-	}
+  /**
+   * @param value new value
+   */
+  public void setValue(final int value) {
+    synchronized (this.syncObject) {
+      this.value = value;
+      this.updateLabel();
+    }
+  }
 
-	/**
-	 * Increment the existing value.
-	 */
-	public void increment() {
-		synchronized (this.syncObject) {
-			this.value++;
-			this.updateLabel();
-		}
-	}
+  /** Increment the existing value. */
+  public void increment() {
+    synchronized (this.syncObject) {
+      this.value++;
+      this.updateLabel();
+    }
+  }
 
-	private void updateLabel() {
-		this.setText(String.valueOf(this.value));
-	}
+  private void updateLabel() {
+    this.setText(String.valueOf(this.value));
+  }
 }
