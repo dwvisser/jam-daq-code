@@ -1,0 +1,8 @@
+repos:
+  - repo: local
+    hooks:
+      - id: google-java-format
+        name: google-java-format
+        entry: scripts/run-google-java-format.sh
+        language: system
+        files: '\.java$'

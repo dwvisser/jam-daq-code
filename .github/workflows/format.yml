@@ -23,11 +23,11 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '25'
 
       - name: Install google-java-format
         run: |
-          curl -sL -o /tmp/google-java-format.jar https://github.com/google/google-java-format/releases/download/v1.21.0/google-java-format-1.21.0-all-deps.jar
+          curl -sL -o /tmp/google-java-format.jar https://github.com/google/google-java-format/releases/download/v1.35.0/google-java-format-1.35.0-all-deps.jar
 
       - name: Run Google Java Format check
         run: |
