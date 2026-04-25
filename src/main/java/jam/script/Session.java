@@ -23,6 +23,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -122,7 +123,28 @@ public final class Session implements PropertyChangeListener {
     this.runControl = runControl;
     this.hdfio = hdfio;
     this.histogramZero = histogramZero;
-    base = new File(System.getProperty("user.dir"));
+    File baseFile = new File(System.getProperty("user.dir"));
+    try {
+      baseFile = baseFile.getCanonicalFile();
+    } catch (IOException ioe) {
+      LOGGER.log(Level.WARNING, "Unable to canonicalize user.dir; using absolute path.", ioe);
+      baseFile = baseFile.getAbsoluteFile();
+    }
+    this.base = baseFile;
+  }
+
+  private File resolveFileWithinBase(final String fname) {
+    try {
+      final File file = new File(base, fname).getCanonicalFile();
+      final String basePath = base.getPath();
+      final String filePath = file.getPath();
+      if (!filePath.equals(basePath) && !filePath.startsWith(basePath + File.separator)) {
+        throw new IllegalArgumentException("Path escapes base directory: " + fname);
+      }
+      return file;
+    } catch (IOException ioe) {
+      throw new IllegalArgumentException("Invalid path: " + fname, ioe);
+    }
   }
 
   /**
@@ -231,7 +253,7 @@ public final class Session implements PropertyChangeListener {
    *     property <code>user.dir</code> at startup
    */
   public File defineFile(final String fname) {
-    return new File(base, fname);
+    return resolveFileWithinBase(fname);
   }
 
   /**

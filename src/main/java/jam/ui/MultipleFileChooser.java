@@ -234,9 +234,13 @@ public final class MultipleFileChooser extends JPanel {
       do {
         listItem = reader.readLine();
         if (listItem != null) {
-          final File fEvn = new File(listItem); // NOPMD
-          listFilesModel.addElement(fEvn);
-          numFiles++;
+          try {
+            final File fEvn = new File(listItem).getCanonicalFile(); // Prevent path traversal
+            listFilesModel.addElement(fEvn);
+            numFiles++;
+          } catch (IOException ioe) {
+            LOGGER.log(Level.WARNING, "Invalid path in list file: " + listItem, ioe);
+          }
         }
       } while (listItem != null);
     } catch (IOException ioe) {
