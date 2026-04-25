@@ -5,6 +5,8 @@ package jam.sort;
 
 import java.io.*;
 import java.nio.CharBuffer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,16 +77,30 @@ public final class GainCalibration {
    * @throws SortException if there's a problem reading the gain file
    */
   public void gainFile(final String name, final boolean autoSuppress) throws SortException {
+    // Validate path to prevent path traversal
+    final Path path = Paths.get(name);
+    if (path.isAbsolute()) {
+      if (name.contains("..") || name.contains("~")) {
+        throw new SortException("Invalid file path: " + name + " - path traversal detected.");
+      }
+    } else {
+      final Path basePath = Paths.get(".").toAbsolutePath().normalize();
+      final Path targetPath = basePath.resolve(name).normalize();
+      if (!targetPath.startsWith(basePath)) {
+        throw new SortException("Invalid file path: " + name + " - path traversal detected.");
+      }
+    }
+    final File file = new File(name);
     try {
       suppress = autoSuppress;
-      FileInputStream input = new FileInputStream(new File(name));
+      FileInputStream input = new FileInputStream(file);
       final int rows = getNumberOfRows(input);
-      input = new FileInputStream(new File(name));
+      input = new FileInputStream(file);
       final int columns = getNumberOfColumns(input);
       if (columns < 2 || columns > 3) {
         throw new SortException("File, \"" + name + "\", must be 2 or 3 columns.");
       }
-      input = new FileInputStream(new File(name));
+      input = new FileInputStream(file);
       readGains(input, rows, columns);
     } catch (IOException ioe) {
       throw new SortException(
