@@ -53,8 +53,6 @@ public final class ConsoleLog implements MessageHandler {
   private transient String messageFile; // message for file
 
   /** A lock for message output so messages don't overlap. */
-  private transient boolean msgLock;
-
   private transient int numberLines; // number of lines in output
 
   /** Log of Console activity. */
@@ -66,7 +64,6 @@ public final class ConsoleLog implements MessageHandler {
     final int defaultLines = 6;
     final int logHeight = lineHeight * defaultLines;
     textLog.setPreferredSize(new Dimension(600, logHeight));
-    msgLock = false;
     numberLines = 1;
     logFileOn = false;
     Runtime.getRuntime().addShutdownHook(new ConsoleLog.LogFileCloser(this));
@@ -160,7 +157,6 @@ public final class ConsoleLog implements MessageHandler {
     synchronized (this) {
       final StringBuffer mbuff = new StringBuffer(message);
       if (part == NEW) {
-        msgLock = true;
         messageFile = getDate() + ">" + mbuff;
         mbuff.insert(0, '>').insert(0, getTime()).insert(0, END_LINE);
         try {
@@ -193,7 +189,6 @@ public final class ConsoleLog implements MessageHandler {
           }
         }
         // unlock text area and notify others they can use it
-        msgLock = false;
         notifyAll();
       } else {
         throw new IllegalArgumentException("Error not a valid message part [JamConsole]");
@@ -225,7 +220,6 @@ public final class ConsoleLog implements MessageHandler {
   public void messageOutln(final String message) {
     synchronized (this) {
       final StringBuffer mbuff = new StringBuffer();
-      msgLock = true;
       messageFile = getDate() + ">" + message + END_LINE;
       mbuff.append(END_LINE).append(getTime()).append('>').append(message);
       this.appendBuffer(mbuff);
@@ -240,7 +234,6 @@ public final class ConsoleLog implements MessageHandler {
         }
       }
       // unlock text area and notify others they can use it
-      msgLock = false;
       notifyAll();
     }
   }
@@ -251,13 +244,8 @@ public final class ConsoleLog implements MessageHandler {
       /*
        * Dont wait for lock. Output message right away.
        */
-      if (msgLock) { // if locked add extra returns
-        messageFile = END_LINE + getDate() + ">" + _message + END_LINE;
-        mbuff.append(END_LINE).append(getTime()).append('>').append(_message).append(END_LINE);
-      } else { // normal message
-        messageFile = getDate() + ">" + _message + END_LINE;
-        mbuff.append(END_LINE).append(getTime()).append('>').append(_message);
-      }
+      messageFile = getDate() + ">" + _message + END_LINE;
+      mbuff.append(END_LINE).append(getTime()).append('>').append(_message);
       try {
         doc.insertString(doc.getLength(), mbuff.toString(), attr);
       } catch (BadLocationException e) {

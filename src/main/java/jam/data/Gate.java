@@ -30,6 +30,8 @@ public final class Gate implements DataElement {
   private static final Map<String, Gate> TABLE =
       Collections.synchronizedMap(new HashMap<String, Gate>());
 
+  private static final Object GATE_LOCK = new Object();
+
   static { // 1- and 2-dimensional gate lists
     DIM_LIST.add(Collections.synchronizedList(new ArrayList<>()));
     DIM_LIST.add(Collections.synchronizedList(new ArrayList<>()));
@@ -37,15 +39,17 @@ public final class Gate implements DataElement {
 
   /** Clears the list of gates. */
   public static void clearList() {
-    for (Gate gate : LIST) {
-      gate.insideGate = NO_AREA;
-      gate.bananaGate.reset();
+    synchronized (GATE_LOCK) {
+      for (Gate gate : LIST) {
+        gate.insideGate = NO_AREA;
+        gate.bananaGate.reset();
+      }
+      LIST.clear();
+      for (List<Gate> list : DIM_LIST) {
+        list.clear();
+      }
+      TABLE.clear();
     }
-    LIST.clear();
-    for (List<Gate> list : DIM_LIST) {
-      list.clear();
-    }
-    TABLE.clear();
   }
 
   /**
@@ -101,11 +105,13 @@ public final class Gate implements DataElement {
    * @param inGateList must contain all histogram objects
    */
   public static void setGateList(final List<Gate> inGateList) {
-    clearList();
-    for (Gate gate : inGateList) {
-      final String fullName = gate.getFullName();
-      TABLE.put(fullName, gate);
-      LIST.add(gate);
+    synchronized (GATE_LOCK) {
+      clearList();
+      for (Gate gate : inGateList) {
+        final String fullName = gate.getFullName();
+        TABLE.put(fullName, gate);
+        LIST.add(gate);
+      }
     }
   }
 

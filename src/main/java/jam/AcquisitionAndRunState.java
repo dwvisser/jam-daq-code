@@ -14,6 +14,7 @@ import java.beans.PropertyChangeListener;
 final class AcquisitionAndRunState implements PropertyChangeListener {
   private final transient Frame frame;
   private RunState runState = RunState.NO_ACQ;
+  private final transient Object stateLock = new Object();
   private final transient JamStatus status;
 
   /**
@@ -40,7 +41,7 @@ final class AcquisitionAndRunState implements PropertyChangeListener {
    * @param state one of the possible run states control dialog box
    */
   private void setRunState(final RunState state) {
-    synchronized (this.runState) {
+    synchronized (stateLock) {
       this.runState = state;
     }
   }
@@ -49,7 +50,7 @@ final class AcquisitionAndRunState implements PropertyChangeListener {
    * @return the current run state
    */
   private AcquisitionStatus getRunState() {
-    synchronized (this.runState) {
+    synchronized (stateLock) {
       return this.runState;
     }
   }
