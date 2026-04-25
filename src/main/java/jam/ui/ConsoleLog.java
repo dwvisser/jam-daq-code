@@ -8,6 +8,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -289,15 +291,34 @@ public final class ConsoleLog implements MessageHandler {
    * @exception JamException exceptions that go to the console
    */
   public String setLogFileName(final String name) throws JamException {
+    // Validate path to prevent path traversal
+    final Path path = Paths.get(name);
+    if (path.isAbsolute()
+        || name.contains("..")
+        || name.contains("/")
+        || name.contains("\\")
+        || name.contains("~")) {
+      throw new JamException("Invalid log file name: " + name + " - path traversal detected.");
+    }
+    final Path basePath = Paths.get(".").toAbsolutePath().normalize();
+    final Path targetPath = basePath.resolve(name + ".log").normalize();
+    if (!targetPath.startsWith(basePath)) {
+      throw new JamException("Invalid log file name: " + name + " - path traversal detected.");
+    }
     String newName = name + ".log";
-    File file = new File(newName);
+    File file = targetPath.toFile();
     /*
      * create a unique file, append a number if a log already exits
      */
     int index = 1;
     while (file.exists()) {
+      final Path uniquePath = basePath.resolve(name + index + ".log").normalize();
+      if (!uniquePath.startsWith(basePath)) {
+        throw new JamException(
+            "Invalid log file name: " + name + index + " - path traversal detected.");
+      }
       newName = name + index + ".log";
-      file = new File(newName); // NOPMD
+      file = uniquePath.toFile();
       index++;
     }
     try {
