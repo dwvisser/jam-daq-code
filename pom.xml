@@ -113,6 +113,12 @@
       <version>5.11.2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-suite-api</artifactId>
+      <version>1.11.2</version>
+      <scope>test</scope>
+    </dependency>
     <!-- https://mvnrepository.com/artifact/com.google.inject/guice -->
     <dependency>
       <groupId>com.google.inject</groupId>

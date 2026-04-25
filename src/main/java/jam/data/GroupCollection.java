@@ -14,16 +14,6 @@ final class GroupCollection implements NameValueCollection<Group>, SortGroupGett
     // singleton
   }
 
-  /**
-   * Clear a group, removes it
-   *
-   * @param group to remove
-   */
-  public void remove(final Group group) {
-    this.map.remove(group.getName());
-    this.list.remove(group);
-  }
-
   /** Map of all groups using name */
   private final transient Map<String, Group> map = new HashMap<>();
 
@@ -35,18 +25,32 @@ final class GroupCollection implements NameValueCollection<Group>, SortGroupGett
   /** The sort group, group with sort histogram */
   private transient Group sortGroup;
 
+  /**
+   * Clear a group, removes it
+   *
+   * @param group to remove
+   */
+  public void remove(final Group group) {
+    synchronized (lock) {
+      this.map.remove(group.getName());
+      this.list.remove(group);
+    }
+  }
+
   public void remap(final Group group, final String oldName, final String newName) {
-    if (group != get(oldName)) {
-      throw new IllegalArgumentException(
-          "Given group is not currently mapped to '" + oldName + "'.");
-    }
+    synchronized (lock) {
+      if (group != get(oldName)) {
+        throw new IllegalArgumentException(
+            "Given group is not currently mapped to '" + oldName + "'.");
+      }
 
-    if (this.containsName(newName)) {
-      throw new IllegalArgumentException("You may not rename to an existing name.");
-    }
+      if (this.containsName(newName)) {
+        throw new IllegalArgumentException("You may not rename to an existing name.");
+      }
 
-    this.map.remove(oldName);
-    this.map.put(newName, group);
+      this.map.remove(oldName);
+      this.map.put(newName, group);
+    }
   }
 
   /** Clear all groups */
@@ -65,7 +69,9 @@ final class GroupCollection implements NameValueCollection<Group>, SortGroupGett
    * @return the group
    */
   public Group get(final String name) {
-    return this.map.get(name);
+    synchronized (lock) {
+      return this.map.get(name);
+    }
   }
 
   /**
@@ -73,7 +79,9 @@ final class GroupCollection implements NameValueCollection<Group>, SortGroupGett
    * @return whether collection contains a group with the given name
    */
   public boolean containsName(final String name) {
-    return this.map.containsKey(name);
+    synchronized (lock) {
+      return this.map.containsKey(name);
+    }
   }
 
   public Set<String> getNameSet() {
@@ -81,14 +89,16 @@ final class GroupCollection implements NameValueCollection<Group>, SortGroupGett
   }
 
   public void add(final Group group, final String uniqueName) {
-    if (Type.SORT == group.getType()) {
-      if (this.sortGroup != null) {
-        throw new IllegalStateException("There may not be more than 1 sort group.");
+    synchronized (lock) {
+      if (Type.SORT == group.getType()) {
+        if (this.sortGroup != null) {
+          throw new IllegalStateException("There may not be more than 1 sort group.");
+        }
+        this.sortGroup = group;
       }
-      this.sortGroup = group;
+      this.list.add(group);
+      this.map.put(uniqueName, group);
     }
-    this.list.add(group);
-    this.map.put(uniqueName, group);
   }
 
   /**
