@@ -10,6 +10,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>25</maven.compiler.release>
+    <javafx.version>23.0.1</javafx.version>
   </properties>
 
   <build>
@@ -45,10 +46,14 @@
           <executions>
             <execution>
               <id>copy-dependencies</id>
-              <phase>package</phase>
+              <phase>generate-resources</phase>
               <goals>
                 <goal>copy-dependencies</goal>
               </goals>
+              <configuration>
+                <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                <includeScope>compile</includeScope>
+              </configuration>
             </execution>
           </executions>
         </plugin>
@@ -124,6 +129,38 @@
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
       <version>6.0.0</version>
+    </dependency>
+    <!-- JavaFX modules from Oracle Java Verified Portfolio -->
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-web</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-graphics</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-swing</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-fxml</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <!-- Markdown processor -->
+    <dependency>
+      <groupId>org.commonmark</groupId>
+      <artifactId>commonmark</artifactId>
+      <version>0.21.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/javax.help/javahelp -->
     <dependency>

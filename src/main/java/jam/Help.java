@@ -7,13 +7,14 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationTargetException;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.prefs.Preferences;
-import javax.help.CSH;
-import javax.help.HelpSet;
-import javax.help.HelpSetException;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.web.WebView;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -21,46 +22,108 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 
 /**
- * Deals with JavaHelp-based User Guide and an "About" dialog.
+ * Deals with JavaFX WebView-based User Guide (Markdown) and an "About" dialog.
  *
  * @author Ken Swartz
  * @author Dale Visser
- * @version version 0.5 November 98
+ * @version version 1.0 - Modernized with JavaFX WebView
  */
 public class Help extends JDialog {
   private static final int POS_X = 20;
 
   /**
-   * Launches the User Guide, with an Exit button in an auxiliary frame.
+   * Launches the User Guide in a JavaFX WebView displaying Markdown content.
    *
    * @param args ignored
    */
   public static void main(final String[] args) {
-    final String helpsetName = "help/HelpSet.xml";
     setLookAndFeel();
+    final JFrame frame = new JFrame("Jam User Guide");
+    displayHelpInWebView(frame, "help/UserGuide.md");
+  }
+
+  /**
+   * Displays Markdown help content in a JavaFX WebView.
+   *
+   * @param frame parent frame
+   * @param markdownResource path to Markdown resource (e.g., "help/UserGuide.md")
+   */
+  public static void displayHelpInWebView(final JFrame frame, final String markdownResource) {
     try {
-      final URL hsURL = ClassLoader.getSystemClassLoader().getResource(helpsetName);
-      final HelpSet helpset = new HelpSet(null, hsURL);
-      final ActionListener listener = new CSH.DisplayHelpFromSource(helpset.createHelpBroker());
-      final JButton proxy = new JButton("Proxy");
-      proxy.addActionListener(listener);
-      final JFrame frame = new JFrame("Jam User Guide");
-      final JButton exit = new JButton("Exit");
-      frame.getContentPane().add(exit, BorderLayout.CENTER);
-      exit.addActionListener(e -> System.exit(0));
-      SwingUtilities.invokeAndWait(
+      final URL resourceUrl = ClassLoader.getSystemClassLoader().getResource(markdownResource);
+      if (resourceUrl == null) {
+        showErrorDialog(new IOException("Resource not found: " + markdownResource));
+        return;
+      }
+
+      final String markdownContent =
+          new String(resourceUrl.openStream().readAllBytes(), StandardCharsets.UTF_8);
+      final String html = convertMarkdownToHtml(markdownContent);
+
+      // Initialize JavaFX on Swing EDT
+      final JFXPanel jfxPanel = new JFXPanel();
+      Platform.runLater(
           () -> {
-            frame.pack();
-            frame.setVisible(true);
+            final WebView webView = new WebView();
+            webView.getEngine().loadContent(html);
+            final Scene scene = new Scene(webView);
+            jfxPanel.setScene(scene);
           });
-      proxy.doClick();
-    } catch (HelpSetException | InvocationTargetException | InterruptedException helpSetException) {
-      showErrorDialog(helpSetException);
+
+      frame.getContentPane().add(jfxPanel, BorderLayout.CENTER);
+
+      final JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER));
+      final JButton close = new JButton("Close");
+      close.addActionListener(e -> frame.dispose());
+      south.add(close);
+      frame.getContentPane().add(south, BorderLayout.SOUTH);
+
+      frame.setSize(800, 600);
+      frame.setLocationRelativeTo(null);
+      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      frame.setVisible(true);
+    } catch (IOException e) {
+      showErrorDialog(e);
     }
+  }
+
+  /**
+   * Converts Markdown to HTML using CommonMark processor.
+   *
+   * @param markdown the Markdown content
+   * @return HTML representation
+   */
+  private static String convertMarkdownToHtml(final String markdown) {
+    final Parser parser = Parser.builder().build();
+    final Node document = parser.parse(markdown);
+    final HtmlRenderer renderer = HtmlRenderer.builder().build();
+    final String html = renderer.render(document);
+
+    // Wrap in HTML with basic styling
+    return "<!DOCTYPE html>\n"
+        + "<html>\n"
+        + "<head>\n"
+        + "<meta charset='UTF-8'>\n"
+        + "<style>\n"
+        + "  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;"
+        + " line-height: 1.6;          margin: 20px; color: #333; }\n"
+        + "  h1, h2, h3 { color: #0066cc; }\n"
+        + "  code { background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px;        "
+        + "  font-family: 'Courier New', monospace; }\n"
+        + "  pre { background-color: #f4f4f4; padding: 10px; border-radius: 5px;        "
+        + " overflow-x: auto; }\n"
+        + "</style>\n"
+        + "</head>\n"
+        + "<body>\n"
+        + html
+        + "</body>\n"
+        + "</html>";
   }
 
   private static void showErrorDialog(final Throwable throwable) {
@@ -92,13 +155,6 @@ public class Help extends JDialog {
     }
   }
 
-  /**
-   * Constructor.
-   *
-   * @param frame parent
-   * @param licenseReader responsible for getting the license text
-   * @param jamVersion the jam version object
-   */
   @Inject
   public Help(final JFrame frame, final LicenseReader licenseReader, final Version jamVersion) {
     super(frame, "University of Illinois/NCSA Open Source License", true);
