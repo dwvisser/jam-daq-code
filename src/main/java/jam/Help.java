@@ -45,18 +45,20 @@ public class Help extends JDialog {
   public static void main(final String[] args) {
     setLookAndFeel();
     final JFrame frame = new JFrame("Jam User Guide");
-    displayHelpInWebView(frame, "help/UserGuide.md");
+    displayHelpInWebView(frame, "help/toc.md");
   }
 
   /**
    * Displays Markdown help content in a JavaFX WebView.
    *
    * @param frame parent frame
-   * @param markdownResource path to Markdown resource (e.g., "help/UserGuide.md")
+   * @param markdownResource path to Markdown resource (e.g., "help/toc.md")
    */
   public static void displayHelpInWebView(final JFrame frame, final String markdownResource) {
     try {
-      final URL resourceUrl = ClassLoader.getSystemClassLoader().getResource(markdownResource);
+      final String basePath = markdownResource.substring(0, markdownResource.lastIndexOf('/') + 1);
+      final URL resourceUrl =
+          Thread.currentThread().getContextClassLoader().getResource(markdownResource);
       if (resourceUrl == null) {
         showErrorDialog(new IOException("Resource not found: " + markdownResource));
         return;
@@ -66,13 +68,43 @@ public class Help extends JDialog {
           new String(resourceUrl.openStream().readAllBytes(), StandardCharsets.UTF_8);
       final String html = convertMarkdownToHtml(markdownContent);
 
+      // Get base URL for the help directory
+      final URL baseUrl = Thread.currentThread().getContextClassLoader().getResource(basePath);
+      final String baseUrlString = baseUrl != null ? baseUrl.toString() : null;
+
       // Initialize JavaFX on Swing EDT
       final JFXPanel jfxPanel = new JFXPanel();
       Platform.runLater(
           () -> {
             final WebView webView = new WebView();
             webView.getEngine().loadContent(html);
-            final Scene scene = new Scene(webView);
+            // Handle link clicks for Markdown files
+            webView
+                .getEngine()
+                .locationProperty()
+                .addListener(
+                    (obs, oldLocation, newLocation) -> {
+                      if (newLocation != null && newLocation.endsWith(".md")) {
+                        // It's a Markdown link, load it
+                        final String relativePath = basePath + newLocation;
+                        try {
+                          final URL mdUrl =
+                              Thread.currentThread()
+                                  .getContextClassLoader()
+                                  .getResource(relativePath);
+                          if (mdUrl != null) {
+                            final String mdContent =
+                                new String(
+                                    mdUrl.openStream().readAllBytes(), StandardCharsets.UTF_8);
+                            final String newHtml = convertMarkdownToHtml(mdContent);
+                            webView.getEngine().loadContent(newHtml);
+                          }
+                        } catch (IOException e) {
+                          showErrorDialog(e);
+                        }
+                      }
+                    });
+            final Scene scene = new Scene(webView, 800, 600);
             jfxPanel.setScene(scene);
           });
 

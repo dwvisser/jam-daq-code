@@ -1,22 +1,16 @@
 package jam.commands;
 
+import jam.Help;
 import jam.global.CommandListenerException;
-import jam.global.Help;
-import javax.help.CSH;
-import javax.help.HelpSet;
-import javax.swing.JButton;
+import javax.swing.JFrame;
 
 /**
  * @author Ken Swartz
  */
 final class ShowUserGuide extends AbstractCommand {
 
-  private final transient JButton proxy = new JButton();
-
   ShowUserGuide() {
     super("User Guide\u2026");
-    final HelpSet help = Help.getInstance().getHelpSet();
-    proxy.addActionListener(new CSH.DisplayHelpFromSource(help.createHelpBroker()));
   }
 
   /**
@@ -24,7 +18,8 @@ final class ShowUserGuide extends AbstractCommand {
    */
   @Override
   protected void execute(final Object[] cmdParams) {
-    proxy.doClick();
+    final JFrame frame = new JFrame("Jam User Guide");
+    Help.displayHelpInWebView(frame, "help/toc.md");
   }
 
   @Override
