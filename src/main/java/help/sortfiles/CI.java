@@ -26,17 +26,21 @@ public class CI extends AbstractSortRoutine {
   private static final int THRESHOLDS = 100;
 
   /* number of channels per dimension in 2-d histograms */
-  private static final int TWO_D_CHANS = 512;
+  private static final int TWO_D_CHANNELS = 512;
 
   /* amount of bits to shift for compression */
   private static final int TWO_D_FACTOR =
-      Math.round((float) (Math.log(ADC_CHANNELS / TWO_D_CHANS) / Math.log(2.0)));
+      Math.round((float) (Math.log(ADC_CHANNELS / TWO_D_CHANNELS) / Math.log(2.0)));
 
   private final transient Gate gGeNaI; // 2D gate
 
   private final transient Gate gTAC; //  1D gate
 
-  private final transient HistInt1D hGe, hNaI, hTAC; //  ungated 1D spectra
+  //  ungated 1D spectra
+  private final transient HistInt1D hGe;
+  private final transient HistInt1D hNaI;
+  private final transient HistInt1D hTAC;
+
   private final transient HistInt1D hGe_g2d, hTAC_g2d; //  gated on Ge vs. NaI
 
   private final transient HistInt1D hGe_TAC; // 	gated on TAC
@@ -54,16 +58,16 @@ public class CI extends AbstractSortRoutine {
   /** * END OF GLOBAL DECLARATIONS ** */
   public CI() {
     super();
-    final String NAI = "NaI";
+    final String nameNaI = "NaI";
 
     /* HISTOGRAM SECTION */
     hGe = createHist1D(ADC_CHANNELS, "Ge", "Germanium");
-    hNaI = createHist1D(ADC_CHANNELS, NAI);
+    hNaI = createHist1D(ADC_CHANNELS, nameNaI);
     hTAC = createHist1D(ADC_CHANNELS, "TAC");
     hGe_TAC = createHist1D(ADC_CHANNELS, "Ge-TAC", "Germanium, gated on TAC");
     hGe_g2d = createHist1D(ADC_CHANNELS, "Ge-2dgate", "Germanium--gated on NaI vs Ge");
     hTAC_g2d = createHist1D(ADC_CHANNELS, "TAC-2dgate", "TAC--gated on NaI vs Ge");
-    hGeNaI = createHist2D(TWO_D_CHANS, "GeNaI", "NaI vs. Germanium", "Germanium", NAI);
+    hGeNaI = createHist2D(TWO_D_CHANNELS, "GeNaI", "NaI vs. Germanium", "Germanium", nameNaI);
 
     /* GATE SECTION */
     gTAC = new Gate("TAC", hTAC);
@@ -79,7 +83,7 @@ public class CI extends AbstractSortRoutine {
     final Scaler sBeam = createScaler("Beam", 1);
     sGe = createScaler("Ge", 2); // Ge provides trigger
     sAccept = createScaler("Ge Accept", 3);
-    Scaler sNaI = createScaler(NAI, 4);
+    Scaler sNaI = createScaler(nameNaI, 4);
 
     /* MONITOR SECTION
      * Monitors associated with scalers, window will return scaler rate in
@@ -117,7 +121,7 @@ public class CI extends AbstractSortRoutine {
    */
   public double monitor(final String name) {
     double rval = 0.0;
-    if (name.equals(DEAD_TIME)) {
+    if (DEAD_TIME.equals(name)) {
       final double geVal = sGe.getValue();
       final double acceptVal = sAccept.getValue();
       rval = 100.0 * (1.0 - (lastAccept - acceptVal) / (geVal - lastGe));
