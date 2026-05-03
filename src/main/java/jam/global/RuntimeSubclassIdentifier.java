@@ -8,11 +8,16 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 /**
  * This utility class is looking for all the classes implementing or inheriting from a given
@@ -33,22 +38,21 @@ public final class RuntimeSubclassIdentifier {
   private static final String SLASH = "/";
 
   /**
-   * @return true if <code>c</code> can have instances and is assignable as <code>tosubclass</code>
-   * @param tosubclass to superclass we desire instances of
+   * @return true if <code>c</code> can have instances and is assignable as <code>toSubclass</code>
+   * @param toSubclass to superclass we desire instances of
    * @param clazz the candidate class to check
    */
-  public static boolean canUseClassAs(final Class<?> tosubclass, final Class<?> clazz) {
-    return tosubclass.isAssignableFrom(clazz) && ((clazz.getModifiers() & Modifier.ABSTRACT) == 0);
+  public static boolean canUseClassAs(final Class<?> toSubclass, final Class<?> clazz) {
+    return toSubclass.isAssignableFrom(clazz) && ((clazz.getModifiers() & Modifier.ABSTRACT) == 0);
   }
 
   /**
    * @param fileName filename minus any path
-   * @param pckg the string representing the package for the filename
+   * @param packageName the string representing the package for the filename
    * @return representation of the proper full reference to the class
    */
-  private static String filenameToClassname(final String fileName, final String pckg) {
-    String rval = pckg + '.' + fileName.substring(0, fileName.length() - CLASS_EXT.length());
-    return rval;
+  private static String filenameToClassname(final String fileName, final String packageName) {
+    return packageName + '.' + fileName.substring(0, fileName.length() - CLASS_EXT.length());
   }
 
   /**
@@ -57,8 +61,8 @@ public final class RuntimeSubclassIdentifier {
    * @return representation of the proper full reference to the class
    */
   private static String fileToClassname(final File file, final String classpath) {
-    final String fullpath = file.getPath();
-    String temp = fullpath.substring(0, fullpath.length() - CLASS_EXT.length());
+    final String fullPath = file.getPath();
+    String temp = fullPath.substring(0, fullPath.length() - CLASS_EXT.length());
     if (temp.startsWith(classpath)) {
       temp = temp.substring(classpath.length(), temp.length());
     }
@@ -79,11 +83,11 @@ public final class RuntimeSubclassIdentifier {
     return classname;
   }
 
-  private final transient String rtsiName;
+  private final transient String runtimeSubclassIdentifierName;
 
   RuntimeSubclassIdentifier() {
     super();
-    rtsiName = getClass().getName();
+    runtimeSubclassIdentifierName = getClass().getName();
   }
 
   /**
@@ -99,14 +103,15 @@ public final class RuntimeSubclassIdentifier {
       final String classname,
       final Class<?> superclass,
       final ClassLoader loader,
-      final Collection<String> coll) {
+      final Collection<String> coll) { // NOPMD
     try {
       final Class<?> clazz = loader.loadClass(classname);
       if (canUseClassAs(superclass, clazz)) {
         coll.add(classname);
       }
-    } catch (ClassNotFoundException cnfex) {
-      JOptionPane.showMessageDialog(null, cnfex.getMessage(), rtsiName, JOptionPane.ERROR_MESSAGE);
+    } catch (ClassNotFoundException e) {
+      JOptionPane.showMessageDialog(
+          null, e.getMessage(), runtimeSubclassIdentifierName, JOptionPane.ERROR_MESSAGE);
     }
   }
 
@@ -128,7 +133,8 @@ public final class RuntimeSubclassIdentifier {
       try {
         url = classpath.toURI().toURL();
       } catch (MalformedURLException e) {
-        JOptionPane.showMessageDialog(null, e.getMessage(), rtsiName, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(
+            null, e.getMessage(), runtimeSubclassIdentifierName, JOptionPane.ERROR_MESSAGE);
       }
       if (url != null) {
         final URL passUrl = url;
@@ -147,8 +153,8 @@ public final class RuntimeSubclassIdentifier {
   }
 
   private <T> void addAllToSet(
-      final Collection<Class<? extends T>> addTo,
-      final Collection<Class<?>> addFrom,
+      final Collection<Class<? extends T>> addTo, // NOPMD
+      final Collection<Class<?>> addFrom, // NOPMD
       final Class<T> superclass) {
     for (Class<?> clazz : addFrom) {
       addTo.add(clazz.asSubclass(superclass));
@@ -156,33 +162,32 @@ public final class RuntimeSubclassIdentifier {
   }
 
   /**
-   * @param <T> class to find implememtors of
-   * @return a set of unique classes that can have instances and are assignable as <code>tosubclass
+   * @param <T> class to find implementors of
+   * @return a set of unique classes that can have instances and are assignable as <code>toSubclass
    *     </code>.
-   * @param pckgname the package to search
-   * @param tosubclass the superclass we desire implementations of
+   * @param packageName the package to search
+   * @param toSubclass the superclass we desire implementations of
    * @param recurse whether to recurse through sub-packages
    */
   public <T> Set<Class<? extends T>> find(
-      final String pckgname, final Class<T> tosubclass, final boolean recurse) {
-    final StringBuilder errmessage =
+      final String packageName, final Class<T> toSubclass, final boolean recurse) {
+    final StringBuilder errorMessage =
         new StringBuilder("Searching in ")
-            .append(pckgname)
+            .append(packageName)
             .append("\nYou've probably incorrectly specified a classpath,\n")
             .append("or moved/renamed an existing .class file.\n");
-    final Set<String> names = findClassNames(pckgname, tosubclass, recurse);
+    final Set<String> names = findClassNames(packageName, toSubclass, recurse);
     final Set<Class<? extends T>> rval = new LinkedHashSet<>(); // preserves
-    // order of
-    // add()'s
+    // order of add()'s
     try {
       for (String name : names) {
         final Class<?> clazz = DEF_LOADER.loadClass(name);
-        rval.add(clazz.asSubclass(tosubclass));
+        rval.add(clazz.asSubclass(toSubclass));
       }
     } catch (ClassNotFoundException | LinkageError e) {
-      errmessage.append(e.getMessage());
+      errorMessage.append(e.getMessage());
       JOptionPane.showMessageDialog(
-          null, errmessage.toString(), rtsiName, JOptionPane.ERROR_MESSAGE);
+          null, errorMessage.toString(), runtimeSubclassIdentifierName, JOptionPane.ERROR_MESSAGE);
     }
     return rval;
   }
@@ -191,19 +196,19 @@ public final class RuntimeSubclassIdentifier {
    * Find all the classes inheriting or implementing a given class in a given package (but it does
    * not search any sub-packages).
    *
-   * @param pckgname the fully qualified name of the package
-   * @param tosubclass the Class object to inherit from
+   * @param packageName the fully qualified name of the package
+   * @param toSubclass the Class object to inherit from
    * @param recurse whether to traverse subpackages recursively
    * @return an unordered list of classes assignable as requested
    */
   private Set<String> findClassNames(
-      final String pckgname, final Class<?> tosubclass, final boolean recurse) {
+      final String packageName, final Class<?> toSubclass, final boolean recurse) {
     /*
      * Code from JWhich Translate the package name into an absolute path
      */
     final SortedSet<String> rval = new TreeSet<>();
     final String name =
-        (pckgname.startsWith(SLASH) ? pckgname : SLASH + pckgname).replace('.', '/');
+        (packageName.startsWith(SLASH) ? packageName : SLASH + packageName).replace('.', '/');
     final URL url = RuntimeSubclassIdentifier.class.getResource(name);
     if (url != null) {
       /*
@@ -216,40 +221,40 @@ public final class RuntimeSubclassIdentifier {
        * commands/LightOff.class commands/LightOn.class RTSI.class
        */
       /* replace any URL space codes with actual spaces */
-      final String urlsp = "%20";
+      final String urlSpace = "%20";
       final String space = " ";
-      final File directory = new File(url.getFile().replaceAll(urlsp, space));
+      final File directory = new File(url.getFile().replaceAll(urlSpace, space));
       if (directory.exists()) {
         final File[] files = directory.listFiles();
         for (File file : files) {
           final String fname = file.getName();
           if (fname.endsWith(CLASS_EXT)) {
-            final String classname = filenameToClassname(fname, pckgname);
-            addToCollection(classname, tosubclass, DEF_LOADER, rval);
+            final String classname = filenameToClassname(fname, packageName);
+            addToCollection(classname, toSubclass, DEF_LOADER, rval);
             // } else if (fname.endsWith(".jar")) {
             /* recursively add the results of the jar file? */
           } else {
             /* if a folder and recursing, add it's results */
             if (recurse && file.isDirectory()) {
-              rval.addAll(findClassNames(pckgname + PERIOD + file.getName(), tosubclass, true));
+              rval.addAll(findClassNames(packageName + PERIOD + file.getName(), toSubclass, true));
             }
           }
         }
       } else {
-        rval.addAll(findClassNamesFromJarURL(url, tosubclass, name.substring(1)));
+        rval.addAll(findClassNamesFromJarURL(url, toSubclass, name.substring(1)));
       }
     }
     return rval;
   }
 
   private Set<String> findClassNamesFromJarConnection(
-      final Enumeration<JarEntry> enumeration, final Class<?> tosubclass, final String starts) {
+      final Enumeration<JarEntry> enumeration, final Class<?> toSubclass, final String starts) {
     final SortedSet<String> rval = new TreeSet<>();
     while (enumeration.hasMoreElements()) {
       final JarEntry entry = enumeration.nextElement();
       final String classname = jarEntryToClassname(entry, starts);
       if (classname != null) {
-        addToCollection(classname, tosubclass, DEF_LOADER, rval);
+        addToCollection(classname, toSubclass, DEF_LOADER, rval);
       }
     }
     return rval;
@@ -267,7 +272,8 @@ public final class RuntimeSubclassIdentifier {
       JarFile jarFile = conn.getJarFile();
       result.addAll(findClassNamesFromJarConnection(jarFile.entries(), toSubclass, starts));
     } catch (IOException e) {
-      JOptionPane.showMessageDialog(null, e.getMessage(), rtsiName, JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(
+          null, e.getMessage(), runtimeSubclassIdentifierName, JOptionPane.ERROR_MESSAGE);
     }
     return result;
   }
@@ -276,14 +282,14 @@ public final class RuntimeSubclassIdentifier {
    * Creates own <code>ClassLoader</code> using the given classpath in order to find all classes
    * which are assignable as the given class or interface.
    *
-   * @param tosubclass type we are looking for
+   * @param toSubclass type we are looking for
    * @param classpath string representing the folder at the base of the classpath
    * @param file where to start the search
    * @param loader the classloader, so we won't keep creating them in recursive calls
-   * @return an alphabetically ordered set of classes assignable as <code>tosubclass</code>
+   * @return an alphabetically ordered set of classes assignable as <code>toSubclass</code>
    */
   private SortedSet<String> getClassesRecursively(
-      final Class<?> tosubclass,
+      final Class<?> toSubclass,
       final String classpath,
       final File file,
       final ClassLoader loader) {
@@ -292,7 +298,7 @@ public final class RuntimeSubclassIdentifier {
       final File[] list = file.listFiles();
       if (list != null) { // In case we don't have permission
         for (File currentFile : list) {
-          rval.addAll(getClassesRecursively(tosubclass, classpath, currentFile, loader));
+          rval.addAll(getClassesRecursively(toSubclass, classpath, currentFile, loader));
         }
       }
     } else { // we are only interested in .class files
@@ -300,10 +306,10 @@ public final class RuntimeSubclassIdentifier {
         final String temp = fileToClassname(file, classpath);
         try {
           final Class<?> clazz = loader.loadClass(temp);
-          if (canUseClassAs(tosubclass, clazz)) {
+          if (canUseClassAs(toSubclass, clazz)) {
             rval.add(temp);
           }
-        } catch (ClassNotFoundException | LinkageError cnfex) { // NOPMD
+        } catch (ClassNotFoundException | LinkageError e) { // NOPMD
           // fall through and return what we have
         }
       }
@@ -327,15 +333,24 @@ public final class RuntimeSubclassIdentifier {
         url = path.toURI().toURL();
       }
     } catch (MalformedURLException e) {
-      JOptionPane.showMessageDialog(null, e.getMessage(), rtsiName, JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(
+          null, e.getMessage(), runtimeSubclassIdentifierName, JOptionPane.ERROR_MESSAGE);
     }
     if (url != null) {
       final URL passUrl = url;
-      final ClassLoader loader = new URLClassLoader(new URL[] {passUrl});
+      final var loader = new URLClassLoader(new URL[] {passUrl});
       try {
         rval = loader.loadClass(className);
       } catch (ClassNotFoundException e) {
-        JOptionPane.showMessageDialog(null, e.getMessage(), rtsiName, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(
+            null, e.getMessage(), runtimeSubclassIdentifierName, JOptionPane.ERROR_MESSAGE);
+      } finally {
+        try {
+          loader.close();
+        } catch (IOException e) {
+          JOptionPane.showMessageDialog(
+              null, e.getMessage(), runtimeSubclassIdentifierName, JOptionPane.ERROR_MESSAGE);
+        }
       }
     }
     return rval;
@@ -352,7 +367,8 @@ public final class RuntimeSubclassIdentifier {
       }
     } catch (ClassNotFoundException e) {
       errorMessage.append(e.getMessage());
-      JOptionPane.showMessageDialog(null, errorMessage, rtsiName, JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(
+          null, errorMessage, runtimeSubclassIdentifierName, JOptionPane.ERROR_MESSAGE);
     }
     return result;
   }

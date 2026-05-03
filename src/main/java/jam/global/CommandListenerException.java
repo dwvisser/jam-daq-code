@@ -1,7 +1,7 @@
 package jam.global;
 
 /**
- * Exception thrown when a error occurs in running a command via the ComandListener interface
+ * Exception thrown when a error occurs in running a command via the CommandListener interface
  *
  * @author Ken Swartz
  */

@@ -3,7 +3,11 @@ package jam.global;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A global status class so that information is globally available.
@@ -49,7 +53,7 @@ public final class JamStatus implements AcquisitionStatus, QuerySortMode {
    */
   public boolean canSetup() {
     synchronized (sortMode) {
-      return ((sortMode == SortMode.NO_SORT) || (sortMode == SortMode.FILE));
+      return (sortMode == SortMode.NO_SORT) || (sortMode == SortMode.FILE);
     }
   }
 
@@ -192,15 +196,15 @@ public final class JamStatus implements AcquisitionStatus, QuerySortMode {
               || mode == SortMode.OFFLINE
               || mode == SortMode.REMOTE)
           && !canSetup()) {
-        final StringBuilder etext = new StringBuilder("Can't setup, setup is locked for ");
+        final StringBuilder message = new StringBuilder("Can't setup, setup is locked for ");
         if (sortMode == SortMode.ONLINE_DISK || sortMode == SortMode.ON_NO_DISK) {
-          etext.append("online");
+          message.append("online");
         } else if (sortMode == SortMode.OFFLINE) {
-          etext.append("offline");
+          message.append("offline");
         } else { // SortMode.REMOTE
-          etext.append("remote");
+          message.append("remote");
         }
-        throw new UnsupportedOperationException(etext.toString());
+        throw new UnsupportedOperationException(message.toString());
       }
       sortMode = mode;
     }

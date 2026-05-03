@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -61,7 +62,7 @@ public final class JamProperties {
   /** Jam properties */
   private static final Properties PROPERTIES = new Properties();
 
-  private static final String USERHOME = System.getProperty("user.home");
+  private static final String USER_HOME = System.getProperty("user.home");
 
   /**
    * Get the value of a boolean property.
@@ -88,14 +89,18 @@ public final class JamProperties {
     int rval = 0; // default return value
     final String classname = JamProperties.class.getName();
     try {
-      if (PROPERTIES.getProperty(key) == null) {
-        LOGGER.warning(classname + ".getPropInt(): property for " + key + " is not defined.");
+      if (PROPERTIES.getProperty(key) == null && LOGGER.isLoggable(Level.WARNING)) {
+        LOGGER.warning( // NOPMD
+            classname + ".getPropInt(): property for " + key + " is not defined.");
       } else {
         rval = Integer.parseInt(PROPERTIES.getProperty(key).trim());
       }
     } catch (NumberFormatException nfe) {
       LOGGER.throwing(classname, "getPropInt", nfe);
-      LOGGER.severe(classname + ".getPropInt(): property for " + key + " is not an integer.");
+      if (LOGGER.isLoggable(Level.SEVERE)) {
+        LOGGER.severe( // NOPMD
+            classname + ".getPropInt(): property for " + key + " is not an integer.");
+      }
     }
     return rval;
   }
@@ -108,11 +113,13 @@ public final class JamProperties {
     String rval = "undefined"; // default return value
     final String property = PROPERTIES.getProperty(key);
     if (property == null) {
-      LOGGER.warning(
-          JamProperties.class.getName()
-              + ".getPropString(): property for "
-              + key
-              + " is not defined.");
+      if (LOGGER.isLoggable(Level.WARNING)) {
+        LOGGER.warning( // NOPMD
+            JamProperties.class.getName()
+                + ".getPropString(): property for "
+                + key
+                + " is not defined.");
+      }
     } else {
       rval = property.trim();
     }
@@ -162,8 +169,6 @@ public final class JamProperties {
   private transient String loadError;
 
   private final transient String userCurrentDir = System.getProperty("user.dir");
-
-  private transient File userFile;
 
   /** message for loading user config */
   private transient String userLoadMessage;
@@ -224,9 +229,9 @@ public final class JamProperties {
           configLoadMessage = "Using default configuration";
         }
       }
-    } catch (FileNotFoundException fnfe) {
+    } catch (FileNotFoundException fileException) {
       loadError = "Jam configuration file, " + fileName + ",  not found.";
-      showErrorMessage(fnfe, loadError);
+      showErrorMessage(fileException, loadError);
     } catch (IOException ioe) {
       loadError = "Could not read configuration file, " + fileName + ".";
       showErrorMessage(ioe, loadError);
@@ -255,7 +260,7 @@ public final class JamProperties {
   private void loadUser() {
     userLoadWarning = NO_WARNINGS;
     loadError = NO_ERRORS;
-    userFile = new File(USERHOME, FILE_USER);
+    File userFile = new File(USER_HOME, FILE_USER);
     try {
       // try userHomeDir
       if (userFile.exists()) {
@@ -274,9 +279,9 @@ public final class JamProperties {
           userLoadMessage = "Read user configuration file: " + userFile.getPath();
         }
       }
-    } catch (FileNotFoundException fnfe) {
+    } catch (FileNotFoundException fileException) {
       loadError = "Jam user configuration file, " + userFile.getPath() + ",  not found.";
-      showErrorMessage(fnfe, loadError);
+      showErrorMessage(fileException, loadError);
     } catch (IOException ioe) {
       loadError = "Could not read user configuration file, " + userFile.getPath() + ".";
       showErrorMessage(ioe, loadError);
@@ -293,7 +298,7 @@ public final class JamProperties {
   }
 
   private void loadUserPropertiesFromCurrentDirectory() throws IOException {
-    userFile = new File(userCurrentDir, FILE_USER);
+    File userFile = new File(userCurrentDir, FILE_USER);
     if (userFile.exists()) {
       inputStream = new FileInputStream(userFile);
       PROPERTIES.load(inputStream);
@@ -301,7 +306,7 @@ public final class JamProperties {
           "Cannot find user configuration file "
               + FILE_USER
               + " in user home directory "
-              + USERHOME;
+              + USER_HOME;
       userLoadMessage = "Read user configuration from file " + userFile.getPath();
       // use default properties
     } else {
@@ -309,7 +314,7 @@ public final class JamProperties {
           "Cannot find user configuration file "
               + FILE_USER
               + ", in user home directory "
-              + USERHOME
+              + USER_HOME
               + " or in current directory "
               + userCurrentDir;
       userLoadMessage = "Using default user properties";
@@ -351,17 +356,19 @@ public final class JamProperties {
     PROPERTIES.setProperty(PropertyKeys.EXP_NAME, "default_");
     PROPERTIES.setProperty(PropertyKeys.SORT_ROUTINE, "jam.sort.Example");
     PROPERTIES.setProperty(PropertyKeys.SORT_CLASSPATH, DEFAULT_SORTPATH);
-    PROPERTIES.setProperty(PropertyKeys.HIST_PATH, new File(USERHOME, "spectra").getPath());
-    PROPERTIES.setProperty(PropertyKeys.EVENT_INPATH, new File(USERHOME, "events").getPath());
-    PROPERTIES.setProperty(PropertyKeys.EVENT_OUTPATH, new File(USERHOME, "events").getPath());
+    PROPERTIES.setProperty(PropertyKeys.HIST_PATH, new File(USER_HOME, "spectra").getPath());
+    PROPERTIES.setProperty(PropertyKeys.EVENT_INPATH, new File(USER_HOME, "events").getPath());
+    PROPERTIES.setProperty(PropertyKeys.EVENT_OUTPATH, new File(USER_HOME, "events").getPath());
     PROPERTIES.setProperty(PropertyKeys.EVENT_OUTFILE, "sortout.evn");
-    PROPERTIES.setProperty(PropertyKeys.LOG_PATH, new File(USERHOME).getPath());
+    PROPERTIES.setProperty(PropertyKeys.LOG_PATH, new File(USER_HOME).getPath());
     PROPERTIES.setProperty(PropertyKeys.EVENT_INSTREAM, "jam.sort.stream.YaleCAEN_InputStream");
     PROPERTIES.setProperty(PropertyKeys.EVENT_OUTSTREAM, "jam.sort.stream.YaleOutputStream");
   }
 
   private void showErrorMessage(final Exception exception, final String extra) {
-    final String message = exception.getMessage() + "; " + extra;
-    LOGGER.severe(JamProperties.class.getName() + "--" + message);
+    if (LOGGER.isLoggable(Level.SEVERE)) {
+      LOGGER.severe( // NOPMD
+          JamProperties.class.getName() + "--" + exception.getMessage() + "; " + extra);
+    }
   }
 }

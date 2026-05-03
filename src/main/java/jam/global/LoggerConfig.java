@@ -2,8 +2,12 @@ package jam.global;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.logging.*;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * Configures the handlers for the "root" logger.
@@ -22,7 +26,7 @@ public class LoggerConfig {
     super();
     logger = Logger.getLogger(name);
     logger.setLevel(Level.FINEST);
-    final Collection<Handler> handlers = Arrays.asList(logger.getHandlers());
+    final var handlers = Arrays.asList(logger.getHandlers());
     for (Handler handler : handlers) {
       logger.removeHandler(handler);
     }
@@ -42,7 +46,7 @@ public class LoggerConfig {
    */
   public LoggerConfig(final String name, final MessageHandler msgHandler) {
     this(name);
-    final Collection<Handler> handlers = Arrays.asList(logger.getHandlers());
+    final var handlers = Arrays.asList(logger.getHandlers());
     for (Handler handler : handlers) {
       if (handler instanceof ConsoleHandler) {
         logger.removeHandler(handler);

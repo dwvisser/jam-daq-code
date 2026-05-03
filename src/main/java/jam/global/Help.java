@@ -14,7 +14,7 @@ import javax.help.HelpSetException;
  */
 public final class Help {
 
-  private transient HelpSet helpset;
+  private transient HelpSet helpSet;
 
   private transient HelpBroker broker;
 
@@ -23,13 +23,13 @@ public final class Help {
   private static final Logger LOGGER = Logger.getLogger(Help.class.getPackage().getName());
 
   private Help() {
-    final String helpsetName = "help/HelpSet.xml";
-    final URL hsURL = Thread.currentThread().getContextClassLoader().getResource(helpsetName);
+    final String helpSetName = "help/HelpSet.xml";
+    final URL hsURL = Thread.currentThread().getContextClassLoader().getResource(helpSetName);
     try {
-      helpset = new HelpSet(null, hsURL);
-      broker = helpset.createHelpBroker();
+      helpSet = new HelpSet(null, hsURL);
+      broker = helpSet.createHelpBroker();
     } catch (HelpSetException e) {
-      final String message = "HelpSet " + helpsetName + " not found";
+      final String message = "HelpSet " + helpSetName + " not found";
       LOGGER.log(Level.WARNING, message, e);
     }
   }
@@ -45,7 +45,7 @@ public final class Help {
    * @return the help set
    */
   public HelpSet getHelpSet() {
-    return helpset;
+    return helpSet;
   }
 
   /**

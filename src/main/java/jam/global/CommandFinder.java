@@ -16,10 +16,10 @@ public interface CommandFinder {
    * @param onlyEnabled <code>true</code> means only return enabled commands
    * @return list of similar commands
    */
-  Collection<String> getSimilar(final String string, final boolean onlyEnabled);
+  Collection<String> getSimilar(String string, boolean onlyEnabled); // NOPMD
 
   /**
    * @return all commands in the map in alphabetical order
    */
-  Collection<String> getAll();
+  Collection<String> getAll(); // NOPMD
 }

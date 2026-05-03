@@ -11,7 +11,7 @@ public interface MessageHandler {
   /** new partial message */
   int NEW = 0;
 
-  /** continue partical message */
+  /** continue partial message */
   int CONTINUE = 1;
 
   /** end partial message */
