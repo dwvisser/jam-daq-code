@@ -1,7 +1,12 @@
 package jam.data;
 
 import jam.data.Group.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Collection of groups.
@@ -15,7 +20,7 @@ final class GroupCollection implements NameValueCollection<Group>, SortGroupGett
   }
 
   /** Map of all groups using name */
-  private final transient Map<String, Group> map = new HashMap<>();
+  private final transient Map<String, Group> map = new HashMap<>(); // NOPMD
 
   /** List of all groups */
   private final transient List<Group> list = new ArrayList<>();
@@ -58,7 +63,7 @@ final class GroupCollection implements NameValueCollection<Group>, SortGroupGett
     synchronized (lock) {
       this.map.clear();
       this.list.clear();
-      this.sortGroup = null; // NOPMD
+      this.sortGroup = null;
     }
   }
 

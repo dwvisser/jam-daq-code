@@ -20,7 +20,7 @@ final class SetVerbose extends AbstractSetBooleanPreference implements PropertyC
     super();
     putValue(NAME, "Verbose front end");
     putValue(SHORT_DESCRIPTION, "Preference for verbosity from the front end process.");
-    prefsNode = CommunicationPreferences.PREFS;
+    preferencesNode = CommunicationPreferences.PREFS;
     key = CommunicationPreferences.VERBOSE;
     defaultState = false;
     enable();

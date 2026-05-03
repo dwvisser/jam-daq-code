@@ -72,12 +72,12 @@ final class OpenHDFCmd extends AbstractCommand
   private void readHDFFile(final File file) {
     final boolean isReading;
     if (file == null) { // No file given
-      final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
-      jfile.setFileFilter(new HDFileFilter(true));
-      final int option = jfile.showOpenDialog(frame);
+      final var fileChooser = new JFileChooser(HDFIO.getLastValidFile());
+      fileChooser.setFileFilter(new HDFileFilter(true));
+      final int option = fileChooser.showOpenDialog(frame);
       // Don't do anything if it was cancel
-      if (option == JFileChooser.APPROVE_OPTION && jfile.getSelectedFile() != null) {
-        openFile = jfile.getSelectedFile();
+      if (option == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null) {
+        openFile = fileChooser.getSelectedFile();
         DataBase.getInstance().clearAllLists();
         this.broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
         hdfio.setListener(this);
@@ -148,10 +148,10 @@ final class OpenHDFCmd extends AbstractCommand
     setEnabled(mode == SortMode.FILE || mode == SortMode.NO_SORT);
   }
 
-  /** Called by HDFIO when asynchronized IO is completed */
+  /** Called by HDFIO when asynchronousIO is completed */
   public void completedIO(final String message, final String errorMessage) {
     hdfio.removeListener();
     notifyApp(openFile);
-    openFile = null; // NOPMD
+    openFile = null;
   }
 }

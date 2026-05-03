@@ -40,12 +40,12 @@ public class Help extends JDialog {
    * @param args ignored
    */
   public static void main(final String[] args) {
-    final String helpsetName = "help/HelpSet.xml";
+    final String helpSetName = "help/HelpSet.xml";
     setLookAndFeel();
     try {
-      final URL hsURL = ClassLoader.getSystemClassLoader().getResource(helpsetName);
-      final HelpSet helpset = new HelpSet(null, hsURL);
-      final ActionListener listener = new CSH.DisplayHelpFromSource(helpset.createHelpBroker());
+      final URL hsURL = ClassLoader.getSystemClassLoader().getResource(helpSetName);
+      final HelpSet helpSet = new HelpSet(null, hsURL);
+      final ActionListener listener = new CSH.DisplayHelpFromSource(helpSet.createHelpBroker());
       final JButton proxy = new JButton("Proxy");
       proxy.addActionListener(listener);
       final JFrame frame = new JFrame("Jam User Guide");
@@ -71,7 +71,7 @@ public class Help extends JDialog {
   private static void setLookAndFeel() {
     final String linux = "Linux";
     final String kunststoff = "com.incors.plaf.kunststoff.KunststoffLookAndFeel";
-    boolean bKunststoff = linux.equals(System.getProperty("os.name")); // NOPMD
+    boolean bKunststoff = linux.equals(System.getProperty("os.name"));
     if (bKunststoff) {
       try {
         UIManager.setLookAndFeel(kunststoff);
@@ -106,10 +106,10 @@ public class Help extends JDialog {
     final String defaultVal = "notseen";
     final String version = jamVersion.getName();
     final String key = "license";
-    final Preferences helpnode = Preferences.userNodeForPackage(getClass());
-    if (frame.isVisible() && !version.equals(helpnode.get(key, defaultVal))) {
+    final Preferences helpNode = Preferences.userNodeForPackage(getClass());
+    if (frame.isVisible() && !version.equals(helpNode.get(key, defaultVal))) {
       setVisible(true);
-      helpnode.put(key, version);
+      helpNode.put(key, version);
     }
   }
 

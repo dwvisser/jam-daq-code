@@ -13,7 +13,7 @@ public class SetEnableScrolling extends AbstractSetBooleanPreference {
     super();
     putValue(NAME, "Plot Scrolling Tiled Plots");
     putValue(SHORT_DESCRIPTION, "Shows the scrollers allowing the scrolling on Plot.");
-    prefsNode = PlotPreferences.PREFS;
+    preferencesNode = PlotPreferences.PREFS;
     key = PlotPreferences.ENABLE_SCROLLING;
     defaultState = false;
   }

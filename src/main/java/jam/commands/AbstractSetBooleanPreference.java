@@ -24,7 +24,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand { // 
   }
 
   /** Preference node which must be defined in full implementations. */
-  protected transient Preferences prefsNode;
+  protected transient Preferences preferencesNode;
 
   /** Name of the preference must be defined in full implementations. */
   protected transient String key;
@@ -32,7 +32,8 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand { // 
   /** Placeholder for the previous/next state. */
   protected transient boolean state;
 
-  private static final ImageIcon CHECK_MARK, CLEAR;
+  private static final ImageIcon CHECK_MARK;
+  private static final ImageIcon CLEAR;
 
   static {
     final ClassLoader loader = AbstractSetBooleanPreference.class.getClassLoader();
@@ -45,14 +46,14 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand { // 
 
   /**
    * Subclass initialization must be in initialization blocks or constructor. This method may not be
-   * overriden.
+   * overridden.
    *
    * @see jam.commands.Commandable#initCommand()
    */
   @Override
   public final void initCommand() {
     synchronized (this) {
-      state = prefsNode.getBoolean(key, defaultState);
+      state = preferencesNode.getBoolean(key, defaultState);
     }
     changeIcon();
   }
@@ -72,9 +73,9 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand { // 
           state = (Boolean) param0;
         }
       } else {
-        state = !state; // NOPMD
+        state = !state;
       }
-      prefsNode.putBoolean(key, state);
+      preferencesNode.putBoolean(key, state);
       changeIcon();
     }
   }

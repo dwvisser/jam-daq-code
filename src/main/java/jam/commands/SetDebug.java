@@ -19,7 +19,7 @@ final class SetDebug extends AbstractSetBooleanPreference implements PropertyCha
   SetDebug() {
     super("Debug front end");
     putValue(SHORT_DESCRIPTION, "Preference for debugging messages from the front end process.");
-    prefsNode = CommunicationPreferences.PREFS;
+    preferencesNode = CommunicationPreferences.PREFS;
     key = CommunicationPreferences.DEBUG;
     defaultState = false;
     enable();

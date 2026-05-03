@@ -57,10 +57,7 @@ public final class HDFIO implements DataIO {
 
   private static final Object LVF_MONITOR = new Object();
 
-  private static class MonitorSteps {
-    private MonitorSteps() {
-      super();
-    }
+  private static final class MonitorSteps {
 
     public static final int OVERHEAD_READ = 1;
 
