@@ -13,13 +13,18 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.ui.ExtensionFileFilter;
 import jam.util.NumberUtilities;
-import java.awt.*;
-import java.io.*;
+import java.awt.Frame;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteOrder;
+import java.util.logging.Level;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * Imports and Exports Histograms files using the XSYS format. XSYS is a data Acquistion program
+ * Imports and Exports Histograms files using the XSYS format. XSYS is a data Acquisition program
  * written at TUNL, and is used at NPL in Seattle. Only import implement as of June 98. A page for
  * VMS is 128x4=512 bytes long.
  *
@@ -43,9 +48,9 @@ public class ImpExpXSYS extends AbstractImpExp { // NOPMD
 
   private transient int areaSizeY;
 
-  private transient int calibFlag;
+  private transient int calibrationFlag;
 
-  private final transient int[] calibCoef = new int[3];
+  private final transient int[] coefficients = new int[3];
 
   // arrays for counts of spectra
 
@@ -112,8 +117,8 @@ public class ImpExpXSYS extends AbstractImpExp { // NOPMD
    * @exception ImpExpException thrown for general problems importing this format
    */
   @Override
-  public void readData(final InputStream buffin) throws ImpExpException {
-    final DataInputStream dis = new DataInputStream(buffin);
+  public void readData(final InputStream inputStream) throws ImpExpException {
+    final DataInputStream dis = new DataInputStream(inputStream);
     firstHeader = true;
     DataBase.getInstance().clearAllLists(); // clear the data base
     broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
@@ -122,7 +127,7 @@ public class ImpExpXSYS extends AbstractImpExp { // NOPMD
       // read in data until end of file
       int specRead = 0;
       int specNotRead = 0;
-      while (unPackHeaderXSYS(buffin)) {
+      while (unPackHeaderXSYS(inputStream)) {
         // histogram 1d int 4 words
         if (areaDataType == XSYS1DI4) {
           final String areaTitle = Integer.toString(areaNumber) + "  " + areaName + " ";
@@ -132,8 +137,8 @@ public class ImpExpXSYS extends AbstractImpExp { // NOPMD
           hist.setNumber(areaNumber);
 
           // calibrate histogram if flag set
-          if (calibFlag == CALIB_ENERGY) {
-            calibHist(calibCoef, hist);
+          if (calibrationFlag == CALIB_ENERGY) {
+            calibHist(coefficients, hist);
           }
           specRead++;
 
@@ -146,22 +151,24 @@ public class ImpExpXSYS extends AbstractImpExp { // NOPMD
           hist.setNumber(areaNumber);
           specRead++;
         } else if (areaDataType == XSYS1DR4) {
-          unPackUnknown(buffin, areaLengthPage);
+          unPackUnknown(inputStream, areaLengthPage);
           specNotRead++;
         } else if (areaDataType == XSYSEVAL) {
-          unPackEVAL(buffin, areaLengthPage);
+          unPackEVAL(inputStream, areaLengthPage);
         } else {
-          unPackUnknown(buffin, areaLengthPage);
+          unPackUnknown(inputStream, areaLengthPage);
           specNotRead++;
         }
       }
-      final StringBuilder msg = new StringBuilder();
-      msg.append(specRead).append(" spectra read");
-      if (specNotRead > 0) {
-        msg.append(", ").append(specNotRead).append(" spectra not read");
+      if (LOGGER.isLoggable(Level.INFO)) {
+        final StringBuilder msg = new StringBuilder();
+        msg.append(specRead).append(" spectra read");
+        if (specNotRead > 0) {
+          msg.append(", ").append(specNotRead).append(" spectra not read");
+        }
+        msg.append('.');
+        LOGGER.info(msg.toString()); // NOPMD
       }
-      msg.append('.');
-      LOGGER.info(msg.toString());
     } catch (IOException ioe) {
       throw new ImpExpException(ioe);
     }
@@ -184,13 +191,14 @@ public class ImpExpXSYS extends AbstractImpExp { // NOPMD
    *
    * @return true if it read a header, false if end of file found
    */
-  private boolean unPackHeaderXSYS(final InputStream buffin) throws IOException, ImpExpException {
+  private boolean unPackHeaderXSYS(final InputStream inputStream)
+      throws IOException, ImpExpException {
     final int[] buffer = new int[L_BUFFER];
-    final boolean endOfFile = readBuffers(buffin, buffer);
+    final boolean endOfFile = readBuffers(inputStream, buffer);
     if (!endOfFile) {
       /* read header word */
       final String header = bufferToString(buffer, P_HEADER, L_INT);
-      if (!(header.equals(HEADER))) {
+      if (!header.equals(HEADER)) {
         throw new ImpExpException("Not an XSYS file, no SPEC key word [ImpExpXsys]");
       }
       /* read in header info */
@@ -202,16 +210,17 @@ public class ImpExpXSYS extends AbstractImpExp { // NOPMD
       areaLengthPage = bufferToBigEndian(buffer, P_AREA_LEN_PAGE);
       areaSizeX = bufferToBigEndian(buffer, P_AREA_SIZE_X);
       areaSizeY = bufferToBigEndian(buffer, P_AREA_SIZE_Y);
-      calibFlag = bufferToBigEndian(buffer, P_AREA_CALIB_FLAG);
-      if (calibFlag == CALIB_ENERGY) {
+      calibrationFlag = bufferToBigEndian(buffer, P_AREA_CALIB_FLAG);
+      if (calibrationFlag == CALIB_ENERGY) {
         for (int i = 0; i < L_AREA_CALIB_COEF; i++) {
-          calibCoef[i] = bufferToBigEndian(buffer, P_AREA_CALIB_COEF + i * L_INT);
+          coefficients[i] = bufferToBigEndian(buffer, P_AREA_CALIB_COEF + i * L_INT);
         }
       }
       /* if header before first histogram */
       if (firstHeader) {
-        if (!silent) {
-          LOGGER.info("  Run number: " + runNumber + " Title: " + runTitle.trim() + " ");
+        if (!silent && LOGGER.isLoggable(Level.INFO)) {
+          LOGGER.info( // NOPMD
+              "  Run number: " + runNumber + " Title: " + runTitle.trim() + " ");
         }
 
         /* read in scalers values */
@@ -235,14 +244,15 @@ public class ImpExpXSYS extends AbstractImpExp { // NOPMD
     Factory.createScaler(importGroup, scalerTitle, scalerId);
   }
 
-  private boolean readBuffers(final InputStream buffin, final int[] buffer) throws IOException {
+  private boolean readBuffers(final InputStream inputStream, final int[] buffer)
+      throws IOException {
     /*
      * read in full buffer, because there is stuff in buffer we want to skip
      */
     boolean rval = false;
     readBuffers:
     for (int i = 0; i < L_BUFFER; i++) {
-      buffer[i] = buffin.read();
+      buffer[i] = inputStream.read();
       if (buffer[i] == -1) {
         rval = true;
         break readBuffers;
@@ -251,35 +261,36 @@ public class ImpExpXSYS extends AbstractImpExp { // NOPMD
     return rval;
   }
 
-  /*
-   * non-javadoc: Unpacks a XSYS histogram 1d type INTEGER.
+  /**
+   * Unpacks a XSYS histogram 1d type INTEGER.
    *
-   * @param buffin inputdata stream @param length size of histogram @param
-   * pages length of area in pages a page is XSYS_BUFFER_SIZE long @return
-   * histogram
+   * @param dataInputStream input data stream
+   * @param length size of histogram
+   * @param pages length of area in pages a page is XSYS_BUFFER_SIZE long
+   * @return histogram
    */
-  private int[] unPackData1d(final DataInputStream buffin, final int length, final int pages)
-      throws IOException {
+  private int[] unPackData1d(
+      final DataInputStream dataInputStream, final int length, final int pages) throws IOException {
     int numberLongWords;
     int[] rval = new int[length];
     byte[] tempBuff; // array to hold byte data
     numberLongWords = pages * XSYS_BUFFER_SIZE;
     tempBuff = new byte[numberLongWords * L_INT];
-    /* read in data to a tempory buffer */
-    buffin.readFully(tempBuff, 0, numberLongWords * L_INT);
+    /* read in data to a temporary buffer */
+    dataInputStream.readFully(tempBuff, 0, numberLongWords * L_INT);
     for (int i = 0; i < length; i++) {
-      /* litte endian read from buffer */
+      /* little endian read from buffer */
       rval[i] = this.numberUtilities.bytesToInt(tempBuff, i * L_INT, ByteOrder.LITTLE_ENDIAN);
     }
     return rval;
   }
 
   /*
-   * non-javadoc: Unpack the data of a XSYS 2d spectum type INTEGER We make a
-   * square specturm using the larger of the two dimension x and y
+   * non-javadoc: Unpack the data of a XSYS 2d spectrum type INTEGER We make a
+   * square spectrum using the larger of the two dimension x and y
    */
   private int[][] unPackData2d(
-      final DataInputStream buffin, final int lengthX, final int lengthY, final int pages)
+      final DataInputStream dataInputStream, final int lengthX, final int lengthY, final int pages)
       throws IOException {
     int numberLongWords = pages * XSYS_BUFFER_SIZE;
     int areaSize = Math.max(lengthX, lengthY); // maximum of 2 values
@@ -288,7 +299,7 @@ public class ImpExpXSYS extends AbstractImpExp { // NOPMD
     byte[] tempBuff = new byte[bytesToRead];
 
     // read in data to a temporary buffer
-    buffin.readFully(tempBuff, 0, bytesToRead);
+    dataInputStream.readFully(tempBuff, 0, bytesToRead);
     int index = 0;
     for (int channelX = 0; channelX < lengthX; channelX++) {
       for (int channelY = 0; channelY < lengthY; channelY++) {
@@ -304,32 +315,33 @@ public class ImpExpXSYS extends AbstractImpExp { // NOPMD
   /*
    * non-javadoc: Unpack unknown data area Just skips over it.
    */
-  private void unPackUnknown(final InputStream buffin, final int areaLengthpage)
+  private void unPackUnknown(final InputStream inputStream, final int areaLengthPage)
       throws IOException {
-    for (int i = 0; i < areaLengthpage * L_BUFFER; i++) {
-      buffin.read();
+    for (int i = 0; i < areaLengthPage * L_BUFFER; i++) {
+      inputStream.read();
     }
   }
 
   /*
    * non-javadoc: Unpack the sort routine used For now just skips over it.
    */
-  private void unPackEVAL(final InputStream buffin, final int areaLengthpage) throws IOException {
-    for (int i = 0; i < areaLengthpage * L_BUFFER; i++) {
-      buffin.read();
+  private void unPackEVAL(final InputStream inputStream, final int areaLengthPage)
+      throws IOException {
+    for (int i = 0; i < areaLengthPage * L_BUFFER; i++) {
+      inputStream.read();
     }
   }
 
   /*
-   * non-javadoc: calibrate a historam
+   * non-javadoc: calibrate a histogram
    */
-  private void calibHist(final int[] coeffs, final AbstractHist1D hist) {
-    final double[] calibDble = new double[3];
-    calibDble[0] = coeffs[0] * 0.0001;
-    calibDble[1] = coeffs[1] * 0.000001;
-    calibDble[2] = coeffs[2] * 0.00000001;
+  private void calibHist(final int[] givenCoefficients, final AbstractHist1D hist) {
+    final double[] calibDouble = new double[3];
+    calibDouble[0] = givenCoefficients[0] * 0.0001;
+    calibDouble[1] = givenCoefficients[1] * 0.000001;
+    calibDouble[2] = givenCoefficients[2] * 0.00000001;
     final AbstractCalibrationFunction calibFunc = new PolynomialFunction(3);
-    calibFunc.setCoeff(calibDble);
+    calibFunc.setCoefficients(calibDouble);
     hist.setCalibration(calibFunc);
   }
 
@@ -346,7 +358,7 @@ public class ImpExpXSYS extends AbstractImpExp { // NOPMD
     int outInt;
     // for unsigned integers clear not in loop
     outInt =
-        (inByte[position])
+        inByte[position]
             | (inByte[position + 1] << 8)
             | (inByte[position + 2] << 16)
             | (inByte[position + 3] << 24);

@@ -28,31 +28,29 @@ public class CubicFunction extends AbstractGaussJordanFunction {
    */
   @Override
   public double getValue(final double channel) {
-    return coeff[0]
-        + coeff[1] * channel
-        + coeff[2] * channel * channel
-        + coeff[3] * channel * channel * channel;
+    return coefficients[0]
+        + coefficients[1] * channel
+        + coefficients[2] * channel * channel
+        + coefficients[3] * channel * channel * channel;
   }
 
   /** do a fit of x y values */
   @Override
   public void fit() throws CalibrationFitException {
     final double[] coeffCubic = polynomialFit(ptsEnergy, ptsChannel, 2);
-    System.arraycopy(coeffCubic, 0, coeff, 0, coeffCubic.length);
+    System.arraycopy(coeffCubic, 0, coefficients, 0, coeffCubic.length);
   }
 
   @Override
   public String updateFormula(final NumberFormat numFormat) {
-    String buffer =
-        "E = "
-            + numFormat.format(coeff[0])
-            + " + "
-            + numFormat.format(coeff[1])
-            + "\u2219ch + "
-            + numFormat.format(coeff[2])
-            + "\u2219ch^2 + "
-            + numFormat.format(coeff[2])
-            + "\u2219ch^3";
-    return buffer;
+    return "E = "
+        + numFormat.format(coefficients[0])
+        + " + "
+        + numFormat.format(coefficients[1])
+        + "\u2219ch + "
+        + numFormat.format(coefficients[2])
+        + "\u2219ch^2 + "
+        + numFormat.format(coefficients[2])
+        + "\u2219ch^3";
   }
 }

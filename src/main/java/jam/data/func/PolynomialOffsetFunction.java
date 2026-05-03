@@ -19,7 +19,7 @@ public class PolynomialOffsetFunction extends AbstractCalibrationFunction {
     super("Polynomial Offset", numberTerms);
     if (numberTerms < MAX_TERMS) {
       title = "E = a0+a1*(ch-x0)+a2*(ch-x0)^2+ ...";
-      coeff = new double[numberTerms];
+      coefficients = new double[numberTerms];
       labels = new String[numberTerms];
       labels[0] = "x0";
       for (int i = 0; i < numberTerms - 1; i++) {
@@ -41,12 +41,12 @@ public class PolynomialOffsetFunction extends AbstractCalibrationFunction {
   @Override
   public double getValue(final double channel) {
     // check that a calibration has been defined
-    double chanMult;
+    double channelMultiplier;
     double value = 0.0;
-    chanMult = 1.0;
-    for (int i = 0; i < coeff.length - 1; i++) {
-      value = value + coeff[i + 1] * chanMult;
-      chanMult = chanMult * (channel - coeff[0]);
+    channelMultiplier = 1.0;
+    for (int i = 0; i < coefficients.length - 1; i++) {
+      value = value + coefficients[i + 1] * channelMultiplier;
+      channelMultiplier = channelMultiplier * (channel - coefficients[0]);
     }
     return value;
   }
@@ -54,7 +54,7 @@ public class PolynomialOffsetFunction extends AbstractCalibrationFunction {
   // To be implemented Later when this function Works
   @Override
   public double getChannel(final double energy) {
-    return ((energy - coeff[0]) / coeff[1]);
+    return (energy - coefficients[0]) / coefficients[1];
   }
 
   /** do a fit of x y values */

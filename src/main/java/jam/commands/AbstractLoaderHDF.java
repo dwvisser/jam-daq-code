@@ -52,12 +52,12 @@ abstract class AbstractLoaderHDF extends AbstractCommand
     loadGroup = load;
     final boolean fileRead;
     if (file == null) { // No file given
-      final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
-      jfile.setFileFilter(new HDFileFilter(true));
-      final int option = jfile.showOpenDialog(GuiceInjector.getObjectInstance(JFrame.class));
+      final JFileChooser fileChooser = new JFileChooser(HDFIO.getLastValidFile());
+      fileChooser.setFileFilter(new HDFileFilter(true));
+      final int option = fileChooser.showOpenDialog(GuiceInjector.getObjectInstance(JFrame.class));
       /* Don't do anything if it was cancel. */
-      if (option == JFileChooser.APPROVE_OPTION && jfile.getSelectedFile() != null) {
-        final File selectedFile = jfile.getSelectedFile();
+      if (option == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null) {
+        final File selectedFile = fileChooser.getSelectedFile();
         hdfio.setListener(this);
         fileRead = hdfio.readFile(fileOpenMode, selectedFile, load);
       } else {

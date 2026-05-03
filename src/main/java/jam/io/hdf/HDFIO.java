@@ -1,7 +1,18 @@
 package jam.io.hdf;
 
 import com.google.inject.Inject;
-import jam.data.*;
+import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
+import jam.data.DataElement;
+import jam.data.DataParameter;
+import jam.data.DataUtility;
+import jam.data.Factory;
+import jam.data.Gate;
+import jam.data.Group;
+import jam.data.NameValueCollection;
+import jam.data.Scaler;
+import jam.data.SortGroupGetter;
+import jam.data.Warehouse;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.NoFunction;
 import jam.global.JamStatus;
@@ -9,7 +20,7 @@ import jam.io.DataIO;
 import jam.io.FileOpenMode;
 import jam.util.AbstractSwingWorker;
 import jam.util.FileUtilities;
-import java.awt.*;
+import java.awt.Frame;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,7 +30,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 
 /**
  * Reads and writes HDF files containing spectra, scalers, gates, and additional useful information.
@@ -31,7 +42,7 @@ import javax.swing.*;
 public final class HDFIO implements DataIO {
   private static final Logger LOGGER = Logger.getLogger(HDFIO.class.getPackage().getName());
 
-  /** Interface to be called when asynchronized IO is completed. */
+  /** Interface to be called when asynchronous IO is completed. */
   public interface AsyncListener {
     /**
      * Called when asynchronous IO is completed
@@ -53,7 +64,7 @@ public final class HDFIO implements DataIO {
    */
   private static File lastGoodFile;
 
-  private static final String LFILE_KEY = "LastValidFile";
+  private static final String LAST_FILE_KEY = "LastValidFile";
 
   private static final Object LVF_MONITOR = new Object();
 
@@ -69,10 +80,10 @@ public final class HDFIO implements DataIO {
 
   // read objects
 
-  private static final Preferences PREFS = Preferences.userNodeForPackage(HDFIO.class);
+  private static final Preferences PREFERENCES = Preferences.userNodeForPackage(HDFIO.class);
 
   static {
-    lastGoodFile = new File(PREFS.get(LFILE_KEY, System.getProperty("user.dir")));
+    lastGoodFile = new File(PREFERENCES.get(LAST_FILE_KEY, System.getProperty("user.dir")));
   }
 
   private static final NameValueCollection<Group> GROUPS = Warehouse.getGroupCollection();
@@ -89,7 +100,7 @@ public final class HDFIO implements DataIO {
   private static void setLastValidFile(final File file) {
     synchronized (LVF_MONITOR) {
       lastGoodFile = file;
-      PREFS.put(LFILE_KEY, file.getAbsolutePath());
+      PREFERENCES.put(LAST_FILE_KEY, file.getAbsolutePath());
     }
   }
 
@@ -155,17 +166,18 @@ public final class HDFIO implements DataIO {
     this.fileUtilities = fileUtilities;
   }
 
-  /*
-   * non-javadoc: Read in an HDF file
+  /**
+   * Read in an HDF file
    *
-   * @param infile file to load @param mode whether to open or reload @param
-   * histNames names of histograms to read, null if all @return
-   * <code>true</code> if successful
+   * @param inFile file to load
+   * @param mode whether to open or reload
+   * @param histNames names of histograms to read, null if all
+   * @return <code>true</code> if successful
    */
   private boolean asyncReadFileGroup(
-      final File infile,
+      final File inFile,
       final FileOpenMode mode,
-      final List<Group> existingGrps,
+      final List<Group> existingGroups,
       final List<HistogramAttributes> histAttrList) {
     synchronized (this) {
       boolean rval = true;
@@ -179,7 +191,7 @@ public final class HDFIO implements DataIO {
       try {
         AbstractData.clearAll();
         // Read in objects
-        inHDF = new HDFile(infile, "r", asyncMonitor, MonitorSteps.READ_WRITE);
+        inHDF = new HDFile(inFile, "r", asyncMonitor, MonitorSteps.READ_WRITE);
         inHDF.setLazyLoadData(true);
         /*
          * read file into set of AbstractHData's, set their internal
@@ -188,53 +200,51 @@ public final class HDFIO implements DataIO {
         inHDF.readFile();
         AbstractData.interpretBytesAll();
         asyncMonitor.increment();
-        final String fileName = fileUtilities.removeExtensionFileName(infile.getName());
+        final String fileName = fileUtilities.removeExtensionFileName(inFile.getName());
         if (hdfToJam.hasVGroupRootGroup()) {
-          convertHDFToJam(mode, fileName, existingGrps, histAttrList);
+          convertHDFToJam(mode, fileName, existingGroups, histAttrList);
         } else {
-          convertHDFToJamOriginal(mode, fileName, existingGrps, histAttrList);
+          convertHDFToJamOriginal(mode, fileName, existingGroups, histAttrList);
         }
-        createOutputMessage(infile, mode, existingGrps, message);
+        createOutputMessage(inFile, mode, existingGroups, message);
       } catch (FileNotFoundException e) {
-        uiErrorMsg = "Opening file: " + infile.getPath() + " Cannot find file or file is locked";
+        uiErrorMsg = "Opening file: " + inFile.getPath() + " Cannot find file or file is locked";
       } catch (HDFException e) {
-        uiErrorMsg = "Reading file: '" + infile.getName() + "', Exception " + e.toString();
+        uiErrorMsg = "Reading file: '" + inFile.getName() + "', Exception " + e.toString();
         rval = false;
       } finally {
         try {
           inHDF.close();
         } catch (IOException except) {
-          uiErrorMsg = "Closing file " + infile.getName();
+          uiErrorMsg = "Closing file " + inFile.getName();
           rval = false;
         }
         /* destroys reference to HDFile (and its AbstractHData's) */
         inHDF = null; // NOPMD
       }
       AbstractData.clearAll();
-      setLastValidFile(infile);
+      setLastValidFile(inFile);
       uiMessage = message.toString();
       return rval;
     }
   }
 
   private void createOutputMessage(
-      final File infile,
+      final File inFile,
       final FileOpenMode mode,
-      final List<Group> existingGrps,
+      final List<Group> existingGroups,
       final StringBuilder message) {
     /* Create output message. */
     if (mode == FileOpenMode.OPEN) {
-      message.append("Opened ").append(infile.getName());
+      message.append("Opened ").append(inFile.getName());
     } else if (mode == FileOpenMode.OPEN_MORE) {
-      message.append("Opened Additional ").append(infile.getName());
+      message.append("Opened Additional ").append(inFile.getName());
     } else if (mode == FileOpenMode.RELOAD) {
-      message.append("Reloaded ").append(infile.getName());
+      message.append("Reloaded ").append(inFile.getName());
     } else { // ADD
-      message.append("Adding counts in ").append(infile.getName());
-      // FIXME currently only add one group
-      message.append(" to groups ");
-      for (int i = 0; i < existingGrps.size(); i++) {
-        final String groupName = existingGrps.get(0).getName();
+      message.append("Adding counts in ").append(inFile.getName());
+      for (int i = 0; i < existingGroups.size(); i++) {
+        final String groupName = existingGroups.get(0).getName();
         if (0 < i) {
           message.append(", ");
         }
@@ -286,8 +296,8 @@ public final class HDFIO implements DataIO {
           "Saving HDF file",
           "Converting Objects",
           MonitorSteps.READ_WRITE + MonitorSteps.OVERHEAD_WRITE);
-      final Preferences prefs = HDFPrefs.PREFS;
-      final boolean suppressEmpty = prefs.getBoolean(HDFPrefs.SUPPRES_EMPTY, true);
+      final Preferences preferences = HDFPrefs.PREFS;
+      final boolean suppressEmpty = preferences.getBoolean(HDFPrefs.SUPPRESS_EMPTY, true);
       asyncMonitor.increment();
       HDFile out = null;
       try {
@@ -330,7 +340,7 @@ public final class HDFIO implements DataIO {
     hdfToJam.setInFile(inHDF);
     // Find groups
     final List<VirtualGroup> virtualGroups = hdfToJam.findGroups(existingGroupList);
-    GROUPLIST:
+    GROUP_LIST:
     for (VirtualGroup currentVGroup : virtualGroups) {
       final List<VirtualGroup> histList;
       final Group currentGroup =
@@ -338,7 +348,7 @@ public final class HDFIO implements DataIO {
 
       // No histograms in group
       if (currentGroup == null) {
-        continue GROUPLIST;
+        continue GROUP_LIST;
       }
 
       setFirstLoadedGroupIfNull(currentGroup);
@@ -448,7 +458,7 @@ public final class HDFIO implements DataIO {
     hdfToJam.setInFile(inHDF);
     Group currentGroup = null;
     // Set group
-    if ((mode == FileOpenMode.OPEN)) {
+    if (mode == FileOpenMode.OPEN) {
       currentGroup = Factory.createGroup(Group.DEFAULT_NAME, null, Group.Type.FILE);
     } else if (mode == FileOpenMode.OPEN_MORE) {
       currentGroup = Factory.createGroup(Group.DEFAULT_NAME, fileName, Group.Type.FILE);
@@ -593,7 +603,7 @@ public final class HDFIO implements DataIO {
     if (wrtSettings && gate.isDefined()) {
       final VirtualGroup gateVGroup = jamToHDF.convertGate(gate);
       histVGroup.add(gateVGroup);
-      // backward compatiable
+      // backward compatible
       globalGates.add(gateVGroup);
       gateCount++;
     }
@@ -602,8 +612,8 @@ public final class HDFIO implements DataIO {
   private void addCalibration(
       final VirtualGroup histVGroup, final AbstractCalibrationFunction calFunc) {
     if (!(calFunc instanceof NoFunction)) {
-      final VDataDescription calibDD = jamToHDF.convertCalibration(calFunc);
-      histVGroup.add(calibDD);
+      final VDataDescription calibrationDataDescription = jamToHDF.convertCalibration(calFunc);
+      histVGroup.add(calibrationDataDescription);
     }
   }
 
@@ -645,7 +655,7 @@ public final class HDFIO implements DataIO {
   }
 
   /*
-   * non-javadoc: Reads in the histogram and hold them in a tempory array
+   * non-javadoc: Reads in the histogram and hold them in a temporary array
    *
    * @exception HDFException thrown if unrecoverable error occurs
    */
@@ -669,15 +679,15 @@ public final class HDFIO implements DataIO {
         // final VirtualGroup histVGroup = (VirtualGroup)
         // histIter.next();
         final HistogramAttributes histAttributes =
-            hdfToJam.convertHistogamAttributes(groupName, histVGroup, mode);
+            hdfToJam.convertHistogramAttributes(groupName, histVGroup, mode);
         lstHistAtt.add(histAttributes);
       }
     }
     return lstHistAtt;
   }
 
-  /*
-   * non-javadoc: Reads in the histogram and hold them in a tempory array
+  /**
+   * Reads in the histogram and hold them in a temporary array
    *
    * @exception HDFException thrown if unrecoverable error occurs
    */
@@ -690,7 +700,7 @@ public final class HDFIO implements DataIO {
       for (AbstractData data : hists.getObjects()) {
         final VirtualGroup currHistGrp = (VirtualGroup) data;
         final HistogramAttributes histAttributes =
-            hdfToJam.convertHistogamAttributes(
+            hdfToJam.convertHistogramAttributes(
                 Group.DEFAULT_NAME, currHistGrp, FileOpenMode.ATTRIBUTES);
         lstHistAtt.add(histAttributes);
       }
@@ -703,38 +713,38 @@ public final class HDFIO implements DataIO {
    * Read in an HDF file.
    *
    * @param mode whether to open or reload
-   * @param infile file to load
+   * @param inFile file to load
    */
-  public boolean readFile(final FileOpenMode mode, final File infile) {
-    return readFile(mode, Collections.singletonList(infile), null, null);
+  public boolean readFile(final FileOpenMode mode, final File inFile) {
+    return readFile(mode, Collections.singletonList(inFile), null, null);
   }
 
   /**
    * Read in an HDF file.
    *
-   * @param infile file to load
+   * @param inFile file to load
    * @param mode whether to open or reload
    * @param group group to read in
    * @return <code>true</code> if successful
    */
-  public boolean readFile(final FileOpenMode mode, final File infile, final Group group) {
+  public boolean readFile(final FileOpenMode mode, final File inFile, final Group group) {
     return readFile(
-        mode, Collections.singletonList(infile), Collections.singletonList(group), null);
+        mode, Collections.singletonList(inFile), Collections.singletonList(group), null);
   }
 
   /**
    * Read in an HDF file.
    *
-   * @param infile file to load
+   * @param inFile file to load
    * @param mode whether to open or reload
    * @param histAttributeList attributes of <code>Histogram</code>'s to read in
    * @return <code>true</code> if successful
    */
   public boolean readFile(
       final FileOpenMode mode,
-      final File infile,
+      final File inFile,
       final List<HistogramAttributes> histAttributeList) {
-    return readFile(mode, Collections.singletonList(infile), null, histAttributeList);
+    return readFile(mode, Collections.singletonList(inFile), null, histAttributeList);
   }
 
   /**
@@ -753,14 +763,18 @@ public final class HDFIO implements DataIO {
       final List<HistogramAttributes> histAttributeList) {
     boolean rval = true;
     fileLoop:
-    for (final File infile : inFiles) {
-      if (!infile.isFile()) {
-        LOGGER.severe("Cannot find file " + infile + ".");
+    for (final File inFile : inFiles) {
+      if (!inFile.isFile()) {
+        if (LOGGER.isLoggable(Level.SEVERE)) {
+          LOGGER.severe("Cannot find file " + inFile + "."); // NOPMD
+        }
         rval = false;
         break fileLoop;
       }
-      if (!HDFile.isHDFFile(infile)) {
-        LOGGER.severe("File " + infile + " is not a valid HDF file.");
+      if (!HDFile.isHDFFile(inFile)) {
+        if (LOGGER.isLoggable(Level.SEVERE)) {
+          LOGGER.severe("File " + inFile + " is not a valid HDF file."); // NOPMD
+        }
         rval = false;
         break fileLoop;
       }
@@ -774,20 +788,20 @@ public final class HDFIO implements DataIO {
   /**
    * Read the histograms in.
    *
-   * @param infile to read from
+   * @param inFile to read from
    * @return list of attributes
    * @throws HDFException if something goes wrong
    */
-  public List<HistogramAttributes> readHistogramAttributes(final File infile) throws HDFException {
+  public List<HistogramAttributes> readHistogramAttributes(final File inFile) throws HDFException {
     final List<HistogramAttributes> rval = new ArrayList<>();
-    if (!HDFile.isHDFFile(infile)) {
+    if (!HDFile.isHDFFile(inFile)) {
       rval.clear();
-      throw new HDFException("File:" + infile.getPath() + " is not an HDF file.");
+      throw new HDFException("File:" + inFile.getPath() + " is not an HDF file.");
     }
     try {
       AbstractData.clearAll();
       /* Read in histogram names */
-      inHDF = new HDFile(infile, "r");
+      inHDF = new HDFile(inFile, "r");
       inHDF.setLazyLoadData(true);
       inHDF.readFile();
       AbstractData.interpretBytesAll();
@@ -799,15 +813,17 @@ public final class HDFIO implements DataIO {
       }
     } catch (FileNotFoundException e) {
       throw new HDFException(
-          "Opening file: " + infile.getPath() + " Cannot find file or file is locked", e);
+          "Opening file: " + inFile.getPath() + " Cannot find file or file is locked", e);
     } catch (HDFException e) {
       throw new HDFException(
-          "Reading file: '" + infile.getName() + "', Exception " + e.toString(), e);
+          "Reading file: '" + inFile.getName() + "', Exception " + e.toString(), e);
     } finally {
       try {
         inHDF.close();
       } catch (IOException except) {
-        LOGGER.warning(except.getMessage());
+        if (LOGGER.isLoggable(Level.WARNING)) {
+          LOGGER.warning(except.getMessage()); // NOPMD
+        }
       }
       inHDF = null; // NOPMD
     }
@@ -838,7 +854,7 @@ public final class HDFIO implements DataIO {
   }
 
   /*
-   * non-javadoc: Asyncronized read
+   * asynchronous read
    */
   private void spawnAsyncReadFile(
       final FileOpenMode mode,
@@ -851,8 +867,6 @@ public final class HDFIO implements DataIO {
         new AbstractSwingWorker() {
           @Override
           public Object construct() {
-            // FIXME KBS Test change thread priority to make monitor pop up
-            // sooner
             Thread.yield();
             Thread thisTread = Thread.currentThread();
             thisTread.setPriority(thisTread.getPriority() - 1);
@@ -866,16 +880,16 @@ public final class HDFIO implements DataIO {
             try {
               // Loop for all files
               for (int i = 0; i < inFiles.size(); i++) {
-                File infile = inFiles.get(i);
+                File inFile = inFiles.get(i);
                 if (mode == FileOpenMode.ADD_OPEN_ONE) {
                   if (i == 0) {
-                    asyncReadFileGroup(infile, FileOpenMode.OPEN, groupList, histAttributeList);
+                    asyncReadFileGroup(inFile, FileOpenMode.OPEN, groupList, histAttributeList);
                   } else {
                     final List<Group> groupListOpen = GROUPS.getList();
-                    asyncReadFileGroup(infile, FileOpenMode.ADD, groupListOpen, histAttributeList);
+                    asyncReadFileGroup(inFile, FileOpenMode.ADD, groupListOpen, histAttributeList);
                   }
                 } else {
-                  asyncReadFileGroup(infile, mode, groupList, histAttributeList);
+                  asyncReadFileGroup(inFile, mode, groupList, histAttributeList);
                 }
                 displayMessage();
               }
@@ -903,7 +917,7 @@ public final class HDFIO implements DataIO {
   }
 
   /*
-   * non-javadoc: Asynchronized write
+   * non-javadoc: Asynchronous write
    */
   private void spawnAsyncWriteFile(
       final File file,

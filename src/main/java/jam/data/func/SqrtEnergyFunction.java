@@ -24,12 +24,13 @@ public class SqrtEnergyFunction extends AbstractLinearRegressionFunction {
    */
   @Override
   public double getValue(final double channel) {
-    return (coeff[0] + coeff[1] * channel) * (coeff[0] + coeff[1] * channel);
+    return (coefficients[0] + coefficients[1] * channel)
+        * (coefficients[0] + coefficients[1] * channel);
   }
 
   @Override
   public double getChannel(final double energy) {
-    return ((Math.sqrt(energy) - coeff[0]) / coeff[1]);
+    return (Math.sqrt(energy) - coefficients[0]) / coefficients[1];
   }
 
   /** do a fit of x y values */
@@ -39,15 +40,15 @@ public class SqrtEnergyFunction extends AbstractLinearRegressionFunction {
     for (int i = 0; i < ptsEnergy.length; i++) {
       sqrtE[i] = Math.sqrt(ptsEnergy[i]);
     }
-    setCoeff(linearRegression(ptsChannel, sqrtE));
+    setCoefficients(linearRegression(ptsChannel, sqrtE));
   }
 
   @Override
   protected String updateFormula(final NumberFormat numFormat) {
     return "\u221aE = "
-        + numFormat.format(coeff[0])
+        + numFormat.format(coefficients[0])
         + " + "
-        + numFormat.format(coeff[1])
+        + numFormat.format(coefficients[1])
         + "\u2219ch";
   }
 }

@@ -24,7 +24,7 @@ public class LinearFunction extends AbstractLinearRegressionFunction {
    */
   @Override
   public double getValue(final double channel) {
-    return coeff[0] + coeff[1] * channel;
+    return coefficients[0] + coefficients[1] * channel;
   }
 
   /**
@@ -35,20 +35,22 @@ public class LinearFunction extends AbstractLinearRegressionFunction {
    */
   @Override
   public double getChannel(final double energy) {
-    return ((energy - coeff[0]) / coeff[1]);
+    return (energy - coefficients[0]) / coefficients[1];
   }
 
   /** do a fit of x y values */
   @Override
   public void fit() throws CalibrationFitException {
     final double[] coeffLinRegress = linearRegression(ptsChannel, ptsEnergy);
-    System.arraycopy(coeffLinRegress, 0, coeff, 0, coeffLinRegress.length);
+    System.arraycopy(coeffLinRegress, 0, coefficients, 0, coeffLinRegress.length);
   }
 
   @Override
   public String updateFormula(final NumberFormat numFormat) {
-    String formula =
-        "E = " + numFormat.format(coeff[0]) + " + " + numFormat.format(coeff[1]) + "\u2219ch";
-    return formula;
+    return "E = "
+        + numFormat.format(coefficients[0])
+        + " + "
+        + numFormat.format(coefficients[1])
+        + "\u2219ch";
   }
 }

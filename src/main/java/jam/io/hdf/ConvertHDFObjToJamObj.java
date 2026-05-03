@@ -4,18 +4,24 @@ import static jam.io.hdf.JamFileFields.Calibration.TYPE_COEFF;
 import static jam.io.hdf.JamFileFields.Calibration.TYPE_POINTS;
 
 import com.google.inject.Inject;
-import jam.data.*;
+import jam.data.AbstractHist1D;
+import jam.data.AbstractHistogram;
+import jam.data.DataParameter;
+import jam.data.Factory;
+import jam.data.Gate;
+import jam.data.Group;
+import jam.data.HistogramType;
+import jam.data.Scaler;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.CalibrationFitException;
 import jam.data.func.CalibrationFunctionCollection;
 import jam.io.FileOpenMode;
 import jam.util.StringUtilities;
-import java.awt.*;
+import java.awt.Polygon;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Ken Swartz
@@ -48,7 +54,7 @@ final class ConvertHDFObjToJamObj {
     return new HistogramAttributes(groupName, name, title, number);
   }
 
-  protected boolean containsGroup(final String groupName, final List<Group> groups) {
+  boolean containsGroup(final String groupName, final List<Group> groups) {
     boolean rval = false;
     for (Group group : groups) {
       if (groupName.equals(group.getGroupName())) {
@@ -79,7 +85,7 @@ final class ConvertHDFObjToJamObj {
     return rval;
   }
 
-  protected AbstractCalibrationFunction convertCalibration(
+  AbstractCalibrationFunction convertCalibration(
       final AbstractHistogram hist, final VDataDescription vdd) throws HDFException {
     final VData data = AbstractData.getObject(VData.class, vdd.getRef());
     final String funcName = vdd.getName();
@@ -108,7 +114,7 @@ final class ConvertHDFObjToJamObj {
           for (int i = 0; i < numPts; i++) {
             coeff[i] = data.getDouble(i, 0);
           }
-          calFunc.setCoeff(coeff);
+          calFunc.setCoefficients(coeff);
           break;
         default:
           throw new HDFException("Unrecognized calibration type");
@@ -120,7 +126,7 @@ final class ConvertHDFObjToJamObj {
     return calFunc;
   }
 
-  protected Gate convertGate(
+  Gate convertGate(
       final AbstractHistogram hist,
       final VDataDescription vdd,
       final String gateName,
@@ -152,17 +158,16 @@ final class ConvertHDFObjToJamObj {
     return gate;
   }
 
-  protected Gate convertGate(
-      final AbstractHistogram hist, final VirtualGroup currVG, final FileOpenMode mode)
+  Gate convertGate(final AbstractHistogram hist, final VirtualGroup currVG, final FileOpenMode mode)
       throws HDFException {
     // Get VDD member of Virtual group
     final VDataDescription vdd =
         AbstractData.ofType(currVG.getObjects(), VDataDescription.class).get(0);
-    final String gname = currVG.getName();
+    final String virtualGroupName = currVG.getName();
     if (vdd == null) {
-      throw new HDFException("No VdataDescription under gate VirtualGroup");
+      throw new HDFException("No VDataDescription under gate VirtualGroup");
     }
-    return convertGate(hist, vdd, gname, mode);
+    return convertGate(hist, vdd, virtualGroupName, mode);
   }
 
   /*
@@ -171,8 +176,7 @@ final class ConvertHDFObjToJamObj {
    * @param mode whether to open or reload @throws HDFException thrown if
    * unrecoverable error occurs
    */
-  protected int convertGatesOriginal(final Group currentGroup, final FileOpenMode mode)
-      throws HDFException {
+  int convertGatesOriginal(final Group currentGroup, final FileOpenMode mode) throws HDFException {
     int numGates = 0;
     // Gate gate = null;
     /* get list of all VG's in file */
@@ -201,7 +205,7 @@ final class ConvertHDFObjToJamObj {
   /*
    * non-javadoc: Convert a virtual group to a jam data group
    */
-  protected Group convertGroup(
+  Group convertGroup(
       final VirtualGroup virtualGroup,
       final String fileName,
       final List<HistogramAttributes> histAttributeList,
@@ -220,7 +224,7 @@ final class ConvertHDFObjToJamObj {
     return group;
   }
 
-  protected HistogramAttributes convertHistogamAttributes(
+  HistogramAttributes convertHistogramAttributes(
       final String groupName, final VirtualGroup histGroup, final FileOpenMode mode)
       throws HDFException {
     final DataIDLabel dataLabel = DataIDLabel.withTagRef(VirtualGroup.class, histGroup.getRef());
@@ -258,7 +262,7 @@ final class ConvertHDFObjToJamObj {
     return histAttributes;
   }
 
-  protected AbstractHistogram convertHistogram(
+  AbstractHistogram convertHistogram(
       final Group group,
       final VirtualGroup histGroup,
       final List<HistogramAttributes> histAttributes,
@@ -384,7 +388,7 @@ final class ConvertHDFObjToJamObj {
    * IllegalStateException if any histogram apparently has more than 2
    * dimensions @return number of histograms
    */
-  protected int convertHistogramsOriginal(
+  int convertHistogramsOriginal(
       final Group group, final FileOpenMode mode, final List<HistogramAttributes> histAttributes)
       throws HDFException {
     int numHists = 0;
@@ -409,14 +413,14 @@ final class ConvertHDFObjToJamObj {
    * @param mode whether to open or reload @throws HDFException if an error
    * occurs reading the parameters
    */
-  protected int convertParameters(final VDataDescription vdd, final FileOpenMode mode) {
+  int convertParameters(final VDataDescription vdd, final FileOpenMode mode) {
     /* Get corresponding VS for this VH */
     final VData data = AbstractData.getObject(VData.class, vdd.getRef());
     int numParams = vdd.getNumRows();
     for (int i = 0; i < numParams; i++) {
-      final String pname = data.getString(i, 0);
+      final String dataName = data.getString(i, 0);
       /* make if OPEN, retrieve if RELOAD */
-      final DataParameter param = produceParameter(mode, pname);
+      final var param = produceParameter(mode, dataName);
       if (param != null) {
         param.setValue(data.getFloat(i, 1));
       }
@@ -424,7 +428,7 @@ final class ConvertHDFObjToJamObj {
     return numParams;
   }
 
-  protected int convertParameters(final VirtualGroup currVG, final FileOpenMode mode) {
+  int convertParameters(final VirtualGroup currVG, final FileOpenMode mode) {
     int numParameters = 0;
     final List<VDataDescription> list =
         AbstractData.ofType(currVG.getObjects(), VDataDescription.class);
@@ -444,15 +448,14 @@ final class ConvertHDFObjToJamObj {
    * @param mode whether to open, reload or add @throws HDFException if there
    * is a problem retrieving scalers
    */
-  protected int convertScalers(
-      final Group group, final VDataDescription vdd, final FileOpenMode mode) {
+  int convertScalers(final Group group, final VDataDescription vdd, final FileOpenMode mode) {
     /* get the VS corresponding to the given VH */
     final VData data = AbstractData.getObject(VData.class, vdd.getRef());
     int numScalers = vdd.getNumRows();
     for (int i = 0; i < numScalers; i++) {
-      final String sname = data.getString(i, 1);
+      final String scalerName = data.getString(i, 1);
       final int sNumber = data.getInteger(i, 0);
-      final Scaler scaler = produceScaler(group, mode, sNumber, sname);
+      final Scaler scaler = produceScaler(group, mode, sNumber, scalerName);
       if (scaler != null) {
         final int fileValue = data.getInteger(i, 2);
         if (mode == FileOpenMode.ADD) {
@@ -465,27 +468,26 @@ final class ConvertHDFObjToJamObj {
     return numScalers;
   }
 
-  protected int convertScalers(
-      final Group group, final VirtualGroup currVG, final FileOpenMode mode) {
+  int convertScalers(final Group group, final VirtualGroup currVG, final FileOpenMode mode) {
     final VDataDescription vdd =
         AbstractData.ofType(currVG.getObjects(), VDataDescription.class).get(0);
     return convertScalers(group, vdd, mode);
   }
 
-  protected VDataDescription findCalibration(final VirtualGroup virtualGroup) {
+  VDataDescription findCalibration(final VirtualGroup virtualGroup) {
     VDataDescription vddCalibration = null;
-    final VDataDescription vddpts = findVData(virtualGroup, TYPE_POINTS);
-    if (vddpts != null) {
-      vddCalibration = vddpts;
+    final VDataDescription pointsData = findVData(virtualGroup, TYPE_POINTS);
+    if (pointsData != null) {
+      vddCalibration = pointsData;
     }
-    final VDataDescription vddcoef = findVData(virtualGroup, TYPE_COEFF);
-    if (vddcoef != null) {
-      vddCalibration = vddcoef;
+    final VDataDescription coefficientsData = findVData(virtualGroup, TYPE_COEFF);
+    if (coefficientsData != null) {
+      vddCalibration = coefficientsData;
     }
     return vddCalibration;
   }
 
-  protected List<VirtualGroup> findGates(final VirtualGroup vgHists, final HistogramType type)
+  List<VirtualGroup> findGates(final VirtualGroup vgHists, final HistogramType type)
       throws HDFException {
     String gateType;
     if (type.getDimensionality() == HistogramType.ONE_D) {
@@ -493,7 +495,7 @@ final class ConvertHDFObjToJamObj {
     } else if (type.getDimensionality() == HistogramType.TWO_D) {
       gateType = JamFileFields.GATE_2D_TYPE;
     } else {
-      throw new HDFException("Unkown Histogram type in finding gates");
+      throw new HDFException("Unknown Histogram type in finding gates");
     }
     final List<String> empty = Collections.emptyList();
     return findSubGroups(vgHists, gateType, empty);
@@ -510,7 +512,7 @@ final class ConvertHDFObjToJamObj {
    * IllegalStateException if any histogram apparently has more than 2
    * dimensions @return number of histograms
    */
-  protected List<VirtualGroup> findGroups(final List<Group> existingGroupList) {
+  List<VirtualGroup> findGroups(final List<Group> existingGroupList) {
     final List<VirtualGroup> groupList = new ArrayList<>();
     /* Get VirtualGroup that is root of all groups */
     final VirtualGroup groupsInRoot = VirtualGroup.ofName(JamFileFields.GRP_SECTION);
@@ -533,23 +535,21 @@ final class ConvertHDFObjToJamObj {
     return groupList;
   }
 
-  protected List<VirtualGroup> findHistograms(
+  List<VirtualGroup> findHistograms(
       final VirtualGroup virtualGroupGroup, final List<String> histogramNames) {
     return findSubGroups(virtualGroupGroup, JamFileFields.HIST_TYPE, histogramNames);
   }
 
-  protected List<VirtualGroup> findParameters(final VirtualGroup virtualGroupGroup) {
+  List<VirtualGroup> findParameters(final VirtualGroup virtualGroupGroup) {
     return findSubGroupsName(virtualGroupGroup, JamFileFields.PARAMETERS);
   }
 
-  protected VDataDescription findParametersOriginal() {
-    final VDataDescription vdd =
-        VDataDescription.ofName(
-            AbstractData.ofType(VDataDescription.class), JamFileFields.PARAMETERS);
-    return vdd;
+  VDataDescription findParametersOriginal() {
+    return VDataDescription.ofName(
+        AbstractData.ofType(VDataDescription.class), JamFileFields.PARAMETERS);
   }
 
-  protected List<VirtualGroup> findScalers(final VirtualGroup virtualGroupGroup) {
+  List<VirtualGroup> findScalers(final VirtualGroup virtualGroupGroup) {
     return findSubGroupsName(virtualGroupGroup, JamFileFields.SCALER_SECT);
   }
 
@@ -560,11 +560,9 @@ final class ConvertHDFObjToJamObj {
    * is a problem retrieving scalers
    */
 
-  protected VDataDescription findScalersOriginal() {
-    final VDataDescription vdd =
-        VDataDescription.ofName(
-            AbstractData.ofType(VDataDescription.class), JamFileFields.SCALER_SECT);
-    return vdd;
+  VDataDescription findScalersOriginal() {
+    return VDataDescription.ofName(
+        AbstractData.ofType(VDataDescription.class), JamFileFields.SCALER_SECT);
   }
 
   private List<VirtualGroup> findSubGroups(
@@ -575,7 +573,7 @@ final class ConvertHDFObjToJamObj {
     for (AbstractData hData : virtualGroupGroup.getObjects()) {
       // Is a virtual group
       if (hData instanceof VirtualGroup) {
-        // add to list if is a scaler goup
+        // add to list if is a scaler group
         final VirtualGroup currentVGroup = (VirtualGroup) hData;
         final String groupName = readVirtualGroupName(currentVGroup);
         if (currentVGroup.getType().equals(groupType)
@@ -593,7 +591,7 @@ final class ConvertHDFObjToJamObj {
     for (AbstractData hData : virtualGroupGroup.getObjects()) {
       // Is a virtual group
       if (hData instanceof VirtualGroup) {
-        // add to list if is a scaler goup
+        // add to list if is a scaler group
         final VirtualGroup currentVGroup = (VirtualGroup) hData;
         if (currentVGroup.getName().equals(groupName)) {
           groupSubList.add(currentVGroup);
@@ -603,13 +601,12 @@ final class ConvertHDFObjToJamObj {
     return groupSubList;
   }
 
-  protected VDataDescription findVData(
-      final VirtualGroup virtualGroupGroup, final String dataType) {
+  VDataDescription findVData(final VirtualGroup virtualGroupGroup, final String dataType) {
     VDataDescription vdd = null;
     for (AbstractData hData : virtualGroupGroup.getObjects()) {
       // Is a virtual data descriptor
       if (hData instanceof VDataDescription) {
-        // add to list if is a scaler goup
+        // add to list if is a scaler group
         final VDataDescription currentVDD = (VDataDescription) hData;
         if (currentVDD.getDataTypeName().equals(dataType)) {
           vdd = currentVDD;
@@ -620,7 +617,7 @@ final class ConvertHDFObjToJamObj {
     return vdd;
   }
 
-  protected boolean hasHistogramsInList(
+  boolean hasHistogramsInList(
       final VirtualGroup virtualGroup,
       final String groupName,
       final List<HistogramAttributes> histAttributeList) {
@@ -649,7 +646,7 @@ final class ConvertHDFObjToJamObj {
    * is a problem retrieving scalers
    */
 
-  protected boolean hasVGroupRootGroup() {
+  boolean hasVGroupRootGroup() {
     boolean hasRoot = false;
     final VirtualGroup groupsRoot = VirtualGroup.ofName(JamFileFields.GRP_SECTION);
     if (groupsRoot != null) {
@@ -659,8 +656,7 @@ final class ConvertHDFObjToJamObj {
   }
 
   private AbstractCalibrationFunction makeCalibration(final String funcName) throws HDFException {
-    final Map<String, Class<? extends AbstractCalibrationFunction>> calMap =
-        CalibrationFunctionCollection.getMapFunctions();
+    final var calMap = CalibrationFunctionCollection.getMapFunctions();
     AbstractCalibrationFunction calFunc = null;
     try {
       if (calMap.containsKey(funcName)) {
@@ -679,7 +675,7 @@ final class ConvertHDFObjToJamObj {
     return hist == null ? null : new Gate(name, hist);
   }
 
-  protected AbstractHistogram openHistogram(
+  AbstractHistogram openHistogram(
       final Group group,
       final String name,
       final String title,
@@ -705,22 +701,18 @@ final class ConvertHDFObjToJamObj {
   }
 
   private DataParameter produceParameter(final FileOpenMode mode, final String name) {
-    final DataParameter param =
-        mode.isOpenMode() ? new DataParameter(name) : DataParameter.getParameter(name);
-    return param;
+    return mode.isOpenMode() ? new DataParameter(name) : DataParameter.getParameter(name);
   }
 
   private Scaler produceScaler(
       final Group group, final FileOpenMode mode, final int number, final String name) {
-    // FIXME check works for unique name and
-    // create unique name should be a utility
     final String uniqueName = group.getName() + "/" + name;
     return mode.isOpenMode()
         ? Factory.createScaler(group, name, number)
         : Scaler.getScaler(uniqueName);
   }
 
-  protected String readVirtualGroupName(final VirtualGroup group) {
+  String readVirtualGroupName(final VirtualGroup group) {
     final DataIDLabel dataIDLabel = DataIDLabel.withTagRef(VirtualGroup.class, group.getRef());
     final String rval;
     if (dataIDLabel == null) { // somehow label doesn't exist
@@ -741,7 +733,7 @@ final class ConvertHDFObjToJamObj {
     return histogram;
   }
 
-  protected void setInFile(final HDFile infile) {
-    inHDF = infile;
+  void setInFile(final HDFile inFile) {
+    inHDF = inFile;
   }
 }

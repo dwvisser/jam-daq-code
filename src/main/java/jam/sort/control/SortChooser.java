@@ -57,7 +57,6 @@ final class SortChooser extends JComboBox<Class<? extends AbstractSortRoutine>> 
     if (sortClass == null) {
       throw new JamException("No sort routine has been selected.");
     }
-    // FIXME maybe we should do DataBase.clearAll(); here
     jam.data.Warehouse.getGroupCollection().clear();
     final String sortName = Group.parseSortClassName(sortClass.getName());
     Factory.createGroup(sortName, Group.Type.SORT);

@@ -91,7 +91,7 @@ final class XsysHeader {
   /** buffer size bytes */
   public static final int L_BUFFER = XSYS_BUFFER_SIZE * L_INT;
 
-  /** flag used in xsys file to indicate cabration coefficients follow */
+  /** flag used in xsys file to indicate calibration coefficients follow */
   public static final int CALIB_ENERGY = 999;
 
   /* pointers to data are ints so we convert them to bytes */

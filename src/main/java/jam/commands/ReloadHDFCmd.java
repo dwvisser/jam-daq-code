@@ -44,10 +44,6 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 
   @Override
   protected void execute(final Object[] cmdParams) {
-    /*
-     * FIXME KBS parse correctly if (cmdParams!=null) { file
-     * =(File)cmdParams[0]; //loadGroup=(Group)cmdParams[1]; }
-     */
     final Group load = SORT_GROUP_GETTER.getSortGroup();
     loadHDFFile(null, load);
   }
@@ -82,7 +78,7 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
     }
   }
 
-  /** Called by HDFIO when asynchronized IO is completed */
+  /** Called by HDFIO when asynchronous IO is completed */
   @Override
   public void completedIO(final String message, final String errorMessage) {
     hdfio.removeListener();
