@@ -3,7 +3,11 @@ package jam.data;
 import injection.GuiceInjector;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class representing an individual scaler in the experiment.
@@ -21,7 +25,7 @@ public final class Scaler implements DataElement {
   /** Limit on name length. */
   public static final int NAME_LENGTH = 16;
 
-  private static final Map<String, Scaler> TABLE =
+  private static final Map<String, Scaler> TABLE = // NOPMD
       Collections.synchronizedMap(new HashMap<String, Scaler>());
 
   /** Clears the list of all scalers. */

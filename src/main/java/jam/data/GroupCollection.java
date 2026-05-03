@@ -124,7 +124,7 @@ final class GroupCollection implements NameValueCollection<Group>, SortGroupGett
   /**
    * @return the singleton instance
    */
-  protected static SortGroupGetter getInstance() {
+  static SortGroupGetter getInstance() {
     return INSTANCE;
   }
 }

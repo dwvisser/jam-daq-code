@@ -39,7 +39,7 @@ public final class GateCollection {
     }
   }
 
-  protected void clear() {
+  void clear() {
     gates.clear();
   }
 

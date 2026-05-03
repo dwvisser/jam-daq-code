@@ -16,7 +16,7 @@ import java.util.List;
 public abstract class AbstractHist1D extends AbstractHistogram {
 
   /** The calibration function. Set to <code>null</code> if there is none. */
-  protected transient AbstractCalibrationFunction calibFunc =
+  protected transient AbstractCalibrationFunction calibrationFn =
       CalibrationFunctionCollection.NO_CALIBRATION;
 
   /** Array which contains the errors in the channel counts. */
@@ -95,20 +95,20 @@ public abstract class AbstractHist1D extends AbstractHistogram {
     synchronized (this) {
       final double[] histArray = new double[this.getSizeX()];
       this.getCounts(histArray);
-      final List<Double> posn =
+      final List<Double> positions =
           PeakFinder.getInstance().getCentroids(histArray, sensitivity, width);
-      double[][] rval = new double[3][posn.size()];
+      double[][] rval = new double[3][positions.size()];
       if (cal && this.isCalibrated()) {
-        for (int i = 0; i < posn.size(); i++) {
-          rval[0][i] = posn.get(i);
-          rval[1][i] = calibFunc.getValue(posn.get(i));
-          rval[2][i] = histArray[(int) Math.round(posn.get(i))];
+        for (int i = 0; i < positions.size(); i++) {
+          rval[0][i] = positions.get(i);
+          rval[1][i] = calibrationFn.getValue(positions.get(i));
+          rval[2][i] = histArray[(int) Math.round(positions.get(i))];
         }
       } else { // no calibration
-        for (int i = 0; i < posn.size(); i++) {
-          rval[0][i] = posn.get(i);
-          rval[1][i] = posn.get(i);
-          rval[2][i] = histArray[(int) Math.round(posn.get(i))];
+        for (int i = 0; i < positions.size(); i++) {
+          rval[0][i] = positions.get(i);
+          rval[1][i] = positions.get(i);
+          rval[2][i] = histArray[(int) Math.round(positions.get(i))];
         }
       }
       return rval;
@@ -121,7 +121,7 @@ public abstract class AbstractHist1D extends AbstractHistogram {
    * histograms, though, an appropriate error array should be calculated and stored by invoking the
    * <code>setErrors()</code> method.
    *
-   * @param errs array representing the 1-sigma erro bars for the channel counts
+   * @param errs array representing the 1-sigma error bars for the channel counts
    */
   public final void setErrors(final double[] errs) {
     synchronized (this) {
@@ -149,11 +149,11 @@ public abstract class AbstractHist1D extends AbstractHistogram {
   /**
    * Sets an energy calibration function for this histogram.
    *
-   * @param calibFunc new energy calibration for this histogram
+   * @param calibrationFn new energy calibration for this histogram
    */
-  public void setCalibration(final AbstractCalibrationFunction calibFunc) {
+  public void setCalibration(final AbstractCalibrationFunction calibrationFn) {
     synchronized (this) {
-      this.calibFunc = calibFunc;
+      this.calibrationFn = calibrationFn;
     }
   }
 
@@ -165,7 +165,7 @@ public abstract class AbstractHist1D extends AbstractHistogram {
    */
   public AbstractCalibrationFunction getCalibration() {
     synchronized (this) {
-      return calibFunc;
+      return calibrationFn;
     }
   }
 
@@ -178,8 +178,8 @@ public abstract class AbstractHist1D extends AbstractHistogram {
   public boolean isCalibrated() {
     boolean calibrated = false;
     synchronized (this) {
-      if (calibFunc != null) {
-        calibrated = calibFunc.isCalibrated();
+      if (calibrationFn != null) {
+        calibrated = calibrationFn.isCalibrated();
       }
     }
     return calibrated;

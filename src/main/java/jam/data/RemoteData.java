@@ -62,7 +62,7 @@ public interface RemoteData extends Remote {
   List<Gate> getGateList() throws RemoteException;
 
   /**
-   * Gets the list of gate names assiciated with the given histogram name.
+   * Gets the list of gate names associated with the given histogram name.
    *
    * @param histName name of histogram which the gates are associated with
    * @return list of the gates associated with the specified histogram

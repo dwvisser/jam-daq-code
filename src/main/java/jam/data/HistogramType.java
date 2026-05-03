@@ -36,7 +36,7 @@ public final class HistogramType {
    * @param array a 1-d or 2-d int or double array
    * @return which type the array corresponds to
    */
-  protected static HistogramType getArrayType(final Object array) {
+  static HistogramType getArrayType(final Object array) {
     final HistogramType rval;
     final String error =
         "You may pass int or double arrays of up to two dimensions as histogram counts.";
@@ -46,16 +46,16 @@ public final class HistogramType {
     }
     final Class<?> componentA = type.getComponentType();
     if (componentA.equals(int.class)) {
-      rval = HistogramType.ONE_DIM_INT;
+      rval = ONE_DIM_INT;
     } else if (componentA.equals(double.class)) {
-      rval = HistogramType.ONE_D_DOUBLE;
+      rval = ONE_D_DOUBLE;
     } else {
       /* Two-D, componentA assumed to be array. */
       final Class<?> componentB = componentA.getComponentType();
       if (componentB.equals(int.class)) {
-        rval = HistogramType.TWO_DIM_INT;
+        rval = TWO_DIM_INT;
       } else if (componentB.equals(double.class)) {
-        rval = HistogramType.TWO_D_DOUBLE;
+        rval = TWO_D_DOUBLE;
       } else {
         throw new IllegalArgumentException(error);
       }

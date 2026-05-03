@@ -3,13 +3,18 @@ package jam.data;
 import injection.GuiceInjector;
 import jam.global.Nameable;
 import jam.util.StringUtilities;
-import java.awt.*;
-import java.util.*;
+import java.awt.Polygon;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A gate, used for data sorting, belongs to a histogram which determines what type of gate it is.
- * There are two types of gates, <code>ONE_DIMENDION</code> and <code>TWO_DIMENSION</code>,
+ * There are two types of gates, <code>ONE_DIMENSION</code> and <code>TWO_DIMENSION</code>,
  *
  * @author Ken Swartz
  * @version 0.5
@@ -27,7 +32,7 @@ public final class Gate implements DataElement {
   private static final boolean[][] NO_AREA = new boolean[0][0];
 
   /* static structures to hold all gates */
-  private static final Map<String, Gate> TABLE =
+  private static final Map<String, Gate> TABLE = // NOPMD
       Collections.synchronizedMap(new HashMap<String, Gate>());
 
   private static final Object GATE_LOCK = new Object();
@@ -120,7 +125,7 @@ public final class Gate implements DataElement {
 
   // gate
 
-  private final transient int dimensions; // type of gate ONE_DIMESION or
+  private final transient int dimensions; // type of gate ONE_DIMENSION or
 
   // TWO_DIMENSION
 
@@ -186,9 +191,9 @@ public final class Gate implements DataElement {
 
   private double getArea1d() {
     final AbstractHistogram histogram = AbstractHistogram.getHistogram(histUniqueName);
-    final jam.data.HistogramType htype = histogram.getType();
+    final jam.data.HistogramType histogramType = histogram.getType();
     double rval = 0.0;
-    if (htype == jam.data.HistogramType.ONE_D_DOUBLE) {
+    if (histogramType == jam.data.HistogramType.ONE_D_DOUBLE) {
       final double[] counts = ((HistDouble1D) histogram).getCounts();
       for (int i = lowerLimit; i <= upperLimit; i++) {
         rval += counts[i];
@@ -204,9 +209,9 @@ public final class Gate implements DataElement {
 
   private double getArea2d() {
     final AbstractHistogram histogram = AbstractHistogram.getHistogram(histUniqueName);
-    final jam.data.HistogramType htype = histogram.getType();
+    final jam.data.HistogramType histogramType = histogram.getType();
     double rval = 0.0;
-    if (htype == jam.data.HistogramType.TWO_DIM_INT) {
+    if (histogramType == jam.data.HistogramType.TWO_DIM_INT) {
       int intSum = 0;
       final int[][] counts2d = ((HistInt2D) histogram).getCounts();
       for (int i = 0; i < sizeX; i++) {
@@ -245,7 +250,7 @@ public final class Gate implements DataElement {
   }
 
   /**
-   * Gets the centriod of the counts in the gate for the histogram which the gate belongs to. This
+   * Gets the centroid of the counts in the gate for the histogram which the gate belongs to. This
    * method only works for 1d gates, for 2d gates it returns 0
    *
    * @return centroid the centroid of the counts in gate
@@ -386,7 +391,7 @@ public final class Gate implements DataElement {
     if (dimensions != 1) {
       throw new UnsupportedOperationException("inGate(int): can only be called for 1D gates.");
     }
-    return (isSet && (channel >= lowerLimit) && (channel <= upperLimit));
+    return isSet && (channel >= lowerLimit) && (channel <= upperLimit);
   }
 
   /**
@@ -418,7 +423,7 @@ public final class Gate implements DataElement {
   }
 
   /**
-   * Sets the limts for a 1-d gate.
+   * Sets the limits for a 1-d gate.
    *
    * @param lower lower channel limit
    * @param upper upper channel limit
