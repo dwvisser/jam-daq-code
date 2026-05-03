@@ -1,10 +1,13 @@
 package jam.data.func;
 
-import java.util.*;
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.swing.ImageIcon;
 
-// TODO Make this dynamically load from classpath.
-// TODO Make this load a class only when needed, i.e., make it a factory.
 /**
  * Class for obtaining specific instances of calibration functions.
  *
@@ -12,10 +15,11 @@ import javax.swing.*;
  */
 public final class CalibrationFunctionCollection {
 
-  private static final Map<String, Class<? extends AbstractCalibrationFunction>> FUNCTIONS =
+  private static final Map<String, Class<? extends AbstractCalibrationFunction>>
+      FUNCTIONS = // NOPMD
       new TreeMap<>();
 
-  private static final Map<String, ImageIcon> ICONS = new HashMap<>();
+  private static final Map<String, ImageIcon> ICONS = new HashMap<>(); // NOPMD
 
   /** Calibration function representing no calibration at all. */
   public static final AbstractCalibrationFunction NO_CALIBRATION = new NoFunction();
@@ -43,7 +47,6 @@ public final class CalibrationFunctionCollection {
     ICONS.clear();
   }
 
-  // TODO Make the icons the responsibility of the calibration function.
   /**
    * @param name the name of the calibration function
    * @return the icon for the calibration function
@@ -66,7 +69,8 @@ public final class CalibrationFunctionCollection {
    *
    * @return the map of function names to functions
    */
-  public static Map<String, Class<? extends AbstractCalibrationFunction>> getMapFunctions() {
+  public static Map<String, Class<? extends AbstractCalibrationFunction>>
+      getMapFunctions() { // NOPMD
     return Collections.unmodifiableMap(FUNCTIONS);
   }
 

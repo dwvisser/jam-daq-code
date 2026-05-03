@@ -35,9 +35,9 @@ public class SortOfflineTest {
         histogram.getArea(), 0.0, 0.001, "Expected '" + histogram.getName() + "' to be zeroed.");
   }
 
-  private void sortEventFile(final String eventFileName, final int repitition) {
+  private void sortEventFile(final String eventFileName, final int repetition) {
     final File eventFile = session.defineFile(eventFileName);
-    for (int i = 0; i < repitition; i++) {
+    for (int i = 0; i < repetition; i++) {
       session.addEventFile(eventFile);
     }
     session.beginSort();
@@ -132,7 +132,7 @@ public class SortOfflineTest {
     final String eventInpath = File.createTempFile("jam", null).getParent();
     JamProperties.setProperty(EVENT_INPATH, eventInpath);
     final File expectedPath =
-        (new File(JamProperties.getPropString(EVENT_INPATH))).getCanonicalFile();
+        new File(JamProperties.getPropString(EVENT_INPATH)).getCanonicalFile();
     final SortControl sc = new SortControl(null, null, new Icons());
     final MultipleFileChooser mfc = sc.getFileChooser();
     final File actualPath = mfc.getCurrentFolder().getCanonicalFile();

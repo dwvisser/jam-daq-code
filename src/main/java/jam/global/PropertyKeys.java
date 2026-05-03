@@ -53,7 +53,7 @@ public final class PropertyKeys {
    */
   public static final String HOST_IP = "host.IP";
 
-  /** Port number for recieving messages from the front end. */
+  /** Port number for receiving messages from the front end. */
   public static final String HOST_PORT_RECV = "host.portRecv";
 
   /** Port number for sending messages to the front end. */
@@ -78,6 +78,6 @@ public final class PropertyKeys {
   /** Front end's IP address for communicating with Jam. */
   public static final String TARGET_IP = "target.IP";
 
-  /** Front end's port number for communciating with Jam. */
+  /** Front end's port number for communicating with Jam. */
   public static final String TARGET_PORT = "target.port";
 }

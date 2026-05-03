@@ -3,7 +3,8 @@ package jam.data.func;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Arrays;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /**
  * A function that can be use to calibrate a histogram. Most often used to define energy
@@ -43,7 +44,7 @@ public abstract class AbstractCalibrationFunction implements Function {
   protected transient double[] ptsEnergy = new double[0];
 
   /** Coefficient values. */
-  protected double[] coeff;
+  protected double[] coefficients;
 
   /** Length histogram */
   protected transient int sizeHistogram;
@@ -63,7 +64,7 @@ public abstract class AbstractCalibrationFunction implements Function {
     super();
     this.name = name;
     if (numberTerms < MAX_TERMS) {
-      coeff = new double[numberTerms];
+      coefficients = new double[numberTerms];
       labels = new String[numberTerms];
     } else {
       throw new IllegalArgumentException(
@@ -75,7 +76,7 @@ public abstract class AbstractCalibrationFunction implements Function {
    * @return Number of terms
    */
   public int getNumberTerms() {
-    return coeff.length;
+    return coefficients.length;
   }
 
   /**
@@ -95,10 +96,10 @@ public abstract class AbstractCalibrationFunction implements Function {
    *
    * @return array containing the calibration coefficients
    */
-  public double[] getCoeff() {
-    final int len = coeff.length;
+  public double[] getCoefficients() {
+    final int len = coefficients.length;
     final double[] rval = new double[len];
-    System.arraycopy(coeff, 0, rval, 0, len);
+    System.arraycopy(coefficients, 0, rval, 0, len);
     return rval;
   }
 
@@ -117,9 +118,9 @@ public abstract class AbstractCalibrationFunction implements Function {
   }
 
   /**
-   * Returns whether coeffecients are result of a fit.
+   * Returns whether coefficients are result of a fit.
    *
-   * @return whether coeffecients are result of a fit
+   * @return whether coefficients are result of a fit
    */
   public boolean isFitPoints() {
     synchronized (this) {
@@ -208,11 +209,11 @@ public abstract class AbstractCalibrationFunction implements Function {
    * @param aIn array of coefficients which should be at least as large as the number of
    *     coefficients
    */
-  public void setCoeff(final double aIn[]) {
+  public void setCoefficients(final double aIn[]) {
     setIsFitPoints(false);
-    if (aIn.length <= coeff.length) {
-      Arrays.fill(coeff, 0.0);
-      System.arraycopy(aIn, 0, coeff, 0, aIn.length);
+    if (aIn.length <= coefficients.length) {
+      Arrays.fill(coefficients, 0.0);
+      System.arraycopy(aIn, 0, coefficients, 0, aIn.length);
     } else {
       throw new IndexOutOfBoundsException(
           getClass().getName() + ".setCoeff(double [" + aIn.length + "]): too many terms.");

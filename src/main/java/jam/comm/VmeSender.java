@@ -7,5 +7,5 @@ interface VmeSender {
    *
    * @param message string to send
    */
-  void sendMessage(final String message);
+  void sendMessage(String message);
 }

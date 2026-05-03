@@ -25,26 +25,24 @@ public class QuadraticFunction extends AbstractGaussJordanFunction {
    */
   @Override
   public double getValue(final double channel) {
-    return coeff[0] + coeff[1] * channel + coeff[2] * channel * channel;
+    return coefficients[0] + coefficients[1] * channel + coefficients[2] * channel * channel;
   }
 
   /** do a fit of x y values */
   @Override
   public void fit() throws CalibrationFitException {
     final double[] coeffQuad = polynomialFit(ptsEnergy, ptsChannel, 2);
-    System.arraycopy(coeffQuad, 0, coeff, 0, coeffQuad.length);
+    System.arraycopy(coeffQuad, 0, coefficients, 0, coeffQuad.length);
   }
 
   @Override
   public String updateFormula(final NumberFormat numFormat) {
-    String formula =
-        "E = "
-            + numFormat.format(coeff[0])
-            + " + "
-            + numFormat.format(coeff[1])
-            + "\u2219ch + "
-            + numFormat.format(coeff[2])
-            + "\u2219ch^2";
-    return formula;
+    return "E = "
+        + numFormat.format(coefficients[0])
+        + " + "
+        + numFormat.format(coefficients[1])
+        + "\u2219ch + "
+        + numFormat.format(coefficients[2])
+        + "\u2219ch^2";
   }
 }

@@ -16,7 +16,7 @@ final class SetBlackBackground extends AbstractSetBooleanPreference {
     super();
     putValue(NAME, "Invert foreground/background");
     putValue(SHORT_DESCRIPTION, "Check to use white-on-black color scheme.");
-    prefsNode = PlotPreferences.PREFS;
+    preferencesNode = PlotPreferences.PREFS;
     key = PlotPreferences.BLACK_BACKGROUND;
     defaultState = false;
   }

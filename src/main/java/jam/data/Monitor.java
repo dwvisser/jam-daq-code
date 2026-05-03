@@ -1,6 +1,10 @@
 package jam.data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.sound.sampled.Clip;
 
 /**
@@ -21,7 +25,7 @@ public final class Monitor {
   public static final List<Monitor> LIST = Collections.synchronizedList(new ArrayList<Monitor>());
 
   /** Lookup table for all monitors. */
-  public static final Map<String, Monitor> TABLE =
+  public static final Map<String, Monitor> TABLE = // NOPMD
       Collections.synchronizedMap(new HashMap<String, Monitor>());
 
   /** Clears the list of monitors. */
@@ -89,7 +93,8 @@ public final class Monitor {
 
   private double value; // value for testing
 
-  private transient double valueNew; // the newest value set
+  // the newest value set
+  private transient double valueNew; // NOPMD
 
   // the previous value set
   private transient double valueOld; // NOPMD
@@ -129,7 +134,7 @@ public final class Monitor {
   }
 
   /**
-   * Constructs an monitor object which delegates to a given <code>Sorter</code> for the caluclation
+   * Constructs an monitor object which delegates to a given <code>Sorter</code> for the calculation
    * of its current value.
    *
    * @param monitorName name of the monitor for display in dialog
@@ -165,7 +170,7 @@ public final class Monitor {
   /**
    * NOT YET IMPLEMENTED, Gets the current <code>AudioClip</code> object to be played for alarms if
    * the alarm is enabled. Currently, the plan is to fully implement this when the JDK 1.2 <code>
-   * javax.media</code> packeage is available.
+   * javax.media</code> package is available.
    *
    * @return the sound clip for this monitor's alarm, <code>null</code> indicates that a default
    *     system beep is desired
@@ -190,7 +195,7 @@ public final class Monitor {
   /**
    * Returns this monitor's name. The name is used in display and to retrieve the monitor.
    *
-   * @return this montor's name
+   * @return this monitor's name
    */
   public String getName() {
     return name;

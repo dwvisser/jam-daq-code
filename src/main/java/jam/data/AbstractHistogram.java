@@ -3,7 +3,14 @@ package jam.data;
 import injection.GuiceInjector;
 import jam.global.Nameable;
 import jam.util.StringUtilities;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Class containing spectra and the routines to perform operations on them.
@@ -39,7 +46,7 @@ public abstract class AbstractHistogram implements DataElement {
   /** Maximum number of characters in the histogram name. */
   public static final int NAME_LENGTH = 20;
 
-  private static final Map<String, AbstractHistogram> NAME_MAP = new HashMap<>();
+  private static final Map<String, AbstractHistogram> NAME_MAP = new HashMap<>(); // NOPMD
 
   private static final SortedMap<Integer, AbstractHistogram> NUMBER_MAP = new TreeMap<>();
 
@@ -87,8 +94,7 @@ public abstract class AbstractHistogram implements DataElement {
    * @return the histogram with the given name, null if name doesn't exist.
    */
   public static AbstractHistogram getHistogram(final String name) {
-    final AbstractHistogram rval = name == null ? null : NAME_MAP.get(name);
-    return rval;
+    return name == null ? null : NAME_MAP.get(name);
   }
 
   /**
@@ -136,7 +142,7 @@ public abstract class AbstractHistogram implements DataElement {
   /**
    * @return list of all histograms sorted by number
    */
-  public static Collection<AbstractHistogram> getListSortedByNumber() {
+  public static Collection<AbstractHistogram> getListSortedByNumber() { // NOPMD
     return Collections.unmodifiableCollection(NUMBER_MAP.values());
   }
 
@@ -241,7 +247,7 @@ public abstract class AbstractHistogram implements DataElement {
   }
 
   /**
-   * Contructor with no number given, but axis labels are given.
+   * Constructor with no number given, but axis labels are given.
    *
    * @param type dimensionality of histogram, 1 or 2
    * @param sizeX number of channels in x-axis
@@ -277,7 +283,7 @@ public abstract class AbstractHistogram implements DataElement {
   }
 
   /**
-   * Contructor with no number given, but axis labels are given.
+   * Constructor with no number given, but axis labels are given.
    *
    * @param type dimensionality of histogram, 1 or 2
    * @param size number of channels, all 2d histograms have square dimensions
@@ -296,8 +302,6 @@ public abstract class AbstractHistogram implements DataElement {
     setLabelX(axisLabelX);
     setLabelY(axisLabelY);
   }
-
-  /* instantized methods */
 
   /**
    * Adds the given counts to this histogram.

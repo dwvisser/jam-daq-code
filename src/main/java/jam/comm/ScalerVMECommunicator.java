@@ -25,14 +25,14 @@ public class ScalerVMECommunicator implements ScalerCommunication, PropertyChang
    * and a status packet (read OK or ERROR) with a message.
    */
   public void readScalers() {
-    final String RUN_SCALER = "list scaler";
-    this.vme.sendMessage(RUN_SCALER);
+    final String listScaler = "list scaler";
+    this.vme.sendMessage(listScaler);
   }
 
   /** Tells the VME to clear the scalers and send a reply: OK or ERROR. */
   public void clearScalers() {
-    final String RUN_CLEAR = "list clear";
-    this.vme.sendMessage(RUN_CLEAR);
+    final String listClear = "list clear";
+    this.vme.sendMessage(listClear);
   }
 
   /**

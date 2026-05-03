@@ -69,20 +69,21 @@ public final class Group implements Nameable {
     final boolean filenameNotNull = fileName != null;
     final boolean groupNameNotNull = groupName != null;
     if (filenameNotNull && groupNameNotNull) {
-      tempFullName = STRINGUTIL.makeFullName(fileName, groupName);
+      tempFullName = STRING_UTILITIES.makeFullName(fileName, groupName);
     } else if (filenameNotNull) {
       tempFullName = fileName;
     } else if (groupNameNotNull) {
       tempFullName = groupName;
     }
-    final String uniqueName = STRINGUTIL.makeUniqueName(tempFullName, COLLECTION.getNameSet());
+    final String uniqueName =
+        STRING_UTILITIES.makeUniqueName(tempFullName, COLLECTION.getNameSet());
     this.type = type;
     this.groupName = groupName;
     this.fullName = uniqueName;
     COLLECTION.add(this, uniqueName);
   }
 
-  protected void add(final Scaler scaler) {
+  void add(final Scaler scaler) {
     this.scalerList.add(scaler);
   }
 
@@ -135,10 +136,10 @@ public final class Group implements Nameable {
     return fullName;
   }
 
-  private static final StringUtilities STRINGUTIL =
+  private static final StringUtilities STRING_UTILITIES =
       GuiceInjector.getObjectInstance(StringUtilities.class);
 
-  protected HistDouble2D createHistDouble2D(
+  HistDouble2D createHistDouble2D(
       final String name,
       final String title,
       final String labelX,
@@ -149,7 +150,7 @@ public final class Group implements Nameable {
     return result;
   }
 
-  protected HistInt2D createHistInt2D(
+  HistInt2D createHistInt2D(
       final String name,
       final String title,
       final String labelX,
@@ -160,7 +161,7 @@ public final class Group implements Nameable {
     return result;
   }
 
-  protected HistDouble1D createHistDouble1D(
+  HistDouble1D createHistDouble1D(
       final String name,
       final String title,
       final String labelX,
@@ -171,7 +172,7 @@ public final class Group implements Nameable {
     return result;
   }
 
-  protected HistInt1D createHistInt1D(
+  HistInt1D createHistInt1D(
       final String name,
       final String title,
       final String labelX,
@@ -184,7 +185,8 @@ public final class Group implements Nameable {
 
   private void addGroupInfoToHist(final AbstractHistogram hist, final String name) {
     hist.setName(
-        STRINGUTIL.makeUniqueName(name, histograms.getNameSet(), AbstractHistogram.NAME_LENGTH));
+        STRING_UTILITIES.makeUniqueName(
+            name, histograms.getNameSet(), AbstractHistogram.NAME_LENGTH));
     hist.updateNames(this); // puts in name map as well
     /* Add to group */
     this.histograms.add(hist, hist.getName());
@@ -196,7 +198,7 @@ public final class Group implements Nameable {
    *
    * @return <code>true</code> if this group remains in the name mapping
    */
-  protected boolean isValid() {
+  boolean isValid() {
     return COLLECTION.getList().contains(this);
   }
 }

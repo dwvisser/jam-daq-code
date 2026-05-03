@@ -14,5 +14,5 @@ interface Predicate<T> {
    * @param object to evaluate based on
    * @return true or false
    */
-  boolean evaluate(final T object);
+  boolean evaluate(T object);
 }

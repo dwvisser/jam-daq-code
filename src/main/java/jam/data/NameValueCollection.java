@@ -30,12 +30,12 @@ public interface NameValueCollection<T extends Nameable> {
    * @param nameable item to add
    * @param uniqueName name to map to
    */
-  void add(final T nameable, final String uniqueName);
+  void add(T nameable, String uniqueName);
 
   /**
    * @param nameable to remove
    */
-  void remove(final T nameable);
+  void remove(T nameable);
 
   /** Clear the collection. */
   void clear();
@@ -44,5 +44,5 @@ public interface NameValueCollection<T extends Nameable> {
    * @param name name of item to get
    * @return item mapped to the given name
    */
-  T get(final String name);
+  T get(String name);
 }

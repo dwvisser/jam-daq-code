@@ -13,7 +13,6 @@ import jam.ui.PanelOKApplyCancelButtons;
 import jam.ui.SelectionTree;
 import jam.util.NumberUtilities;
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -44,22 +43,39 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 
   private static final double BIN_CENTER_OFFSET = 0.5;
 
-  private final transient JCheckBox cchan, ccoeff;
-  private final transient JComboBox<Object> cfrom, cto;
-  private transient double chan1i, chan2i, chan1f, chan2f;
+  private final transient JCheckBox channels;
+  private final transient JCheckBox coefficients;
+  private final transient JComboBox<Object> from;
+  private final transient JComboBox<Object> to;
+  private transient double chan1i;
+  private transient double chan2i;
+  private transient double chan1f;
+  private transient double chan2f;
 
-  private transient AbstractHist1D hfrom;
+  private transient AbstractHist1D from_histogram;
 
-  private transient AbstractHist1D hto;
+  private transient AbstractHist1D to_histogram;
 
-  private transient double intercept1, slope1, intercept2, slope2;
-  private final transient JLabel label1, label2, label3, label4;
+  private transient double intercept1;
+  private transient double slope1;
+  private transient double intercept2;
+  private transient double slope2;
+  private final transient JLabel label1;
+  private final transient JLabel label2;
+  private final transient JLabel label3;
+  private final transient JLabel label4;
 
   private final transient JLabel lname;
 
-  private transient int mlo, mhi;
-  private final transient JTextField text1, text2, text3, text4, ttextto;
-  private transient double x2lo, x2hi;
+  private transient int mlo;
+  private transient int mhi;
+  private final transient JTextField text1;
+  private final transient JTextField text2;
+  private final transient JTextField text3;
+  private final transient JTextField text4;
+  private final transient JTextField ttextto;
+  private transient double x2lo;
+  private transient double x2hi;
 
   private final transient NumberUtilities numberUtilities;
 
@@ -87,10 +103,10 @@ public class GainShift extends AbstractManipulation implements ItemListener {
     Dimension dim;
     // UI Layout
     setResizable(false);
-    final Container cdgain = getContentPane();
-    int hgap = 5;
-    int vgap = 10;
-    cdgain.setLayout(new BorderLayout(hgap, vgap));
+    final var contents = getContentPane();
+    final int horizontalGap = 5;
+    final int verticalGap = 10;
+    contents.setLayout(new BorderLayout(horizontalGap, verticalGap));
     setLocation(20, 50);
     addWindowListener(
         new WindowAdapter() {
@@ -105,12 +121,12 @@ public class GainShift extends AbstractManipulation implements ItemListener {
           }
         });
     // Labels panel
-    final JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
+    final JPanel pLabels = new JPanel(new GridLayout(0, 1, horizontalGap, verticalGap));
     int thickInset = 20;
     int thinInset = 10;
     int zeroInset = 0;
     pLabels.setBorder(new EmptyBorder(thickInset, thinInset, zeroInset, zeroInset));
-    cdgain.add(pLabels, BorderLayout.WEST);
+    contents.add(pLabels, BorderLayout.WEST);
     pLabels.add(new JLabel("Shift histogram", SwingConstants.RIGHT));
     pLabels.add(new JLabel("Using", SwingConstants.RIGHT));
     label1 = new JLabel("", SwingConstants.RIGHT); // set by setUILabels
@@ -119,55 +135,55 @@ public class GainShift extends AbstractManipulation implements ItemListener {
     pLabels.add(label3);
     pLabels.add(new JLabel("To  histogram", SwingConstants.RIGHT));
     // Entries Panel
-    final JPanel pEntries = new JPanel(new GridLayout(0, 1, hgap, vgap));
+    final var pEntries = new JPanel(new GridLayout(0, 1, horizontalGap, verticalGap));
     pEntries.setBorder(new EmptyBorder(thickInset, zeroInset, zeroInset, thinInset));
-    cdgain.add(pEntries, BorderLayout.CENTER);
-    final JPanel pfrom = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-    cfrom = new JComboBox<>(new HistogramComboBoxModel(HistogramComboBoxModel.Mode.ONE_D));
-    meanCharWidth = getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
-    dim = cfrom.getPreferredSize();
+    contents.add(pEntries, BorderLayout.CENTER);
+    final var fromPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+    from = new JComboBox<>(new HistogramComboBoxModel(HistogramComboBoxModel.Mode.ONE_D));
+    meanCharWidth = getMeanCharWidth(from.getFontMetrics(from.getFont()));
+    dim = from.getPreferredSize();
     dim.width = CHAR_LENGTH * meanCharWidth;
-    cfrom.setPreferredSize(dim);
-    cfrom.setEditable(false);
-    pfrom.add(cfrom);
-    pEntries.add(pfrom);
-    final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+    from.setPreferredSize(dim);
+    from.setEditable(false);
+    fromPanel.add(from);
+    pEntries.add(fromPanel);
+    final JPanel checkboxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
     final ButtonGroup cbg = new ButtonGroup();
-    cchan = new JCheckBox("Channels", false);
-    cbg.add(cchan);
-    cchan.addItemListener(this);
-    ccoeff = new JCheckBox("Coeffiecients", true);
-    cbg.add(ccoeff);
-    ccoeff.addItemListener(this);
-    pradio.add(cchan);
-    pradio.add(ccoeff);
-    pEntries.add(pradio);
-    final JPanel pinfields = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+    channels = new JCheckBox("Channels", false);
+    cbg.add(channels);
+    channels.addItemListener(this);
+    coefficients = new JCheckBox("Coefficients", true);
+    cbg.add(coefficients);
+    coefficients.addItemListener(this);
+    checkboxPanel.add(channels);
+    checkboxPanel.add(coefficients);
+    pEntries.add(checkboxPanel);
+    final var inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
     int textColumns = 8;
     text1 = new JTextField("0.0", textColumns);
-    pinfields.add(text1);
+    inputPanel.add(text1);
     label2 = new JLabel(""); // set by setUILabels
-    pinfields.add(label2);
+    inputPanel.add(label2);
     text2 = new JTextField("1.0", textColumns);
-    pinfields.add(text2);
-    pEntries.add(pinfields);
-    final JPanel poutfields = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+    inputPanel.add(text2);
+    pEntries.add(inputPanel);
+    final var outputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
     text3 = new JTextField("0.0", textColumns);
-    poutfields.add(text3);
+    outputPanel.add(text3);
     label4 = new JLabel(""); // set by setUILabels
-    poutfields.add(label4);
+    outputPanel.add(label4);
     text4 = new JTextField("1.0", textColumns);
-    poutfields.add(text4);
-    pEntries.add(poutfields);
+    outputPanel.add(text4);
+    pEntries.add(outputPanel);
     final JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-    cto = new JComboBox<>();
-    meanCharWidth = getMeanCharWidth(cto.getFontMetrics(cto.getFont()));
-    dim = cto.getPreferredSize();
+    to = new JComboBox<>();
+    meanCharWidth = getMeanCharWidth(to.getFontMetrics(to.getFont()));
+    dim = to.getPreferredSize();
     dim.width = CHAR_LENGTH * meanCharWidth;
-    cto.setPreferredSize(dim);
-    cto.addItem("New Histogram");
-    cto.addItemListener(this);
-    pto.add(cto);
+    to.setPreferredSize(dim);
+    to.addItem("New Histogram");
+    to.addItemListener(this);
+    pto.add(to);
     lname = new JLabel("Name");
     pto.add(lname);
     ttextto = new JTextField("gainshift", TEXT_LENGTH);
@@ -181,39 +197,39 @@ public class GainShift extends AbstractManipulation implements ItemListener {
                 try {
                   doGainShift();
                   broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
-                  SelectionTree.setCurrentHistogram(hto);
-                  status.setCurrentGroup(DataUtility.getGroup(hto));
-                  broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hto);
+                  SelectionTree.setCurrentHistogram(to_histogram);
+                  status.setCurrentGroup(DataUtility.getGroup(to_histogram));
+                  broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, to_histogram);
                 } catch (DataException je) {
                   LOGGER.log(Level.SEVERE, je.getMessage(), je);
                 }
               }
             });
-    cdgain.add(pApply.getComponent(), BorderLayout.SOUTH);
+    contents.add(pApply.getComponent(), BorderLayout.SOUTH);
     pack();
-    cfrom.addActionListener(
+    from.addActionListener(
         event -> {
-          final Object selected = cfrom.getSelectedItem();
+          final Object selected = from.getSelectedItem();
           if (selected == null || selected instanceof String) {
-            hfrom = null; // NOPMD
+            from_histogram = null;
             pApply.setButtonsEnabled(false, false, true);
           } else {
-            hfrom = (AbstractHist1D) selected;
+            from_histogram = (AbstractHist1D) selected;
             pApply.setButtonsEnabled(true, true, true);
           }
         });
-    cfrom.setSelectedIndex(0);
+    from.setSelectedIndex(0);
     pack();
     setUILabels(true);
   }
 
-  /** calculate channels if given coeff. */
+  /** calculate channels if given coefficients */
   private void calculateChannels() {
     chan1f = (intercept1 + slope1 * chan1i - intercept2) / slope2;
     chan2f = (intercept1 + slope1 * chan2i - intercept2) / slope2;
   }
 
-  /** calculate coeff. if given channels */
+  /** calculate coefficients if given channels */
   private void calculateCoefficients() {
 
     intercept1 = 0.0; // if using channels, gain just gives channel
@@ -242,7 +258,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
       final double slopeIn,
       final double interceptOut,
       final double slopeOut,
-      final int npts2,
+      final int size,
       final int index) {
     // energy at lower edge of spec#1 channel
     final double e1lo = interceptIn + slopeIn * (index - BIN_CENTER_OFFSET);
@@ -260,8 +276,8 @@ public class GainShift extends AbstractManipulation implements ItemListener {
     mhi = (int) (x2hi + BIN_CENTER_OFFSET);
     mlo = Math.max(mlo, 0);
     mhi = Math.max(mhi, 0);
-    mlo = Math.min(mlo, npts2 - 1);
-    mhi = Math.min(mhi, npts2 - 1);
+    mlo = Math.min(mlo, size - 1);
+    mhi = Math.min(mhi, size - 1);
   }
 
   /*
@@ -269,7 +285,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
    */
   private void doGainShift() throws DataException {
     /* Get coefficients or channels. */
-    if (cchan.isSelected()) {
+    if (channels.isSelected()) {
       getChannels();
       calculateCoefficients();
     } else {
@@ -277,65 +293,71 @@ public class GainShift extends AbstractManipulation implements ItemListener {
     }
     /* Get input histogram. */
     final HistogramType oneDi = HistogramType.ONE_DIM_INT;
-    final boolean isOneD = hfrom.getType() == oneDi;
+    final boolean isOneD = from_histogram.getType() == oneDi;
     final double[] countsIn =
         isOneD
-            ? this.numberUtilities.intToDoubleArray(((jam.data.HistInt1D) hfrom).getCounts())
-            : ((jam.data.HistDouble1D) hfrom).getCounts();
-    final double[] errIn = hfrom.getErrors();
+            ? this.numberUtilities.intToDoubleArray(
+                ((jam.data.HistInt1D) from_histogram).getCounts())
+            : ((jam.data.HistDouble1D) from_histogram).getCounts();
+    final double[] errIn = from_histogram.getErrors();
     getOrCreateOutputHistogram();
-    hto.setZero();
+    to_histogram.setZero();
     final int countLen =
-        hto.getType() == oneDi
-            ? ((jam.data.HistInt1D) hto).getCounts().length
-            : ((jam.data.HistDouble1D) hto).getCounts().length;
+        to_histogram.getType() == oneDi
+            ? ((jam.data.HistInt1D) to_histogram).getCounts().length
+            : ((jam.data.HistDouble1D) to_histogram).getCounts().length;
     final double[] out = gainShift(countsIn, intercept1, slope1, intercept2, slope2, countLen);
     final double[] errOut =
-        errorGainShift(errIn, intercept1, slope1, intercept2, slope2, hto.getErrors().length);
-    if (hto.getType() == oneDi) {
-      hto.setCounts(this.numberUtilities.doubleToIntArray(out));
+        errorGainShift(
+            errIn, intercept1, slope1, intercept2, slope2, to_histogram.getErrors().length);
+    if (to_histogram.getType() == oneDi) {
+      to_histogram.setCounts(this.numberUtilities.doubleToIntArray(out));
     } else {
-      hto.setCounts(out);
+      to_histogram.setCounts(out);
     }
-    hto.setErrors(errOut);
-
-    LOGGER.info(
-        "Gain shift "
-            + hfrom.getFullName().trim()
-            + " with gain: "
-            + format(intercept1)
-            + " + "
-            + format(slope1)
-            + " x ch; to "
-            + hto.getFullName()
-            + " with gain: "
-            + format(intercept2)
-            + " + "
-            + format(slope2)
-            + " x ch");
+    to_histogram.setErrors(errOut);
+    if (LOGGER.isLoggable(Level.INFO)) {
+      LOGGER.info( // NOPMD
+          "Gain shift "
+              + from_histogram.getFullName().trim()
+              + " with gain: "
+              + format(intercept1)
+              + " + "
+              + format(slope1)
+              + " x ch; to "
+              + to_histogram.getFullName()
+              + " with gain: "
+              + format(intercept2)
+              + " + "
+              + format(slope2)
+              + " x ch");
+    }
   }
 
   private void getOrCreateOutputHistogram() {
-    final String name = (String) cto.getSelectedItem();
+    final String name = (String) to.getSelectedItem();
     if (isNewHistogram(name)) {
       final String histName = ttextto.getText().trim();
       final String groupName = parseGroupName(name);
-      hto = (AbstractHist1D) createNewDoubleHistogram(groupName, histName, hfrom.getSizeX());
-      LOGGER.info("New Histogram created: '" + groupName + "/" + histName + "'");
+      to_histogram =
+          (AbstractHist1D) createNewDoubleHistogram(groupName, histName, from_histogram.getSizeX());
+      if (LOGGER.isLoggable(Level.INFO)) {
+        LOGGER.info("New Histogram created: '" + groupName + "/" + histName + "'"); // NOPMD
+      }
     } else {
-      hto = (AbstractHist1D) AbstractHistogram.getHistogram(name);
+      to_histogram = (AbstractHist1D) AbstractHistogram.getHistogram(name);
     }
   }
 
   /** Loads the list of gates and set co-ordinates as x y if 2d or lower upper if 1d. */
   @Override
   public void doSetup() {
-    final String lto = (String) cto.getSelectedItem();
-    cto.removeAllItems();
-    loadAllHists(cto, true, HistogramType.ONE_D);
-    cto.setSelectedItem(lto);
-    setUseHist((String) cto.getSelectedItem());
-    cfrom.setSelectedIndex(0);
+    final String lto = (String) to.getSelectedItem();
+    to.removeAllItems();
+    loadAllHists(to, true, HistogramType.ONE_D);
+    to.setSelectedItem(lto);
+    setUseHist((String) to.getSelectedItem());
+    from.setSelectedIndex(0);
   }
 
   /**
@@ -347,8 +369,8 @@ public class GainShift extends AbstractManipulation implements ItemListener {
    * @param slopeIn linear calibration coefficient of countsIn
    * @param interceptOut constant calibration coefficient for output array
    * @param slopeOut linear calibration coefficient for output array
-   * @param npts2 desired size of output array
-   * @return new array of size <code>npts</code> re-binned for new gain coefficients
+   * @param size desired size of output array
+   * @return new array of size <code>size</code> re-binned for new gain coefficients
    * @throws DataException if there's a problem
    */
   private double[] errorGainShift(
@@ -357,12 +379,12 @@ public class GainShift extends AbstractManipulation implements ItemListener {
       final double slopeIn,
       final double interceptOut,
       final double slopeOut,
-      final int npts2)
+      final int size)
       throws DataException {
-    final double[] countsOut = new double[npts2];
+    final double[] countsOut = new double[size];
     for (int n = 0; n < countsIn.length; n++) {
-      calculateIntermediateValues(interceptIn, slopeIn, interceptOut, slopeOut, npts2, n);
-      if ((mlo >= 0) && (mhi < npts2)) {
+      calculateIntermediateValues(interceptIn, slopeIn, interceptOut, slopeOut, size, n);
+      if ((mlo >= 0) && (mhi < size)) {
         calculateErrorContribution(countsIn, countsOut, n);
       }
     }
@@ -396,31 +418,28 @@ public class GainShift extends AbstractManipulation implements ItemListener {
    * format a number
    */
   private String format(final double value) {
-    int integer, fraction;
-    NumberFormat fval;
-
-    integer = (int) log10(Math.abs(value));
+    int integer = (int) log10(Math.abs(value));
     integer = Math.max(integer, 1);
-    fraction = Math.max(7 - integer, 0);
-    fval = NumberFormat.getInstance();
-    fval.setGroupingUsed(false);
-    fval.setMinimumFractionDigits(fraction);
-    fval.setMinimumFractionDigits(fraction);
-    fval.setMinimumIntegerDigits(integer);
-    return fval.format(value);
+    final int fraction = Math.max(7 - integer, 0);
+    var format = NumberFormat.getInstance();
+    format.setGroupingUsed(false);
+    format.setMinimumFractionDigits(fraction);
+    format.setMinimumFractionDigits(fraction);
+    format.setMinimumIntegerDigits(integer);
+    return format.format(value);
   }
 
   /**
    * Gain-shifting subroutine adapted from Fortran code written and used at the Nuclear Physics
-   * Laboratory at University of Washigton, Seattle.
+   * Laboratory at University of Washington, Seattle.
    *
    * @param countsIn input array of counts
    * @param interceptIn constant calibration coefficient of countsIn
    * @param slopeIn linear calibration coefficient of countsIn
    * @param interceptOut constant calibration coefficient for output array
    * @param slopeOut linear calibration coefficient for output array
-   * @param npts2 desired size of output array
-   * @return new array of size <code>npts</code> re-binned for new gain coefficients
+   * @param size desired size of output array
+   * @return new array of size <code>size</code> re-binned for new gain coefficients
    * @throws DataException if there's a problem
    */
   private double[] gainShift(
@@ -429,26 +448,26 @@ public class GainShift extends AbstractManipulation implements ItemListener {
       final double slopeIn,
       final double interceptOut,
       final double slopeOut,
-      final int npts2)
+      final int size)
       throws DataException {
-    double[] countsOut = new double[npts2]; // language specifies elements
+    double[] countsOut = new double[size]; // language specifies elements
     // initialized to
     // zero
     // loop for each channel of original array
     for (int n = 0; n < countsIn.length; n++) {
-      calculateIntermediateValues(interceptIn, slopeIn, interceptOut, slopeOut, npts2, n);
+      calculateIntermediateValues(interceptIn, slopeIn, interceptOut, slopeOut, size, n);
       // treat the 3 cases below
-      if ((mlo >= 0) && (mhi < npts2)) {
+      if ((mlo >= 0) && (mhi < size)) {
         // sp#1 chan fits within one sp#2 chan
         if (mhi == mlo) {
           countsOut[mlo] = countsOut[mlo] + countsIn[n];
-          // sp#1 chan falls into two sp#2 chans
+          // sp#1 chan falls into two sp#2 channels
         } else if (mhi == (mlo + 1)) {
           countsOut[mlo] =
               countsOut[mlo] + countsIn[n] * (mlo + BIN_CENTER_OFFSET - x2lo) / (x2hi - x2lo);
           countsOut[mhi] =
               countsOut[mhi] + countsIn[n] * (x2hi - mhi + BIN_CENTER_OFFSET) / (x2hi - x2lo);
-          // sp#1 chan covers several sp#2 chans
+          // sp#1 chan covers several sp#2 channels
         } else if (mhi > mlo + 1) {
           calculateCountsInsideRange(countsIn, countsOut, n);
         } else {
@@ -481,7 +500,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
   }
 
   /*
-   * non-javadoc: get the coeff. from the text fields
+   * non-javadoc: get the coefficients from the text fields
    */
   private void getCoefficients() throws DataException {
     try {
@@ -496,14 +515,14 @@ public class GainShift extends AbstractManipulation implements ItemListener {
 
   /** A item state change indicates that a gate has been chosen. */
   public void itemStateChanged(final ItemEvent event) {
-    if (event.getSource() == ccoeff || event.getSource() == cchan) {
+    if (event.getSource() == coefficients || event.getSource() == channels) {
       try {
-        setUseCoeff(ccoeff.isSelected());
+        setUseCoefficients(coefficients.isSelected());
       } catch (DataException de) {
         LOGGER.log(Level.SEVERE, de.getMessage(), de);
       }
-    } else if (event.getSource() == cto && (cto.getSelectedItem() != null)) {
-      setUseHist((String) cto.getSelectedItem());
+    } else if (event.getSource() == to && (to.getSelectedItem() != null)) {
+      setUseHist((String) to.getSelectedItem());
     }
   }
 
@@ -528,7 +547,7 @@ public class GainShift extends AbstractManipulation implements ItemListener {
     }
   }
 
-  private void setUseCoeff(final boolean state) throws DataException {
+  private void setUseCoefficients(final boolean state) throws DataException {
     setUILabels(state);
     if (state) {
       getChannels();

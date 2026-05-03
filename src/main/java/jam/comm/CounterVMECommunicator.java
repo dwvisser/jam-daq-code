@@ -26,8 +26,8 @@ final class CounterVMECommunicator implements PropertyChangeListener {
 
   /** Tells the VME to zero its counters and send a reply: OK or ERROR. */
   private void zeroCounters() {
-    final String COUNT_ZERO = "count zero";
-    this.vme.sendMessage(COUNT_ZERO);
+    final String countZero = "count zero";
+    this.vme.sendMessage(countZero);
   }
 
   /**
@@ -35,7 +35,7 @@ final class CounterVMECommunicator implements PropertyChangeListener {
    * values, and a status packet (read OK or ERROR) with a message.
    */
   private void readCounters() {
-    final String COUNT_READ = "count read";
-    this.vme.sendMessage(COUNT_READ);
+    final String countRead = "count read";
+    this.vme.sendMessage(countRead);
   }
 }

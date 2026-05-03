@@ -16,7 +16,7 @@ final class SetAutoPeakFind extends AbstractSetBooleanPreference {
     super();
     putValue(NAME, "Automatic peak find");
     putValue(SHORT_DESCRIPTION, "Automatically search for and mark peaks in 1d histograms.");
-    prefsNode = PlotPreferences.PREFS;
+    preferencesNode = PlotPreferences.PREFS;
     key = PlotPreferences.AUTO_PEAK_FIND;
     defaultState = false;
   }

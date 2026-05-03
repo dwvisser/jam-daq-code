@@ -1,7 +1,8 @@
 package jam.global;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 /**
  * Extends the thread class to allow proper stopping and suspending of threads, by allowing the
@@ -64,7 +65,9 @@ public class GoodThread extends Thread {
       if (state != State.SUSPEND) {
         stateLock.notifyAll(); // wake up thread
       }
-      LOGGER.info(toString());
+      if (LOGGER.isLoggable(Level.INFO)) {
+        LOGGER.info(toString()); // NOPMD
+      }
     }
   }
 
@@ -90,7 +93,7 @@ public class GoodThread extends Thread {
               JOptionPane.ERROR_MESSAGE);
         }
       }
-      return (state == State.RUN);
+      return state == State.RUN;
     }
   }
 

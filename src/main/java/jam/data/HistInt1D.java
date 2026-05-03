@@ -102,7 +102,7 @@ public final class HistInt1D extends AbstractHist1D {
   protected void getCounts(final double[] array) {
     synchronized (this) {
       final int max = Math.min(array.length, counts.length);
-      for (int i = 0; i < max; i++) { // NOPMD
+      for (int i = 0; i < max; i++) {
         array[i] = counts[i];
       }
     }

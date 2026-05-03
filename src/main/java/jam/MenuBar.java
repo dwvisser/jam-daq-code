@@ -11,7 +11,10 @@ import jam.plot.PlotPreferences;
 import jam.plot.color.ColorPrefs;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 /**
  * Jam's menu bar. Separated from JamMain to reduce its size and separate responsibilities.
@@ -134,16 +137,16 @@ final class MenuBar implements PropertyChangeListener {
   }
 
   private JMenu createControlMenu() {
-    final JMenu mcontrol = new JMenu("Control");
-    mcontrol.add(this.commandManager.getMenuItem(CommandNames.START));
-    mcontrol.add(this.commandManager.getMenuItem(CommandNames.STOP));
-    mcontrol.add(this.commandManager.getMenuItem(CommandNames.FLUSH));
-    mcontrol.addSeparator();
-    mcontrol.add(this.commandManager.getMenuItem(CommandNames.SHOW_RUN_CONTROL));
-    mcontrol.add(this.commandManager.getMenuItem(CommandNames.SHOW_SORT_CONTROL));
-    mcontrol.add(this.commandManager.getMenuItem(CommandNames.PARAMETERS));
-    mcontrol.add(this.commandManager.getMenuItem(CommandNames.SHOW_BUFFER_COUNT));
-    return mcontrol;
+    final JMenu control = new JMenu("Control");
+    control.add(this.commandManager.getMenuItem(CommandNames.START));
+    control.add(this.commandManager.getMenuItem(CommandNames.STOP));
+    control.add(this.commandManager.getMenuItem(CommandNames.FLUSH));
+    control.addSeparator();
+    control.add(this.commandManager.getMenuItem(CommandNames.SHOW_RUN_CONTROL));
+    control.add(this.commandManager.getMenuItem(CommandNames.SHOW_SORT_CONTROL));
+    control.add(this.commandManager.getMenuItem(CommandNames.PARAMETERS));
+    control.add(this.commandManager.getMenuItem(CommandNames.SHOW_BUFFER_COUNT));
+    return control;
   }
 
   private JMenu createHistogramMenu() {
@@ -200,7 +203,7 @@ final class MenuBar implements PropertyChangeListener {
     mPrefer.add(this.commandManager.getMenuItem(PlotPreferences.AUTO_PEAK_FIND));
     mPrefer.add(this.commandManager.getMenuItem(CommandNames.SHOW_PEAK_FIND));
     mPrefer.addSeparator();
-    mPrefer.add(this.commandManager.getMenuItem(HDFPrefs.SUPPRES_EMPTY));
+    mPrefer.add(this.commandManager.getMenuItem(HDFPrefs.SUPPRESS_EMPTY));
     mPrefer.addSeparator();
     mPrefer.add(this.commandManager.getMenuItem(CommunicationPreferences.VERBOSE));
     mPrefer.add(this.commandManager.getMenuItem(CommunicationPreferences.DEBUG));
@@ -212,7 +215,7 @@ final class MenuBar implements PropertyChangeListener {
     final BroadcastEvent event = (BroadcastEvent) evt;
     final BroadcastEvent.Command command = event.getCommand();
     if (command == BroadcastEvent.Command.FIT_NEW) {
-      final Action fitAction = (Action) (event.getContent());
+      final Action fitAction = (Action) event.getContent();
       fitting.add(new JMenuItem(fitAction));
     }
   }
@@ -220,7 +223,7 @@ final class MenuBar implements PropertyChangeListener {
   /**
    * @return the only menubar created by this class
    */
-  protected JMenuBar getMenuBar() {
+  JMenuBar getMenuBar() {
     return menus;
   }
 }

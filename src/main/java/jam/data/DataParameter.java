@@ -3,7 +3,11 @@ package jam.data;
 import injection.GuiceInjector;
 import jam.global.Nameable;
 import jam.util.StringUtilities;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class for user-defined numerical parameters that can be used during sorting. Jam creates a dialog

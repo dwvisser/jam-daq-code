@@ -53,7 +53,11 @@ public class MessageSender {
     final BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
     final ThreadPoolExecutor executor =
         new ThreadPoolExecutor(1, 1, 200L, TimeUnit.MILLISECONDS, queue);
-    return executor.submit(eventGenerator);
+    try {
+      return executor.submit(eventGenerator);
+    } finally {
+      executor.close();
+    }
   }
 
   class EventGenerator implements Runnable {
@@ -64,7 +68,8 @@ public class MessageSender {
     private final transient byte[] eventEnd = {(byte) 0xff, (byte) 0xff};
     private final transient byte[] bufferPad = {(byte) 0xff, (byte) 0xf0};
     private final transient Random random = new Random();
-    private final transient Counter eventCounter, bufferCounter;
+    private final transient Counter eventCounter;
+    private final transient Counter bufferCounter;
     private final transient SocketAddress jamDataSocketAddress; // NOPMD
 
     EventGenerator(

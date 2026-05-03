@@ -48,7 +48,7 @@ public class CalibrationFit extends AbstractControl {
 
   private static final String BLANK_LABEL = "    --     ";
 
-  private transient AbstractCalibrationFunction calibFunc =
+  private transient AbstractCalibrationFunction calibrationFn =
       CalibrationFunctionCollection.NO_CALIBRATION;
 
   /* GUI stuff */
@@ -57,10 +57,11 @@ public class CalibrationFit extends AbstractControl {
   private final transient JComboBox<Object> funcChooser; // Chooser for
   // function type
 
-  private final transient JLabel lcalibEq;
+  private final transient JLabel equationLabel;
 
   /* Radio buttons for fit type */
-  private final transient JRadioButton rbFitPoints, rbSetCoeffs;
+  private final transient JRadioButton rbFitPoints;
+  private final transient JRadioButton rbSetCoefficients;
 
   private transient JPanel pPoint[];
 
@@ -80,7 +81,7 @@ public class CalibrationFit extends AbstractControl {
 
   private transient boolean isUpdate;
 
-  private final transient NumberFormat numFormatCoeff;
+  private final transient NumberFormat coefficientFormat;
 
   /**
    * Constructs a calibration fitting dialog.
@@ -93,12 +94,12 @@ public class CalibrationFit extends AbstractControl {
     super(frame, "Calibration Fit", false, broadcaster);
     setResizable(false);
     setLocation(30, 30);
-    final Container cdialogCalib = getContentPane();
-    cdialogCalib.setLayout(new BorderLayout(5, 5));
+    final Container contents = getContentPane();
+    contents.setLayout(new BorderLayout(5, 5));
     /* Selection panel at the top */
     final JPanel pSelection = new JPanel(new GridLayout(0, 1, 5, 0));
     pSelection.setBorder(new EmptyBorder(10, 0, 0, 0));
-    cdialogCalib.add(pSelection, BorderLayout.NORTH);
+    contents.add(pSelection, BorderLayout.NORTH);
     /* Equation chooser */
     final JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
     pChoose.add(new JLabel("Function: "));
@@ -108,9 +109,9 @@ public class CalibrationFit extends AbstractControl {
     pChoose.add(funcChooser);
     pSelection.add(pChoose);
     /* Equation */
-    lcalibEq = new JLabel(BLANK_TITLE, SwingConstants.CENTER);
-    pSelection.add(lcalibEq);
-    /* Fit using points or coeffs */
+    equationLabel = new JLabel(BLANK_TITLE, SwingConstants.CENTER);
+    pSelection.add(equationLabel);
+    /* Fit using points or coefficients */
     final JPanel pFitType = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
     final ButtonGroup gFitType = new ButtonGroup();
     rbFitPoints = new JRadioButton("Fit Points", true);
@@ -122,19 +123,19 @@ public class CalibrationFit extends AbstractControl {
         });
     gFitType.add(rbFitPoints);
     pFitType.add(rbFitPoints);
-    rbSetCoeffs = new JRadioButton("Set Coefficients", false);
-    rbSetCoeffs.addItemListener(
+    rbSetCoefficients = new JRadioButton("Set Coefficients", false);
+    rbSetCoefficients.addItemListener(
         itemEvent -> {
-          if (rbSetCoeffs.isSelected()) {
+          if (rbSetCoefficients.isSelected()) {
             setFitTypePoints(false);
           }
         });
-    gFitType.add(rbSetCoeffs);
-    pFitType.add(rbSetCoeffs);
+    gFitType.add(rbSetCoefficients);
+    pFitType.add(rbSetCoefficients);
     pSelection.add(pFitType);
     /* Tabbed panel with fit points an coefficients */
     tabPane = new JTabbedPane();
-    cdialogCalib.add(tabPane, BorderLayout.CENTER);
+    contents.add(tabPane, BorderLayout.CENTER);
     final JPanel ptsPanel = createAllPointsPanel();
     tabPane.addTab("Points", null, ptsPanel, "Channels and Energies to fit.");
     final JPanel histPanel = createCoeffPanel();
@@ -145,7 +146,7 @@ public class CalibrationFit extends AbstractControl {
             new PanelOKApplyCancelButtons.AbstractListener(this) {
               public void apply() {
                 if (rbFitPoints.isSelected()) {
-                  doApplyCalib();
+                  applyCalibration();
                 } else {
                   doSetCoefficients();
                 }
@@ -153,20 +154,20 @@ public class CalibrationFit extends AbstractControl {
 
               @Override
               public void cancel() {
-                doCancelCalib();
+                cancelCalibration();
               }
             });
-    cdialogCalib.add(pButtons.getComponent(), BorderLayout.SOUTH);
+    contents.add(pButtons.getComponent(), BorderLayout.SOUTH);
     pack();
     // Initially selections
     isUpdate = false;
     // comboBoxFunction.setSelectedIndex(0);
     rbFitPoints.setSelected(true);
     // numFormat for formatting coeff output
-    numFormatCoeff = NumberFormat.getInstance();
-    numFormatCoeff.setGroupingUsed(false);
-    numFormatCoeff.setMinimumFractionDigits(2);
-    numFormatCoeff.setMaximumFractionDigits(10);
+    coefficientFormat = NumberFormat.getInstance();
+    coefficientFormat.setGroupingUsed(false);
+    coefficientFormat.setMinimumFractionDigits(2);
+    coefficientFormat.setMaximumFractionDigits(10);
   }
 
   // Create panel with the points to fit
@@ -237,16 +238,16 @@ public class CalibrationFit extends AbstractControl {
    */
   private void selectFunction(final String funcName) {
     try {
-      calibFunc = getCurrentCalibrationFunction();
+      calibrationFn = getCurrentCalibrationFunction();
       final Class<? extends AbstractCalibrationFunction> calClass =
           CalibrationFunctionCollection.getMapFunctions().get(funcName);
-      final boolean change = calClass.isInstance(calibFunc);
+      final boolean change = calClass.isInstance(calibrationFn);
       final AbstractHist1D currentHistogram = getCurrentHistogram();
-      if (calibFunc == null || !change) {
-        calibFunc = calClass.getDeclaredConstructor().newInstance();
-        calibFunc.setSizeHistogram(currentHistogram.getSizeX());
+      if (calibrationFn == null || !change) {
+        calibrationFn = calClass.getDeclaredConstructor().newInstance();
+        calibrationFn.setSizeHistogram(currentHistogram.getSizeX());
       }
-      updateFields(calibFunc, rbFitPoints.isSelected());
+      updateFields(calibrationFn, rbFitPoints.isSelected());
     } catch (InstantiationException
         | IllegalAccessException
         | InvocationTargetException
@@ -265,54 +266,56 @@ public class CalibrationFit extends AbstractControl {
     } else {
       tabPane.setSelectedIndex(1);
     }
-    updateFields(calibFunc, state);
+    updateFields(calibrationFn, state);
   }
 
   private void updateSelection() {
     boolean isCalPts;
-    calibFunc = getCurrentCalibrationFunction();
+    calibrationFn = getCurrentCalibrationFunction();
     /* Select name. */
-    String name = calibFunc.getName();
+    String name = calibrationFn.getName();
     /* Set fit type. */
-    if (calibFunc.isFitPoints()) {
+    if (calibrationFn.isFitPoints()) {
       isCalPts = true;
       rbFitPoints.setSelected(true);
     } else {
       isCalPts = false;
-      rbSetCoeffs.setSelected(true);
+      rbSetCoefficients.setSelected(true);
     }
-    // Change isUpdate state so we dont loop on item Change event
+    // Change isUpdate state so we don't loop on item Change event
     isUpdate = true;
     funcChooser.setSelectedItem(name);
     isUpdate = false;
-    updateFields(calibFunc, isCalPts);
+    updateFields(calibrationFn, isCalPts);
   }
 
   @Override
   public void doSetup() {
-    calibFunc = getCurrentCalibrationFunction();
-    final boolean isCalPts = calibFunc.isFitPoints();
-    updateFields(calibFunc, isCalPts);
+    calibrationFn = getCurrentCalibrationFunction();
+    final boolean isCalPts = calibrationFn.isFitPoints();
+    updateFields(calibrationFn, isCalPts);
   }
 
-  private void doApplyCalib() {
+  private void applyCalibration() {
     final AbstractHist1D currentHistogram = getCurrentHistogram();
     if (currentHistogram == null) {
       LOGGER.severe("Need a 1 Dimension histogram");
     } else {
-      if (calibFunc != null && calibFunc.isCalibrated()) {
+      if (calibrationFn != null && calibrationFn.isCalibrated()) {
         doFitCalibration();
-        final boolean isCalPts = calibFunc.isFitPoints();
-        updateFields(calibFunc, isCalPts);
+        final boolean isCalPts = calibrationFn.isFitPoints();
+        updateFields(calibrationFn, isCalPts);
       } else {
-        currentHistogram.setCalibration(calibFunc);
-        LOGGER.info("Uncalibrated histogram " + currentHistogram.getFullName());
+        currentHistogram.setCalibration(calibrationFn);
+        if (LOGGER.isLoggable(Level.INFO)) {
+          LOGGER.info("Uncalibrated histogram " + currentHistogram.getFullName()); // NOPMD
+        }
       }
     }
   }
 
   /** cancel the histogram calibration */
-  private void doCancelCalib() {
+  private void cancelCalibration() {
     this.dispose();
     broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
   }
@@ -356,13 +359,15 @@ public class CalibrationFit extends AbstractControl {
           yval[i] = energy[i];
           xval[i] = channel[i];
         }
-        calibFunc.setPoints(xval, yval);
-        calibFunc.fit();
-        fitText = calibFunc.getFormula(numFormatCoeff);
-        currentHist.setCalibration(calibFunc);
+        calibrationFn.setPoints(xval, yval);
+        calibrationFn.fit();
+        fitText = calibrationFn.getFormula(coefficientFormat);
+        currentHist.setCalibration(calibrationFn);
         broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
-        LOGGER.info(
-            "Calibrated histogram " + currentHist.getFullName().trim() + " with " + fitText);
+        if (LOGGER.isLoggable(Level.INFO)) {
+          LOGGER.info( // NOPMD
+              "Calibrated histogram " + currentHist.getFullName().trim() + " with " + fitText);
+        }
       } else {
         LOGGER.severe("Need at least 2 points");
       }
@@ -371,7 +376,9 @@ public class CalibrationFit extends AbstractControl {
       LOGGER.severe("Invalid input, not a number");
     } catch (CalibrationFitException de) {
       currentHist.setCalibration(CalibrationFunctionCollection.NO_CALIBRATION);
-      LOGGER.severe(de.getMessage());
+      if (LOGGER.isLoggable(Level.SEVERE)) {
+        LOGGER.severe(de.getMessage()); // NOPMD
+      }
     }
   }
 
@@ -380,7 +387,7 @@ public class CalibrationFit extends AbstractControl {
     double coeff[] = new double[numberTerms];
     final AbstractHist1D currentHist = getCurrentHistogram();
     /* silently ignore if histogram null */
-    if (calibFunc == null) {
+    if (calibrationFn == null) {
       LOGGER.severe("Calibration function not defined.");
     } else {
       int index = 0;
@@ -388,23 +395,27 @@ public class CalibrationFit extends AbstractControl {
         for (index = 0; index < numberTerms; index++) {
           coeff[index] = Double.parseDouble(tcoeff[index].getText());
         }
-        calibFunc.setCoeff(coeff);
-        currentHist.setCalibration(calibFunc);
+        calibrationFn.setCoefficients(coeff);
+        currentHist.setCalibration(calibrationFn);
         broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
-        LOGGER.info(
-            "Calibrated histogram "
-                + currentHist.getFullName().trim()
-                + " with "
-                + calibFunc.getFormula(numFormatCoeff));
-
+        if (LOGGER.isLoggable(Level.INFO)) {
+          LOGGER.info( // NOPMD
+              "Calibrated histogram "
+                  + currentHist.getFullName().trim()
+                  + " with "
+                  + calibrationFn.getFormula(coefficientFormat));
+        }
       } catch (NumberFormatException nfe) {
-        LOGGER.severe("Invalid input, coefficient " + calibFunc.getLabels()[index]);
+        if (LOGGER.isLoggable(Level.SEVERE)) {
+          LOGGER.severe( // NOPMD
+              "Invalid input, coefficient " + calibrationFn.getLabels()[index]);
+        }
       }
     }
   }
 
   /**
-   * Sets inputs fields, enables and diables them as appropricate depending of if there is a
+   * Sets inputs fields, enables and disables them as appropriate depending of if there is a
    * calibration or what type it is.
    *
    * @param hcf calibration, if any
@@ -413,7 +424,7 @@ public class CalibrationFit extends AbstractControl {
   private void updateFields(final AbstractCalibrationFunction hcf, final boolean isCalPts) {
     final boolean calNotNull = hcf.isCalibrated();
     final String title = hcf.getTitle();
-    lcalibEq.setText(title);
+    equationLabel.setText(title);
 
     /* Points fields */
     if (calNotNull) {
@@ -421,7 +432,7 @@ public class CalibrationFit extends AbstractControl {
       final double[] ptsEnergy = hcf.getPtsEnergy();
       numberTerms = hcf.getNumberTerms();
       final String[] labels = hcf.getLabels();
-      final double[] coeff = hcf.getCoeff();
+      final double[] coeff = hcf.getCoefficients();
       /* Calibrated with points */
       if (isCalPts) {
         setCalibratedWithPoints(ptsChannel, ptsEnergy, labels, coeff);
@@ -438,7 +449,7 @@ public class CalibrationFit extends AbstractControl {
         for (int i = 0; i < MAX_TERMS; i++) {
           if (i < numberTerms) {
             lcoeff[i].setText(labels[i]);
-            tcoeff[i].setText(numFormatCoeff.format(coeff[i]));
+            tcoeff[i].setText(coefficientFormat.format(coeff[i]));
             tcoeff[i].setEnabled(true);
             tcoeff[i].setEditable(true);
           } else {
@@ -490,7 +501,7 @@ public class CalibrationFit extends AbstractControl {
     for (int i = 0; i < MAX_TERMS; i++) {
       if (i < numberTerms) {
         lcoeff[i].setText(labels[i]);
-        tcoeff[i].setText(numFormatCoeff.format(coeff[i]));
+        tcoeff[i].setText(coefficientFormat.format(coeff[i]));
         tcoeff[i].setEnabled(false);
         tcoeff[i].setEditable(true);
       } else {
@@ -513,11 +524,9 @@ public class CalibrationFit extends AbstractControl {
 
   private AbstractCalibrationFunction getCurrentCalibrationFunction() {
     final AbstractHist1D currentHist = getCurrentHistogram();
-    final AbstractCalibrationFunction rval =
-        currentHist == null
-            ? CalibrationFunctionCollection.NO_CALIBRATION
-            : currentHist.getCalibration();
-    return rval;
+    return currentHist == null
+        ? CalibrationFunctionCollection.NO_CALIBRATION
+        : currentHist.getCalibration();
   }
 
   /** Update selection then show dialog */

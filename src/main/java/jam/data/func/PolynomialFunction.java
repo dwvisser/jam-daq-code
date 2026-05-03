@@ -13,7 +13,7 @@ public class PolynomialFunction extends AbstractGaussJordanFunction {
   public PolynomialFunction(final int numberTerms) {
     super("Polynomial", numberTerms);
     title = "E = a0 + a1\u2219ch + a2\u2219(ch)\u00b2 + ...";
-    coeff = new double[numberTerms];
+    coefficients = new double[numberTerms];
     labels = new String[numberTerms];
     for (int i = 0; i < numberTerms; i++) {
       labels[0] = "a(" + i + ")";
@@ -29,10 +29,10 @@ public class PolynomialFunction extends AbstractGaussJordanFunction {
   @Override
   public double getValue(final double channel) {
     double value = 0.0;
-    double chanMult = 1.0;
-    for (double aCoeff : coeff) {
-      value = value + aCoeff * chanMult;
-      chanMult = chanMult * channel;
+    double channelMultiplier = 1.0;
+    for (double aCoeff : coefficients) {
+      value = value + aCoeff * channelMultiplier;
+      channelMultiplier = channelMultiplier * channel;
     }
     return value;
   }
@@ -40,7 +40,7 @@ public class PolynomialFunction extends AbstractGaussJordanFunction {
   // To be implemented later when This Function Works
   @Override
   public double getChannel(final double energy) {
-    return ((energy - coeff[0]) / coeff[1]);
+    return (energy - coefficients[0]) / coefficients[1];
   }
 
   /** do a fit of x y values */

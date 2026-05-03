@@ -1,6 +1,6 @@
 package jam.global;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * represents the possible run states of Jam.
@@ -24,7 +24,8 @@ public final class RunState implements AcquisitionStatus {
   private final transient String name;
   private String label;
   private final transient Color color;
-  private final transient boolean acquireOn, acquireMode;
+  private final transient boolean acquireOn;
+  private final transient boolean acquireMode;
 
   private RunState(final int index) {
     super();
@@ -85,7 +86,7 @@ public final class RunState implements AcquisitionStatus {
   }
 
   /**
-   * @return background color for the lable to show for this run state
+   * @return background color for the label to show for this run state
    */
   public Color getColor() {
     return color;

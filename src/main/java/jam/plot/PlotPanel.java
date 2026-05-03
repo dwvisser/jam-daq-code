@@ -51,7 +51,7 @@ final class PlotPanel extends JPanel implements CountsContainer {
 
   private transient boolean mouseMove = false;
 
-  private transient PageFormat pageformat = null;
+  private transient PageFormat pageFormat = null;
 
   private final transient Plot plot;
 
@@ -133,10 +133,8 @@ final class PlotPanel extends JPanel implements CountsContainer {
     super.paintComponent(graphics);
     final PlotColorMap pcm = PlotColorMap.getInstance();
     if (plot.isPrinting()) { // output to printer
-      // FIXME KBS font not set
-      // graph.setFont(printFont);
       pcm.setColorMap(Mode.PRINT);
-      plot.setView(pageformat);
+      plot.setView(pageFormat);
     } else { // output to screen
       // graph.setFont(screenFont);
       pcm.setColorMap(colorMode);
@@ -149,7 +147,7 @@ final class PlotPanel extends JPanel implements CountsContainer {
     plot.setViewSize(getSize());
     plot.update(graphics);
     /*
-     * give graph all pertinent info, draw outline, tickmarks, labels, and
+     * give graph all pertinent info, draw outline, tick marks, labels, and
      * title
      */
     final AbstractHistogram plotHist = plot.getHistogram();
@@ -226,7 +224,7 @@ final class PlotPanel extends JPanel implements CountsContainer {
 
   protected void setPageFormat(final PageFormat format) {
     synchronized (this) {
-      pageformat = format;
+      pageFormat = format;
     }
   }
 

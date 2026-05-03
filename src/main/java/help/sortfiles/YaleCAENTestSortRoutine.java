@@ -34,9 +34,9 @@ public class YaleCAENTestSortRoutine extends AbstractSortRoutine {
   // energies
 
   // The data channels. Raw data is assigned to these when it is read
-  private final transient int cNaITDC[] = new int[16]; // NOPMD
-  private final transient int cNaIADC[] = new int[16]; // NOPMD
-  private final transient int cSciADC[] = new int[5]; // NOPMD
+  private final transient int cNaITDC[] = new int[16];
+  private final transient int cNaIADC[] = new int[16];
+  private final transient int cSciADC[] = new int[5];
 
   // Some floating point variables for energies
 
@@ -149,11 +149,11 @@ public class YaleCAENTestSortRoutine extends AbstractSortRoutine {
 
     // NaI ADC Gates
     for (int i = 0; i < 16; i++) {
-      gNaIADC[i] = new Gate("NaI " + i, hNaIADC[i]); // NOPMD
+      gNaIADC[i] = new Gate("NaI " + i, hNaIADC[i]);
     }
     // NaI TDC Gates
     for (int i = 0; i < 16; i++) {
-      gNaITDCa[i] = new Gate(NA_I_TDC + i + " a", hNaITDC[i]); // NOPMD
+      gNaITDCa[i] = new Gate(NA_I_TDC + i + " a", hNaITDC[i]);
     }
 
     // NaI Sum gate
@@ -164,7 +164,7 @@ public class YaleCAENTestSortRoutine extends AbstractSortRoutine {
 
     // Scintillator ADC
     for (int i = 0; i < 5; i++) {
-      gSciADC[i] = new Gate("Sci ADC " + i, hSciADC[i]); // NOPMD
+      gSciADC[i] = new Gate("Sci ADC " + i, hSciADC[i]);
     }
 
     // ---------------------------------------
@@ -365,12 +365,12 @@ public class YaleCAENTestSortRoutine extends AbstractSortRoutine {
   }
 
   private double[] calculateCalibratedEnergies() {
-    final double eNaIADC[] = new double[16]; // NOPMD
+    final double eNaIADC[] = new double[16];
     // Parameters for energy calibrations
     final double cenNaI1 = pcenNaI1sum.getValue();
     final double cenNaI2 = pcenNaI2sum.getValue();
     // Calibrate NaI
-    final double diff12 = (cenNaI2 - cenNaI1);
+    final double diff12 = cenNaI2 - cenNaI1;
     for (int i = 0; i < 16; i++) {
       final double cchNaI1 = pcchNaI1[i].getValue();
       final double cchNaI2 = pcchNaI2[i].getValue();

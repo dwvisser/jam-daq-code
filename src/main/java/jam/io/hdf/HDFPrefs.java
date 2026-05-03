@@ -17,5 +17,5 @@ public final class HDFPrefs {
   public static final Preferences PREFS = Preferences.userNodeForPackage(HDFPrefs.class);
 
   /** Name for the empty write preference. */
-  public static final String SUPPRES_EMPTY = "Write Empty Histograms/Gates";
+  public static final String SUPPRESS_EMPTY = "Write Empty Histograms/Gates";
 }

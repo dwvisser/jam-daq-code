@@ -14,7 +14,7 @@ public final class NoFunction extends AbstractCalibrationFunction {
     super();
     name = "Not calibrated.";
     title = "";
-    coeff = new double[0];
+    coefficients = new double[0];
     labels = new String[0];
   }
 
