@@ -41,16 +41,22 @@ public class CI extends AbstractSortRoutine {
   private final transient HistInt1D hNaI;
   private final transient HistInt1D hTAC;
 
-  private final transient HistInt1D hGe_g2d, hTAC_g2d; //  gated on Ge vs. NaI
+  //  gated on Ge vs. NaI
+  private final transient HistInt1D hGe_g2d;
+  private final transient HistInt1D hTAC_g2d;
 
   private final transient HistInt1D hGe_TAC; // 	gated on TAC
 
   private final transient HistInt2D hGeNaI; //  ungated 2D spectra
 
-  private transient int idGe, idNaI, idTAC; //  id numbers for the signals
+  //  id numbers for the signals
+  private transient int idGe;
+  private transient int idNaI;
+  private transient int idTAC;
 
   /* for calculating dead time */
-  private transient int lastGe, lastAccept; // NOPMD
+  private transient int lastGe;
+  private transient int lastAccept;
 
   private final transient Scaler sGe;
   private final transient Scaler sAccept;
